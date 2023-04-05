@@ -1,33 +1,3 @@
-CREATE TABLE IF NOT EXISTS group_event_attendance (
-	id INTEGER PRIMARY KEY,
-	user_id INTEGER NOT NULL,
-	event_id INTEGER NOT NULL,
-	is_attending BOOL,
-	FOREIGN KEY (user_id) 
-		REFERENCES users (id)
-	FOREIGN KEY (event_id) 
-		REFERENCES group_events (id)
-);
-
-
-CREATE TABLE IF NOT EXISTS messages(
-	id INTEGER PRIMARY KEY,
-	sender_id INTEGER NOT NULL,
-	recipient_id INTEGER,
-	group_id INTEGER,
-	content TEXT NOT NULL,
-	image_path TEXT,
-	sent_at DATETIME NOT NULL,
-	read_at DATETIME NOT NULL,
-	FOREIGN KEY (sender_id) 
-		REFERENCES users (id)
-	FOREIGN KEY (recipient_id) 
-		REFERENCES users (id)
-	FOREIGN KEY (group_id) 
-		REFERENCES groups (id)
-);
-
-
 CREATE TABLE IF NOT EXISTS notification_types(
 	id INTEGER PRIMARY KEY,
     entity TEXT NOT NULL,
