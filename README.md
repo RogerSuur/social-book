@@ -1,7 +1,7 @@
-# social-network
+# Social Network
 
 
-# Useful links
+## Useful links
 
 * Social network [audit questions](https://github.com/01-edu/public/tree/master/subjects/social-network)
 * [Intra link](https://01.kood.tech/intra/johvi/div-01/social-network?event=28) for the project description
@@ -11,7 +11,7 @@
 * [Designing a notification system](https://tannguyenit95.medium.com/designing-a-notification-system-1da83ca971bc) example
 
 
-# Database
+## Database
 * Creating new database migration: <br/>
 
         migrate create -ext sql -dir api/pkg/db/migrations/sqlite -seq schema_name
