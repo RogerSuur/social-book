@@ -1,0 +1,9 @@
+DROP TABLE  IF EXISTS group_events;
+DROP TABLE  IF EXISTS user_groups;
+DROP TABLE  IF EXISTS comments;
+DROP TABLE  IF EXISTS allowed_private_posts;
+DROP TABLE  IF EXISTS posts;
+DROP TABLE  IF EXISTS privacy_type;
+DROP TABLE  IF EXISTS groups;
+DROP TABLE  IF EXISTS followers;
+DROP TABLE  IF EXISTS users;
