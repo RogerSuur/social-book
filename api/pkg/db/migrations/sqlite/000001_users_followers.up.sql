@@ -12,6 +12,16 @@ CREATE TABLE IF NOT EXISTS users (
 	is_public BOOL NOT NULL DEFAULT false
 );
 
+CREATE TABLE IF NOT EXISTS user_sessions(
+	id INTEGER PRIMARY KEY,
+	user_id INTEGER NOT NULL,
+	session TEXT NOT NUll,
+		FOREIGN KEY (user_id)
+			REFERENCES users(id)
+
+);
+
+
 CREATE TABLE IF NOT EXISTS followers(
 	id INTEGER PRIMARY KEY,
 	following_id INTEGER NOT NULL,
