@@ -27,3 +27,7 @@ yarn-error.log*
 **/.idea
 package-lock.json
 node_modules/
+App.test.js
+reportWebVitals.js
+setupTests.js
+build/
