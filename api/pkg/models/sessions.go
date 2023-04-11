@@ -13,7 +13,7 @@ type SessionModel struct {
 }
 
 func (m SessionModel) Insert(session *Session) (int64, error) {
-	query := `INSERT INTO sessions (user_id, session) VALUES(?, ?)`
+	query := `INSERT INTO user_sessions (user_id, session) VALUES(?, ?)`
 
 	args := []interface{}{
 		session.UserId,
@@ -36,7 +36,7 @@ func (m SessionModel) Insert(session *Session) (int64, error) {
 }
 
 func (m SessionModel) GetByToken(token string) (*Session, error) {
-	query := `SELECT id, user_id, session FROM sessions WHERE session = ?`
+	query := `SELECT id, user_id, session FROM user_sessions WHERE session = ?`
 	row := m.DB.QueryRow(query, token)
 	session := &Session{}
 
@@ -46,7 +46,7 @@ func (m SessionModel) GetByToken(token string) (*Session, error) {
 }
 
 func (m SessionModel) DeleteByToken(token string) error {
-	query := `DELETE FROM sessions WHERE session = ?`
+	query := `DELETE FROM user_sessions WHERE session = ?`
 
 	_, err := m.DB.Exec(query, token)
 

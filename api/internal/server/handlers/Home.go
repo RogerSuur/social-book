@@ -33,13 +33,17 @@ func Login(rw http.ResponseWriter, r *http.Request) {
 
 	sessionToken, err := services.UserLogin(userData)
 	if err != nil {
-		log.Println("Cannot login user")
+		log.Printf("Cannot login user: %s", err)
+		http.Error(rw, "Cannot login user", http.StatusInternalServerError)
+		return
 	}
 
 	services.SetCookie(rw, sessionToken)
 
 	_, err = fmt.Fprintf(rw, "Successful login, cookie set")
 	if err != nil {
-		log.Println("Cannot access login page")
+		log.Printf("Cannot access login page: %s", err)
+		http.Error(rw, "Cannot access login page", http.StatusInternalServerError)
+		return
 	}
 }

@@ -1,8 +1,10 @@
 package services
 
 import (
+	database "SocialNetworkRestApi/api/pkg/db/sqlite"
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -24,6 +26,13 @@ func (u *UserService) CreateUser(user *models.User) (int64, error) {
 func Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		DB, err := database.OpenDB()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		env := models.CreateEnv(DB)
+
 		// TODO: Should probably implement cookiejar to handle preferences and stuff in addition to session token
 		// https://golang.org/pkg/net/http/cookiejar/
 
@@ -36,8 +45,7 @@ func Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 		}
 
 		// check if session exists
-		sessionModel := models.SessionModel{}
-		_, err = sessionModel.GetByToken(cookie.Value)
+		_, err = env.Sessions.GetByToken(cookie.Value)
 
 		if err != nil {
 			log.Printf("No session found: %s", err)
@@ -52,9 +60,15 @@ func Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 
 func UserLogin(user *models.User) (string, error) {
 
+	DB, err := database.OpenDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	env := models.CreateEnv(DB)
+
 	// check if user exists
-	userModel := models.UserModel{}
-	dbUser, err := userModel.GetByEmail(user.Email)
+	dbUser, err := env.Users.GetByEmail(user.Email)
 	if err != nil {
 		log.Printf("User email not found: %s", err)
 		return "", errors.New("user email not found")
@@ -74,12 +88,12 @@ func UserLogin(user *models.User) (string, error) {
 	}
 
 	// store session in DB
-	sessionModel := models.SessionModel{}
-	_, err = sessionModel.Insert(&session)
+	lastID, err := env.Sessions.Insert(&session)
 	if err != nil {
 		log.Printf("Cannot create session: %s", err)
 		return "", errors.New("cannot create session")
 	}
+	fmt.Println("Last inserted ID:", lastID)
 	return sessionToken, nil
 }
 
