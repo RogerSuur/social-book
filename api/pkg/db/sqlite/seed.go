@@ -21,17 +21,26 @@ func Seed(db *sql.DB) {
 	// SeedComments(db)
 	// SeedGroups(db)
 	// SeedFollowers(db)
+	// SeedSessions(db)
 
 	env := models.CreateEnv(db)
 
-	// test, err := env.Groups.GetById(1)
+	//Single value test
+	test, err := env.Sessions.GetByToken("aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL")
+
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+
+	}
+
+	//Array TEST
 	tests, err := env.Groups.GetAllByCreatorId(1)
 
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 
 	} else {
-		// fmt.Printf("%+v\n", test)
+		fmt.Printf("%+v\n", test)
 
 		for _, v := range tests {
 			fmt.Printf("%+v\n", v)
@@ -40,6 +49,26 @@ func Seed(db *sql.DB) {
 
 	}
 
+}
+
+func SeedSessions(db *sql.DB) {
+	env := models.CreateEnv(db)
+
+	for i := 0; i < 10; i++ {
+		session := &models.Session{
+			UserId: i + 1,
+			Token:  faker.Jwt(),
+		}
+
+		_, err := env.Sessions.Insert(session)
+
+		fmt.Printf("%+v\n", session)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+	}
 }
 
 func SeedFollowers(db *sql.DB) {
@@ -55,7 +84,7 @@ func SeedFollowers(db *sql.DB) {
 
 		_, err := env.Followers.Insert(tempFollower)
 
-		fmt.Printf("%+v\n", tempFollower)
+		// fmt.Printf("%+v\n", tempFollower)
 
 		if err != nil {
 			fmt.Println(err)

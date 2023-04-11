@@ -48,9 +48,9 @@ func (m PostModel) Insert(post *Post) (int64, error) {
 	return lastId, nil
 }
 
-func (p PostModel) GetById(id int64) (*Post, error) {
+func (m PostModel) GetById(id int64) (*Post, error) {
 	query := `SELECT id, user_id,  title, content, created_at, image_path, privacy_type_id FROM posts WHERE id = ?`
-	row := p.DB.QueryRow(query, id)
+	row := m.DB.QueryRow(query, id)
 	post := &Post{}
 
 	err := row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
@@ -58,13 +58,13 @@ func (p PostModel) GetById(id int64) (*Post, error) {
 	return post, err
 }
 
-func (p PostModel) GetAllByUserId(id int64) ([]*Post, error) {
+func (m PostModel) GetAllByUserId(id int64) ([]*Post, error) {
 
 	stmt := `SELECT id, user_id,  title, content, created_at, image_path, privacy_type_id FROM posts p
 	WHERE user_id = ?
     ORDER BY created_at DESC`
 
-	rows, err := p.DB.Query(stmt, id)
+	rows, err := m.DB.Query(stmt, id)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (p PostModel) GetAllByUserId(id int64) ([]*Post, error) {
 	return posts, nil
 }
 
-func (p PostModel) GetAllFeedPosts(id int64) ([]*Post, error) {
+func (m PostModel) GetAllFeedPosts(id int64) ([]*Post, error) {
 
 	//TODO
 	//return all posts to the current user

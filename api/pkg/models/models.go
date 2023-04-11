@@ -4,13 +4,14 @@ import "database/sql"
 
 type Env struct {
 	Users         UserModel
-	Followers	FollowerModel
+	Followers     FollowerModel
 	Posts         PostModel
 	Comments      CommentModel
 	Groups        GroupModel
 	Events        EventModel
 	Messages      MessageModel
 	Notifications NotificationModel
+	Sessions      SessionModel
 }
 
 func CreateEnv(db *sql.DB) Env {
@@ -22,6 +23,7 @@ func CreateEnv(db *sql.DB) Env {
 		Events:        EventModel{DB: db},
 		Messages:      MessageModel{DB: db},
 		Notifications: NotificationModel{DB: db},
-		Followers: FollowerModel{DB:db},
+		Followers:     FollowerModel{DB: db},
+		Sessions:      SessionModel{DB: db},
 	}
 }
