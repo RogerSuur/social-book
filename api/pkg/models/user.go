@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -39,6 +40,8 @@ func (u UserModel) Insert(user *User) (int64, error) {
 		user.IsPublic,
 		time.Now(),
 	}
+
+	fmt.Println(args...)
 
 	result, err := u.DB.Exec(query, args...)
 

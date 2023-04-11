@@ -3,6 +3,7 @@ package main
 import (
 	"SocialNetworkRestApi/api/internal/server/handlers"
 	database "SocialNetworkRestApi/api/pkg/db/sqlite"
+	service "SocialNetworkRestApi/api/pkg/services"
 	"fmt"
 	"log"
 	"net/http"
@@ -31,9 +32,9 @@ func main() {
 	fmt.Println("successfully migrated DB..")
 
 	database.Seed(db)
-	
 
-	http.HandleFunc("/", handlers.Home)
+	http.HandleFunc("/", service.Authenticate(handlers.Home))
+	http.HandleFunc("/login", handlers.Login)
 
 	fmt.Printf("Starting server on port %d\n", config.port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.port), nil); err != nil {
