@@ -24,6 +24,9 @@ func (u *UserService) CreateUser(user *models.User) (int64, error) {
 func Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		// TODO: Should probably implement cookiejar to handle preferences and stuff in addition to session token
+		// https://golang.org/pkg/net/http/cookiejar/
+
 		// check if cookie exists
 		cookie, err := r.Cookie("session")
 		if err != nil {
@@ -90,7 +93,7 @@ func SetCookie(w http.ResponseWriter, sessionToken string) {
 }
 
 func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(bytes), err
 }
 
