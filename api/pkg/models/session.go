@@ -61,3 +61,12 @@ func (m SessionModel) GetUserSessions(id int) ([]*Session, error) {
 	//Not sure if needed
 	return nil, nil
 }
+
+// remove a session by token
+func (m SessionModel) DeleteByToken(token string) error {
+	query := `DELETE FROM user_sessions WHERE token = ?`
+
+	_, err := m.DB.Exec(query, token)
+
+	return err
+}
