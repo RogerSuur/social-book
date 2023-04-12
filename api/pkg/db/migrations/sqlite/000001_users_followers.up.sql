@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS user_sessions(
 	id INTEGER PRIMARY KEY,
 	user_id INTEGER NOT NULL,
-	session TEXT NOT NUll,
+	token TEXT NOT NUll,
+	created_at DATETIME NOT NULL,
 		FOREIGN KEY (user_id)
 			REFERENCES users(id)
 
