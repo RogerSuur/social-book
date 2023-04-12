@@ -10,14 +10,19 @@ import (
 	"SocialNetworkRestApi/api/pkg/services"
 )
 
-func Home(rw http.ResponseWriter, r *http.Request) {
+type Application struct {
+	Logger  *log.Logger
+	Service *services.Service
+}
+
+func (app *Application) Home(rw http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprintf(rw, "Homepage hit")
 	if err != nil {
 		log.Println("Cannot access homepage")
 	}
 }
 
-func Login(rw http.ResponseWriter, r *http.Request) {
+func (app *Application) Login(rw http.ResponseWriter, r *http.Request) {
 
 	userData := &models.User{
 		FirstName: "Test",
@@ -31,14 +36,14 @@ func Login(rw http.ResponseWriter, r *http.Request) {
 		IsPublic:  true,
 	}
 
-	sessionToken, err := services.UserLogin(userData)
+	sessionToken, err := app.Service.UserLogin(userData)
 	if err != nil {
 		log.Printf("Cannot login user: %s", err)
 		http.Error(rw, "Cannot login user", http.StatusInternalServerError)
 		return
 	}
 
-	services.SetCookie(rw, sessionToken)
+	app.Service.SetCookie(rw, sessionToken)
 
 	_, err = fmt.Fprintf(rw, "Successful login, cookie set")
 	if err != nil {

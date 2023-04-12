@@ -3,10 +3,11 @@ package main
 import (
 	"SocialNetworkRestApi/api/internal/server/handlers"
 	database "SocialNetworkRestApi/api/pkg/db/sqlite"
-	service "SocialNetworkRestApi/api/pkg/services"
+	"SocialNetworkRestApi/api/pkg/services"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 type Config struct {
@@ -15,6 +16,8 @@ type Config struct {
 
 func main() {
 	config := &Config{port: 8090}
+
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Llongfile)
 
 	//DATABASE
 	db, err := database.OpenDB()
@@ -31,10 +34,15 @@ func main() {
 
 	fmt.Println("successfully migrated DB..")
 
+	app := &handlers.Application{
+		Logger:  logger,
+		Service: &services.Service{DB: db},
+	}
+
 	database.Seed(db)
 
-	http.HandleFunc("/", service.Authenticate(handlers.Home))
-	http.HandleFunc("/login", handlers.Login)
+	http.HandleFunc("/", app.Service.Authenticate(app.Home))
+	http.HandleFunc("/login", app.Login)
 
 	fmt.Printf("Starting server on port %d\n", config.port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.port), nil); err != nil {
