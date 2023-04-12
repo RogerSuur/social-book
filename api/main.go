@@ -15,7 +15,7 @@ type Config struct {
 }
 
 func main() {
-	config := &Config{port: 8090}
+	config := &Config{port: 8000}
 
 	logger := log.New(os.Stdout, "", log.LstdFlags|log.Llongfile)
 
@@ -42,7 +42,7 @@ func main() {
 	database.Seed(db)
 
 	http.HandleFunc("/", app.Service.Authenticate(app.Home))
-	http.HandleFunc("/login", app.Login)
+	http.HandleFunc("/signin", app.Login)
 
 	fmt.Printf("Starting server on port %d\n", config.port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.port), nil); err != nil {
