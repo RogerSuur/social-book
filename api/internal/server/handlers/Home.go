@@ -20,6 +20,6 @@ func (app *Application) Home(rw http.ResponseWriter, r *http.Request) {
 
 	_, err := fmt.Fprintf(rw, "Homepage hit")
 	if err != nil {
-		log.Println("Cannot access homepage")
+		app.Logger.Println("Cannot access homepage")
 	}
 }

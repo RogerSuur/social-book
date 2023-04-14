@@ -8,11 +8,16 @@
 - [Database schema migration](https://engineering.qubecinema.com/2019/09/20/sqlite-database-schema-migration-using-golang.html) example
 - [Database access organising](https://www.alexedwards.net/blog/organising-database-access) example
 - [Designing a notification system](https://tannguyenit95.medium.com/designing-a-notification-system-1da83ca971bc) example
+- [Service pattern (project structure)](https://www.alexedwards.net/blog/the-fat-service-pattern)
 
 ## Running frontend server
 
-- Option for development: "npm start"
-- Option for production: "npm run build" -> "node server.js" from frontend repo
+- Option for development: `cd frontend` -> `npm start`
+- Option for production: `npm run build` -> `node server.js` from frontend repo
+
+## Running backend server
+
+- `go run ./api/.`
 
 ## Database
 

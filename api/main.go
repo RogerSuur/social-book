@@ -29,7 +29,7 @@ func main() {
 
 	err = database.RunMigrateScripts(db)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	fmt.Println("successfully migrated DB..")
@@ -44,9 +44,9 @@ func main() {
 	http.HandleFunc("/", app.Service.Authenticate(app.Home))
 	http.HandleFunc("/signin", app.Login)
 
-	fmt.Printf("Starting server on port %d\n", config.port)
+	logger.Printf("Starting server on port %d\n", config.port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.port), nil); err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 }
