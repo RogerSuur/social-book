@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import CreatePost from "./CreatePost";
+import CreatePost from "../components/CreatePost";
 import axios from "axios";
 
 const Posts = () => {

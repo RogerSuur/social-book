@@ -1,20 +1,21 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import FileUploader from "../components/FileUploader";
 import axios from "axios";
 
 const SIGNUP_URL = "http://localhost:8000/signup";
 
 const Signup = () => {
   const [errMsg, setErrMsg] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const [formData, setFormData] = useState({
     email: "",
-    username: "",
     password: "",
     firstName: "",
     lastName: "",
-    age: 13,
-    sex: "M",
+    dateOfBirth: new Date().toISOString().split("T")[0],
+    username: "",
+    description: "",
   });
 
   const navigate = useNavigate();
@@ -33,15 +34,25 @@ const Signup = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const form = new FormData();
+    Object.keys(formData).forEach((key) => {
+      form.append(key, formData[key]);
+    });
+    form.append("file", selectedFile);
+
+    Object.keys(formData).forEach((key) => {
+      console.log(key, form.get(key));
+    });
+
     try {
-      const response = await axios.post(SIGNUP_URL, JSON.stringify(formData), {
+      const response = await axios.post(SIGNUP_URL, form, {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
 
       console.log(JSON.stringify(response));
 
-      navigate("/signin", { replace: true });
+      navigate("/login", { replace: true });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -71,39 +82,6 @@ const Signup = () => {
       {errMsg && <h3>{errMsg}</h3>}
       <form onSubmit={handleSubmit}>
         <input
-          type="email"
-          placeholder="Email address"
-          onChange={handleChange}
-          name="email"
-          value={formData.email}
-          title="Email in the form of example@example.com"
-          required
-        />
-        <br />
-        <input
-          type="text"
-          placeholder="Username"
-          onChange={handleChange}
-          name="username"
-          value={formData.username}
-          minLength="8"
-          maxLength="30"
-          required
-        />
-        <br />
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={handleChange}
-          name="password"
-          value={formData.password}
-          title="Password should have at least one lowercase and one uppercase letter, a number and a symbol"
-          minLength="8"
-          maxLength="32"
-          required
-        />
-        <br />
-        <input
           type="text"
           placeholder="First Name"
           onChange={handleChange}
@@ -122,43 +100,62 @@ const Signup = () => {
         />
         <br />
         <input
-          type="number"
-          placeholder="Age"
+          type="email"
+          placeholder="Email address"
           onChange={handleChange}
-          name="age"
-          value={formData.age}
-          min="13"
-          max="130"
+          name="email"
+          value={formData.email}
+          title="Email in the form of example@example.com"
           required
         />
         <br />
-        <fieldset>
-          <legend>Sex</legend>
-          <input
-            type="radio"
-            name="sex"
-            onChange={handleChange}
-            id="male"
-            value="M"
-            checked={formData.sex === "M"}
-          />
-          <label htmlFor="male">Male</label>
-          <br />
-          <input
-            type="radio"
-            name="sex"
-            onChange={handleChange}
-            id="female"
-            value="F"
-            checked={formData.sex === "F"}
-          />
-          <label htmlFor="female">Female</label>
-          <br />
-        </fieldset>
+        <input
+          type="password"
+          placeholder="Password"
+          onChange={handleChange}
+          name="password"
+          value={formData.password}
+          title="Password should have at least one lowercase and one uppercase letter, a number and a symbol"
+          minLength="8"
+          maxLength="32"
+          required
+        />
+        <br />
+        <input
+          type="date"
+          placeholder="Date of Birth"
+          onChange={handleChange}
+          name="dateOfBirth"
+          value={formData.dateOfBirth}
+          required
+        />
+        <br />
+        <input
+          type="text"
+          placeholder="Username"
+          onChange={handleChange}
+          name="username"
+          value={formData.username}
+          minLength="8"
+          maxLength="30"
+        />
+        <br />
+        <textarea
+          placeholder="Write something about yourself"
+          onChange={handleChange}
+          value={formData.description}
+          name="description"
+        />
+        <br />
+        <FileUploader
+          onFileSelectSuccess={(file) => setSelectedFile(file)}
+          onFileSelectError={({ error }) => setErrMsg(error)}
+        />
+        <br />
         <button>Sign Up</button>
       </form>
       <div>
-        Already have an account? <Link to={`/signin`}>Sign in</Link>
+        Already have an account? <Link to={`/login`}>Sign in</Link>
       </div>
     </>
   );

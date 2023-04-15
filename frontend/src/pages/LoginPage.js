@@ -4,9 +4,9 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
 
-const LOGIN_URL = "http://localhost:8000/signin";
+const LOGIN_URL = "http://localhost:8000/login";
 
-const Signin = () => {
+const Login = () => {
   const { setAuth } = useAuth();
 
   const navigate = useNavigate();
@@ -96,4 +96,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Login;

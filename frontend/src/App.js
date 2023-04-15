@@ -1,13 +1,13 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Profile from "./components/Profile";
-import PostsPage from "./components/PostsPage";
-import Chat from "./components/Chat";
+import Profile from "./pages/ProfilePage";
+import PostsPage from "./pages/PostsPage";
+import Chat from "./pages/ChatPage";
 import Post from "./components/Post";
-import Signup from "./components/Signup";
-import Signin from "./components/Signin";
-import NoPage from "./components/NoPage";
-import Category from "./components/Category";
+import Signup from "./pages/SignupPage";
+import Login from "./pages/LoginPage";
+import NoPage from "./pages/NoPage";
+import Category from "./pages/CategoryPage";
 import RequireAuth from "./components/RequireAuth";
 //import RequireGuest from "./components/RequireGuest";
 import Logout from "./components/Logout";
@@ -20,7 +20,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navbar />}>
-            <Route path="signin" element={<Signin />} />
+            <Route path="login" element={<Login />} />
             <Route path="signup" element={<Signup />} />
 
             <Route path="profile" element={<Profile />} />

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useOutletContext } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import Users from "./Users";
+import Users from "../components/Users";
 
 const LOAD_MSG_HISTORY = "http://localhost:8000/loadmessages";
 

@@ -17,7 +17,7 @@ const Navbar = () => {
           {!auth && (
             <>
               <li>
-                <Link className="text-link" to="/signin">
+                <Link className="text-link" to="/login">
                   Sign In
                 </Link>
               </li>

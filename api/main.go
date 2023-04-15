@@ -42,7 +42,7 @@ func main() {
 	database.Seed(db)
 
 	http.HandleFunc("/", app.Service.Authenticate(app.Home))
-	http.HandleFunc("/signin", app.Login)
+	http.HandleFunc("/login", app.Login)
 
 	logger.Printf("Starting server on port %d\n", config.port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.port), nil); err != nil {
