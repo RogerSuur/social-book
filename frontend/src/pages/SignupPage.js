@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import FileUploader from "../components/FileUploader";
 import axios from "axios";
 
 const SIGNUP_URL = "http://localhost:8000/signup";
 
 const Signup = () => {
   const [errMsg, setErrMsg] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -34,18 +32,8 @@ const Signup = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const form = new FormData();
-    Object.keys(formData).forEach((key) => {
-      form.append(key, formData[key]);
-    });
-    form.append("file", selectedFile);
-
-    Object.keys(formData).forEach((key) => {
-      console.log(key, form.get(key));
-    });
-
     try {
-      const response = await axios.post(SIGNUP_URL, form, {
+      const response = await axios.post(SIGNUP_URL, json.stringify(formData), {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
@@ -145,11 +133,6 @@ const Signup = () => {
           onChange={handleChange}
           value={formData.description}
           name="description"
-        />
-        <br />
-        <FileUploader
-          onFileSelectSuccess={(file) => setSelectedFile(file)}
-          onFileSelectError={({ error }) => setErrMsg(error)}
         />
         <br />
         <button>Sign Up</button>
