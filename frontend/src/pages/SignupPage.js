@@ -33,7 +33,7 @@ const Signup = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post(SIGNUP_URL, json.stringify(formData), {
+      const response = await axios.post(SIGNUP_URL, JSON.stringify(formData), {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
