@@ -43,6 +43,7 @@ func main() {
 
 	http.HandleFunc("/", app.Service.Authenticate(app.Home))
 	http.HandleFunc("/login", app.Login)
+	http.HandleFunc("/post", app.Post)
 
 	logger.Printf("Starting server on port %d\n", config.port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.port), nil); err != nil {
