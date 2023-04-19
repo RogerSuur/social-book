@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"SocialNetworkRestApi/api/internal/server/utils"
 	"SocialNetworkRestApi/api/pkg/services"
 )
 
@@ -16,7 +15,8 @@ type Application struct {
 
 func (app *Application) Home(rw http.ResponseWriter, r *http.Request) {
 
-	utils.SetCors(&rw, r)
+	// added cors headers in Authenticate middleware
+	//utils.SetCors(&rw, r)
 
 	_, err := fmt.Fprintf(rw, "Homepage hit")
 	if err != nil {

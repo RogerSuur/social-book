@@ -12,3 +12,8 @@ func (s *Service) CreateUser(user *models.User) (int64, error) {
 	// finally, insert into the DB
 	return env.Users.Insert(user)
 }
+
+func (s *Service) GetUserData(userID int64) (*models.User, error) {
+	env := models.CreateEnv(s.DB)
+	return env.Users.GetById(userID)
+}

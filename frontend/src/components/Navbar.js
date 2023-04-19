@@ -7,7 +7,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate("/posts", { replace: true });
+    navigate("/profile", { replace: true });
   }, []);
 
   return (

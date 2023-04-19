@@ -1,6 +1,7 @@
 package services
 
 import (
+	"SocialNetworkRestApi/api/internal/server/utils"
 	"SocialNetworkRestApi/api/pkg/models"
 	"log"
 	"net/http"
@@ -10,6 +11,8 @@ import (
 
 func (s *Service) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		utils.SetCors(&w, r)
 
 		env := models.CreateEnv(s.DB)
 
@@ -42,6 +45,22 @@ func (s *Service) SetCookie(w http.ResponseWriter, sessionToken string) {
 		MaxAge: 3600,
 	}
 	http.SetCookie(w, &cookie)
+}
+
+func (s *Service) GetUserID(r *http.Request) (int, error) {
+	env := models.CreateEnv(s.DB)
+
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		return 0, err
+	}
+
+	session, err := env.Sessions.GetByToken(cookie.Value)
+	if err != nil {
+		return 0, err
+	}
+
+	return session.UserId, nil
 }
 
 func HashPassword(password string) (string, error) {
