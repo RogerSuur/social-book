@@ -43,7 +43,7 @@ const Login = () => {
         withCredentials: true,
       });
 
-      console.log(JSON.stringify(response));
+      console.log(JSON.stringify(response, null, 2));
       setAuth(true);
       setFormData({
         username: "",
