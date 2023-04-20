@@ -1,39 +1,60 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useForm } from "react-hook-form";
 
 const SIGNUP_URL = "http://localhost:8000/signup";
 
 const Signup = () => {
   const [errMsg, setErrMsg] = useState("");
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    firstName: "",
-    lastName: "",
-    dateOfBirth: new Date().toISOString().split("T")[0],
-    nickname: "",
-    about: "",
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      dateOfBirth: new Date(
+        new Date().getFullYear() - 13,
+        new Date().getMonth(),
+        new Date().getDate()
+      )
+        .toISOString()
+        .split("T")[0],
+    },
+    criteriaMode: "all",
   });
+
+  // const onSubmit = (data) => {
+  //   console.log(data, "here");
+  // };
+
+  // const [formData, setFormData] = useState({
+  //   email: "",
+  //   password: "",
+  //   firstName: "",
+  //   lastName: "",
+  //   dateOfBirth: new Date().toISOString().split("T")[0],
+  //   nickname: "",
+  //   about: "",
+  // });
 
   const navigate = useNavigate();
 
-  const handleChange = (event) => {
-    const { name, value, type, checked } = event.target;
+  // const handleChange = (event) => {
+  //   const { name, value, type, checked } = event.target;
 
-    setFormData((prevFormData) => {
-      return {
-        ...prevFormData,
-        [name]: type === "checkbox" ? checked : value,
-      };
-    });
-  };
+  //   setFormData((prevFormData) => {
+  //     return {
+  //       ...prevFormData,
+  //       [name]: type === "checkbox" ? checked : value,
+  //     };
+  //   });
+  // };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const onSubmit = async (data) => {
     try {
-      const response = await axios.post(SIGNUP_URL, JSON.stringify(formData), {
+      const response = await axios.post(SIGNUP_URL, JSON.stringify(data), {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
@@ -68,71 +89,102 @@ const Signup = () => {
   return (
     <>
       {errMsg && <h3>{errMsg}</h3>}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <input
-          type="text"
           placeholder="First Name"
-          onChange={handleChange}
-          name="firstName"
-          value={formData.firstName}
-          required
+          {...register("firstName", {
+            required: "Please enter your first name",
+          })}
         />
+        {errors.firstName && <p>{errors.firstName.message}</p>}
         <br />
         <input
-          type="text"
           placeholder="Last Name"
-          onChange={handleChange}
-          name="lastName"
-          value={formData.lastName}
-          required
+          {...register("lastName", {
+            required: "Please enter your last name",
+          })}
         />
+        {errors.lastName && <p>{errors.lastName.message}</p>}
+
         <br />
         <input
-          type="email"
           placeholder="Email address"
-          onChange={handleChange}
-          name="email"
-          value={formData.email}
-          title="Email in the form of example@example.com"
-          required
+          {...register("email", {
+            required: "Please enter your email address",
+            pattern: {
+              value:
+                /^[A-Z0-9][A-Z0-9._%+-]{0,63}@(?:[A-Z0-9-]{1,63}\.){1,15}[A-Z]{2,63}$/i,
+              message:
+                "The email address should be in form of example@example.com",
+            },
+          })}
         />
+        {errors.email && <p>{errors.email.message}</p>}
+
         <br />
         <input
           type="password"
           placeholder="Password"
-          onChange={handleChange}
-          name="password"
-          value={formData.password}
-          title="Password should have at least one lowercase and one uppercase letter, a number and a symbol"
-          minLength="8"
-          maxLength="32"
-          required
+          {...register("password", {
+            required: "Please enter your email address",
+            minLength: {
+              value: 8,
+              message: "The password should be at least 8 characters long",
+            },
+            pattern: {
+              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+              message:
+                "The password should have at least one lowercase and one uppercase letter, a number and a symbol",
+            },
+          })}
         />
+        {errors.password && <p>{errors.password.message}</p>}
+        <br />
+        <input
+          type="password"
+          placeholder="Confirm password"
+          {...register("confirm_password", {
+            required: "Please enter your password again",
+            validate: (value) =>
+              value === watch("password") || "The passwords do not match",
+          })}
+        />
+        {errors.confirm_password && <p>{errors.confirm_password.message}</p>}
         <br />
         <input
           type="date"
-          placeholder="Date of Birth"
-          onChange={handleChange}
-          name="dateOfBirth"
-          value={formData.dateOfBirth}
-          required
+          {...register("dateOfBirth", {
+            required: "Please enter your birth date",
+            validate: (value) =>
+              new Date(value) <
+                new Date(
+                  new Date().getFullYear() - 13,
+                  new Date().getMonth(),
+                  new Date().getDate()
+                ) || "You must be 13 years of age or older to sign up",
+          })}
         />
+        {errors.dateOfBirth && <p>{errors.dateOfBirth.message}</p>}
         <br />
         <input
-          type="text"
-          placeholder="Username"
-          onChange={handleChange}
-          name="nickname"
-          value={formData.nickname}
-          minLength="8"
-          maxLength="30"
+          placeholder="Nickname"
+          {...register("nickname", {
+            minLength: {
+              value: 8,
+              message: "The nickname should be at least 8 characters long",
+            },
+            pattern: {
+              value: /^[a-zA-Z0-9._]{8,}$/,
+              message:
+                "The nickname can only contain letters, numbers, dots (.) and underscores (_)",
+            },
+          })}
         />
+        {errors.nickname && <p>{errors.nickname.message}</p>}
         <br />
         <textarea
           placeholder="Write something about yourself"
-          onChange={handleChange}
-          value={formData.about}
-          name="about"
+          {...register("about")}
         />
         <br />
         <button>Sign Up</button>
