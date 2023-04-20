@@ -21,9 +21,9 @@ CREATE TABLE IF NOT EXISTS privacy_type (
 
 INSERT INTO privacy_type (id, name)
 VALUES 
-(0, "public"),
-(1, "private"),
-(2, "sub-private");
+(1, "public"),
+(2, "private"),
+(3, "sub-private");
 
 
 CREATE TABLE IF NOT EXISTS allowed_private_posts (
