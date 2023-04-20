@@ -20,6 +20,7 @@ type Env struct {
 	Messages      MessageModel
 	Notifications NotificationModel
 	Sessions      SessionModel
+	AllowedPost   AllowedPostModel
 }
 
 func CreateEnv(db *sql.DB) Env {
@@ -33,5 +34,6 @@ func CreateEnv(db *sql.DB) Env {
 		Notifications: NotificationModel{DB: db},
 		Followers:     FollowerModel{DB: db},
 		Sessions:      SessionModel{DB: db},
+		AllowedPost:   AllowedPostModel{DB: db},
 	}
 }

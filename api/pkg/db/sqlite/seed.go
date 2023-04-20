@@ -16,39 +16,61 @@ import (
 
 func Seed(db *sql.DB) {
 
-	SeedUsers(db)
-	SeedPosts(db)
+	// SeedUsers(db)
+	// SeedPosts(db)
+	SeedUserAllowedPosts(db)
 	// SeedComments(db)
 	// SeedGroups(db)
 	// SeedFollowers(db)
 	// SeedSessions(db)
 
-	env := models.CreateEnv(db)
+	// env := models.CreateEnv(db)
 
 	//Single value test
-	test, err := env.Sessions.GetByToken("aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL")
+	// test, err := env.Sessions.GetByToken("aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL")
 
-	if err != nil {
-		fmt.Printf("%+v\n", err)
+	// if err != nil {
+	// 	 fmt.Printf("%+v\n", err)
 
-	}
+	// }
 
 	//Array TEST
-	tests, err := env.Groups.GetAllByCreatorId(1)
+	// tests, err := env.Groups.GetAllByCreatorId(1)
 
-	if err != nil {
-		fmt.Printf("%+v\n", err)
+	// if err != nil {
+	// 	fmt.Printf("%+v\n", err)
 
-	} else {
-		fmt.Printf("%+v\n", test)
+	// } else {
+	// fmt.Printf("%+v\n", test)
 
-		for _, v := range tests {
-			fmt.Printf("%+v\n", v)
+	// for _, v := range tests {
+	// 	fmt.Printf("%+v\n", v)
 
-		}
+	// }
 
+	// }
+
+}
+
+func SeedUserAllowedPosts(db *sql.DB) {
+	env := models.CreateEnv(db)
+
+	// for i := 0; i < 10; i++ {
+
+	tempPost := &models.AllowedPost{
+		UserId: 12,
+		PostId: 79,
 	}
 
+	_, err := env.AllowedPost.Insert(tempPost)
+
+	// fmt.Printf("%+v\n", tempPost)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// }
 }
 
 func SeedSessions(db *sql.DB) {
@@ -74,34 +96,37 @@ func SeedSessions(db *sql.DB) {
 func SeedFollowers(db *sql.DB) {
 	env := models.CreateEnv(db)
 
-	for i := 0; i < 10; i++ {
-		tempFollower := &models.Follower{
-			FollowingId: i + 1,
-			FollowerId:  i + 11,
-			Accepted:    true,
-			Active:      true,
-		}
-
-		_, err := env.Followers.Insert(tempFollower)
-
-		// fmt.Printf("%+v\n", tempFollower)
-
-		if err != nil {
-			fmt.Println(err)
-		}
-
+	// for i := 0; i < 10; i++ {
+	tempFollower := &models.Follower{
+		FollowingId: 11,
+		FollowerId:  12,
+		Accepted:    true,
+		Active:      true,
 	}
+
+	_, err := env.Followers.Insert(tempFollower)
+
+	// fmt.Printf("%+v\n", tempFollower)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// }
 }
 
 func SeedPosts(db *sql.DB) {
 	env := models.CreateEnv(db)
 
 	for i := 0; i < 10; i++ {
+
+		res := (i % 3) + 1
+
 		tempPost := &models.Post{
 			Title:       faker.Word(),
 			Content:     faker.Sentence(),
-			UserId:      i + 1,
-			PrivacyType: enums.SubPrivate,
+			UserId:      12,
+			PrivacyType: enums.PrivacyType(res),
 		}
 
 		_, err := env.Posts.Insert(tempPost)
