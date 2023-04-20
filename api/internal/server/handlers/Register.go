@@ -4,17 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"SocialNetworkRestApi/api/internal/server/utils"
 	"SocialNetworkRestApi/api/pkg/models"
 )
 
 type signupJSON struct {
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	FirstName   string `json:"firstName"`
-	LastName    string `json:"lastName"`
-	DateOfBirth string `json:"dateOfBirth"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Birthday  string `json:"dateOfBirth"`
 	// AvatarImage string `json:"avatarImage"`
 	Nickname string `json:"nickname"`
 	About    string `json:"about"`
@@ -42,11 +43,19 @@ func (app *Application) Register(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "JSON error", http.StatusBadRequest)
 		}
 
+		birthday, err := time.Parse("2006-01-02", JSONdata.Birthday)
+		if err != nil {
+			app.Logger.Printf("Cannot parse birthday: %s", err)
+			http.Error(rw, "Cannot parse birthday", http.StatusBadRequest)
+			return
+		}
+
 		userData := &models.User{
-			Email:     JSONdata.Email,
-			Password:  JSONdata.Password,
 			FirstName: JSONdata.FirstName,
 			LastName:  JSONdata.LastName,
+			Email:     JSONdata.Email,
+			Password:  JSONdata.Password,
+			Birthday:  birthday,
 			Nickname:  JSONdata.Nickname,
 			About:     JSONdata.About,
 		}
