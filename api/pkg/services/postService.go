@@ -3,8 +3,18 @@ package services
 import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
+	"fmt"
 	"log"
+	"time"
 )
+
+type feedPostJSON struct {
+	Id        int       `json:"id"`
+	UserId    int       `json:"userId"`
+	Content   string    `json:"content"`
+	ImagePath string    `json:"imagePath"`
+	CreatedAt time.Time `json:"createdAt"`
+}
 
 func (s *Service) CreatePost(post *models.Post) error {
 
@@ -29,4 +39,27 @@ func (s *Service) CreatePost(post *models.Post) error {
 	}
 
 	return err
+}
+
+func (s *Service) GetFeedPosts(offset string) ([]*feedPostJSON, error) {
+
+	env := models.CreateEnv(s.DB)
+
+	posts, _ := env.Posts.GetAllFeedPosts(1)
+
+	fmt.Println(posts)
+
+	feedPosts := []*feedPostJSON{}
+
+	for _, p := range posts {
+		feedPosts = append(feedPosts, &feedPostJSON{
+			p.Id,
+			p.UserId,
+			p.Content,
+			p.ImagePath,
+			p.CreatedAt,
+		})
+	}
+
+	return feedPosts, nil
 }

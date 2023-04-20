@@ -3,6 +3,7 @@ package main
 import (
 	"SocialNetworkRestApi/api/internal/server/handlers"
 	database "SocialNetworkRestApi/api/pkg/db/sqlite"
+	"SocialNetworkRestApi/api/pkg/models"
 	"SocialNetworkRestApi/api/pkg/services"
 	"fmt"
 	"log"
@@ -36,14 +37,15 @@ func main() {
 
 	app := &handlers.Application{
 		Logger:  logger,
-		Service: &services.Service{DB: db},
+		Service: &services.Service{DB: db, Env: models.CreateEnv(db)},
 	}
 
 	database.Seed(db)
 
-	http.HandleFunc("/", app.Service.Authenticate(app.Home))
+	// http.HandleFunc("/", app.Service.Authenticate(app.Home))
 	http.HandleFunc("/login", app.Login)
-	http.HandleFunc("/post", app.Post)
+	http.HandleFunc("/post", app.Service.Authenticate(app.Post))
+	http.HandleFunc("/feedposts", app.FeedPosts)
 
 	logger.Printf("Starting server on port %d\n", config.port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.port), nil); err != nil {

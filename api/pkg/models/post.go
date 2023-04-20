@@ -94,5 +94,33 @@ func (m PostModel) GetAllFeedPosts(id int64) ([]*Post, error) {
 
 	//TODO
 	//return all posts to the current user
-	return nil, nil
+
+	stmt := `SELECT id, user_id,  title, content, created_at, image_path, privacy_type_id FROM posts p
+	WHERE user_id = ?
+    ORDER BY created_at DESC`
+
+	rows, err := m.DB.Query(stmt, id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	posts := []*Post{}
+
+	for rows.Next() {
+		post := &Post{}
+
+		err := rows.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return posts, nil
 }

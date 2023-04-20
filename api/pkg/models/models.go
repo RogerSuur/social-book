@@ -3,7 +3,15 @@ package models
 import "database/sql"
 
 type Env struct {
-	Users         UserModel
+	Users interface {
+		Insert(*User) (int64, error)
+		Update(*User) error
+		GetById(id int) (*User, error)
+		GetByEmail(email string) (*User, error)
+		GetByUserName(userName string) (*User, error)
+		GetAllUserFollowers(id int) ([]*User, error)
+		GetAllFollowedBy(id int) ([]*User, error)
+	}
 	Followers     FollowerModel
 	Posts         PostModel
 	Comments      CommentModel

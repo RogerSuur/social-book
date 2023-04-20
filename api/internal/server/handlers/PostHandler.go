@@ -7,21 +7,22 @@ import (
 	"net/http"
 )
 
-type postJSON struct {
+type createPostJSON struct {
 	UserId      int    `json:"userId"`
-	Title       string `json:"title"`
 	Content     string `json:"content"`
+	ImagePath   string `json:"imagePath"`
 	PrivacyType int    `json:"privacyType"`
 }
 
 func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 
-	if r.Method == "POST" {
+	switch r.Method {
+	case "POST":
 		//Create a post method here
 		decoder := json.NewDecoder(r.Body)
 		decoder.DisallowUnknownFields()
 
-		JSONdata := &postJSON{}
+		JSONdata := &createPostJSON{}
 		err := decoder.Decode(JSONdata)
 
 		if err != nil {
@@ -31,7 +32,7 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 
 		post := &models.Post{
 			UserId:      JSONdata.UserId,
-			Title:       JSONdata.Title,
+			ImagePath:   JSONdata.ImagePath,
 			Content:     JSONdata.Content,
 			PrivacyType: enums.PrivacyType(JSONdata.PrivacyType),
 		}
@@ -43,7 +44,12 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "err", http.StatusBadRequest)
 			return
 		}
+
+	default:
+		http.Error(rw, "err", http.StatusBadRequest)
+		return
 	}
+
 }
 
 //Get handlers should return posts available to see for currently authenticated user

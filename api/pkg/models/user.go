@@ -80,7 +80,7 @@ func (u UserModel) Update(user *User) error {
 	return err
 }
 
-func (u UserModel) GetById(id int64) (*User, error) {
+func (u UserModel) GetById(id int) (*User, error) {
 	query := `SELECT id, forname, surname, email, password, birthday, nickname, about, image_path, created_at, is_public FROM users WHERE id = ?`
 	row := u.DB.QueryRow(query, id)
 	user := &User{}
