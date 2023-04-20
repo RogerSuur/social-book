@@ -12,8 +12,8 @@ const Signup = () => {
     firstName: "",
     lastName: "",
     dateOfBirth: new Date().toISOString().split("T")[0],
-    username: "",
-    description: "",
+    nickname: "",
+    about: "",
   });
 
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ const Signup = () => {
         setErrMsg("No Server Response");
       } else if (err.response?.status === 400) {
         const data = err.response.data.slice(0, -1);
-        if (data === "username") {
+        if (data === "nickname") {
           setErrMsg(
             "A username should contain only uppercase and lowercase letters, dots (.) or underscores(_). If it fits the description, the username has already been taken"
           );
@@ -122,8 +122,8 @@ const Signup = () => {
           type="text"
           placeholder="Username"
           onChange={handleChange}
-          name="username"
-          value={formData.username}
+          name="nickname"
+          value={formData.nickname}
           minLength="8"
           maxLength="30"
         />
@@ -131,8 +131,8 @@ const Signup = () => {
         <textarea
           placeholder="Write something about yourself"
           onChange={handleChange}
-          value={formData.description}
-          name="description"
+          value={formData.about}
+          name="about"
         />
         <br />
         <button>Sign Up</button>
