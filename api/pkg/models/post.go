@@ -3,6 +3,7 @@ package models
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -19,6 +20,8 @@ type Post struct {
 type PostModel struct {
 	DB *sql.DB
 }
+
+const FeedLimit = 100
 
 func (m PostModel) Insert(post *Post) (int64, error) {
 	query := `INSERT INTO posts (user_id, title, content, created_at, image_path, privacy_type_id)
@@ -90,16 +93,36 @@ func (m PostModel) GetAllByUserId(id int64) ([]*Post, error) {
 	return posts, nil
 }
 
-func (m PostModel) GetAllFeedPosts(id int64) ([]*Post, error) {
+func (m PostModel) GetAllFeedPosts(offset int) ([]*Post, error) {
 
 	//TODO
 	//return all posts to the current user
 
-	stmt := `SELECT id, user_id,  title, content, created_at, image_path, privacy_type_id FROM posts p
-	WHERE user_id = ?
-    ORDER BY created_at DESC`
+	currentUserId := 12
 
-	rows, err := m.DB.Query(stmt, id)
+	stmt := `SELECT p.id, p.user_id, p.content, p.created_at, p.image_path, privacy_type_id FROM posts p 
+	LEFT JOIN  followers f ON  
+	p.user_id = f.following_id
+	LEFT JOIN allowed_private_posts app ON
+	p.id = app.post_id
+	WHERE privacy_type_id = 1 
+	OR privacy_type_id = 2 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND f.active = 1
+	OR privacy_type_id = 3 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND f.active = 1 AND app.id IS NOT NULL AND app.user_id = ?
+	OR p.user_id = ?
+	GROUP BY p.id
+	ORDER BY created_at DESC
+	LIMIT ? OFFSET ?`
+
+	args := []interface{}{
+		currentUserId,
+		currentUserId,
+		currentUserId,
+		currentUserId,
+		FeedLimit,
+		offset,
+	}
+
+	rows, err := m.DB.Query(stmt, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -111,12 +134,14 @@ func (m PostModel) GetAllFeedPosts(id int64) ([]*Post, error) {
 	for rows.Next() {
 		post := &Post{}
 
-		err := rows.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
+		err := rows.Scan(&post.Id, &post.UserId, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
 		if err != nil {
 			return nil, err
 		}
 		posts = append(posts, post)
 	}
+
+	fmt.Println(posts)
 
 	if err = rows.Err(); err != nil {
 		return nil, err

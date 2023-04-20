@@ -45,7 +45,12 @@ func (s *Service) GetFeedPosts(offset string) ([]*feedPostJSON, error) {
 
 	env := models.CreateEnv(s.DB)
 
-	posts, _ := env.Posts.GetAllFeedPosts(1)
+	posts, err := env.Posts.GetAllFeedPosts(0)
+
+	if err!= nil {
+	fmt.Println(err)
+		
+	}
 
 	fmt.Println(posts)
 
