@@ -152,7 +152,7 @@ const Signup = () => {
                 "The nickname should not be longer than 32 characters long",
             },
             pattern: {
-              value: /^[a-zA-Z0-9._ ]{,32}$/,
+              value: /^[a-zA-Z0-9._ ]{0,32}$/,
               message:
                 "The nickname can only contain letters, numbers, spaces, dots (.) and underscores (_)",
             },
