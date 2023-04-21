@@ -16,9 +16,9 @@ import (
 
 func Seed(db *sql.DB) {
 
-	// SeedUsers(db)
-	// SeedPosts(db)
-	SeedUserAllowedPosts(db)
+	SeedUsers(db)
+	SeedPosts(db)
+	//SeedUserAllowedPosts(db)
 	// SeedComments(db)
 	// SeedGroups(db)
 	// SeedFollowers(db)

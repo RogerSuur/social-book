@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"SocialNetworkRestApi/api/internal/server/utils"
 	"encoding/json"
 	"net/http"
 
@@ -8,6 +9,8 @@ import (
 )
 
 func (app *Application) FeedPosts(w http.ResponseWriter, r *http.Request) {
+
+	utils.SetCors(&w, r)
 
 	switch r.Method {
 	case "GET":
@@ -21,9 +24,9 @@ func (app *Application) FeedPosts(w http.ResponseWriter, r *http.Request) {
 		feed, _ := app.Service.GetFeedPosts(offset)
 
 		json.NewEncoder(w).Encode(&feed)
-	case "OPTIONS":
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	// case "OPTIONS":
+	// 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
+	// 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	default:
 		http.Error(w, "method is not supported", http.StatusNotFound)
 		return
