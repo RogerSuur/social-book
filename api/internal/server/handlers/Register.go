@@ -11,14 +11,14 @@ import (
 )
 
 type signupJSON struct {
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Birthday  string `json:"dateOfBirth"`
-	// AvatarImage string `json:"avatarImage"`
-	Nickname string `json:"nickname"`
-	About    string `json:"about"`
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirmPassword"`
+	FirstName       string `json:"firstName"`
+	LastName        string `json:"lastName"`
+	Birthday        string `json:"dateOfBirth"`
+	Nickname        string `json:"nickname"`
+	About           string `json:"about"`
 }
 
 func (app *Application) Register(rw http.ResponseWriter, r *http.Request) {
@@ -29,6 +29,7 @@ func (app *Application) Register(rw http.ResponseWriter, r *http.Request) {
 
 		if r.Header.Get("Content-Type") != "application/json" {
 			http.Error(rw, "Content-Type must be application/json", http.StatusUnsupportedMediaType)
+			return
 		}
 		r.Body = http.MaxBytesReader(rw, r.Body, 1024)
 
@@ -41,9 +42,11 @@ func (app *Application) Register(rw http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			app.Logger.Printf("JSON error: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
+			return
 		}
 
 		birthday, err := time.Parse("2006-01-02", JSONdata.Birthday)
+
 		if err != nil {
 			app.Logger.Printf("Cannot parse birthday: %s", err)
 			http.Error(rw, "Cannot parse birthday", http.StatusBadRequest)

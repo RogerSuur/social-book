@@ -13,6 +13,7 @@ const Signup = () => {
     watch,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     defaultValues: {
       dateOfBirth: new Date(
         new Date().getFullYear() - 13,
@@ -25,32 +26,7 @@ const Signup = () => {
     criteriaMode: "all",
   });
 
-  // const onSubmit = (data) => {
-  //   console.log(data, "here");
-  // };
-
-  // const [formData, setFormData] = useState({
-  //   email: "",
-  //   password: "",
-  //   firstName: "",
-  //   lastName: "",
-  //   dateOfBirth: new Date().toISOString().split("T")[0],
-  //   nickname: "",
-  //   about: "",
-  // });
-
   const navigate = useNavigate();
-
-  // const handleChange = (event) => {
-  //   const { name, value, type, checked } = event.target;
-
-  //   setFormData((prevFormData) => {
-  //     return {
-  //       ...prevFormData,
-  //       [name]: type === "checkbox" ? checked : value,
-  //     };
-  //   });
-  // };
 
   const onSubmit = async (data) => {
     try {
@@ -68,13 +44,9 @@ const Signup = () => {
       } else if (err.response?.status === 400) {
         const data = err.response.data.slice(0, -1);
         if (data === "nickname") {
-          setErrMsg(
-            "A username should contain only uppercase and lowercase letters, dots (.) or underscores(_). If it fits the description, the username has already been taken"
-          );
+          setErrMsg("The nickname has already been taken");
         } else if (data === "email") {
-          setErrMsg(
-            "An email address should be in the form of example@example.com and contain only uppercase and lowercase letters, and symbols(. _%+-). If it fits the description, the email has already been taken"
-          );
+          setErrMsg("Please use another email address");
         } else if (data === "password") {
           setErrMsg(
             "Your password should have at least one lowercase and one uppercase letter, a number and a symbol"
@@ -98,6 +70,7 @@ const Signup = () => {
         />
         {errors.firstName && <p>{errors.firstName.message}</p>}
         <br />
+
         <input
           placeholder="Last Name"
           {...register("lastName", {
@@ -105,8 +78,8 @@ const Signup = () => {
           })}
         />
         {errors.lastName && <p>{errors.lastName.message}</p>}
-
         <br />
+
         <input
           placeholder="Email address"
           {...register("email", {
@@ -120,13 +93,13 @@ const Signup = () => {
           })}
         />
         {errors.email && <p>{errors.email.message}</p>}
-
         <br />
+
         <input
           type="password"
           placeholder="Password"
           {...register("password", {
-            required: "Please enter your email address",
+            required: "Please enter your password",
             minLength: {
               value: 8,
               message: "The password should be at least 8 characters long",
@@ -140,17 +113,20 @@ const Signup = () => {
         />
         {errors.password && <p>{errors.password.message}</p>}
         <br />
+
         <input
           type="password"
           placeholder="Confirm password"
-          {...register("confirm_password", {
+          {...register("confirmPassword", {
+            exclude: true,
             required: "Please enter your password again",
             validate: (value) =>
               value === watch("password") || "The passwords do not match",
           })}
         />
-        {errors.confirm_password && <p>{errors.confirm_password.message}</p>}
+        {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
         <br />
+
         <input
           type="date"
           {...register("dateOfBirth", {
@@ -166,15 +142,17 @@ const Signup = () => {
         />
         {errors.dateOfBirth && <p>{errors.dateOfBirth.message}</p>}
         <br />
+
         <input
           placeholder="Nickname"
           {...register("nickname", {
-            minLength: {
-              value: 8,
-              message: "The nickname should be at least 8 characters long",
+            maxLength: {
+              value: 32,
+              message:
+                "The nickname should not be longer than 32 characters long",
             },
             pattern: {
-              value: /^[a-zA-Z0-9._]{8,}$/,
+              value: /^[a-zA-Z0-9._ ]{,32}$/,
               message:
                 "The nickname can only contain letters, numbers, dots (.) and underscores (_)",
             },
@@ -182,11 +160,13 @@ const Signup = () => {
         />
         {errors.nickname && <p>{errors.nickname.message}</p>}
         <br />
+
         <textarea
           placeholder="Write something about yourself"
           {...register("about")}
         />
         <br />
+
         <button>Sign Up</button>
       </form>
       <div>
