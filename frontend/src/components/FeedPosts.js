@@ -3,7 +3,6 @@ import List from "./List";
 
 const FEEDPOSTS_URL = "http://localhost:8000/feedposts";
 
-//Feedposts for main page
 const FeedPosts = () => {
     const mapFeedPosts = (post) => (
         <div className="content-area" key={post.id}>
