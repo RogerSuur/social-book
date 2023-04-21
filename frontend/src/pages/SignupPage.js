@@ -154,7 +154,7 @@ const Signup = () => {
             pattern: {
               value: /^[a-zA-Z0-9._ ]{,32}$/,
               message:
-                "The nickname can only contain letters, numbers, dots (.) and underscores (_)",
+                "The nickname can only contain letters, numbers, spaces, dots (.) and underscores (_)",
             },
           })}
         />
