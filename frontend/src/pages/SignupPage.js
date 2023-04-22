@@ -142,7 +142,6 @@ const Signup = () => {
         />
         {errors.dateOfBirth && <p>{errors.dateOfBirth.message}</p>}
         <br />
-
         <input
           placeholder="Nickname"
           {...register("nickname", {

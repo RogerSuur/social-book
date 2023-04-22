@@ -5,8 +5,6 @@ import Following from "./Following.js";
 import ProfileInfo from "./ProfileInfo.js";
 
 const ProfileContent = ({ selected }) => {
-  console.log(selected, "Profile content");
-
   const [displayedContent, setDisplayedContent] = useState(null);
 
   useEffect(() => {
