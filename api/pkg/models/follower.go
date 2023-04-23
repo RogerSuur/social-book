@@ -58,12 +58,64 @@ func (m FollowerModel) Update(follower *Follower) error {
 	return err
 }
 
-func (p FollowerModel) GetById(id int64) (*Follower, error) {
+func (m FollowerModel) GetById(id int64) (*Follower, error) {
 	query := `SELECT id, following_id,  follower_id, accepted, active FROM followers WHERE id = ?`
-	row := p.DB.QueryRow(query, id)
+	row := m.DB.QueryRow(query, id)
 	follower := &Follower{}
 
 	err := row.Scan(&follower.Id, &follower.FollowingId, &follower.FollowerId, &follower.Accepted, &follower.Active)
 
 	return follower, err
+}
+
+func (m FollowerModel) GetFollowingById(followingId int64) ([]*Follower, error) {
+	query := `SELECT following_id, follower_id, accepted, active FROM followers WHERE following_id = ?`
+	rows, err := m.DB.Query(query, followingId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	followers := []*Follower{}
+
+	for rows.Next() {
+		follower := &Follower{}
+
+		err := rows.Scan(&follower.FollowingId, &follower.FollowerId, &follower.Accepted, &follower.Active)
+		if err != nil {
+			return nil, err
+		}
+
+		if follower.Active {
+			followers = append(followers, follower)
+		}
+	}
+
+	return followers, err
+}
+
+func (m FollowerModel) GetFollowersById(followerId int64) ([]*Follower, error) {
+	query := `SELECT following_id, follower_id, accepted, active FROM followers WHERE follower_id = ?`
+	rows, err := m.DB.Query(query, followerId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	following := []*Follower{}
+
+	for rows.Next() {
+		follower := &Follower{}
+
+		err := rows.Scan(&follower.FollowingId, &follower.FollowerId, &follower.Accepted, &follower.Active)
+		if err != nil {
+			return nil, err
+		}
+		
+		if follower.Active {
+			following = append(following, follower)
+		}
+	}
+
+	return following, err
 }

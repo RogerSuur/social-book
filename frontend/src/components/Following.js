@@ -1,7 +1,7 @@
 import List from "../components/List.js";
 
 //insert correct URL
-const FOLLOWING_URL = "http://localhost:8000/profile";
+const FOLLOWING_URL = "http://localhost:8000/following";
 
 const Following = () => {
   const mapFollowing = (following) => (

@@ -17,6 +17,23 @@ type profileJSON struct {
 	IsPublic    bool   `json:"isPublic"`
 }
 
+type follower struct {
+	UserID      int    `json:"userID"`
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	Nickname    string `json:"nickname"`
+	AvatarImage string `json:"avatarImage"`
+	Accepted    bool   `json:"accepted"`
+}
+
+type userFollowers struct {
+	Followers []follower `json:"followers"`
+}
+
+type userFollowing struct {
+	Following []follower `json:"following"`
+}
+
 func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
@@ -25,14 +42,14 @@ func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 		userID, err := app.Service.GetUserID(r)
 		if err != nil {
 			app.Logger.Printf("Cannot get user ID: %s", err)
-			http.Error(rw, "Cannot get user ID", http.StatusUnauthorized)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		userData, err := app.Service.GetUserData(int64(userID))
 		if err != nil {
 			app.Logger.Printf("Cannot get user data: %s", err)
-			http.Error(rw, "Cannot get user data", http.StatusUnauthorized)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -63,5 +80,67 @@ func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 		}
 		rw.Write(jsonResp)
 
+	}
+}
+
+func (app *Application) Followers(rw http.ResponseWriter, r *http.Request) {
+
+	if r.Method == "GET" {
+
+		userID, err := app.Service.GetUserID(r)
+		if err != nil {
+			app.Logger.Printf("Cannot get user ID: %s", err)
+			http.Error(rw, "Cannot get user ID", http.StatusUnauthorized)
+			return
+		}
+
+		userFollowers, err := app.Service.GetUserFollowers(int64(userID))
+
+		if err != nil {
+			app.Logger.Printf("Cannot get user followers: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		err = json.NewEncoder(rw).Encode(userFollowers)
+
+		if err != nil {
+			app.Logger.Printf("Cannot encode user followers: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}
+
+func (app *Application) Following(rw http.ResponseWriter, r *http.Request) {
+
+	if r.Method == "GET" {
+
+		userID, err := app.Service.GetUserID(r)
+		if err != nil {
+			app.Logger.Printf("Cannot get user ID: %s", err)
+			http.Error(rw, "Cannot get user ID", http.StatusUnauthorized)
+			return
+		}
+
+		userFollowing, err := app.Service.GetUserFollowing(int64(userID))
+
+		if err != nil {
+			app.Logger.Printf("Cannot get user following: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		err = json.NewEncoder(rw).Encode(userFollowing)
+
+		if err != nil {
+			app.Logger.Printf("Cannot encode user following: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		return
 	}
 }
