@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import Modal from "../components/Modal.js";
+import AvatarUpdater from "../components/AvatarUpdater.js";
+import FileUploader from "./FileUploader.js";
+import UploadAndDisplayImage from "./UploadAndDisplayImage.js";
 
 const PROFILE_URL = "http://localhost:8000/profile";
 const PROFILE_UPDATE_URL = "";
 
-const ProfileInfo = () => {
+const ProfileInfo = (props) => {
   const [user, setUser] = useState({});
   const [errMsg, setErrMsg] = useState("");
   const values = user;
@@ -77,12 +81,27 @@ const ProfileInfo = () => {
             <div className="row">
               <div className="column">
                 <img
-                  src={user.avatarImage}
+                  style={{
+                    width: "20vw",
+                    height: "20vw",
+                    objectFit: "cover",
+                    objectPosition: "0% 100%",
+                  }}
+                  src={
+                    "https://www.pixelstalk.net/wp-content/uploads/2016/05/Free-Cool-Backgrounds.jpg"
+                  }
                   alt={`${user.firstName}'s image`}
                 ></img>
               </div>
+
               <h1 className="column-title">{user.firstName}'s profile</h1>
             </div>
+            {/* <Modal text={"Update Image"}>
+              <AvatarUpdater />
+            </Modal> */}
+            <Modal text={"Upload New Image"}>
+              <AvatarUpdater />
+            </Modal>
             <div className="row">
               <div className="column-title">First Name</div>
               <div className="column">{user.firstName}</div>

@@ -5,8 +5,9 @@ const FileUploader = ({ onFileSelectSuccess, onFileSelectError }) => {
 
   const handleFileInput = (event) => {
     const file = event.target.files[0];
-    if (file.size > 10240)
-      onFileSelectError({ error: "File size cannot exceed more than 10MB" });
+    console.log(file.size);
+    if (file.size > 1024000)
+      onFileSelectError({ error: "File size cannot exceed more than 1MB" });
     else onFileSelectSuccess(file);
   };
 
