@@ -35,16 +35,21 @@ func main() {
 
 	fmt.Println("successfully migrated DB..")
 
+	repos := models.InitRepositories(db)
+
 	app := &handlers.Application{
-		Logger:  logger,
-		Service: &services.Service{DB: db, Env: models.CreateEnv(db)},
+		Logger:      logger,
+		UserService: services.InitUserService(repos.UserRepo, repos.SessionRepo),
 	}
 
-	database.Seed(db)
+	database.Seed(*repos)
 
-	// http.HandleFunc("/", app.Service.Authenticate(app.Home))
+	http.HandleFunc("/", app.UserService.Authenticate(app.Home))
 	http.HandleFunc("/login", app.Login)
-	http.HandleFunc("/post", app.Service.Authenticate(app.Post))
+	http.HandleFunc("/signup", app.Register)
+	//http.HandleFunc("/logout", app.Service.Authenticate(app.Logout))
+	http.HandleFunc("/profile", app.UserService.Authenticate(app.Profile))
+	http.HandleFunc("/post", app.UserService.Authenticate(app.Post))
 	http.HandleFunc("/feedposts", app.FeedPosts)
 
 	logger.Printf("Starting server on port %d\n", config.port)

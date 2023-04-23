@@ -9,12 +9,12 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (s *Service) UserLogin(user *models.User) (string, error) {
+func (s *UserService) UserLogin(user *models.User) (string, error) {
 
-	env := models.CreateEnv(s.DB)
+	// env := models.CreateEnv(s.DB)
 
 	// check if user exists
-	dbUser, err := env.Users.GetByEmail(user.Email)
+	dbUser, err := s.UserRepo.GetByEmail(user.Email)
 	if err != nil {
 		log.Printf("User email not found: %s", err)
 		return "", errors.New("user email not found")
@@ -34,7 +34,7 @@ func (s *Service) UserLogin(user *models.User) (string, error) {
 	}
 
 	// store session in DB
-	lastID, err := env.Sessions.Insert(&session)
+	lastID, err := s.SessionRepo.Insert(&session)
 	if err != nil {
 		log.Printf("Cannot create session: %s", err)
 		return "", errors.New("cannot create session")

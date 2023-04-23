@@ -6,11 +6,21 @@ type Notification struct {
 	// TODO
 }
 
-type NotificationModel struct {
+type INotificationRepository interface {
+	Insert(notification *Notification) (int64, error)
+}
+
+type NotificationRepository struct {
 	DB *sql.DB
 }
 
-func (g NotificationModel) Insert(event *Notification) (int64, error) {
+func NewNotificationRepo(db *sql.DB) *NotificationRepository {
+	return &NotificationRepository{
+		DB: db,
+	}
+}
+
+func (g NotificationRepository) Insert(notification *Notification) (int64, error) {
 
 	//TODO
 	//insert new notification into database

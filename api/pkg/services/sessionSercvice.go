@@ -1,17 +1,19 @@
 package services
 
 import (
-	"SocialNetworkRestApi/api/pkg/models"
+	"SocialNetworkRestApi/api/internal/server/utils"
 	"log"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *Service) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
+func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		env := models.CreateEnv(s.DB)
+		utils.SetCors(&w, r)
+
+		// env := models.CreateEnv(s.DB)
 
 		// check if cookie exists
 		cookie, err := r.Cookie("session")
@@ -22,7 +24,7 @@ func (s *Service) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 		}
 
 		// check if session exists
-		_, err = env.Sessions.GetByToken(cookie.Value)
+		_, err = s.SessionRepo.GetByToken(cookie.Value)
 
 		if err != nil {
 			log.Printf("No session found: %s", err)
@@ -35,13 +37,28 @@ func (s *Service) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (s *Service) SetCookie(w http.ResponseWriter, sessionToken string) {
+func (s *UserService) SetCookie(w http.ResponseWriter, sessionToken string) {
 	cookie := http.Cookie{
 		Name:   "session",
 		Value:  sessionToken,
 		MaxAge: 3600,
 	}
 	http.SetCookie(w, &cookie)
+}
+
+func (s *UserService) GetUserID(r *http.Request) (int, error) {
+
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		return 0, err
+	}
+
+	session, err := s.SessionRepo.GetByToken(cookie.Value)
+	if err != nil {
+		return 0, err
+	}
+
+	return session.UserId, nil
 }
 
 func HashPassword(password string) (string, error) {

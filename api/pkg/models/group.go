@@ -13,11 +13,24 @@ type Group struct {
 	CreatedAt   time.Time
 }
 
-type GroupModel struct {
+type IGroupRepository interface {
+	GetAllByCreatorId(userId int) ([]*Group, error)
+	GetAllByMemberId(userId int) ([]*Group, error)
+	GetById(id int64) (*Group, error)
+	Insert(group *Group) (int64, error)
+}
+
+type GroupRepository struct {
 	DB *sql.DB
 }
 
-func (m GroupModel) Insert(group *Group) (int64, error) {
+func NewGroupRepo(db *sql.DB) *GroupRepository {
+	return &GroupRepository{
+		DB: db,
+	}
+}
+
+func (m GroupRepository) Insert(group *Group) (int64, error) {
 
 	query := `INSERT INTO groups (creator_id, title, description, created_at)
 	VALUES(?, ?, ?, ?)`
@@ -44,7 +57,7 @@ func (m GroupModel) Insert(group *Group) (int64, error) {
 	return lastId, nil
 }
 
-func (p GroupModel) GetById(id int64) (*Group, error) {
+func (p GroupRepository) GetById(id int64) (*Group, error) {
 	query := `SELECT id, creator_id,  title, description, created_at FROM groups WHERE id = ?`
 	row := p.DB.QueryRow(query, id)
 	group := &Group{}
@@ -54,7 +67,7 @@ func (p GroupModel) GetById(id int64) (*Group, error) {
 	return group, err
 }
 
-func (m GroupModel) GetAllByCreatorId(userId int) ([]*Group, error) {
+func (m GroupRepository) GetAllByCreatorId(userId int) ([]*Group, error) {
 
 	stmt := `SELECT id, creator_id,  title, description, created_at FROM groups
 	WHERE creator_id = ?
@@ -86,7 +99,7 @@ func (m GroupModel) GetAllByCreatorId(userId int) ([]*Group, error) {
 	return groups, nil
 }
 
-func (g GroupModel) GetAllByMemberId(userId int) ([]*Group, error) {
+func (g GroupRepository) GetAllByMemberId(userId int) ([]*Group, error) {
 
 	//TODO
 	//Get all groups the user is member of, by id

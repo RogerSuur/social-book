@@ -13,11 +13,23 @@ type Follower struct {
 	Active      bool
 }
 
-type FollowerModel struct {
+type IFollowerRepository interface {
+	GetById(id int64) (*Follower, error)
+	Insert(follower *Follower) (int64, error)
+	Update(follower *Follower) error
+}
+
+type FollowerRepository struct {
 	DB *sql.DB
 }
 
-func (m FollowerModel) Insert(follower *Follower) (int64, error) {
+func NewFollowerRepo(db *sql.DB) *FollowerRepository {
+	return &FollowerRepository{
+		DB: db,
+	}
+}
+
+func (m FollowerRepository) Insert(follower *Follower) (int64, error) {
 	query := `INSERT INTO followers (following_id, follower_id, accepted, active)
 	VALUES(?, ?, ?, ?)`
 
@@ -44,7 +56,7 @@ func (m FollowerModel) Insert(follower *Follower) (int64, error) {
 	return lastId, nil
 }
 
-func (m FollowerModel) Update(follower *Follower) error {
+func (m FollowerRepository) Update(follower *Follower) error {
 	query := `UPDATE followers SET accepted = ?, active = ? WHERE id = ?`
 
 	args := []interface{}{
@@ -58,7 +70,7 @@ func (m FollowerModel) Update(follower *Follower) error {
 	return err
 }
 
-func (p FollowerModel) GetById(id int64) (*Follower, error) {
+func (p FollowerRepository) GetById(id int64) (*Follower, error) {
 	query := `SELECT id, following_id,  follower_id, accepted, active FROM followers WHERE id = ?`
 	row := p.DB.QueryRow(query, id)
 	follower := &Follower{}

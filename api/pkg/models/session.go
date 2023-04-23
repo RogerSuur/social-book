@@ -12,12 +12,25 @@ type Session struct {
 	CreatedAt time.Time
 }
 
-type SessionModel struct {
+type ISessionRepository interface {
+	DeleteByToken(token string) error
+	GetByToken(token string) (*Session, error)
+	GetUserSessions(id int) ([]*Session, error)
+	Insert(session *Session) (int64, error)
+}
+
+type SessionRepository struct {
 	DB *sql.DB
 }
 
+func NewSessionRepo(db *sql.DB) *SessionRepository {
+	return &SessionRepository{
+		DB: db,
+	}
+}
+
 // Inserts a new user session to database
-func (m SessionModel) Insert(session *Session) (int64, error) {
+func (m SessionRepository) Insert(session *Session) (int64, error) {
 	query := `INSERT INTO user_sessions (user_id, token, created_at)
 	VALUES(?, ?, ?)`
 
@@ -43,7 +56,7 @@ func (m SessionModel) Insert(session *Session) (int64, error) {
 }
 
 // Returns a session by token
-func (m SessionModel) GetByToken(token string) (*Session, error) {
+func (m SessionRepository) GetByToken(token string) (*Session, error) {
 
 	query := `SELECT id, user_id, token, created_at FROM user_sessions WHERE token = ?`
 	row := m.DB.QueryRow(query, token)
@@ -55,7 +68,7 @@ func (m SessionModel) GetByToken(token string) (*Session, error) {
 }
 
 // Returns all user sessions
-func (m SessionModel) GetUserSessions(id int) ([]*Session, error) {
+func (m SessionRepository) GetUserSessions(id int) ([]*Session, error) {
 
 	//TODO
 	//Not sure if needed
@@ -63,7 +76,7 @@ func (m SessionModel) GetUserSessions(id int) ([]*Session, error) {
 }
 
 // remove a session by token
-func (m SessionModel) DeleteByToken(token string) error {
+func (m SessionRepository) DeleteByToken(token string) error {
 	query := `DELETE FROM user_sessions WHERE token = ?`
 
 	_, err := m.DB.Exec(query, token)

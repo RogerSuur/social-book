@@ -9,12 +9,12 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (s *Service) UserRegister(user *models.User) (string, error) {
+func (s *UserService) UserRegister(user *models.User) (string, error) {
 
-	env := models.CreateEnv(s.DB)
+	// env := models.CreateEnv(s.DB)
 
 	// check if user exists
-	_, err := env.Users.GetByEmail(user.Email)
+	_, err := s.UserRepo.GetByEmail(user.Email)
 	if err == nil {
 		log.Printf("User email already exists")
 		return "", errors.New("user email already exists")
@@ -29,7 +29,7 @@ func (s *Service) UserRegister(user *models.User) (string, error) {
 	user.Password = hashedPassword
 
 	// create user
-	lastID, err := env.Users.Insert(user)
+	lastID, err := s.UserRepo.Insert(user)
 	if err != nil {
 		log.Printf("Cannot create user: %s", err)
 		return "", errors.New("cannot create user")
@@ -44,7 +44,7 @@ func (s *Service) UserRegister(user *models.User) (string, error) {
 	}
 
 	// store session in DB
-	lastID, err = env.Sessions.Insert(&session)
+	lastID, err = s.SessionRepo.Insert(&session)
 	if err != nil {
 		log.Printf("Cannot create session: %s", err)
 		return "", errors.New("cannot create session")
