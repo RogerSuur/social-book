@@ -8,6 +8,22 @@ import (
 	"time"
 )
 
+type IPostService interface {
+	CreatePost(post *models.Post) error
+	GetFeedPosts(offset string) ([]*feedPostJSON, error)
+}
+
+// Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
+type PostService struct {
+	PostRepository models.IPostRepository
+}
+
+func InitPostService(postRepo *models.PostRepository) *PostService {
+	return &PostService{
+		PostRepository: postRepo,
+	}
+}
+
 type feedPostJSON struct {
 	Id        int       `json:"id"`
 	UserId    int       `json:"userId"`
@@ -16,9 +32,7 @@ type feedPostJSON struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
-func (s *Service) CreatePost(post *models.Post) error {
-
-	env := models.CreateEnv(s.DB)
+func (s *PostService) CreatePost(post *models.Post) error {
 
 	if len(post.Title) == 0 {
 		err := errors.New("title too short")
@@ -32,7 +46,7 @@ func (s *Service) CreatePost(post *models.Post) error {
 		return err
 	}
 
-	_, err := env.Posts.Insert(post)
+	_, err := s.PostRepository.Insert(post)
 
 	if err != nil {
 		log.Printf("CreatePost error: %s", err)
@@ -41,15 +55,13 @@ func (s *Service) CreatePost(post *models.Post) error {
 	return err
 }
 
-func (s *Service) GetFeedPosts(offset string) ([]*feedPostJSON, error) {
+func (s *PostService) GetFeedPosts(offset string) ([]*feedPostJSON, error) {
 
-	env := models.CreateEnv(s.DB)
+	posts, err := s.PostRepository.GetAllFeedPosts(0)
 
-	posts, err := env.Posts.GetAllFeedPosts(0)
+	if err != nil {
+		fmt.Println(err)
 
-	if err!= nil {
-	fmt.Println(err)
-		
 	}
 
 	fmt.Println(posts)

@@ -19,13 +19,19 @@ type Post struct {
 
 type IPostRepository interface {
 	GetAllByUserId(id int64) ([]*Post, error)
-	GetAllFeedPosts(id int64) ([]*Post, error)
+	GetAllFeedPosts(offset int) ([]*Post, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
 }
 
 type PostRepository struct {
 	DB *sql.DB
+}
+
+func NewPostRepo(db *sql.DB) *PostRepository {
+	return &PostRepository{
+		DB: db,
+	}
 }
 
 const FeedLimit = 100

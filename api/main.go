@@ -40,11 +40,12 @@ func main() {
 	app := &handlers.Application{
 		Logger:      logger,
 		UserService: services.InitUserService(repos.UserRepo, repos.SessionRepo),
+		PostService: services.InitPostService(repos.PostRepo),
 	}
 
 	database.Seed(*repos)
 
-	http.HandleFunc("/", app.UserService.Authenticate(app.Home))
+	// http.HandleFunc("/", app.UserService.Authenticate(app.Home))
 	http.HandleFunc("/login", app.Login)
 	http.HandleFunc("/signup", app.Register)
 	//http.HandleFunc("/logout", app.Service.Authenticate(app.Logout))

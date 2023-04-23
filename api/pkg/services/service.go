@@ -2,17 +2,17 @@ package services
 
 import (
 	"SocialNetworkRestApi/api/pkg/models"
-	"database/sql"
 )
 
-type Service struct {
-	DB  *sql.DB
-	Env models.Env
-}
+// type Service struct {
+// 	DB  *sql.DB
+// 	Env models.Env
+// }
 
 // Services contains all the controllers
 type Services struct {
 	UserService IUserService
+	PostService IPostService
 }
 
 // InitServices returns a new Controllers

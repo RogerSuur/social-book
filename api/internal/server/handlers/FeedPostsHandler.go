@@ -21,7 +21,7 @@ func (app *Application) FeedPosts(w http.ResponseWriter, r *http.Request) {
 			offset = "0"
 		}
 
-		feed, _ := app.Service.GetFeedPosts(offset)
+		feed, _ := app.PostService.GetFeedPosts(offset)
 
 		json.NewEncoder(w).Encode(&feed)
 	// case "OPTIONS":

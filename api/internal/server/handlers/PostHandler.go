@@ -37,7 +37,7 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 			PrivacyType: enums.PrivacyType(JSONdata.PrivacyType),
 		}
 
-		err = app.Service.CreatePost(post)
+		err = app.PostService.CreatePost(post)
 
 		if err != nil {
 			app.Logger.Printf("Cannot create post: %s", err)

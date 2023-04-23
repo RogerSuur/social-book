@@ -10,6 +10,7 @@ import (
 type Application struct {
 	Logger      *log.Logger
 	UserService services.IUserService
+	PostService services.IPostService
 }
 
 func (app *Application) Home(rw http.ResponseWriter, r *http.Request) {
