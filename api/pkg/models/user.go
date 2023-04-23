@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 )
 
@@ -40,8 +39,6 @@ func (u UserModel) Insert(user *User) (int64, error) {
 		user.IsPublic,
 		time.Now(),
 	}
-
-	fmt.Println(args...)
 
 	result, err := u.DB.Exec(query, args...)
 
@@ -108,6 +105,16 @@ func (u UserModel) GetByUserName(name string) (*User, error) {
 	err := row.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Birthday, &user.Nickname, &user.About, &user.ImagePath, &user.CreatedAt, &user.IsPublic)
 
 	return user, err
+}
+
+func (u UserModel) CheckIfNicknameExists(nickname string, id int) error {
+	query := `SELECT id FROM users WHERE nickname = ? AND id != ?`
+	row := u.DB.QueryRow(query, nickname, id)
+	user := &User{}
+
+	err := row.Scan(&user.Id)
+
+	return err
 }
 
 // Return all user followers, who follow user with given id

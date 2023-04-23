@@ -66,7 +66,7 @@ func (app *Application) Register(rw http.ResponseWriter, r *http.Request) {
 		sessionToken, err := app.Service.UserRegister(userData)
 		if err != nil {
 			app.Logger.Printf("Cannot register user: %s", err)
-			http.Error(rw, err.Error(), http.StatusUnauthorized)
+			http.Error(rw, err.Error(), http.StatusBadRequest)
 			return
 		}
 
