@@ -2,19 +2,18 @@ package services
 
 import (
 	"SocialNetworkRestApi/api/internal/server/utils"
-	"SocialNetworkRestApi/api/pkg/models"
 	"log"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *Service) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
+func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		utils.SetCors(&w, r)
 
-		env := models.CreateEnv(s.DB)
+		// env := models.CreateEnv(s.DB)
 
 		// check if cookie exists
 		cookie, err := r.Cookie("session")
@@ -25,7 +24,7 @@ func (s *Service) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 		}
 
 		// check if session exists
-		_, err = env.Sessions.GetByToken(cookie.Value)
+		_, err = s.SessionRepo.GetByToken(cookie.Value)
 
 		if err != nil {
 			log.Printf("No session found: %s", err)
@@ -38,7 +37,7 @@ func (s *Service) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (s *Service) SetCookie(w http.ResponseWriter, sessionToken string) {
+func (s *UserService) SetCookie(w http.ResponseWriter, sessionToken string) {
 	cookie := http.Cookie{
 		Name:   "session",
 		Value:  sessionToken,
@@ -47,15 +46,14 @@ func (s *Service) SetCookie(w http.ResponseWriter, sessionToken string) {
 	http.SetCookie(w, &cookie)
 }
 
-func (s *Service) GetUserID(r *http.Request) (int, error) {
-	env := models.CreateEnv(s.DB)
+func (s *UserService) GetUserID(r *http.Request) (int, error) {
 
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		return 0, err
 	}
 
-	session, err := env.Sessions.GetByToken(cookie.Value)
+	session, err := s.SessionRepo.GetByToken(cookie.Value)
 	if err != nil {
 		return 0, err
 	}

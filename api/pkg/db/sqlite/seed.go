@@ -3,7 +3,6 @@ package database
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
-	"database/sql"
 	"fmt"
 	"time"
 
@@ -14,45 +13,45 @@ import (
 // 	db *sql.DB
 // }
 
-func Seed(db *sql.DB) {
+func Seed(repos models.Repositories) {
 
-	// SeedUsers(db)
-	// SeedPosts(db)
+	SeedUsers(repos.UserRepo)
+	SeedSessions(repos.SessionRepo)
+	SeedPosts(repos.PostRepo)
+
 	// SeedComments(db)
 	// SeedGroups(db)
 	// SeedFollowers(db)
-	// SeedSessions(db)
 
-	env := models.CreateEnv(db)
+	// env := models.CreateEnv(db)
 
 	//Single value test
-	test, err := env.Sessions.GetByToken("aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL")
+	test, err := repos.SessionRepo.GetByToken("aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL")
 
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 
 	}
 
-	//Array TEST
-	tests, err := env.Groups.GetAllByCreatorId(1)
+	// //Array TEST
+	// tests, err := env.Groups.GetAllByCreatorId(1)
 
-	if err != nil {
-		fmt.Printf("%+v\n", err)
+	// if err != nil {
+	// 	fmt.Printf("%+v\n", err)
 
-	} else {
-		fmt.Printf("%+v\n", test)
+	// } else {
+	fmt.Printf("%+v\n", test)
 
-		for _, v := range tests {
-			fmt.Printf("%+v\n", v)
+	// 	for _, v := range tests {
+	// 		fmt.Printf("%+v\n", v)
 
-		}
+	// 	}
 
-	}
+	// }
 
 }
 
-func SeedSessions(db *sql.DB) {
-	env := models.CreateEnv(db)
+func SeedSessions(repo *models.SessionRepository) {
 
 	for i := 0; i < 10; i++ {
 		session := &models.Session{
@@ -60,7 +59,7 @@ func SeedSessions(db *sql.DB) {
 			Token:  faker.Jwt(),
 		}
 
-		_, err := env.Sessions.Insert(session)
+		_, err := repo.Insert(session)
 
 		fmt.Printf("%+v\n", session)
 
@@ -71,8 +70,7 @@ func SeedSessions(db *sql.DB) {
 	}
 }
 
-func SeedFollowers(db *sql.DB) {
-	env := models.CreateEnv(db)
+func SeedFollowers(repo *models.FollowerRepository) {
 
 	for i := 0; i < 10; i++ {
 		tempFollower := &models.Follower{
@@ -82,7 +80,7 @@ func SeedFollowers(db *sql.DB) {
 			Active:      true,
 		}
 
-		_, err := env.Followers.Insert(tempFollower)
+		_, err := repo.Insert(tempFollower)
 
 		// fmt.Printf("%+v\n", tempFollower)
 
@@ -93,8 +91,7 @@ func SeedFollowers(db *sql.DB) {
 	}
 }
 
-func SeedPosts(db *sql.DB) {
-	env := models.CreateEnv(db)
+func SeedPosts(repo *models.PostRepository) {
 
 	for i := 0; i < 10; i++ {
 		tempPost := &models.Post{
@@ -104,7 +101,7 @@ func SeedPosts(db *sql.DB) {
 			PrivacyType: enums.SubPrivate,
 		}
 
-		_, err := env.Posts.Insert(tempPost)
+		_, err := repo.Insert(tempPost)
 
 		// fmt.Printf("%+v\n", tempPost)
 
@@ -115,8 +112,7 @@ func SeedPosts(db *sql.DB) {
 	}
 }
 
-func SeedUsers(db *sql.DB) {
-	env := models.CreateEnv(db)
+func SeedUsers(repo *models.UserRepository) {
 
 	for i := 0; i < 10; i++ {
 
@@ -132,7 +128,7 @@ func SeedUsers(db *sql.DB) {
 			Birthday:  date,
 		}
 
-		id, err := env.Users.Insert(tempUser)
+		id, err := repo.Insert(tempUser)
 		tempUser.Id = int(id)
 
 		if err != nil {
@@ -145,8 +141,7 @@ func SeedUsers(db *sql.DB) {
 	}
 }
 
-func SeedComments(db *sql.DB) {
-	env := models.CreateEnv(db)
+func SeedComments(repo *models.CommentRepository) {
 
 	for i := 0; i < 10; i++ {
 		tempComment := &models.Comment{
@@ -155,7 +150,7 @@ func SeedComments(db *sql.DB) {
 			PostId:  10 - i,
 		}
 
-		id, err := env.Comments.Insert(tempComment)
+		id, err := repo.Insert(tempComment)
 
 		tempComment.Id = int(id)
 
@@ -168,8 +163,7 @@ func SeedComments(db *sql.DB) {
 	}
 }
 
-func SeedGroups(db *sql.DB) {
-	env := models.CreateEnv(db)
+func SeedGroups(repo *models.GroupRepository) {
 
 	for i := 0; i < 10; i++ {
 		tempGroup := &models.Group{
@@ -178,7 +172,7 @@ func SeedGroups(db *sql.DB) {
 			CreatorId:   i + 1,
 		}
 
-		_, err := env.Groups.Insert(tempGroup)
+		_, err := repo.Insert(tempGroup)
 
 		// fmt.Printf("%+v\n", tempGroup)
 

@@ -14,11 +14,25 @@ type Comment struct {
 	CreatedAt time.Time
 }
 
-type CommentModel struct {
+type ICommentRepository interface {
+	GetAllByPostId(postId int) ([]*Comment, error)
+	GetAllByUserId(userId int) ([]*Comment, error)
+	GetById(id int64) (*Comment, error)
+	Insert(comment *Comment) (int64, error)
+	Update(comment *Comment) error
+}
+
+type CommentRepository struct {
 	DB *sql.DB
 }
 
-func (m CommentModel) Insert(comment *Comment) (int64, error) {
+func NewCommentRepo(db *sql.DB) *CommentRepository {
+	return &CommentRepository{
+		DB: db,
+	}
+}
+
+func (m CommentRepository) Insert(comment *Comment) (int64, error) {
 	query := `INSERT INTO comments (post_id, user_id, content, image_path, created_at)
 	VALUES(?, ?, ?, ?, ?)`
 
@@ -45,14 +59,14 @@ func (m CommentModel) Insert(comment *Comment) (int64, error) {
 	return lastId, nil
 }
 
-func (m CommentModel) Update(comment *Comment) error {
+func (m CommentRepository) Update(comment *Comment) error {
 
 	//TODO
 	//update comment in database
 	return nil
 }
 
-func (m CommentModel) GetById(id int64) (*Comment, error) {
+func (m CommentRepository) GetById(id int64) (*Comment, error) {
 	query := `SELECT id, post_id, user_id, content,  image_path, created_at FROM comments WHERE id = ?`
 	row := m.DB.QueryRow(query, id)
 	comment := &Comment{}
@@ -62,7 +76,7 @@ func (m CommentModel) GetById(id int64) (*Comment, error) {
 	return comment, err
 }
 
-func (m CommentModel) GetAllByPostId(postId int) ([]*Comment, error) {
+func (m CommentRepository) GetAllByPostId(postId int) ([]*Comment, error) {
 	query := `SELECT id, post_id, user_id, content,  image_path, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC`
 	rows, err := m.DB.Query(query, postId)
 	if err != nil {
@@ -89,7 +103,7 @@ func (m CommentModel) GetAllByPostId(postId int) ([]*Comment, error) {
 	return comments, nil
 }
 
-func (m CommentModel) GetAllByUserId(userId int) ([]*Comment, error) {
+func (m CommentRepository) GetAllByUserId(userId int) ([]*Comment, error) {
 	query := `SELECT id, post_id, user_id, content,  image_path, created_at FROM comments WHERE user_id = ? ORDER BY created_at DESC`
 	rows, err := m.DB.Query(query, userId)
 	if err != nil {

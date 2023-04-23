@@ -3,6 +3,7 @@ package main
 import (
 	"SocialNetworkRestApi/api/internal/server/handlers"
 	database "SocialNetworkRestApi/api/pkg/db/sqlite"
+	"SocialNetworkRestApi/api/pkg/models"
 	"SocialNetworkRestApi/api/pkg/services"
 	"fmt"
 	"log"
@@ -34,18 +35,20 @@ func main() {
 
 	fmt.Println("successfully migrated DB..")
 
+	repos := models.InitRepositories(db)
+
 	app := &handlers.Application{
-		Logger:  logger,
-		Service: &services.Service{DB: db},
+		Logger:      logger,
+		UserService: services.InitUserService(repos.UserRepo, repos.SessionRepo),
 	}
 
-	database.Seed(db)
+	database.Seed(*repos)
 
-	http.HandleFunc("/", app.Service.Authenticate(app.Home))
+	http.HandleFunc("/", app.UserService.Authenticate(app.Home))
 	http.HandleFunc("/login", app.Login)
 	http.HandleFunc("/signup", app.Register)
 	//http.HandleFunc("/logout", app.Service.Authenticate(app.Logout))
-	http.HandleFunc("/profile", app.Service.Authenticate(app.Profile))
+	http.HandleFunc("/profile", app.UserService.Authenticate(app.Profile))
 
 	logger.Printf("Starting server on port %d\n", config.port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.port), nil); err != nil {

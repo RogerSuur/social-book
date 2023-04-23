@@ -41,14 +41,14 @@ func (app *Application) Login(rw http.ResponseWriter, r *http.Request) {
 			Password: JSONdata.Password,
 		}
 
-		sessionToken, err := app.Service.UserLogin(userData)
+		sessionToken, err := app.UserService.UserLogin(userData)
 		if err != nil {
 			app.Logger.Printf("Cannot login user: %s", err)
 			http.Error(rw, "err", http.StatusUnauthorized)
 			return
 		}
 
-		app.Service.SetCookie(rw, sessionToken)
+		app.UserService.SetCookie(rw, sessionToken)
 
 		_, err = fmt.Fprintf(rw, "Successful login, cookie set")
 		if err != nil {

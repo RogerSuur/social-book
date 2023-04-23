@@ -6,11 +6,21 @@ type Message struct {
 	// TODO
 }
 
-type MessageModel struct {
+type IMessageRepository interface {
+	Insert(event *Message) (int64, error)
+}
+
+type MessageRepository struct {
 	DB *sql.DB
 }
 
-func (g MessageModel) Insert(event *Message) (int64, error) {
+func NewMessageRepo(db *sql.DB) *MessageRepository {
+	return &MessageRepository{
+		DB: db,
+	}
+}
+
+func (m MessageRepository) Insert(event *Message) (int64, error) {
 
 	//TODO
 	//insert new message into database

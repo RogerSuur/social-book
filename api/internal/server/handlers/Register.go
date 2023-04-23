@@ -51,14 +51,14 @@ func (app *Application) Register(rw http.ResponseWriter, r *http.Request) {
 			About:     JSONdata.About,
 		}
 
-		sessionToken, err := app.Service.UserRegister(userData)
+		sessionToken, err := app.UserService.UserRegister(userData)
 		if err != nil {
 			app.Logger.Printf("Cannot register user: %s", err)
 			http.Error(rw, err.Error(), http.StatusUnauthorized)
 			return
 		}
 
-		app.Service.SetCookie(rw, sessionToken)
+		app.UserService.SetCookie(rw, sessionToken)
 
 		_, err = fmt.Fprintf(rw, "Successful registration")
 		if err != nil {

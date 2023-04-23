@@ -1,16 +1,15 @@
 package handlers
 
 import (
+	"SocialNetworkRestApi/api/pkg/services"
 	"fmt"
 	"log"
 	"net/http"
-
-	"SocialNetworkRestApi/api/pkg/services"
 )
 
 type Application struct {
-	Logger  *log.Logger
-	Service *services.Service
+	Logger      *log.Logger
+	UserService services.IUserService
 }
 
 func (app *Application) Home(rw http.ResponseWriter, r *http.Request) {

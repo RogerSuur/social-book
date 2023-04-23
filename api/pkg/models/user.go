@@ -20,11 +20,27 @@ type User struct {
 	IsPublic  bool
 }
 
-type UserModel struct {
+type IUserRepository interface {
+	Insert(*User) (int64, error)
+	Update(*User) error
+	GetById(id int64) (*User, error)
+	GetByEmail(email string) (*User, error)
+	GetByUserName(userName string) (*User, error)
+	GetAllUserFollowers(id int) ([]*User, error)
+	GetAllFollowedBy(id int) ([]*User, error)
+}
+
+type UserRepository struct {
 	DB *sql.DB
 }
 
-func (u UserModel) Insert(user *User) (int64, error) {
+func NewUserRepo(db *sql.DB) *UserRepository {
+	return &UserRepository{
+		DB: db,
+	}
+}
+
+func (u UserRepository) Insert(user *User) (int64, error) {
 	query := `INSERT INTO users (forname, surname, email, password, birthday, nickname, about, image_path, is_public, created_at)
 	VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
@@ -58,7 +74,7 @@ func (u UserModel) Insert(user *User) (int64, error) {
 	return lastId, nil
 }
 
-func (u UserModel) Update(user *User) error {
+func (u UserRepository) Update(user *User) error {
 	query := `UPDATE users SET forname = ?, surname = ?, email = ?, password = ?, birthday = ?, 
 	nickname = ?, about = ?, image_path = ?, isPublic = ? WHERE id = ?`
 
@@ -80,7 +96,7 @@ func (u UserModel) Update(user *User) error {
 	return err
 }
 
-func (u UserModel) GetById(id int64) (*User, error) {
+func (u UserRepository) GetById(id int64) (*User, error) {
 	query := `SELECT id, forname, surname, email, password, birthday, nickname, about, image_path, created_at, is_public FROM users WHERE id = ?`
 	row := u.DB.QueryRow(query, id)
 	user := &User{}
@@ -90,7 +106,7 @@ func (u UserModel) GetById(id int64) (*User, error) {
 	return user, err
 }
 
-func (u UserModel) GetByEmail(email string) (*User, error) {
+func (u UserRepository) GetByEmail(email string) (*User, error) {
 	query := `SELECT id, forname, surname, email, password, birthday, nickname, about, image_path, created_at, is_public  FROM users WHERE email = ?`
 	row := u.DB.QueryRow(query, email)
 	user := &User{}
@@ -100,7 +116,7 @@ func (u UserModel) GetByEmail(email string) (*User, error) {
 	return user, err
 }
 
-func (u UserModel) GetByUserName(name string) (*User, error) {
+func (u UserRepository) GetByUserName(name string) (*User, error) {
 	query := `SELECT id, forname, surname, email, password, birthday, nickname, about, image_path, created_at, is_public FROM users WHERE nickname = ?`
 	row := u.DB.QueryRow(query, name)
 	user := &User{}
@@ -111,7 +127,7 @@ func (u UserModel) GetByUserName(name string) (*User, error) {
 }
 
 // Return all user followers, who follow user with given id
-func (m UserModel) GetAllUserFollowers(id int) ([]*User, error) {
+func (m UserRepository) GetAllUserFollowers(id int) ([]*User, error) {
 	stmt := `SELECT users.id, users.forname, users.surname, users.email, users.password, birthday, nickname, about, image_path, created_at, is_public FROM users
 	 INNER JOIN followers f on f.follower_id = users.id AND f.following_id = ?`
 
@@ -142,7 +158,7 @@ func (m UserModel) GetAllUserFollowers(id int) ([]*User, error) {
 }
 
 // Return all followed users by user id
-func (m UserModel) GetAllFollowedBy(id int) ([]*User, error) {
+func (m UserRepository) GetAllFollowedBy(id int) ([]*User, error) {
 
 	stmt := `SELECT users.id, users.forname, users.surname, users.email, users.password, birthday, nickname, about, image_path, created_at, is_public FROM users
 	 INNER JOIN followers f on f.following_id = users.id AND f.follower_id = ?`
