@@ -33,7 +33,14 @@ func (app *Application) Login(rw http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			app.Logger.Printf("JSON error: %v", err)
-			http.Error(rw, "JSON error", http.StatusBadRequest)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if JSONdata.Email == "" || JSONdata.Password == "" {
+			app.Logger.Printf("Incomplete login credentials: %s", JSONdata)
+			http.Error(rw, "Incomplete credentials", http.StatusBadRequest)
+			return
 		}
 
 		userData := &models.User{
@@ -44,7 +51,7 @@ func (app *Application) Login(rw http.ResponseWriter, r *http.Request) {
 		sessionToken, err := app.Service.UserLogin(userData)
 		if err != nil {
 			app.Logger.Printf("Cannot login user: %s", err)
-			http.Error(rw, "err", http.StatusUnauthorized)
+			http.Error(rw, err.Error(), http.StatusUnauthorized)
 			return
 		}
 
@@ -53,7 +60,7 @@ func (app *Application) Login(rw http.ResponseWriter, r *http.Request) {
 		_, err = fmt.Fprintf(rw, "Successful login, cookie set")
 		if err != nil {
 			app.Logger.Printf("Cannot access login page: %s", err)
-			http.Error(rw, "Cannot access login page", http.StatusInternalServerError)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
