@@ -15,41 +15,21 @@ import (
 
 func Seed(repos models.Repositories) {
 
-	SeedUsers(repos.UserRepo)
-	SeedSessions(repos.SessionRepo)
-	SeedPosts(repos.PostRepo)
-
-	// SeedComments(db)
-	// SeedGroups(db)
-	// SeedFollowers(db)
-
-	// env := models.CreateEnv(db)
+	// SeedUsers(repos.UserRepo)
+	// SeedSessions(repos.SessionRepo)
+	// SeedPosts(repos.PostRepo)
+	SeedComments(repos.CommentRepo)
 
 	//Single value test
-	test, err := repos.SessionRepo.GetByToken("aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL")
+	test, err := repos.PostRepo.GetCommentCount(1)
 
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 
 	}
 
-	// //Array TEST
-	// tests, err := env.Groups.GetAllByCreatorId(1)
-
-	// if err != nil {
-	// 	fmt.Printf("%+v\n", err)
-
-	// } else {
 	fmt.Printf("%+v\n", test)
 
-	// 	for _, v := range tests {
-	// 		fmt.Printf("%+v\n", v)
-
-	// 	}
-
-	// }
-
-	// }
 }
 
 func SeedSessions(repo *models.SessionRepository) {
@@ -151,7 +131,7 @@ func SeedComments(repo *models.CommentRepository) {
 		tempComment := &models.Comment{
 			Content: faker.Sentence(),
 			UserId:  i + 1,
-			PostId:  10 - i,
+			PostId:  1,
 		}
 
 		id, err := repo.Insert(tempComment)

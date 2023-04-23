@@ -22,6 +22,7 @@ type IPostRepository interface {
 	GetAllFeedPosts(offset int) ([]*Post, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
+	GetCommentCount(postId int) (int, error)
 }
 
 type PostRepository struct {
@@ -106,10 +107,8 @@ func (m PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 	return posts, nil
 }
 
+// Return all posts to the current user by offset
 func (m PostRepository) GetAllFeedPosts(offset int) ([]*Post, error) {
-
-	//TODO
-	//return all posts to the current user
 
 	currentUserId := 12
 
@@ -161,4 +160,18 @@ func (m PostRepository) GetAllFeedPosts(offset int) ([]*Post, error) {
 	}
 
 	return posts, nil
+}
+
+func (m PostRepository) GetCommentCount(postId int) (int, error) {
+	query := `SELECT COUNT(*) FROM comments WHERE post_id = ?`
+	row := m.DB.QueryRow(query, postId)
+	var commentCount int
+
+	err := row.Scan(&commentCount)
+
+	if err != nil {
+		return -1, err
+	}
+
+	return commentCount, nil
 }

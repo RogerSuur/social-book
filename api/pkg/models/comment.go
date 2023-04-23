@@ -103,6 +103,9 @@ func (m CommentRepository) GetAllByPostId(postId int) ([]*Comment, error) {
 	return comments, nil
 }
 
+
+
+
 func (m CommentRepository) GetAllByUserId(userId int) ([]*Comment, error) {
 	query := `SELECT id, post_id, user_id, content,  image_path, created_at FROM comments WHERE user_id = ? ORDER BY created_at DESC`
 	rows, err := m.DB.Query(query, userId)

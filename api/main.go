@@ -48,7 +48,7 @@ func main() {
 	// http.HandleFunc("/", app.UserService.Authenticate(app.Home))
 	http.HandleFunc("/login", app.Login)
 	http.HandleFunc("/signup", app.Register)
-	//http.HandleFunc("/logout", app.Service.Authenticate(app.Logout))
+	//http.HandleFunc("/logout", app.UserService.Authenticate(app.Logout))
 	http.HandleFunc("/profile", app.UserService.Authenticate(app.Profile))
 	http.HandleFunc("/post", app.UserService.Authenticate(app.Post))
 	http.HandleFunc("/feedposts", app.FeedPosts)
