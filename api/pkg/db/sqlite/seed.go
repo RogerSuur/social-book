@@ -28,10 +28,10 @@ func Seed(repos models.Repositories) {
 	//Single value test
 	test, err := repos.SessionRepo.GetByToken("aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL")
 
-	// if err != nil {
-	// 	 fmt.Printf("%+v\n", err)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
 
-	// }
+	}
 
 	// //Array TEST
 	// tests, err := env.Groups.GetAllByCreatorId(1)
@@ -81,7 +81,7 @@ func SeedFollowers(repo *models.FollowerRepository) {
 		Active:      true,
 	}
 
-		_, err := repo.Insert(tempFollower)
+	_, err := repo.Insert(tempFollower)
 
 	// fmt.Printf("%+v\n", tempFollower)
 
