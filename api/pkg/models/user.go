@@ -129,12 +129,22 @@ func (repo UserRepository) GetByUserName(name string) (*User, error) {
 	return user, err
 }
 
+func (repo UserRepository) CheckIfNicknameExists(nickname string, id int) error {
+	query := `SELECT id FROM users WHERE nickname = ? AND id != ?`
+	row := repo.DB.QueryRow(query, nickname, id)
+	user := &User{}
+
+	err := row.Scan(&user.Id)
+
+	return err
+}
+
 // Return all user followers, who follow user with given id
-func (m UserRepository) GetAllUserFollowers(id int) ([]*User, error) {
+func (repo UserRepository) GetAllUserFollowers(id int) ([]*User, error) {
 	stmt := `SELECT users.id, users.forname, users.surname, users.email, users.password, birthday, nickname, about, image_path, created_at, is_public FROM users
 	 INNER JOIN followers f on f.follower_id = users.id AND f.following_id = ?`
 
-	rows, err := m.DB.Query(stmt, id)
+	rows, err := repo.DB.Query(stmt, id)
 	if err != nil {
 		return nil, err
 	}
@@ -161,12 +171,12 @@ func (m UserRepository) GetAllUserFollowers(id int) ([]*User, error) {
 }
 
 // Return all followed users by user id
-func (m UserRepository) GetAllFollowedBy(id int) ([]*User, error) {
+func (repo UserRepository) GetAllFollowedBy(id int) ([]*User, error) {
 
 	stmt := `SELECT users.id, users.forname, users.surname, users.email, users.password, birthday, nickname, about, image_path, created_at, is_public FROM users
 	 INNER JOIN followers f on f.following_id = users.id AND f.follower_id = ?`
 
-	rows, err := m.DB.Query(stmt, id)
+	rows, err := repo.DB.Query(stmt, id)
 	if err != nil {
 		return nil, err
 	}

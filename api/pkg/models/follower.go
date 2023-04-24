@@ -85,3 +85,55 @@ func (repo FollowerRepository) GetById(id int64) (*Follower, error) {
 
 	return follower, err
 }
+
+func (repo FollowerRepository) GetFollowingById(followingId int64) ([]*Follower, error) {
+	query := `SELECT following_id, follower_id, accepted, active FROM followers WHERE following_id = ?`
+	rows, err := repo.DB.Query(query, followingId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	followers := []*Follower{}
+
+	for rows.Next() {
+		follower := &Follower{}
+
+		err := rows.Scan(&follower.FollowingId, &follower.FollowerId, &follower.Accepted, &follower.Active)
+		if err != nil {
+			return nil, err
+		}
+
+		if follower.Active {
+			followers = append(followers, follower)
+		}
+	}
+
+	return followers, err
+}
+
+func (repo FollowerRepository) GetFollowersById(followerId int64) ([]*Follower, error) {
+	query := `SELECT following_id, follower_id, accepted, active FROM followers WHERE follower_id = ?`
+	rows, err := repo.DB.Query(query, followerId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	following := []*Follower{}
+
+	for rows.Next() {
+		follower := &Follower{}
+
+		err := rows.Scan(&follower.FollowingId, &follower.FollowerId, &follower.Accepted, &follower.Active)
+		if err != nil {
+			return nil, err
+		}
+		
+		if follower.Active {
+			following = append(following, follower)
+		}
+	}
+
+	return following, err
+}

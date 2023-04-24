@@ -49,6 +49,8 @@ func main() {
 	http.HandleFunc("/signup", app.Register)
 	//http.HandleFunc("/logout", app.Service.Authenticate(app.Logout))
 	http.HandleFunc("/profile", app.UserService.Authenticate(app.Profile))
+	http.HandleFunc("/following", app.UserService.Authenticate(app.Following))
+	http.HandleFunc("/followers", app.UserService.Authenticate(app.Followers))
 
 	logger.Printf("Starting server on port %d\n", config.port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.port), nil); err != nil {
