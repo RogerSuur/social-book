@@ -53,7 +53,7 @@ func (app *Application) Login(rw http.ResponseWriter, r *http.Request) {
 		_, err = fmt.Fprintf(rw, "Successful login, cookie set")
 		if err != nil {
 			app.Logger.Printf("Cannot access login page: %s", err)
-			http.Error(rw, "Cannot access login page", http.StatusInternalServerError)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}

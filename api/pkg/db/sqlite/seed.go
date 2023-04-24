@@ -34,13 +34,13 @@ func Seed(repos models.Repositories) {
 	// tests, err := env.Groups.GetAllByCreatorId(1)
 
 	// if err != nil {
-	// 	fmt.Printf("%+v\n", err)
+	// 	repos.UserRepo.Logger.Printf("%+v\n", err)
 
 	// } else {
 	// repos.UserRepo.Logger.Printf("%+v\n", test)
 
 	// 	for _, v := range tests {
-	// 		fmt.Printf("%+v\n", v)
+	// 		repos.UserRepo.Logger.Printf("%+v\n", v)
 
 	// 	}
 
@@ -81,7 +81,7 @@ func SeedFollowers(repo *models.FollowerRepository) {
 
 		_, err := repo.Insert(tempFollower)
 
-		// fmt.Printf("%+v\n", tempFollower)
+		// logger.Printf("%+v\n", tempFollower)
 
 		if err != nil {
 			logger.Println(err)
@@ -103,7 +103,7 @@ func SeedPosts(repo *models.PostRepository) {
 
 		_, err := repo.Insert(tempPost)
 
-		// fmt.Printf("%+v\n", tempPost)
+		// logger.Printf("%+v\n", tempPost)
 
 		if err != nil {
 			logger.Println(err)
@@ -137,8 +137,8 @@ func SeedUsers(repo *models.UserRepository) {
 			logger.Println(err)
 		}
 
-		// fmt.Printf("%+v\n", tempUser)
-		// fmt.Println()
+		// logger.Printf("%+v\n", tempUser)
+		// logger.Println()
 
 	}
 }
@@ -157,7 +157,7 @@ func SeedComments(repo *models.CommentRepository) {
 
 		tempComment.Id = int(id)
 
-		// fmt.Printf("%+v\n", tempComment)
+		// logger.Printf("%+v\n", tempComment)
 
 		if err != nil {
 			logger.Println(err)
@@ -178,7 +178,7 @@ func SeedGroups(repo *models.GroupRepository) {
 
 		_, err := repo.Insert(tempGroup)
 
-		// fmt.Printf("%+v\n", tempGroup)
+		// logger.Printf("%+v\n", tempGroup)
 
 		if err != nil {
 			logger.Println(err)

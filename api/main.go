@@ -33,7 +33,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	fmt.Println("successfully migrated DB..")
+	logger.Println("successfully migrated DB..")
 
 	repos := models.InitRepositories(db)
 

@@ -4,9 +4,9 @@ import (
 	"SocialNetworkRestApi/api/internal/server/utils"
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -35,6 +35,7 @@ type IUserService interface {
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
 type UserService struct {
+	Logger      *log.Logger
 	UserRepo    models.IUserRepository
 	SessionRepo models.ISessionRepository
 }
@@ -42,6 +43,7 @@ type UserService struct {
 // InitUserService initializes the user controller.
 func InitUserService(userRepo *models.UserRepository, sessionRepo *models.SessionRepository) *UserService {
 	return &UserService{
+		Logger:      log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
 		UserRepo:    userRepo,
 		SessionRepo: sessionRepo,
 	}
@@ -81,14 +83,14 @@ func (s *UserService) UserRegister(user *models.User) (string, error) {
 	// check if user exists
 	_, err := s.UserRepo.GetByEmail(user.Email)
 	if err == nil {
-		log.Printf("User email already exists")
+		s.Logger.Printf("User email already exists")
 		return "", errors.New("user email already exists")
 	}
 
 	// hash password
 	hashedPassword, err := HashPassword(user.Password)
 	if err != nil {
-		log.Printf("Cannot hash password: %s", err)
+		s.Logger.Printf("Cannot hash password: %s", err)
 		return "", errors.New("cannot hash password")
 	}
 	user.Password = hashedPassword
@@ -96,10 +98,10 @@ func (s *UserService) UserRegister(user *models.User) (string, error) {
 	// create user
 	lastID, err := s.UserRepo.Insert(user)
 	if err != nil {
-		log.Printf("Cannot create user: %s", err)
+		s.Logger.Printf("Cannot create user: %s", err)
 		return "", errors.New("cannot create user")
 	}
-	fmt.Println("Last inserted ID:", lastID)
+	s.Logger.Println("Last inserted ID:", lastID)
 
 	// create session
 	sessionToken := uuid.NewV4().String()
@@ -111,10 +113,10 @@ func (s *UserService) UserRegister(user *models.User) (string, error) {
 	// store session in DB
 	lastID, err = s.SessionRepo.Insert(&session)
 	if err != nil {
-		log.Printf("Cannot create session: %s", err)
+		s.Logger.Printf("Cannot create session: %s", err)
 		return "", errors.New("cannot create session")
 	}
-	fmt.Println("Last inserted ID:", lastID)
+	s.Logger.Println("Last inserted ID:", lastID)
 	return sessionToken, nil
 }
 
@@ -123,13 +125,13 @@ func (s *UserService) UserLogin(user *models.User) (string, error) {
 	// check if user exists
 	dbUser, err := s.UserRepo.GetByEmail(user.Email)
 	if err != nil {
-		log.Printf("User email not found: %s", err)
+		s.Logger.Printf("User email not found: %s", err)
 		return "", errors.New("user email not found")
 	}
 
 	// check if password is correct
 	if !CheckPasswordHash(user.Password, dbUser.Password) {
-		log.Printf("Incorrect password")
+		s.Logger.Printf("Incorrect password")
 		return "", errors.New("incorrect password")
 	}
 
@@ -143,10 +145,10 @@ func (s *UserService) UserLogin(user *models.User) (string, error) {
 	// store session in DB
 	lastID, err := s.SessionRepo.Insert(&session)
 	if err != nil {
-		log.Printf("Cannot create session: %s", err)
+		s.Logger.Printf("Cannot create session: %s", err)
 		return "", errors.New("cannot create session")
 	}
-	fmt.Println("Last inserted ID:", lastID)
+	s.Logger.Println("Last inserted ID:", lastID)
 	return sessionToken, nil
 }
 
@@ -158,7 +160,7 @@ func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 		// check if cookie exists
 		cookie, err := r.Cookie("session")
 		if err != nil {
-			log.Printf("No cookie found: %s", err)
+			s.Logger.Printf("No cookie found: %s", err)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
@@ -167,7 +169,7 @@ func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 		_, err = s.SessionRepo.GetByToken(cookie.Value)
 
 		if err != nil {
-			log.Printf("No session found: %s", err)
+			s.Logger.Printf("No session found: %s", err)
 			http.Error(w, "Invalid session", http.StatusUnauthorized)
 			return
 		}

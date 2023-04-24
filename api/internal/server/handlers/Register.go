@@ -63,7 +63,7 @@ func (app *Application) Register(rw http.ResponseWriter, r *http.Request) {
 		_, err = fmt.Fprintf(rw, "Successful registration")
 		if err != nil {
 			app.Logger.Printf("Cannot access register page: %s", err)
-			http.Error(rw, "Cannot access register page", http.StatusInternalServerError)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
