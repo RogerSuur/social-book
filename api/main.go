@@ -18,7 +18,7 @@ type Config struct {
 func main() {
 	config := &Config{port: 8000}
 
-	logger := log.New(os.Stdout, "", log.LstdFlags|log.Llongfile)
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
 	//DATABASE
 	db, err := database.OpenDB()

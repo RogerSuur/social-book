@@ -2,6 +2,8 @@ package models
 
 import (
 	"database/sql"
+	"log"
+	"os"
 	"time"
 )
 
@@ -21,16 +23,18 @@ type IGroupRepository interface {
 }
 
 type GroupRepository struct {
-	DB *sql.DB
+	Logger *log.Logger
+	DB     *sql.DB
 }
 
 func NewGroupRepo(db *sql.DB) *GroupRepository {
 	return &GroupRepository{
-		DB: db,
+		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		DB:     db,
 	}
 }
 
-func (m GroupRepository) Insert(group *Group) (int64, error) {
+func (repo GroupRepository) Insert(group *Group) (int64, error) {
 
 	query := `INSERT INTO groups (creator_id, title, description, created_at)
 	VALUES(?, ?, ?, ?)`
@@ -42,7 +46,7 @@ func (m GroupRepository) Insert(group *Group) (int64, error) {
 		time.Now(),
 	}
 
-	result, err := m.DB.Exec(query, args...)
+	result, err := repo.DB.Exec(query, args...)
 
 	if err != nil {
 		return 0, err
@@ -53,6 +57,8 @@ func (m GroupRepository) Insert(group *Group) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+
+	repo.Logger.Printf("Last inserted group '%s' by user %d (last insert ID: %d)", group.Title, group.CreatorId, lastId)
 
 	return lastId, nil
 }
@@ -67,13 +73,13 @@ func (p GroupRepository) GetById(id int64) (*Group, error) {
 	return group, err
 }
 
-func (m GroupRepository) GetAllByCreatorId(userId int) ([]*Group, error) {
+func (repo GroupRepository) GetAllByCreatorId(userId int) ([]*Group, error) {
 
 	stmt := `SELECT id, creator_id,  title, description, created_at FROM groups
 	WHERE creator_id = ?
     ORDER BY title ASC`
 
-	rows, err := m.DB.Query(stmt, userId)
+	rows, err := repo.DB.Query(stmt, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +105,7 @@ func (m GroupRepository) GetAllByCreatorId(userId int) ([]*Group, error) {
 	return groups, nil
 }
 
-func (g GroupRepository) GetAllByMemberId(userId int) ([]*Group, error) {
+func (repo GroupRepository) GetAllByMemberId(userId int) ([]*Group, error) {
 
 	//TODO
 	//Get all groups the user is member of, by id

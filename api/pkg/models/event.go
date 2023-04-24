@@ -2,6 +2,8 @@ package models
 
 import (
 	"database/sql"
+	"log"
+	"os"
 )
 
 type Event struct {
@@ -15,30 +17,32 @@ type IEventRepository interface {
 }
 
 type EventRepository struct {
-	DB *sql.DB
+	Logger *log.Logger
+	DB     *sql.DB
 }
 
 func NewEventRepo(db *sql.DB) *EventRepository {
 	return &EventRepository{
-		DB: db,
+		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		DB:     db,
 	}
 }
 
-func (g EventRepository) Insert(event *Event) (int64, error) {
+func (repo EventRepository) Insert(event *Event) (int64, error) {
 
 	//TODO
 	//insert new event into database
 	return 0, nil
 }
 
-func (g EventRepository) GetAllByGroupId(groupId int) ([]*Event, error) {
+func (repo EventRepository) GetAllByGroupId(groupId int) ([]*Event, error) {
 
 	//TODO
 	//Get all events by group
 	return nil, nil
 }
 
-func (g EventRepository) GetAllByUserId(userId int) ([]*Event, error) {
+func (repo EventRepository) GetAllByUserId(userId int) ([]*Event, error) {
 
 	//TODO
 	//Get all events by attending user

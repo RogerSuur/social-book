@@ -2,6 +2,8 @@ package models
 
 import (
 	"database/sql"
+	"log"
+	"os"
 	"time"
 )
 
@@ -23,16 +25,18 @@ type ICommentRepository interface {
 }
 
 type CommentRepository struct {
-	DB *sql.DB
+	Logger *log.Logger
+	DB     *sql.DB
 }
 
 func NewCommentRepo(db *sql.DB) *CommentRepository {
 	return &CommentRepository{
-		DB: db,
+		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		DB:     db,
 	}
 }
 
-func (m CommentRepository) Insert(comment *Comment) (int64, error) {
+func (repo CommentRepository) Insert(comment *Comment) (int64, error) {
 	query := `INSERT INTO comments (post_id, user_id, content, image_path, created_at)
 	VALUES(?, ?, ?, ?, ?)`
 
@@ -44,7 +48,7 @@ func (m CommentRepository) Insert(comment *Comment) (int64, error) {
 		time.Now(),
 	}
 
-	result, err := m.DB.Exec(query, args...)
+	result, err := repo.DB.Exec(query, args...)
 
 	if err != nil {
 		return 0, err
@@ -56,19 +60,21 @@ func (m CommentRepository) Insert(comment *Comment) (int64, error) {
 		return 0, err
 	}
 
+	repo.Logger.Printf("Inserted comment by user %d for post %d (last insert ID: %d)", comment.UserId, comment.PostId, lastId)
+
 	return lastId, nil
 }
 
-func (m CommentRepository) Update(comment *Comment) error {
+func (repo CommentRepository) Update(comment *Comment) error {
 
 	//TODO
 	//update comment in database
 	return nil
 }
 
-func (m CommentRepository) GetById(id int64) (*Comment, error) {
+func (repo CommentRepository) GetById(id int64) (*Comment, error) {
 	query := `SELECT id, post_id, user_id, content,  image_path, created_at FROM comments WHERE id = ?`
-	row := m.DB.QueryRow(query, id)
+	row := repo.DB.QueryRow(query, id)
 	comment := &Comment{}
 
 	err := row.Scan(&comment.Id, &comment.PostId, &comment.UserId, &comment.Content, &comment.ImagePath, &comment.CreatedAt)
@@ -76,9 +82,9 @@ func (m CommentRepository) GetById(id int64) (*Comment, error) {
 	return comment, err
 }
 
-func (m CommentRepository) GetAllByPostId(postId int) ([]*Comment, error) {
+func (repo CommentRepository) GetAllByPostId(postId int) ([]*Comment, error) {
 	query := `SELECT id, post_id, user_id, content,  image_path, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC`
-	rows, err := m.DB.Query(query, postId)
+	rows, err := repo.DB.Query(query, postId)
 	if err != nil {
 		return nil, err
 	}
@@ -103,9 +109,9 @@ func (m CommentRepository) GetAllByPostId(postId int) ([]*Comment, error) {
 	return comments, nil
 }
 
-func (m CommentRepository) GetAllByUserId(userId int) ([]*Comment, error) {
+func (repo CommentRepository) GetAllByUserId(userId int) ([]*Comment, error) {
 	query := `SELECT id, post_id, user_id, content,  image_path, created_at FROM comments WHERE user_id = ? ORDER BY created_at DESC`
-	rows, err := m.DB.Query(query, userId)
+	rows, err := repo.DB.Query(query, userId)
 	if err != nil {
 		return nil, err
 	}

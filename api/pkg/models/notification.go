@@ -1,6 +1,10 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+	"os"
+)
 
 type Notification struct {
 	// TODO
@@ -11,16 +15,18 @@ type INotificationRepository interface {
 }
 
 type NotificationRepository struct {
-	DB *sql.DB
+	Logger *log.Logger
+	DB     *sql.DB
 }
 
 func NewNotificationRepo(db *sql.DB) *NotificationRepository {
 	return &NotificationRepository{
-		DB: db,
+		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		DB:     db,
 	}
 }
 
-func (g NotificationRepository) Insert(notification *Notification) (int64, error) {
+func (repo NotificationRepository) Insert(notification *Notification) (int64, error) {
 
 	//TODO
 	//insert new notification into database

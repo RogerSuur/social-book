@@ -3,6 +3,8 @@ package models
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"database/sql"
+	"log"
+	"os"
 	"time"
 )
 
@@ -24,16 +26,18 @@ type IPostRepository interface {
 }
 
 type PostRepository struct {
-	DB *sql.DB
+	Logger *log.Logger
+	DB     *sql.DB
 }
 
 func NewPostRepo(db *sql.DB) *PostRepository {
 	return &PostRepository{
-		DB: db,
+		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		DB:     db,
 	}
 }
 
-func (m PostRepository) Insert(post *Post) (int64, error) {
+func (repo PostRepository) Insert(post *Post) (int64, error) {
 	query := `INSERT INTO posts (user_id, title, content, created_at, image_path, privacy_type_id)
 	VALUES(?, ?, ?, ?, ?, ?)`
 
@@ -46,7 +50,7 @@ func (m PostRepository) Insert(post *Post) (int64, error) {
 		post.PrivacyType,
 	}
 
-	result, err := m.DB.Exec(query, args...)
+	result, err := repo.DB.Exec(query, args...)
 
 	if err != nil {
 		return 0, err
@@ -58,12 +62,14 @@ func (m PostRepository) Insert(post *Post) (int64, error) {
 		return 0, err
 	}
 
+	repo.Logger.Printf("Inserted post '%s' by user %d (last insert ID: %d)", post.Title, post.UserId, lastId)
+
 	return lastId, nil
 }
 
-func (m PostRepository) GetById(id int64) (*Post, error) {
+func (repo PostRepository) GetById(id int64) (*Post, error) {
 	query := `SELECT id, user_id,  title, content, created_at, image_path, privacy_type_id FROM posts WHERE id = ?`
-	row := m.DB.QueryRow(query, id)
+	row := repo.DB.QueryRow(query, id)
 	post := &Post{}
 
 	err := row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
@@ -71,13 +77,13 @@ func (m PostRepository) GetById(id int64) (*Post, error) {
 	return post, err
 }
 
-func (m PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
+func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 
 	stmt := `SELECT id, user_id,  title, content, created_at, image_path, privacy_type_id FROM posts p
 	WHERE user_id = ?
     ORDER BY created_at DESC`
 
-	rows, err := m.DB.Query(stmt, id)
+	rows, err := repo.DB.Query(stmt, id)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +109,7 @@ func (m PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 	return posts, nil
 }
 
-func (m PostRepository) GetAllFeedPosts(id int64) ([]*Post, error) {
+func (repo PostRepository) GetAllFeedPosts(id int64) ([]*Post, error) {
 
 	//TODO
 	//return all posts to the current user

@@ -2,7 +2,8 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
+	"os"
 	"time"
 )
 
@@ -31,16 +32,18 @@ type IUserRepository interface {
 }
 
 type UserRepository struct {
-	DB *sql.DB
+	Logger *log.Logger
+	DB     *sql.DB
 }
 
 func NewUserRepo(db *sql.DB) *UserRepository {
 	return &UserRepository{
-		DB: db,
+		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		DB:     db,
 	}
 }
 
-func (u UserRepository) Insert(user *User) (int64, error) {
+func (repo UserRepository) Insert(user *User) (int64, error) {
 	query := `INSERT INTO users (forname, surname, email, password, birthday, nickname, about, image_path, is_public, created_at)
 	VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
@@ -57,9 +60,7 @@ func (u UserRepository) Insert(user *User) (int64, error) {
 		time.Now(),
 	}
 
-	fmt.Println(args...)
-
-	result, err := u.DB.Exec(query, args...)
+	result, err := repo.DB.Exec(query, args...)
 
 	if err != nil {
 		return 0, err
@@ -71,10 +72,12 @@ func (u UserRepository) Insert(user *User) (int64, error) {
 		return 0, err
 	}
 
+	repo.Logger.Printf("Inserted user: %s / %s %s (last insert ID: %d)", user.Email, user.FirstName, user.LastName, lastId)
+
 	return lastId, nil
 }
 
-func (u UserRepository) Update(user *User) error {
+func (repo UserRepository) Update(user *User) error {
 	query := `UPDATE users SET forname = ?, surname = ?, email = ?, password = ?, birthday = ?, 
 	nickname = ?, about = ?, image_path = ?, isPublic = ? WHERE id = ?`
 
@@ -91,14 +94,14 @@ func (u UserRepository) Update(user *User) error {
 		user.Id,
 	}
 
-	_, err := u.DB.Exec(query, args...)
+	_, err := repo.DB.Exec(query, args...)
 
 	return err
 }
 
-func (u UserRepository) GetById(id int64) (*User, error) {
+func (repo UserRepository) GetById(id int64) (*User, error) {
 	query := `SELECT id, forname, surname, email, password, birthday, nickname, about, image_path, created_at, is_public FROM users WHERE id = ?`
-	row := u.DB.QueryRow(query, id)
+	row := repo.DB.QueryRow(query, id)
 	user := &User{}
 
 	err := row.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Birthday, &user.Nickname, &user.About, &user.ImagePath, &user.CreatedAt, &user.IsPublic)
@@ -106,9 +109,9 @@ func (u UserRepository) GetById(id int64) (*User, error) {
 	return user, err
 }
 
-func (u UserRepository) GetByEmail(email string) (*User, error) {
+func (repo UserRepository) GetByEmail(email string) (*User, error) {
 	query := `SELECT id, forname, surname, email, password, birthday, nickname, about, image_path, created_at, is_public  FROM users WHERE email = ?`
-	row := u.DB.QueryRow(query, email)
+	row := repo.DB.QueryRow(query, email)
 	user := &User{}
 
 	err := row.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Birthday, &user.Nickname, &user.About, &user.ImagePath, &user.CreatedAt, &user.IsPublic)
@@ -116,9 +119,9 @@ func (u UserRepository) GetByEmail(email string) (*User, error) {
 	return user, err
 }
 
-func (u UserRepository) GetByUserName(name string) (*User, error) {
+func (repo UserRepository) GetByUserName(name string) (*User, error) {
 	query := `SELECT id, forname, surname, email, password, birthday, nickname, about, image_path, created_at, is_public FROM users WHERE nickname = ?`
-	row := u.DB.QueryRow(query, name)
+	row := repo.DB.QueryRow(query, name)
 	user := &User{}
 
 	err := row.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Birthday, &user.Nickname, &user.About, &user.ImagePath, &user.CreatedAt, &user.IsPublic)

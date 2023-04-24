@@ -2,6 +2,8 @@ package models
 
 import (
 	"database/sql"
+	"log"
+	"os"
 	"time"
 )
 
@@ -20,16 +22,18 @@ type IFollowerRepository interface {
 }
 
 type FollowerRepository struct {
-	DB *sql.DB
+	Logger *log.Logger
+	DB     *sql.DB
 }
 
 func NewFollowerRepo(db *sql.DB) *FollowerRepository {
 	return &FollowerRepository{
-		DB: db,
+		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		DB:     db,
 	}
 }
 
-func (m FollowerRepository) Insert(follower *Follower) (int64, error) {
+func (repo FollowerRepository) Insert(follower *Follower) (int64, error) {
 	query := `INSERT INTO followers (following_id, follower_id, accepted, active)
 	VALUES(?, ?, ?, ?)`
 
@@ -41,7 +45,7 @@ func (m FollowerRepository) Insert(follower *Follower) (int64, error) {
 		time.Now(),
 	}
 
-	result, err := m.DB.Exec(query, args...)
+	result, err := repo.DB.Exec(query, args...)
 
 	if err != nil {
 		return 0, err
@@ -53,10 +57,12 @@ func (m FollowerRepository) Insert(follower *Follower) (int64, error) {
 		return 0, err
 	}
 
+	repo.Logger.Printf("Inserted follower %d to start following %d (Last insert ID: %d)", follower.FollowerId, follower.FollowingId, lastId)
+
 	return lastId, nil
 }
 
-func (m FollowerRepository) Update(follower *Follower) error {
+func (repo FollowerRepository) Update(follower *Follower) error {
 	query := `UPDATE followers SET accepted = ?, active = ? WHERE id = ?`
 
 	args := []interface{}{
@@ -65,14 +71,14 @@ func (m FollowerRepository) Update(follower *Follower) error {
 		follower.Id,
 	}
 
-	_, err := m.DB.Exec(query, args...)
+	_, err := repo.DB.Exec(query, args...)
 
 	return err
 }
 
-func (p FollowerRepository) GetById(id int64) (*Follower, error) {
+func (repo FollowerRepository) GetById(id int64) (*Follower, error) {
 	query := `SELECT id, following_id,  follower_id, accepted, active FROM followers WHERE id = ?`
-	row := p.DB.QueryRow(query, id)
+	row := repo.DB.QueryRow(query, id)
 	follower := &Follower{}
 
 	err := row.Scan(&follower.Id, &follower.FollowingId, &follower.FollowerId, &follower.Accepted, &follower.Active)

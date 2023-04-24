@@ -3,15 +3,13 @@ package database
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
-	"fmt"
+	"SocialNetworkRestApi/api/pkg/services"
+	"log"
+	"os"
 	"time"
 
 	"github.com/bxcodec/faker/v3"
 )
-
-// type Seed struct {
-// 	db *sql.DB
-// }
 
 func Seed(repos models.Repositories) {
 
@@ -26,12 +24,11 @@ func Seed(repos models.Repositories) {
 	// env := models.CreateEnv(db)
 
 	//Single value test
-	test, err := repos.SessionRepo.GetByToken("aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL.aWiLyVUgPWdDqRVBVHqRKQghrxFigZFpNvWjpCWL")
+	/* test, err := repos.SessionRepo.GetByToken("b48976a7-64e0-4ff5-a816-6362dbcb1aa0")
 
 	if err != nil {
-		fmt.Printf("%+v\n", err)
-
-	}
+		repos.UserRepo.Logger.Printf("%+v\n", err)
+	} */
 
 	// //Array TEST
 	// tests, err := env.Groups.GetAllByCreatorId(1)
@@ -40,7 +37,7 @@ func Seed(repos models.Repositories) {
 	// 	fmt.Printf("%+v\n", err)
 
 	// } else {
-	fmt.Printf("%+v\n", test)
+	// repos.UserRepo.Logger.Printf("%+v\n", test)
 
 	// 	for _, v := range tests {
 	// 		fmt.Printf("%+v\n", v)
@@ -52,25 +49,27 @@ func Seed(repos models.Repositories) {
 }
 
 func SeedSessions(repo *models.SessionRepository) {
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
 	for i := 0; i < 10; i++ {
 		session := &models.Session{
 			UserId: i + 1,
-			Token:  faker.Jwt(),
+			Token:  faker.UUIDHyphenated(),
 		}
 
 		_, err := repo.Insert(session)
 
-		fmt.Printf("%+v\n", session)
+		//logger.Printf("%+v\n", session)
 
 		if err != nil {
-			fmt.Println(err)
+			logger.Println(err)
 		}
 
 	}
 }
 
 func SeedFollowers(repo *models.FollowerRepository) {
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
 	for i := 0; i < 10; i++ {
 		tempFollower := &models.Follower{
@@ -85,13 +84,14 @@ func SeedFollowers(repo *models.FollowerRepository) {
 		// fmt.Printf("%+v\n", tempFollower)
 
 		if err != nil {
-			fmt.Println(err)
+			logger.Println(err)
 		}
 
 	}
 }
 
 func SeedPosts(repo *models.PostRepository) {
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
 	for i := 0; i < 10; i++ {
 		tempPost := &models.Post{
@@ -106,22 +106,24 @@ func SeedPosts(repo *models.PostRepository) {
 		// fmt.Printf("%+v\n", tempPost)
 
 		if err != nil {
-			fmt.Println(err)
+			logger.Println(err)
 		}
 
 	}
 }
 
 func SeedUsers(repo *models.UserRepository) {
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
 	for i := 0; i < 10; i++ {
 
 		date, _ := time.Parse("2006-01-02", faker.Date())
+		pwd, _ := services.HashPassword("something")
 		tempUser := &models.User{
 			FirstName: faker.FirstName(),
 			LastName:  faker.LastName(),
 			Email:     faker.Email(),
-			Password:  "something",
+			Password:  pwd,
 			Nickname:  faker.Username(),
 			About:     faker.Sentence(),
 			ImagePath: faker.Word(),
@@ -132,7 +134,7 @@ func SeedUsers(repo *models.UserRepository) {
 		tempUser.Id = int(id)
 
 		if err != nil {
-			fmt.Println(err)
+			logger.Println(err)
 		}
 
 		// fmt.Printf("%+v\n", tempUser)
@@ -142,6 +144,7 @@ func SeedUsers(repo *models.UserRepository) {
 }
 
 func SeedComments(repo *models.CommentRepository) {
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
 	for i := 0; i < 10; i++ {
 		tempComment := &models.Comment{
@@ -157,13 +160,14 @@ func SeedComments(repo *models.CommentRepository) {
 		// fmt.Printf("%+v\n", tempComment)
 
 		if err != nil {
-			fmt.Println(err)
+			logger.Println(err)
 		}
 
 	}
 }
 
 func SeedGroups(repo *models.GroupRepository) {
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
 	for i := 0; i < 10; i++ {
 		tempGroup := &models.Group{
@@ -177,7 +181,7 @@ func SeedGroups(repo *models.GroupRepository) {
 		// fmt.Printf("%+v\n", tempGroup)
 
 		if err != nil {
-			fmt.Println(err)
+			logger.Println(err)
 		}
 
 	}

@@ -1,6 +1,10 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+	"os"
+)
 
 type Message struct {
 	// TODO
@@ -11,16 +15,18 @@ type IMessageRepository interface {
 }
 
 type MessageRepository struct {
-	DB *sql.DB
+	Logger *log.Logger
+	DB     *sql.DB
 }
 
 func NewMessageRepo(db *sql.DB) *MessageRepository {
 	return &MessageRepository{
-		DB: db,
+		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		DB:     db,
 	}
 }
 
-func (m MessageRepository) Insert(event *Message) (int64, error) {
+func (repo MessageRepository) Insert(event *Message) (int64, error) {
 
 	//TODO
 	//insert new message into database
