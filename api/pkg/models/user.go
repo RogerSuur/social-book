@@ -27,6 +27,7 @@ type IUserRepository interface {
 	GetById(id int64) (*User, error)
 	GetByEmail(email string) (*User, error)
 	GetByUserName(userName string) (*User, error)
+	CheckIfNicknameExists(nickname string, id int64) error
 	GetAllUserFollowers(id int) ([]*User, error)
 	GetAllFollowedBy(id int) ([]*User, error)
 }
@@ -129,7 +130,7 @@ func (repo UserRepository) GetByUserName(name string) (*User, error) {
 	return user, err
 }
 
-func (repo UserRepository) CheckIfNicknameExists(nickname string, id int) error {
+func (repo UserRepository) CheckIfNicknameExists(nickname string, id int64) error {
 	query := `SELECT id FROM users WHERE nickname = ? AND id != ?`
 	row := repo.DB.QueryRow(query, nickname, id)
 	user := &User{}

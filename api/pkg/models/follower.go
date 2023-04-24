@@ -19,6 +19,8 @@ type IFollowerRepository interface {
 	GetById(id int64) (*Follower, error)
 	Insert(follower *Follower) (int64, error)
 	Update(follower *Follower) error
+	GetFollowersById(id int64) ([]*Follower, error)
+	GetFollowingById(id int64) ([]*Follower, error)
 }
 
 type FollowerRepository struct {
@@ -129,7 +131,7 @@ func (repo FollowerRepository) GetFollowersById(followerId int64) ([]*Follower, 
 		if err != nil {
 			return nil, err
 		}
-		
+
 		if follower.Active {
 			following = append(following, follower)
 		}

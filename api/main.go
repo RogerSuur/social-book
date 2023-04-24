@@ -38,9 +38,12 @@ func main() {
 	repos := models.InitRepositories(db)
 
 	app := &handlers.Application{
-		Logger:      logger,
-		UserService: services.InitUserService(repos.UserRepo, repos.SessionRepo),
-	}
+		Logger: logger,
+		UserService: services.InitUserService(
+			repos.UserRepo,
+			repos.SessionRepo,
+			repos.FollowerRepo,
+		)}
 
 	database.Seed(*repos)
 

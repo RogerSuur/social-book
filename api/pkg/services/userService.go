@@ -23,6 +23,15 @@ type ProfileJSON struct {
 	IsPublic    bool   `json:"isPublic"`
 }
 
+type FollowerData struct {
+	UserID      int
+	FirstName   string
+	LastName    string
+	Nickname    string
+	AvatarImage string
+	Accepted    bool
+}
+
 type IUserService interface {
 	Authenticate(handler http.HandlerFunc) http.HandlerFunc
 	CreateUser(user *models.User) (int64, error)
@@ -31,21 +40,29 @@ type IUserService interface {
 	SetCookie(w http.ResponseWriter, sessionToken string)
 	UserLogin(user *models.User) (string, error)
 	UserRegister(user *models.User) (string, error)
+	GetUserFollowers(userID int64) ([]FollowerData, error)
+	GetUserFollowing(userID int64) ([]FollowerData, error)
 }
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
 type UserService struct {
-	Logger      *log.Logger
-	UserRepo    models.IUserRepository
-	SessionRepo models.ISessionRepository
+	Logger       *log.Logger
+	UserRepo     models.IUserRepository
+	SessionRepo  models.ISessionRepository
+	FollowerRepo models.IFollowerRepository
 }
 
 // InitUserService initializes the user controller.
-func InitUserService(userRepo *models.UserRepository, sessionRepo *models.SessionRepository) *UserService {
+func InitUserService(
+	userRepo *models.UserRepository,
+	sessionRepo *models.SessionRepository,
+	followerRepo *models.FollowerRepository,
+) *UserService {
 	return &UserService{
-		Logger:      log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
-		UserRepo:    userRepo,
-		SessionRepo: sessionRepo,
+		Logger:       log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		UserRepo:     userRepo,
+		SessionRepo:  sessionRepo,
+		FollowerRepo: followerRepo,
 	}
 }
 
@@ -84,14 +101,26 @@ func (s *UserService) UserRegister(user *models.User) (string, error) {
 	_, err := s.UserRepo.GetByEmail(user.Email)
 	if err == nil {
 		s.Logger.Printf("User email already exists")
-		return "", errors.New("user email already exists")
+		return "", errors.New("email")
 	}
 
-	// hash password
+	if len(user.Nickname) > 0 {
+		err = s.UserRepo.CheckIfNicknameExists(user.Nickname, 0)
+		if err == nil {
+			log.Printf("User nickname already exists")
+			return "", errors.New("nickname")
+		}
+	}
+
+	if !CheckPasswordStrength(user.Password) {
+		log.Printf("Password is not strong enough")
+		return "", errors.New("password")
+	}
+
 	hashedPassword, err := HashPassword(user.Password)
 	if err != nil {
 		s.Logger.Printf("Cannot hash password: %s", err)
-		return "", errors.New("cannot hash password")
+		return "", errors.New("server")
 	}
 	user.Password = hashedPassword
 
@@ -99,9 +128,10 @@ func (s *UserService) UserRegister(user *models.User) (string, error) {
 	lastID, err := s.UserRepo.Insert(user)
 	if err != nil {
 		s.Logger.Printf("Cannot create user: %s", err)
-		return "", errors.New("cannot create user")
+		return "", errors.New("server")
 	}
-	s.Logger.Println("Last inserted ID:", lastID)
+
+	s.Logger.Printf("User successfully registered (Last inserted ID: %v)", lastID)
 
 	// create session
 	sessionToken := uuid.NewV4().String()
@@ -116,7 +146,8 @@ func (s *UserService) UserRegister(user *models.User) (string, error) {
 		s.Logger.Printf("Cannot create session: %s", err)
 		return "", errors.New("cannot create session")
 	}
-	s.Logger.Println("Last inserted ID:", lastID)
+	s.Logger.Printf("Session initiated, (last inserted ID %v:)", lastID)
+
 	return sessionToken, nil
 }
 
@@ -203,18 +234,9 @@ func (s *UserService) GetUserID(r *http.Request) (int, error) {
 	return session.UserId, nil
 }
 
-type FollowerData struct {
-	UserID      int
-	FirstName   string
-	LastName    string
-	Nickname    string
-	AvatarImage string
-	Accepted    bool
-}
+func (s *UserService) GetUserFollowers(userID int64) ([]FollowerData, error) {
 
-func (s *Service) GetUserFollowers(userID int64) ([]FollowerData, error) {
-	env := models.CreateEnv(s.DB)
-	followers, err := env.Followers.GetFollowersById(userID)
+	followers, err := s.FollowerRepo.GetFollowersById(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -222,26 +244,27 @@ func (s *Service) GetUserFollowers(userID int64) ([]FollowerData, error) {
 	followersData := []FollowerData{}
 
 	for _, follower := range followers {
-		user, err := env.Users.GetById(int64(follower.FollowerId))
+		user, err := s.UserRepo.GetById(int64(follower.FollowerId))
 		if err != nil {
 			return nil, err
 		}
-		followersData = append(followersData, FollowerData{
+		follower := FollowerData{
 			UserID:      user.Id,
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
 			Nickname:    user.Nickname,
 			AvatarImage: user.ImagePath,
 			Accepted:    follower.Accepted,
-		})
+		}
+		followersData = append(followersData, follower)
 	}
 
 	return followersData, nil
 }
 
-func (s *Service) GetUserFollowing(userID int64) ([]FollowerData, error) {
-	env := models.CreateEnv(s.DB)
-	following, err := env.Followers.GetFollowingById(userID)
+func (s *UserService) GetUserFollowing(userID int64) ([]FollowerData, error) {
+
+	following, err := s.FollowerRepo.GetFollowingById(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -249,18 +272,19 @@ func (s *Service) GetUserFollowing(userID int64) ([]FollowerData, error) {
 	followingData := []FollowerData{}
 
 	for _, follower := range following {
-		user, err := env.Users.GetById(int64(follower.FollowingId))
+		user, err := s.UserRepo.GetById(int64(follower.FollowingId))
 		if err != nil {
 			return nil, err
 		}
-		followingData = append(followingData, FollowerData{
+		following := FollowerData{
 			UserID:      user.Id,
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
 			Nickname:    user.Nickname,
 			AvatarImage: user.ImagePath,
 			Accepted:    follower.Accepted,
-		})
+		}
+		followingData = append(followingData, following)
 	}
 
 	return followingData, nil
