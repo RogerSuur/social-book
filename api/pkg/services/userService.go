@@ -23,6 +23,18 @@ type ProfileJSON struct {
 	IsPublic    bool   `json:"isPublic"`
 }
 
+type ProfileUpdateJSON struct {
+	// FirstName   string `json:"firstName"`
+	// LastName    string `json:"lastName"`
+	// Email       string `json:"email"`
+	// Birthday    string `json:"birthday"`
+	Nickname string `json:"nickname"`
+	About    string `json:"about"`
+	// AvatarImage string `json:"avatarImage"`
+	// CreatedAt   string `json:"createdAt"`
+	// IsPublic    bool   `json:"isPublic"`
+}
+
 type FollowerData struct {
 	UserID      int
 	FirstName   string
@@ -35,6 +47,7 @@ type FollowerData struct {
 type IUserService interface {
 	Authenticate(handler http.HandlerFunc) http.HandlerFunc
 	CreateUser(user *models.User) (int64, error)
+	UpdateUserData(userID int64, updateData ProfileUpdateJSON) error
 	GetUserData(userID int64) (*ProfileJSON, error)
 	GetUserID(r *http.Request) (int, error)
 	SetCookie(w http.ResponseWriter, sessionToken string)
@@ -74,6 +87,40 @@ func (s *UserService) CreateUser(user *models.User) (int64, error) {
 	return s.UserRepo.Insert(user)
 }
 
+func (s *UserService) UpdateUserData(userID int64, updateData ProfileUpdateJSON) error {
+
+	user, err := s.UserRepo.GetById(userID)
+	if err != nil {
+		return err
+	}
+
+	// update the values of the user in case matching key is found in updateData
+
+	switch {
+	case updateData.Nickname != user.Nickname:
+		if len(updateData.Nickname) < 3 {
+			log.Printf("User nickname too short")
+			return errors.New("nickname")
+		}
+
+		err = s.UserRepo.CheckIfNicknameExists(updateData.Nickname, userID)
+		if err == nil {
+			log.Printf("User nickname already exists")
+			return errors.New("nickname")
+		}
+		user.Nickname = updateData.Nickname
+
+	case updateData.About != user.About:
+		user.About = updateData.About
+
+	default:
+		return errors.New("no data to update")
+
+	}
+
+	return s.UserRepo.Update(user)
+}
+
 func (s *UserService) GetUserData(userID int64) (*ProfileJSON, error) {
 	user := &models.User{}
 	user, err := s.UserRepo.GetById(userID)
@@ -104,12 +151,15 @@ func (s *UserService) UserRegister(user *models.User) (string, error) {
 		return "", errors.New("email")
 	}
 
-	if len(user.Nickname) > 0 {
+	if len(user.Nickname) > 3 {
 		err = s.UserRepo.CheckIfNicknameExists(user.Nickname, 0)
 		if err == nil {
 			log.Printf("User nickname already exists")
 			return "", errors.New("nickname")
 		}
+	} else if len(user.Nickname) > 0 {
+		log.Printf("Nickname is too short")
+		return "", errors.New("nickname")
 	}
 
 	if !CheckPasswordStrength(user.Password) {

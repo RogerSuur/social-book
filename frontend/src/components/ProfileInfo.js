@@ -7,7 +7,7 @@ import FileUploader from "./FileUploader.js";
 import UploadAndDisplayImage from "./UploadAndDisplayImage.js";
 
 const PROFILE_URL = "http://localhost:8000/profile";
-const PROFILE_UPDATE_URL = "";
+const PROFILE_UPDATE_URL = "http://localhost:8000/profile/update";
 
 const ProfileInfo = (props) => {
   const [user, setUser] = useState({});

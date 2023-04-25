@@ -21,6 +21,17 @@ type User struct {
 	IsPublic  bool
 }
 
+type SignupJSON struct {
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirmPassword"`
+	FirstName       string `json:"firstName"`
+	LastName        string `json:"lastName"`
+	Birthday        string `json:"dateOfBirth"`
+	Nickname        string `json:"nickname"`
+	About           string `json:"about"`
+}
+
 type IUserRepository interface {
 	Insert(*User) (int64, error)
 	Update(*User) error
