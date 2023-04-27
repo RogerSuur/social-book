@@ -16,6 +16,7 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/profile", app.UserService.Authenticate(app.Profile)).Methods("GET")
 	r.HandleFunc("/following", app.UserService.Authenticate(app.Following)).Methods("GET")
 	r.HandleFunc("/followers", app.UserService.Authenticate(app.Followers)).Methods("GET")
+	r.HandleFunc("/feedposts", app.UserService.Authenticate(app.FeedPosts)).Methods("GET")
 
 	return r
 }

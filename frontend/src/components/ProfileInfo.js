@@ -70,8 +70,8 @@ const ProfileInfo = (props) => {
     // }
   };
 
-  console.log(isDirty, "DIRTY");
-  console.log(user, "USER");
+  // console.log(isDirty, "DIRTY");
+  // console.log(user, "USER");
 
   return (
     <>

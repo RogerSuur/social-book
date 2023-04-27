@@ -9,7 +9,6 @@ import (
 )
 
 func (app *Application) FeedPosts(w http.ResponseWriter, r *http.Request) {
-
 	utils.SetCors(&w, r)
 
 	switch r.Method {

@@ -13,11 +13,11 @@ import (
 
 func Seed(repos models.Repositories) {
 
-	SeedUsers(repos.UserRepo)
-	SeedSessions(repos.SessionRepo)
-	SeedPosts(repos.PostRepo)
+	//SeedUsers(repos.UserRepo)
+	//SeedSessions(repos.SessionRepo)
+	//SeedPosts(repos.PostRepo)
 
-	// SeedComments(db)
+	//SeedComments(repos.CommentRepo)
 	// SeedGroups(db)
 	// SeedFollowers(db)
 
