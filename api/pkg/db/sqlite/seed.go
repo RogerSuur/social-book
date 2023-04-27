@@ -15,10 +15,10 @@ import (
 
 func Seed(repos models.Repositories) {
 
-	//SeedUsers(repos.UserRepo)
+	// SeedUsers(repos.UserRepo)
 	// SeedSessions(repos.SessionRepo)
-	//SeedPosts(repos.PostRepo)
-	//SeedComments(repos.CommentRepo)
+	// SeedPosts(repos.PostRepo)
+	// SeedComments(repos.CommentRepo)
 
 	//Single value test
 	test, err := repos.PostRepo.GetCommentCount(1)

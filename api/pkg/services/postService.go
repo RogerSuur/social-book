@@ -76,7 +76,5 @@ func (s *PostService) GetFeedPosts(offset string) ([]*feedPostJSON, error) {
 		})
 	}
 
-	//fmt.Println(feedPosts)
-
 	return feedPosts, nil
 }

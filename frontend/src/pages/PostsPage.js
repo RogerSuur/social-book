@@ -18,7 +18,7 @@ const Posts = () => {
         .get("http://localhost:8000/feedposts", {
           withCredentials: true,
         })
-        .then((response) =>  {console.log(response.data[0]);
+        .then((response) =>  {
          setPosts(response.data)}
         );
     };
