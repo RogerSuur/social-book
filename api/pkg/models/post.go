@@ -3,7 +3,6 @@ package models
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -39,7 +38,7 @@ func NewPostRepo(db *sql.DB) *PostRepository {
 	}
 }
 
-const FeedLimit = 100
+const FeedLimit = 10
 
 func (repo PostRepository) Insert(post *Post) (int64, error) {
 	query := `INSERT INTO posts (user_id, title, content, created_at, image_path, privacy_type_id)
@@ -137,7 +136,7 @@ func (m PostRepository) GetAllFeedPosts(offset int) ([]*Post, error) {
 		currentUserId,
 		currentUserId,
 		FeedLimit,
-		offset,
+		(offset * 10),
 	}
 
 	rows, err := m.DB.Query(stmt, args...)
@@ -159,10 +158,10 @@ func (m PostRepository) GetAllFeedPosts(offset int) ([]*Post, error) {
 		posts = append(posts, post)
 	}
 
-	for _, post := range posts {
-		fmt.Printf("ID: %d\nUser ID: %d\nContent: %s\nCreated At: %v\nImage Path: %s\nPrivacy Type: %d\n\n",
-			post.Id, post.UserId, post.Content, post.CreatedAt, post.ImagePath, post.PrivacyType)
-	}
+	// for _, post := range posts {
+	// 	fmt.Printf("ID: %d\nUser ID: %d\nContent: %s\nCreated At: %v\nImage Path: %s\nPrivacy Type: %d\n\n",
+	// 		post.Id, post.UserId, post.Content, post.CreatedAt, post.ImagePath, post.PrivacyType)
+	// }
 
 	if err = rows.Err(); err != nil {
 		return nil, err

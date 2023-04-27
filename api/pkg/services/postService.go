@@ -10,7 +10,7 @@ import (
 
 type IPostService interface {
 	CreatePost(post *models.Post) error
-	GetFeedPosts(offset string) ([]*feedPostJSON, error)
+	GetFeedPosts(offset int) ([]*feedPostJSON, error)
 }
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
@@ -55,9 +55,9 @@ func (s *PostService) CreatePost(post *models.Post) error {
 	return err
 }
 
-func (s *PostService) GetFeedPosts(offset string) ([]*feedPostJSON, error) {
+func (s *PostService) GetFeedPosts(offset int) ([]*feedPostJSON, error) {
 
-	posts, err := s.PostRepository.GetAllFeedPosts(0)
+	posts, err := s.PostRepository.GetAllFeedPosts(offset)
 
 	if err != nil {
 		fmt.Println(err)

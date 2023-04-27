@@ -4,6 +4,7 @@ import (
 	"SocialNetworkRestApi/api/internal/server/utils"
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -15,12 +16,14 @@ func (app *Application) FeedPosts(rw http.ResponseWriter, r *http.Request) {
 	case "GET":
 		vars := mux.Vars(r)
 		offset := vars["offset"]
+		offsetInt, err := strconv.Atoi(offset)
 
-		if len(offset) <= 0 {
-			offset = "0"
+		if offsetInt < 0 || err != nil {
+			app.Logger.Printf("DATA PARSE error: %v", err)
+			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
 		}
 
-		feed, err := app.PostService.GetFeedPosts(offset)
+		feed, err := app.PostService.GetFeedPosts(offsetInt)
 
 		if err != nil {
 			app.Logger.Printf("JSON error: %v", err)
