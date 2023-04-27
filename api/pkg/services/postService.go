@@ -64,8 +64,6 @@ func (s *PostService) GetFeedPosts(offset string) ([]*feedPostJSON, error) {
 
 	}
 
-	fmt.Println(posts)
-
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
@@ -77,6 +75,8 @@ func (s *PostService) GetFeedPosts(offset string) ([]*feedPostJSON, error) {
 			p.CreatedAt,
 		})
 	}
+
+	//fmt.Println(feedPosts)
 
 	return feedPosts, nil
 }
