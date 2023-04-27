@@ -13,15 +13,10 @@ import (
 
 func Seed(repos models.Repositories) {
 
-	SeedUsers(repos.UserRepo)
-	SeedSessions(repos.SessionRepo)
-	SeedPosts(repos.PostRepo)
-
-	// SeedComments(db)
-	// SeedGroups(db)
-	// SeedFollowers(db)
-
-	// env := models.CreateEnv(db)
+	// SeedUsers(repos.UserRepo)
+	// SeedSessions(repos.SessionRepo)
+	// SeedPosts(repos.PostRepo)
+	// SeedComments(repos.CommentRepo)
 
 	//Single value test
 	/* test, err := repos.SessionRepo.GetByToken("b48976a7-64e0-4ff5-a816-6362dbcb1aa0")
@@ -88,17 +83,24 @@ func SeedFollowers(repo *models.FollowerRepository) {
 		}
 
 	}
+
+	// fmt.Printf("%+v\n", tempFollower)
+
+	// }
 }
 
 func SeedPosts(repo *models.PostRepository) {
 	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
 	for i := 0; i < 10; i++ {
+
+		res := (i % 3) + 1
+
 		tempPost := &models.Post{
 			Title:       faker.Word(),
 			Content:     faker.Sentence(),
-			UserId:      i + 1,
-			PrivacyType: enums.SubPrivate,
+			UserId:      12,
+			PrivacyType: enums.PrivacyType(res),
 		}
 
 		_, err := repo.Insert(tempPost)
@@ -150,7 +152,7 @@ func SeedComments(repo *models.CommentRepository) {
 		tempComment := &models.Comment{
 			Content: faker.Sentence(),
 			UserId:  i + 1,
-			PostId:  10 - i,
+			PostId:  1,
 		}
 
 		id, err := repo.Insert(tempComment)

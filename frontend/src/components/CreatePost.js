@@ -1,34 +1,13 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import Select from "react-select";
+import { useState } from "react";
 import axios from "axios";
 
 const CreatePost = (props) => {
   const [formData, setFormData] = useState({
     title: "",
     body: "",
-    categories: [],
   });
-  const [categories, setCategories] = useState([]);
   const [errMsg, setErrMsg] = useState("");
-
-  useEffect(() => {
-    const loadCategories = async () => {
-      await axios
-        .get("http://localhost:8000/categories", {
-          withCredentials: true,
-        })
-        .then((response) =>
-          setCategories(
-            response.data.map((category) => {
-              return { label: category.title, value: category.category_id };
-            })
-          )
-        );
-    };
-
-    loadCategories();
-  }, []);
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -45,7 +24,6 @@ const CreatePost = (props) => {
     setFormData((prevFormData) => {
       return {
         ...prevFormData,
-        categories: selected,
       };
     });
   };
@@ -76,7 +54,6 @@ const CreatePost = (props) => {
     setFormData({
       title: "",
       body: "",
-      categories: [],
     });
   };
 
@@ -98,14 +75,6 @@ const CreatePost = (props) => {
             onChange={handleChange}
             value={formData.body}
             name="body"
-            required
-          />
-          <Select
-            options={categories}
-            isMulti
-            name="categories"
-            onChange={handleOptions}
-            value={formData.categories}
             required
           />
           <button>Post</button>

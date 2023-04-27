@@ -10,6 +10,7 @@ import (
 // Services contains all the controllers
 type Services struct {
 	UserService IUserService
+	PostService IPostService
 }
 
 // InitServices returns a new Controllers

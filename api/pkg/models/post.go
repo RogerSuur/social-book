@@ -3,6 +3,7 @@ package models
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -20,9 +21,10 @@ type Post struct {
 
 type IPostRepository interface {
 	GetAllByUserId(id int64) ([]*Post, error)
-	GetAllFeedPosts(id int64) ([]*Post, error)
+	GetAllFeedPosts(offset int) ([]*Post, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
+	GetCommentCount(postId int) (int, error)
 }
 
 type PostRepository struct {
@@ -36,6 +38,8 @@ func NewPostRepo(db *sql.DB) *PostRepository {
 		DB:     db,
 	}
 }
+
+const FeedLimit = 100
 
 func (repo PostRepository) Insert(post *Post) (int64, error) {
 	query := `INSERT INTO posts (user_id, title, content, created_at, image_path, privacy_type_id)
@@ -109,9 +113,74 @@ func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 	return posts, nil
 }
 
-func (repo PostRepository) GetAllFeedPosts(id int64) ([]*Post, error) {
+// Return all posts to the current user by offset
+func (m PostRepository) GetAllFeedPosts(offset int) ([]*Post, error) {
 
-	//TODO
-	//return all posts to the current user
-	return nil, nil
+	currentUserId := 12
+
+	stmt := `SELECT p.id, p.user_id, p.content, p.created_at, p.image_path, privacy_type_id FROM posts p 
+	LEFT JOIN  followers f ON  
+	p.user_id = f.following_id
+	LEFT JOIN allowed_private_posts app ON
+	p.id = app.post_id
+	WHERE privacy_type_id = 1 
+	OR privacy_type_id = 2 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND f.active = 1
+	OR privacy_type_id = 3 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND f.active = 1 AND app.id IS NOT NULL AND app.user_id = ?
+	OR p.user_id = ?
+	GROUP BY p.id
+	ORDER BY created_at DESC
+	LIMIT ? OFFSET ?`
+
+	args := []interface{}{
+		currentUserId,
+		currentUserId,
+		currentUserId,
+		currentUserId,
+		FeedLimit,
+		offset,
+	}
+
+	rows, err := m.DB.Query(stmt, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	posts := []*Post{}
+
+	for rows.Next() {
+		post := &Post{}
+
+		err := rows.Scan(&post.Id, &post.UserId, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	for _, post := range posts {
+		fmt.Printf("ID: %d\nUser ID: %d\nContent: %s\nCreated At: %v\nImage Path: %s\nPrivacy Type: %d\n\n",
+			post.Id, post.UserId, post.Content, post.CreatedAt, post.ImagePath, post.PrivacyType)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}
+
+func (m PostRepository) GetCommentCount(postId int) (int, error) {
+	query := `SELECT COUNT(*) FROM comments WHERE post_id = ?`
+	row := m.DB.QueryRow(query, postId)
+	var commentCount int
+
+	err := row.Scan(&commentCount)
+
+	if err != nil {
+		return -1, err
+	}
+
+	return commentCount, nil
 }
