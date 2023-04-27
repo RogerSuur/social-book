@@ -23,7 +23,9 @@ func (app *Application) FeedPosts(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
 		}
 
-		feed, err := app.PostService.GetFeedPosts(offsetInt)
+		userID, err := app.UserService.GetUserID(r)
+
+		feed, err := app.PostService.GetFeedPosts(userID, offsetInt)
 
 		if err != nil {
 			app.Logger.Printf("JSON error: %v", err)

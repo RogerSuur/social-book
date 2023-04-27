@@ -20,7 +20,7 @@ type Post struct {
 
 type IPostRepository interface {
 	GetAllByUserId(id int64) ([]*Post, error)
-	GetAllFeedPosts(offset int) ([]*Post, error)
+	GetAllFeedPosts(currentUserId int, offset int) ([]*Post, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
 	GetCommentCount(postId int) (int, error)
@@ -113,9 +113,10 @@ func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 }
 
 // Return all posts to the current user by offset
-func (m PostRepository) GetAllFeedPosts(offset int) ([]*Post, error) {
+func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*Post, error) {
 
-	currentUserId := 12
+	//Change value if needed for testing purposes
+	// currentUserId = 12
 
 	stmt := `SELECT p.id, p.user_id, p.content, p.created_at, p.image_path, privacy_type_id FROM posts p 
 	LEFT JOIN  followers f ON  
