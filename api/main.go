@@ -44,6 +44,9 @@ func main() {
 			repos.UserRepo,
 			repos.SessionRepo,
 			repos.FollowerRepo,
+		),
+		PostService: services.InitPostService(
+			repos.PostRepo,
 		)}
 
 	database.Seed(*repos)

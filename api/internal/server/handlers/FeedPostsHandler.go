@@ -8,8 +8,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (app *Application) FeedPosts(w http.ResponseWriter, r *http.Request) {
-	utils.SetCors(&w, r)
+func (app *Application) FeedPosts(rw http.ResponseWriter, r *http.Request) {
+	utils.SetCors(&rw, r)
 
 	switch r.Method {
 	case "GET":
@@ -20,14 +20,19 @@ func (app *Application) FeedPosts(w http.ResponseWriter, r *http.Request) {
 			offset = "0"
 		}
 
-		feed, _ := app.PostService.GetFeedPosts(offset)
+		feed, err := app.PostService.GetFeedPosts(offset)
 
-		json.NewEncoder(w).Encode(&feed)
+		if err != nil {
+			app.Logger.Printf("JSON error: %v", err)
+			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
+
+		json.NewEncoder(rw).Encode(&feed)
 	// case "OPTIONS":
 	// 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
 	// 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	default:
-		http.Error(w, "method is not supported", http.StatusNotFound)
+		http.Error(rw, "method is not supported", http.StatusNotFound)
 		return
 	}
 

@@ -21,6 +21,7 @@ func InitServices(repositories *models.Repositories) *Services {
 			repositories.SessionRepo,
 			repositories.FollowerRepo,
 		),
+		PostService: InitPostService(repositories.PostRepo),
 	}
 }
 
