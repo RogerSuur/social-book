@@ -1,9 +1,11 @@
 import List from "./List";
 
 
-const FEEDPOSTS_URL = "http://localhost:8000/feedposts";
+const FEEDPOSTS_URL = `http://localhost:8000/feedposts/`;
 
-const FeedPosts = () => {
+const FeedPosts = (props) => {
+  const { offset } = props;
+  console.log(offset)
     const mapFeedPosts = (post) => {
 
       const numComments = 7
@@ -27,7 +29,7 @@ const FeedPosts = () => {
   }
 
 
-  return <List url={FEEDPOSTS_URL} mapFunction={mapFeedPosts} />;
+  return <List url={`${FEEDPOSTS_URL}${offset}`} mapFunction={mapFeedPosts} />;
 }
 
 

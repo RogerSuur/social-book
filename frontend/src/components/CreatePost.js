@@ -62,14 +62,6 @@ const CreatePost = (props) => {
       <div className="content-area">
         {errMsg && <h2>{errMsg}</h2>}
         <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Title"
-            onChange={handleChange}
-            name="title"
-            value={formData.title}
-            required
-          />
           <textarea
             placeholder="Write something..."
             onChange={handleChange}

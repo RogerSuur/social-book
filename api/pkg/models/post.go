@@ -116,7 +116,7 @@ func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*Post, error) {
 
 	//Change value if needed for testing purposes
-	// currentUserId = 12
+	currentUserId = 1
 
 	stmt := `SELECT p.id, p.user_id, p.content, p.created_at, p.image_path, privacy_type_id FROM posts p 
 	LEFT JOIN  followers f ON  
