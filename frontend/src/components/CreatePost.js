@@ -4,8 +4,7 @@ import axios from "axios";
 
 const CreatePost = (props) => {
   const [formData, setFormData] = useState({
-    title: "",
-    body: "",
+    content: "",
   });
   const [errMsg, setErrMsg] = useState("");
 
@@ -33,7 +32,7 @@ const CreatePost = (props) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/createpost",
+        "http://localhost:8000/post",
         JSON.stringify(formData),
         { withCredentials: true },
         {
@@ -53,7 +52,7 @@ const CreatePost = (props) => {
 
     setFormData({
       title: "",
-      body: "",
+      content: "",
     });
   };
 
@@ -66,7 +65,7 @@ const CreatePost = (props) => {
             placeholder="Write something..."
             onChange={handleChange}
             value={formData.body}
-            name="body"
+            name="content"
             required
           />
           <button>Post</button>

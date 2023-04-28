@@ -34,12 +34,6 @@ type feedPostJSON struct {
 
 func (s *PostService) CreatePost(post *models.Post) error {
 
-	if len(post.Title) == 0 {
-		err := errors.New("title too short")
-		log.Printf("CreatePost error: %s", err)
-		return err
-	}
-
 	if len(post.Content) == 0 {
 		err := errors.New("content too short")
 		log.Printf("CreatePost error: %s", err)
