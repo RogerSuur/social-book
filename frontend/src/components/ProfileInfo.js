@@ -36,7 +36,6 @@ const ProfileInfo = (props) => {
   }, []);
 
   const onSubmit = async (data) => {
-    console.log(data);
     // try {
     //   const response = await axios.post(
     //     PROFILE_UPDATE_URL,

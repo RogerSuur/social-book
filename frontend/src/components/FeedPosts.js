@@ -5,7 +5,6 @@ const FEEDPOSTS_URL = `http://localhost:8000/feedposts/`;
 
 const FeedPosts = (props) => {
   const { offset } = props;
-  console.log(offset)
     const mapFeedPosts = (post) => {
 
       const numComments = 7
