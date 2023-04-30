@@ -41,6 +41,7 @@ type IUserRepository interface {
 	CheckIfNicknameExists(nickname string, id int64) error
 	GetAllUserFollowers(id int) ([]*User, error)
 	GetAllFollowedBy(id int) ([]*User, error)
+	UpdateImage(id int64, imagePath string) error
 }
 
 type UserRepository struct {
@@ -212,4 +213,12 @@ func (repo UserRepository) GetAllFollowedBy(id int) ([]*User, error) {
 	}
 
 	return users, nil
+}
+
+func (repo UserRepository) UpdateImage(id int64, imagePath string) error {
+	query := `UPDATE users SET image_path = ? WHERE id = ?`
+
+	_, err := repo.DB.Exec(query, imagePath, id)
+
+	return err
 }
