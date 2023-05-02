@@ -47,7 +47,11 @@ func main() {
 		),
 		PostService: services.InitPostService(
 			repos.PostRepo,
-		)}
+		),
+		CommentService: services.InitCommentService(
+			repos.CommentRepo,
+		),
+	}
 
 	database.Seed(*repos)
 

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"SocialNetworkRestApi/api/internal/server/utils"
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -33,16 +34,14 @@ func (app *Application) Comments(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
 		}
 
-		// userID, err := app.UserService.GetUserID(r)
+		comments, err := app.CommentService.GetPostComments(postId, offset)
 
-		// comments, err := app.UserService.GetPostComments(postId, offset)
+		if err != nil {
+			app.Logger.Printf("JSON error: %v", err)
+			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
 
-		// if err != nil {
-		// 	app.Logger.Printf("JSON error: %v", err)
-		// 	http.Error(rw, "JSON error", http.StatusBadRequest)
-		// }
-
-		// json.NewEncoder(rw).Encode(&comments)
+		json.NewEncoder(rw).Encode(&comments)
 
 	default:
 		http.Error(rw, "method is not supported", http.StatusNotFound)

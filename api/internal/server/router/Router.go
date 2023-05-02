@@ -17,7 +17,7 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/following", app.UserService.Authenticate(app.Following)).Methods("GET")
 	r.HandleFunc("/followers", app.UserService.Authenticate(app.Followers)).Methods("GET")
 	r.HandleFunc("/feedposts/{offset}", app.UserService.Authenticate(app.FeedPosts)).Methods("GET")
-	r.HandleFunc("/comments/{postId}", app.UserService.Authenticate(app.Comments)).Methods("GET")
+	r.HandleFunc("/comments/{postId}/{offset}", app.UserService.Authenticate(app.Comments)).Methods("GET")
 	r.HandleFunc("/post", app.UserService.Authenticate(app.Post)).Methods("POST")
 
 	return r
