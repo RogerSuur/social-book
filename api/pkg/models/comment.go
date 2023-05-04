@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const CommentLimit = 10
+
 type Comment struct {
 	Id        int
 	PostId    int
@@ -17,7 +19,7 @@ type Comment struct {
 }
 
 type ICommentRepository interface {
-	GetAllByPostId(postId int) ([]*Comment, error)
+	GetAllByPostId(postId int, offset int) ([]*Comment, error)
 	GetAllByUserId(userId int) ([]*Comment, error)
 	GetById(id int64) (*Comment, error)
 	Insert(comment *Comment) (int64, error)
@@ -82,9 +84,19 @@ func (repo CommentRepository) GetById(id int64) (*Comment, error) {
 	return comment, err
 }
 
-func (repo CommentRepository) GetAllByPostId(postId int) ([]*Comment, error) {
-	query := `SELECT id, post_id, user_id, content,  image_path, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC`
-	rows, err := repo.DB.Query(query, postId)
+func (repo CommentRepository) GetAllByPostId(postId int, offset int) ([]*Comment, error) {
+	query := `SELECT id, post_id, user_id, content,  image_path, created_at FROM comments 
+	WHERE post_id = ? 
+	ORDER BY created_at DESC
+	LIMIT ? OFFSET ?`
+
+	args := []interface{}{
+		postId,
+		FeedLimit,
+		(offset * FeedLimit),
+	}
+
+	rows, err := repo.DB.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}

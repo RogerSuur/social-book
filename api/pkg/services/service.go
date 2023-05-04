@@ -9,8 +9,9 @@ import (
 
 // Services contains all the controllers
 type Services struct {
-	UserService IUserService
-	PostService IPostService
+	UserService    IUserService
+	PostService    IPostService
+	CommentService ICommentService
 }
 
 // InitServices returns a new Controllers
@@ -21,7 +22,8 @@ func InitServices(repositories *models.Repositories) *Services {
 			repositories.SessionRepo,
 			repositories.FollowerRepo,
 		),
-		PostService: InitPostService(repositories.PostRepo),
+		PostService:    InitPostService(repositories.PostRepo),
+		CommentService: InitCommentService(repositories.CommentRepo),
 	}
 }
 

@@ -136,7 +136,7 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*Post,
 		currentUserId,
 		currentUserId,
 		FeedLimit,
-		(offset * 10),
+		(offset * FeedLimit),
 	}
 
 	rows, err := m.DB.Query(stmt, args...)
