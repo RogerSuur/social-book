@@ -95,7 +95,6 @@ func SeedPosts(repo *models.PostRepository) {
 
 	for i := 0; i < 10; i++ {
 		tempPost := &models.Post{
-			Title:       faker.Word(),
 			Content:     faker.Sentence(),
 			UserId:      i + 1,
 			PrivacyType: enums.SubPrivate,

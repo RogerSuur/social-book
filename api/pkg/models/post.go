@@ -11,7 +11,6 @@ import (
 type Post struct {
 	Id          int
 	UserId      int
-	Title       string
 	Content     string
 	ImagePath   string
 	CreatedAt   time.Time
@@ -42,11 +41,11 @@ const FeedLimit = 10
 
 func (repo PostRepository) Insert(post *Post) (int64, error) {
 	query := `INSERT INTO posts (user_id, title, content, created_at, image_path, privacy_type_id)
-	VALUES(?, ?, ?, ?, ?, ?)`
+	VALUES(?,?, ?, ?, ?, ?)`
 
 	args := []interface{}{
 		post.UserId,
-		post.Title,
+		"empty",
 		post.Content,
 		time.Now(),
 		post.ImagePath,
@@ -65,24 +64,24 @@ func (repo PostRepository) Insert(post *Post) (int64, error) {
 		return 0, err
 	}
 
-	repo.Logger.Printf("Inserted post '%s' by user %d (last insert ID: %d)", post.Title, post.UserId, lastId)
+	repo.Logger.Printf("Inserted post by user %d (last insert ID: %d)", post.UserId, lastId)
 
 	return lastId, nil
 }
 
 func (repo PostRepository) GetById(id int64) (*Post, error) {
-	query := `SELECT id, user_id,  title, content, created_at, image_path, privacy_type_id FROM posts WHERE id = ?`
+	query := `SELECT id, user_id, content, created_at, image_path, privacy_type_id FROM posts WHERE id = ?`
 	row := repo.DB.QueryRow(query, id)
 	post := &Post{}
 
-	err := row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
+	err := row.Scan(&post.Id, &post.UserId, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
 
 	return post, err
 }
 
 func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 
-	stmt := `SELECT id, user_id,  title, content, created_at, image_path, privacy_type_id FROM posts p
+	stmt := `SELECT id, user_id, content, created_at, image_path, privacy_type_id FROM posts p
 	WHERE user_id = ?
     ORDER BY created_at DESC`
 
@@ -98,7 +97,7 @@ func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 	for rows.Next() {
 		post := &Post{}
 
-		err := rows.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
+		err := rows.Scan(&post.Id, &post.UserId, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
 		if err != nil {
 			return nil, err
 		}
