@@ -32,3 +32,6 @@ App.test.js
 reportWebVitals.js
 setupTests.js
 build/
+
+/images
+/frontend/public/images
