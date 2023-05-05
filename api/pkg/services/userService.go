@@ -27,15 +27,16 @@ type ProfileJSON struct {
 }
 
 type ProfileUpdateJSON struct {
-	// FirstName   string `json:"firstName"`
-	// LastName    string `json:"lastName"`
-	// Email       string `json:"email"`
-	// Birthday    string `json:"birthday"`
-	Nickname string `json:"nickname"`
-	About    string `json:"about"`
-	// AvatarImage string `json:"avatarImage"`
-	// CreatedAt   string `json:"createdAt"`
-	// IsPublic    bool   `json:"isPublic"`
+	UserID      int    `json:"id"`
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	Email       string `json:"email"`
+	Birthday    string `json:"birthday"`
+	Nickname    string `json:"nickname"`
+	About       string `json:"about"`
+	AvatarImage string `json:"avatarImage"`
+	CreatedAt   string `json:"createdAt"`
+	IsPublic    bool   `json:"isPublic"`
 }
 
 type FollowerData struct {
@@ -241,7 +242,7 @@ func (s *UserService) UserLogin(user *models.User) (string, error) {
 func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		utils.SetCors(&w, r)
+		//utils.SetCors(&w, r)
 
 		// check if cookie exists
 		cookie, err := r.Cookie("session")

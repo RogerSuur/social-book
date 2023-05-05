@@ -44,13 +44,12 @@ const ProfileInfo = (props) => {
       const response = await axios.post(
         PROFILE_UPDATE_URL,
         JSON.stringify(data),
-        { withCredentials: true },
-        {
+        { withCredentials: true, 
           headers: { "Content-Type": "application/json" },
         }
       );
 
-      console.log(JSON.stringify(response));
+      console.log("RESPONSE:", JSON.stringify(response));
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");

@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"SocialNetworkRestApi/api/internal/server/utils"
 	"SocialNetworkRestApi/api/pkg/models"
 )
 
@@ -22,8 +21,6 @@ type signupJSON struct {
 }
 
 func (app *Application) Register(rw http.ResponseWriter, r *http.Request) {
-
-	utils.SetCors(&rw, r)
 
 	if r.Header.Get("Content-Type") != "application/json" {
 		http.Error(rw, "Content-Type must be application/json", http.StatusUnsupportedMediaType)

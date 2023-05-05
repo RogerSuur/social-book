@@ -92,7 +92,7 @@ func (repo UserRepository) Insert(user *User) (int64, error) {
 
 func (repo UserRepository) Update(user *User) error {
 	query := `UPDATE users SET forname = ?, surname = ?, email = ?, password = ?, birthday = ?, 
-	nickname = ?, about = ?, image_path = ?, isPublic = ? WHERE id = ?`
+	nickname = ?, about = ?, image_path = ?, is_public = ? WHERE id = ?`
 
 	args := []interface{}{
 		user.FirstName,
