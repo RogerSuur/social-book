@@ -13,13 +13,13 @@ import (
 
 func Seed(repos models.Repositories) {
 
-	SeedUsers(repos.UserRepo)
-	SeedSessions(repos.SessionRepo)
-	SeedPosts(repos.PostRepo)
+	// SeedUsers(repos.UserRepo)
+	// SeedSessions(repos.SessionRepo)
+	// SeedPosts(repos.PostRepo)
 
-	// SeedComments(db)
-	// SeedGroups(db)
-	SeedFollowers(repos.FollowerRepo)
+	// // SeedComments(db)
+	// // SeedGroups(db)
+	// SeedFollowers(repos.FollowerRepo)
 
 	// env := models.CreateEnv(db)
 

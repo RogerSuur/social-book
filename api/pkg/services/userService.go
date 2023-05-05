@@ -14,6 +14,7 @@ import (
 )
 
 type ProfileJSON struct {
+	UserID      int    `json:"id"`
 	FirstName   string `json:"firstName"`
 	LastName    string `json:"lastName"`
 	Email       string `json:"email"`
@@ -38,12 +39,12 @@ type ProfileUpdateJSON struct {
 }
 
 type FollowerData struct {
-	UserID      int
-	FirstName   string
-	LastName    string
-	Nickname    string
-	AvatarImage string
-	Accepted    bool
+	UserID      int    `json:"id"`
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	Nickname    string `json:"nickname"`
+	AvatarImage string `json:"avatarImage"`
+	Accepted    bool   `json:"accepted"`
 }
 
 type IUserService interface {
@@ -131,6 +132,7 @@ func (s *UserService) GetUserData(userID int64) (*ProfileJSON, error) {
 		return nil, err
 	}
 	userJSON := &ProfileJSON{
+		UserID:      int(userID),
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,
 		Email:       user.Email,

@@ -30,44 +30,34 @@ const ProfileInfo = (props) => {
         .get(PROFILE_URL, {
           withCredentials: true,
         })
-        .then((response) => setUser(response.data.user));
+        .then((response) => {
+          setUser(response.data.user);
+          console.log(response.data.user, "USRRR");
+        });
     };
     loadUser();
   }, []);
 
   const onSubmit = async (data) => {
-    console.log(data);
-    // try {
-    //   const response = await axios.post(
-    //     PROFILE_UPDATE_URL,
-    //     JSON.stringify(data),
-    //     {
-    //       headers: { "Content-Type": "application/json" },
-    //       withCredentials: true,
-    //     }
-    //   );
+    console.log(data, "CONSOLE");
+    try {
+      const response = await axios.post(
+        PROFILE_UPDATE_URL,
+        JSON.stringify(data),
+        { withCredentials: true },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-    //   console.log(JSON.stringify(response));
-
-    //   navigate("/login", { replace: true });
-    // } catch (err) {
-    //   if (!err?.response) {
-    //     setErrMsg("No Server Response");
-    //   } else if (err.response?.status === 400) {
-    //     const data = err.response.data.slice(0, -1);
-    //     if (data === "nickname") {
-    //       setErrMsg("The nickname has already been taken");
-    //     } else if (data === "email") {
-    //       setErrMsg("Please use another email address");
-    //     } else if (data === "password") {
-    //       setErrMsg(
-    //         "Your password should have at least one lowercase and one uppercase letter, a number and a symbol"
-    //       );
-    //     }
-    //   } else {
-    //     setErrMsg("Internal Server Error");
-    //   }
-    // }
+      console.log(JSON.stringify(response));
+    } catch (err) {
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else if (err.response?.status > 200) {
+        setErrMsg("Internal Server Error");
+      }
+    }
   };
 
   console.log(isDirty, "DIRTY");
@@ -87,18 +77,13 @@ const ProfileInfo = (props) => {
                     objectFit: "cover",
                     objectPosition: "0% 100%",
                   }}
-                  src={
-                    "https://www.pixelstalk.net/wp-content/uploads/2016/05/Free-Cool-Backgrounds.jpg"
-                  }
-                  alt={`${user.firstName}'s image`}
+                  src={`images/${user.id}/${user.avatarImage}`}
+                  alt={`${user.firstName}`}
                 ></img>
               </div>
 
               <h1 className="column-title">{user.firstName}'s profile</h1>
             </div>
-            {/* <Modal text={"Update Image"}>
-              <AvatarUpdater />
-            </Modal> */}
             <Modal text={"Upload New Image"}>
               <AvatarUpdater />
             </Modal>
@@ -114,49 +99,6 @@ const ProfileInfo = (props) => {
               <div className="column-title">Email</div>
               <div className="column">{user.email}</div>
             </div>
-            {/* <div className="row">
-              <div className="column-title">New Password</div>
-              <div className="column">
-                <input
-                  type="password"
-                  placeholder="Password"
-                  {...register("password", {
-                    required: "Please enter your password",
-                    minLength: {
-                      value: 8,
-                      message:
-                        "The password should be at least 8 characters long",
-                    },
-                    pattern: {
-                      value:
-                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
-                      message:
-                        "The password should have at least one lowercase and one uppercase letter, a number and a symbol",
-                    },
-                  })}
-                />
-                {errors.password && <p>{errors.password.message}</p>}
-              </div>
-            </div>
-            <div className="row">
-              <div className="column-title">Confirm Password</div>
-              <div className="column">
-                <input
-                  type="password"
-                  placeholder="Confirm password"
-                  {...register("confirmPassword", {
-                    exclude: true,
-                    required: "Please enter your password again",
-                    validate: (value) =>
-                      value === watch("password") ||
-                      "The passwords do not match",
-                  })}
-                />
-                {errors.confirmPassword && (
-                  <p>{errors.confirmPassword.message}</p>
-                )}
-              </div>
-            </div> */}
             <div className="row">
               <div className="column-title">Birthday</div>
               <div className="column">{user.birthday}</div>
