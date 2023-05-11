@@ -9,7 +9,6 @@ import (
 
 type createPostJSON struct {
 	UserId      int    `json:"userId"`
-	Title       string `json:"title"`
 	Content     string `json:"content"`
 	ImagePath   string `json:"imagePath"`
 	PrivacyType int    `json:"privacyType"`

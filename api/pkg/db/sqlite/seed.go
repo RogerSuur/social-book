@@ -76,7 +76,6 @@ func SeedFollowers(repo *models.FollowerRepository) {
 			FollowingId: i + 1,
 			FollowerId:  i + 11,
 			Accepted:    true,
-			Active:      true,
 		}
 
 		_, err := repo.Insert(tempFollower)

@@ -3,7 +3,6 @@ package services
 import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
-	"fmt"
 	"log"
 	"time"
 )
@@ -56,24 +55,20 @@ func (s *PostService) GetFeedPosts(userId int, offset int) ([]*feedPostJSON, err
 	posts, err := s.PostRepository.GetAllFeedPosts(userId, offset)
 
 	if err != nil {
-		fmt.Println(err)
+		s.Logger.Printf("GetFeedPosts error: %s", err)
 	}
 
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
-		commentCount, err := s.PostRepository.GetCommentCount(p.Id)
-
-		if err != nil {
-			s.Logger.Printf("GetFeedPosts error: %s", err)
-		}
+		// commentCount, err := s.PostRepository.GetCommentCount(p.Id)
 
 		feedPosts = append(feedPosts, &feedPostJSON{
 			p.Id,
 			p.UserId,
 			p.Content,
 			p.ImagePath,
-			commentCount,
+			p.CommentCount,
 			p.CreatedAt,
 		})
 	}

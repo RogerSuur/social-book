@@ -12,7 +12,6 @@ type Follower struct {
 	FollowingId int
 	FollowerId  int
 	Accepted    bool
-	Active      bool
 }
 
 type IFollowerRepository interface {
@@ -36,14 +35,13 @@ func NewFollowerRepo(db *sql.DB) *FollowerRepository {
 }
 
 func (repo FollowerRepository) Insert(follower *Follower) (int64, error) {
-	query := `INSERT INTO followers (following_id, follower_id, accepted, active)
-	VALUES(?, ?, ?, ?)`
+	query := `INSERT INTO followers (following_id, follower_id, accepted)
+	VALUES(?, ?, ?)`
 
 	args := []interface{}{
 		follower.FollowingId,
 		follower.FollowerId,
 		follower.Accepted,
-		follower.Active,
 		time.Now(),
 	}
 
@@ -65,11 +63,10 @@ func (repo FollowerRepository) Insert(follower *Follower) (int64, error) {
 }
 
 func (repo FollowerRepository) Update(follower *Follower) error {
-	query := `UPDATE followers SET accepted = ?, active = ? WHERE id = ?`
+	query := `UPDATE followers SET accepted = ? WHERE id = ?`
 
 	args := []interface{}{
 		follower.Accepted,
-		follower.Active,
 		follower.Id,
 	}
 
@@ -79,11 +76,11 @@ func (repo FollowerRepository) Update(follower *Follower) error {
 }
 
 func (repo FollowerRepository) GetById(id int64) (*Follower, error) {
-	query := `SELECT id, following_id,  follower_id, accepted, active FROM followers WHERE id = ?`
+	query := `SELECT id, following_id,  follower_id, accepted FROM followers WHERE id = ?`
 	row := repo.DB.QueryRow(query, id)
 	follower := &Follower{}
 
-	err := row.Scan(&follower.Id, &follower.FollowingId, &follower.FollowerId, &follower.Accepted, &follower.Active)
+	err := row.Scan(&follower.Id, &follower.FollowingId, &follower.FollowerId, &follower.Accepted)
 
 	return follower, err
 }
@@ -101,21 +98,18 @@ func (repo FollowerRepository) GetFollowingById(followingId int64) ([]*Follower,
 	for rows.Next() {
 		follower := &Follower{}
 
-		err := rows.Scan(&follower.FollowingId, &follower.FollowerId, &follower.Accepted, &follower.Active)
+		err := rows.Scan(&follower.FollowingId, &follower.FollowerId, &follower.Accepted)
 		if err != nil {
 			return nil, err
 		}
 
-		if follower.Active {
-			followers = append(followers, follower)
-		}
 	}
 
 	return followers, err
 }
 
 func (repo FollowerRepository) GetFollowersById(followerId int64) ([]*Follower, error) {
-	query := `SELECT following_id, follower_id, accepted, active FROM followers WHERE follower_id = ?`
+	query := `SELECT following_id, follower_id, accepted FROM followers WHERE follower_id = ?`
 	rows, err := repo.DB.Query(query, followerId)
 
 	if err != nil {
@@ -127,14 +121,11 @@ func (repo FollowerRepository) GetFollowersById(followerId int64) ([]*Follower, 
 	for rows.Next() {
 		follower := &Follower{}
 
-		err := rows.Scan(&follower.FollowingId, &follower.FollowerId, &follower.Accepted, &follower.Active)
+		err := rows.Scan(&follower.FollowingId, &follower.FollowerId, &follower.Accepted)
 		if err != nil {
 			return nil, err
 		}
 
-		if follower.Active {
-			following = append(following, follower)
-		}
 	}
 
 	return following, err
