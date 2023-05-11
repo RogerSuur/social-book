@@ -15,9 +15,9 @@ func Seed(repos models.Repositories) {
 
 	//SeedUsers(repos.UserRepo)
 	//SeedSessions(repos.SessionRepo)
-	//SeedPosts(repos.PostRepo)
+	SeedPosts(repos.PostRepo)
 
-	//SeedComments(repos.CommentRepo)
+	SeedComments(repos.CommentRepo)
 	// SeedGroups(db)
 	// SeedFollowers(db)
 
@@ -149,7 +149,7 @@ func SeedComments(repo *models.CommentRepository) {
 		tempComment := &models.Comment{
 			Content: faker.Sentence(),
 			UserId:  i + 1,
-			PostId:  10 - i,
+			PostId:  i + 1,
 		}
 
 		id, err := repo.Insert(tempComment)

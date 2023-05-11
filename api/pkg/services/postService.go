@@ -15,6 +15,7 @@ type IPostService interface {
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
 type PostService struct {
+	Logger         *log.Logger
 	PostRepository models.IPostRepository
 }
 
@@ -25,11 +26,12 @@ func InitPostService(postRepo *models.PostRepository) *PostService {
 }
 
 type feedPostJSON struct {
-	Id        int       `json:"id"`
-	UserId    int       `json:"userId"`
-	Content   string    `json:"content"`
-	ImagePath string    `json:"imagePath"`
-	CreatedAt time.Time `json:"createdAt"`
+	Id           int       `json:"id"`
+	UserId       int       `json:"userId"`
+	Content      string    `json:"content"`
+	ImagePath    string    `json:"imagePath"`
+	CommentCount int       `json:"commentCount"`
+	CreatedAt    time.Time `json:"createdAt"`
 }
 
 func (s *PostService) CreatePost(post *models.Post) error {
@@ -60,11 +62,18 @@ func (s *PostService) GetFeedPosts(userId int, offset int) ([]*feedPostJSON, err
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
+		commentCount, err := s.PostRepository.GetCommentCount(p.Id)
+
+		if err != nil {
+			s.Logger.Printf("GetFeedPosts error: %s", err)
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			p.Id,
 			p.UserId,
 			p.Content,
 			p.ImagePath,
+			commentCount,
 			p.CreatedAt,
 		})
 	}
