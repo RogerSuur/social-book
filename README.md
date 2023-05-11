@@ -29,4 +29,4 @@
 
 - Updating the migration.go file code:
 
-        go-bindata -o api/pkg/db/sqlite/migration.go   -prefix api/pkg/db migrations/sqlite/  -pkg database api/pkg/db/migrations/sqlite
+        go-bindata -o api/pkg/db/sqlite/migration.go   -prefix api/pkg/db/migrations/sqlite/  -pkg database api/pkg/db/migrations/sqlite
