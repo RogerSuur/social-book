@@ -53,7 +53,7 @@ func main() {
 		),
 	}
 
-	database.Seed(*repos)
+	database.Seed(repos)
 
 	r := router.New(app)
 

@@ -1,7 +1,6 @@
 package database
 
 import (
-	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
 	"SocialNetworkRestApi/api/pkg/services"
 	"log"
@@ -11,17 +10,13 @@ import (
 	"github.com/bxcodec/faker/v3"
 )
 
-func Seed(repos models.Repositories) {
+func Seed(repos *models.Repositories) {
 
-	//SeedUsers(repos.UserRepo)
-	//SeedSessions(repos.SessionRepo)
+	SeedUsers(repos.UserRepo)
+	SeedFollowers(repos)
 	SeedPosts(repos.PostRepo)
 
-	SeedComments(repos.CommentRepo)
-	// SeedGroups(db)
-	// SeedFollowers(db)
-
-	// env := models.CreateEnv(db)
+	// SeedComments(repos.CommentRepo)
 
 	//Single value test
 	/* test, err := repos.SessionRepo.GetByToken("b48976a7-64e0-4ff5-a816-6362dbcb1aa0")
@@ -48,97 +43,108 @@ func Seed(repos models.Repositories) {
 
 }
 
-func SeedSessions(repo *models.SessionRepository) {
-	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
-
-	for i := 0; i < 10; i++ {
-		session := &models.Session{
-			UserId: i + 1,
-			Token:  faker.UUIDHyphenated(),
-		}
-
-		_, err := repo.Insert(session)
-
-		//logger.Printf("%+v\n", session)
-
-		if err != nil {
-			logger.Println(err)
-		}
-
-	}
-}
-
-func SeedFollowers(repo *models.FollowerRepository) {
-	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
-
-	for i := 0; i < 10; i++ {
-		tempFollower := &models.Follower{
-			FollowingId: i + 1,
-			FollowerId:  i + 11,
-			Accepted:    true,
-		}
-
-		_, err := repo.Insert(tempFollower)
-
-		// logger.Printf("%+v\n", tempFollower)
-
-		if err != nil {
-			logger.Println(err)
-		}
-
-	}
-}
-
-func SeedPosts(repo *models.PostRepository) {
-	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
-
-	for i := 0; i < 10; i++ {
-		tempPost := &models.Post{
-			Content:     faker.Sentence(),
-			UserId:      i + 1,
-			PrivacyType: enums.SubPrivate,
-		}
-
-		_, err := repo.Insert(tempPost)
-
-		// logger.Printf("%+v\n", tempPost)
-
-		if err != nil {
-			logger.Println(err)
-		}
-
-	}
-}
-
+// Seed database users from predefined dataset
 func SeedUsers(repo *models.UserRepository) {
 	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
-	for i := 0; i < 10; i++ {
+	for _, seedUser := range SeedUserData {
 
 		date, _ := time.Parse("2006-01-02", faker.Date())
-		pwd, _ := services.HashPassword("something")
+		pwd, _ := services.HashPassword("123")
+
 		tempUser := &models.User{
-			FirstName: faker.FirstName(),
-			LastName:  faker.LastName(),
-			Email:     faker.Email(),
+			FirstName: seedUser.FirstName,
+			LastName:  seedUser.LastName,
+			Email:     seedUser.Email,
 			Password:  pwd,
-			Nickname:  faker.Username(),
-			About:     faker.Sentence(),
+			Nickname:  seedUser.Nickname,
+			About:     seedUser.About,
 			ImagePath: faker.Word(),
 			Birthday:  date,
 		}
 
 		id, err := repo.Insert(tempUser)
-		tempUser.Id = int(id)
+		seedUser.Id = int(id)
 
 		if err != nil {
 			logger.Println(err)
 		}
 
-		// logger.Printf("%+v\n", tempUser)
-		// logger.Println()
-
 	}
+
+}
+
+func SeedPosts(repo *models.PostRepository) {
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
+
+	for _, seedUser := range SeedUserData {
+		if seedUser.Id > 0 {
+			for _, seedPost := range seedUser.PostSet {
+				tempPost := &models.Post{
+					Content:     seedPost.Content,
+					UserId:      seedUser.Id,
+					PrivacyType: seedPost.PrivacyType,
+				}
+
+				id, err := repo.Insert(tempPost)
+				seedPost.Id = int(id)
+
+				logger.Printf("%+v\n", tempPost)
+
+				if err != nil {
+					logger.Printf("%+v\n", err)
+				}
+			}
+		}
+	}
+
+}
+
+func SeedFollowers(repos *models.Repositories) {
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
+
+	for _, seedUser := range SeedUserData {
+		if seedUser.Id > 0 {
+			for _, seedFollowing := range seedUser.FollowingEmails {
+
+				followedUser, err := repos.UserRepo.GetByEmail(seedFollowing)
+				if err != nil {
+					logger.Printf("%+v\n", err)
+				}
+
+				tempFollowing := &models.Follower{
+					FollowingId: followedUser.Id,
+					FollowerId:  seedUser.Id,
+					Accepted:    true,
+				}
+
+				_, err = repos.FollowerRepo.Insert(tempFollowing)
+
+				logger.Printf("%+v\n", tempFollowing)
+
+				if err != nil {
+					logger.Printf("%+v\n", err)
+				}
+			}
+		}
+	}
+
+	// for i := 0; i < 10; i++ {
+	// 	tempFollower := &models.Follower{
+	// 		FollowingId: i + 1,
+	// 		FollowerId:  i + 11,
+	// 		Accepted:    true,
+	// 	}
+
+	// 	_, err := repo.Insert(tempFollower)
+
+	// 	// logger.Printf("%+v\n", tempFollower)
+
+	// 	if err != nil {
+	// 		logger.Println(err)
+	// 	}
+
+	// }
 }
 
 func SeedComments(repo *models.CommentRepository) {
@@ -184,3 +190,23 @@ func SeedGroups(repo *models.GroupRepository) {
 
 	}
 }
+
+// func SeedSessions(repo *models.SessionRepository) {
+// 	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
+
+// 	for i := 0; i < 10; i++ {
+// 		session := &models.Session{
+// 			UserId: i + 1,
+// 			Token:  faker.UUIDHyphenated(),
+// 		}
+
+// 		_, err := repo.Insert(session)
+
+// 		//logger.Printf("%+v\n", session)
+
+// 		if err != nil {
+// 			logger.Println(err)
+// 		}
+
+// 	}
+// }
