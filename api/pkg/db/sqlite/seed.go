@@ -14,8 +14,7 @@ func Seed(repos *models.Repositories) {
 
 	SeedUsers(repos.UserRepo)
 	SeedFollowers(repos)
-	SeedPosts(repos.PostRepo)
-
+	SeedPosts(repos)
 	// SeedComments(repos.CommentRepo)
 
 	//Single value test
@@ -74,7 +73,7 @@ func SeedUsers(repo *models.UserRepository) {
 
 }
 
-func SeedPosts(repo *models.PostRepository) {
+func SeedPosts(repos *models.Repositories) {
 	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
 	for _, seedUser := range SeedUserData {
@@ -86,10 +85,60 @@ func SeedPosts(repo *models.PostRepository) {
 					PrivacyType: seedPost.PrivacyType,
 				}
 
-				id, err := repo.Insert(tempPost)
-				seedPost.Id = int(id)
+				postId, err := repos.PostRepo.Insert(tempPost)
+				seedPost.Id = int(postId)
+				tempPost.Id = int(postId)
 
-				logger.Printf("%+v\n", tempPost)
+				//Insert post comments
+				for _, comments := range seedPost.CommentSet {
+					commentUser, err := repos.UserRepo.GetByEmail(comments.UserEmail)
+
+					if err != nil {
+						logger.Printf("%+v\n", err)
+					}
+
+					tempComment := &models.Comment{
+						Content: comments.Content,
+						UserId:  commentUser.Id,
+						PostId:  int(postId),
+					}
+
+					id, err := repos.CommentRepo.Insert(tempComment)
+
+					tempComment.Id = int(id)
+
+					// logger.Printf("%+v\n", tempComment)
+
+					if err != nil {
+						logger.Printf("%+v\n", err)
+					}
+				}
+
+				for i := 0; i < seedPost.LoremComments; i++ {
+
+					loremUser, err := repos.UserRepo.GetByEmail("l@l.com")
+
+					if err != nil {
+						logger.Printf("%+v\n", err)
+					}
+					tempComment := &models.Comment{
+						Content: faker.Sentence(),
+						UserId:  loremUser.Id,
+						PostId:  int(postId),
+					}
+
+					id, err := repos.CommentRepo.Insert(tempComment)
+
+					tempComment.Id = int(id)
+
+					// logger.Printf("%+v\n", tempComment)
+
+					if err != nil {
+						logger.Printf("%+v\n", err)
+					}
+				}
+
+				// logger.Printf("%+v\n", tempPost)
 
 				if err != nil {
 					logger.Printf("%+v\n", err)

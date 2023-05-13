@@ -53,7 +53,17 @@ func main() {
 		),
 	}
 
-	database.Seed(repos)
+	args := os.Args
+
+	if len(args) > 1 {
+		switch args[1] {
+		case "-seed":
+			database.Seed(repos)
+		default:
+			break
+		}
+
+	}
 
 	r := router.New(app)
 
