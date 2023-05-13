@@ -75,7 +75,6 @@ func (s *UserService) CreateUser(user *models.User) (int64, error) {
 }
 
 func (s *UserService) GetUserData(userID int64) (*ProfileJSON, error) {
-	user := &models.User{}
 	user, err := s.UserRepo.GetById(userID)
 	if err != nil {
 		return nil, err
