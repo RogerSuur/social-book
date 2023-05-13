@@ -19,6 +19,9 @@
 
 - `go run ./api/.`
 
+If you wish to seed the database, run the command:
+- `go run ./api/. seed`
+
 ## Database
 
 - Creating new database migration: <br/>

@@ -57,7 +57,7 @@ func main() {
 
 	if len(args) > 1 {
 		switch args[1] {
-		case "-seed":
+		case "seed":
 			database.Seed(repos)
 		default:
 			break
