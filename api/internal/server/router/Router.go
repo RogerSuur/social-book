@@ -3,6 +3,7 @@ package router
 import (
 	"SocialNetworkRestApi/api/internal/server/handlers"
 	"SocialNetworkRestApi/api/internal/server/utils"
+	ws "SocialNetworkRestApi/api/internal/server/websocket"
 
 	"github.com/gorilla/mux"
 )
@@ -13,6 +14,8 @@ func New(app *handlers.Application) *mux.Router {
 	r.Use(utils.CorsMiddleware)
 
 	r.HandleFunc("/", app.UserService.Authenticate(app.Home)).Methods("GET")
+	r.HandleFunc("/ws", ws.New().WShandler)
+
 	r.HandleFunc("/login", app.Login).Methods("POST", "OPTIONS")
 	r.HandleFunc("/signup", app.Register).Methods("POST", "OPTIONS")
 	//r.HandleFunc("/logout", app.UserService.Authenticate(app.Logout))
