@@ -58,10 +58,6 @@ const ProfileInfo = (props) => {
     }
   };
 
-<<<<<<< HEAD
-  // console.log(isDirty, "DIRTY");
-  // console.log(user, "USER");
-=======
   const handleModalClose = () => {
     setModalOpen(false);
   };
@@ -72,7 +68,6 @@ const ProfileInfo = (props) => {
 
   console.log(isDirty, "DIRTY");
   console.log(user, "USER");
->>>>>>> user-profile
 
   return (
     <>
