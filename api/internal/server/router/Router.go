@@ -15,6 +15,7 @@ func New(app *handlers.Application) *mux.Router {
 
 	r.HandleFunc("/", app.UserService.Authenticate(app.Home)).Methods("GET")
 	r.HandleFunc("/ws", ws.New().WShandler)
+	r.HandleFunc("/auth", app.UserService.Authenticate(nil)).Methods("GET")
 
 	r.HandleFunc("/login", app.Login).Methods("POST", "OPTIONS")
 	r.HandleFunc("/signup", app.Register).Methods("POST", "OPTIONS")
