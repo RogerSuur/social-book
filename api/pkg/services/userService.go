@@ -55,7 +55,9 @@ type IUserService interface {
 	GetUserData(userID int64) (*ProfileJSON, error)
 	GetUserID(r *http.Request) (int, error)
 	SetCookie(w http.ResponseWriter, sessionToken string)
+	ClearCookie(w http.ResponseWriter)
 	UserLogin(user *models.User) (string, error)
+	UserLogout(r *http.Request) error
 	UserRegister(user *models.User) (string, error)
 	GetUserFollowers(userID int64) ([]FollowerData, error)
 	GetUserFollowing(userID int64) ([]FollowerData, error)
@@ -239,6 +241,21 @@ func (s *UserService) UserLogin(user *models.User) (string, error) {
 	return sessionToken, nil
 }
 
+func (s *UserService) UserLogout(r *http.Request) error {
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		s.Logger.Printf("No cookie found: %s", err)
+		return errors.New("no cookie found")
+	}
+
+	err = s.SessionRepo.DeleteByToken(cookie.Value)
+	if err != nil {
+		s.Logger.Printf("Cannot delete session: %s", err)
+		return errors.New("cannot delete session")
+	}
+	return nil
+}
+
 func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -271,6 +288,15 @@ func (s *UserService) SetCookie(w http.ResponseWriter, sessionToken string) {
 		Name:   "session",
 		Value:  sessionToken,
 		MaxAge: 3600,
+	}
+	http.SetCookie(w, &cookie)
+}
+
+func (s *UserService) ClearCookie(w http.ResponseWriter) {
+	cookie := http.Cookie{
+		Name:   "session",
+		Value:  "",
+		MaxAge: -1,
 	}
 	http.SetCookie(w, &cookie)
 }
