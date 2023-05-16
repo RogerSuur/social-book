@@ -3,8 +3,6 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import Modal from "../components/Modal.js";
 import AvatarUpdater from "../components/AvatarUpdater.js";
-import FileUploader from "./FileUploader.js";
-import UploadAndDisplayImage from "./UploadAndDisplayImage.js";
 
 const PROFILE_URL = "http://localhost:8000/profile";
 const PROFILE_UPDATE_URL = "http://localhost:8000/profile/update";
@@ -12,11 +10,12 @@ const PROFILE_UPDATE_URL = "http://localhost:8000/profile/update";
 const ProfileInfo = (props) => {
   const [user, setUser] = useState({});
   const [errMsg, setErrMsg] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+
   const values = user;
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isDirty },
   } = useForm({
     mode: "onBlur",
@@ -36,15 +35,15 @@ const ProfileInfo = (props) => {
         });
     };
     loadUser();
-  }, []);
+  }, [modalOpen]);
 
   const onSubmit = async (data) => {
-    console.log(data, "CONSOLE");
     try {
       const response = await axios.post(
         PROFILE_UPDATE_URL,
         JSON.stringify(data),
-        { withCredentials: true, 
+        {
+          withCredentials: true,
           headers: { "Content-Type": "application/json" },
         }
       );
@@ -59,33 +58,50 @@ const ProfileInfo = (props) => {
     }
   };
 
+<<<<<<< HEAD
   // console.log(isDirty, "DIRTY");
   // console.log(user, "USER");
+=======
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleModalClick = () => {
+    setModalOpen(true);
+  };
+
+  console.log(isDirty, "DIRTY");
+  console.log(user, "USER");
+>>>>>>> user-profile
 
   return (
     <>
       {user && (
         <div className="content-area">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="row">
-              <div className="column">
-                <img
-                  style={{
-                    width: "20vw",
-                    height: "20vw",
-                    objectFit: "cover",
-                    objectPosition: "0% 100%",
-                  }}
-                  src={`images/${user.id}/${user.avatarImage}`}
-                  alt={`${user.firstName}`}
-                ></img>
-              </div>
-
-              <h1 className="column-title">{user.firstName}'s profile</h1>
+          <div className="row">
+            <div className="column">
+              <img
+                style={{
+                  width: "20vw",
+                  height: "20vw",
+                  objectFit: "cover",
+                  objectPosition: "0% 100%",
+                }}
+                src={`images/${user.id}/${user.avatarImage}`}
+                alt={`${user.firstName}`}
+              ></img>
             </div>
-            <Modal text={"Upload New Image"}>
-              <AvatarUpdater />
+
+            <h1 className="column-title">{user.firstName}'s profile</h1>
+          </div>
+          <div>
+            <Modal open={modalOpen} onClose={handleModalClose}>
+              <AvatarUpdater onUploadSuccess={handleModalClose} />
             </Modal>
+            <button onClick={handleModalClick}>Upload New Image</button>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="row">
               <div className="column-title">First Name</div>
               <div className="column">{user.firstName}</div>

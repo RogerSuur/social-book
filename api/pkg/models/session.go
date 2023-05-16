@@ -85,7 +85,17 @@ func (repo SessionRepository) GetUserSessions(id int) ([]*Session, error) {
 func (repo SessionRepository) DeleteByToken(token string) error {
 	query := `DELETE FROM user_sessions WHERE token = ?`
 
-	_, err := repo.DB.Exec(query, token)
+	result, err := repo.DB.Exec(query, token)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	repo.Logger.Printf("Deleted %d session(s) with token %s", rowsAffected, token)
 
 	return err
 }

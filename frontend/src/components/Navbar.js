@@ -43,13 +43,11 @@ const Navbar = () => {
               Inbox
             </Link>
           </li>
-          {auth && (
-            <li>
-              <Link className="text-link" id="logout" to="/logout">
-                Logout
-              </Link>
-            </li>
-          )}
+          <li>
+            <Link className="text-link" id="logout" to="/logout">
+              Logout
+            </Link>
+          </li>
         </ul>
       </nav>
       <Outlet />
