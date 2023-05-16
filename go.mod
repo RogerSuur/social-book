@@ -15,4 +15,5 @@ require gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 require (
 	github.com/bxcodec/faker/v3 v3.8.0
 	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/websocket v1.5.0
 )
