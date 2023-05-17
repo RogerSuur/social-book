@@ -259,9 +259,6 @@ func (s *UserService) UserLogout(r *http.Request) error {
 func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		//utils.SetCors(&w, r)
-
-		// check if cookie exists
 		cookie, err := r.Cookie("session")
 		if err != nil {
 			s.Logger.Printf("No cookie found: %s", err)
@@ -269,7 +266,6 @@ func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		// check if session exists
 		_, err = s.SessionRepo.GetByToken(cookie.Value)
 
 		if err != nil {
@@ -278,7 +274,11 @@ func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		// finally, call the handler
+		// required for auth handler
+		if handler == nil {
+			return
+		}
+
 		handler.ServeHTTP(w, r)
 	}
 }
