@@ -16,23 +16,26 @@ func (w *WebsocketServer) WShandler(rw http.ResponseWriter, r *http.Request) {
 	w.upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := w.upgrader.Upgrade(rw, r, nil)
 	if err != nil {
-		log.Println("Cannot upgrade", err)
+		log.Println("Cannot upgrade:", err)
 		rw.Write([]byte(err.Error()))
 		return
 	}
 	defer conn.Close()
 	log.Println("Successfully upgraded connection")
-	go w.handleMessages(conn)
-}
+	w.clients[conn] = true
 
-func (w *WebsocketServer) handleMessages(conn *websocket.Conn) {
 	for {
-		_, msg, err := conn.ReadMessage()
+		messageType, message, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("Cannot read message")
-			return
+			log.Println("Error during message reading:", err)
+			break
 		}
-		log.Printf("Message received: %s\n", msg)
+		log.Printf("Received: %s", message)
+		err = conn.WriteMessage(messageType, message)
+		if err != nil {
+			log.Println("Error during message writing:", err)
+			break
+		}
 	}
 }
 

@@ -3,6 +3,7 @@ package main
 import (
 	"SocialNetworkRestApi/api/internal/server/handlers"
 	"SocialNetworkRestApi/api/internal/server/router"
+	"SocialNetworkRestApi/api/internal/server/websocket"
 	database "SocialNetworkRestApi/api/pkg/db/sqlite"
 	"SocialNetworkRestApi/api/pkg/models"
 	"SocialNetworkRestApi/api/pkg/services"
@@ -40,6 +41,7 @@ func main() {
 
 	app := &handlers.Application{
 		Logger: logger,
+		WS:     websocket.New(),
 		UserService: services.InitUserService(
 			repos.UserRepo,
 			repos.SessionRepo,
