@@ -17,28 +17,28 @@ const RequireAuth = () => {
 
   console.log(location, "LOC AUTH");
 
-  const updateUsers = (message) => {
-    const { user_id, username, online, datetime } = message;
+  // const updateUsers = (message) => {
+  //   const { user_id, username, online, datetime } = message;
 
-    setUsers((prevUsers) =>
-      [
-        ...prevUsers.filter(
-          (user) => user.user_id !== user_id && user.user_id !== sender_id
-        ),
-        { user_id, username, online, datetime },
-      ].sort((a, b) =>
-        a.datetime < b.datetime
-          ? 1
-          : b.datetime < a.datetime
-          ? -1
-          : a.username.toLowerCase() > b.username.toLowerCase()
-          ? 1
-          : a.username.toLowerCase() < b.username.toLowerCase()
-          ? -1
-          : 0
-      )
-    );
-  };
+  //   setUsers((prevUsers) =>
+  //     [
+  //       ...prevUsers.filter(
+  //         (user) => user.user_id !== user_id && user.user_id !== sender_id
+  //       ),
+  //       { user_id, username, online, datetime },
+  //     ].sort((a, b) =>
+  //       a.datetime < b.datetime
+  //         ? 1
+  //         : b.datetime < a.datetime
+  //         ? -1
+  //         : a.username.toLowerCase() > b.username.toLowerCase()
+  //         ? 1
+  //         : a.username.toLowerCase() < b.username.toLowerCase()
+  //         ? -1
+  //         : 0
+  //     )
+  //   );
+  // };
 
   useEffect(() => {
     const authorisation = async () => {
@@ -64,35 +64,35 @@ const RequireAuth = () => {
   }, [location]);
 
   const {} = useWebSocket(socketUrl, {
-    onMessage: (event) => {
-      let data = JSON.parse(event.data);
-      if (location.pathname !== "/chat") {
-        if (!Array.isArray(data)) {
-          if (data.type === "") {
-            window.alert(`${data.sender_username} says ${data.body}`);
-          }
-        }
-      }
+    // onMessage: (event) => {
+    //   let data = JSON.parse(event.data);
+    //   if (location.pathname !== "/chat") {
+    //     if (!Array.isArray(data)) {
+    //       if (data.type === "") {
+    //         window.alert(`${data.sender_username} says ${data.body}`);
+    //       }
+    //     }
+    //   }
 
-      if (Array.isArray(data)) {
-        data.forEach((message) => {
-          if (message.type === "connection") {
-            if (message.myself === true) {
-              setSenderId(message.user_id);
-            }
-            updateUsers(message);
-          }
-        });
-      }
+    //   if (Array.isArray(data)) {
+    //     data.forEach((message) => {
+    //       if (message.type === "connection") {
+    //         if (message.myself === true) {
+    //           setSenderId(message.user_id);
+    //         }
+    //         updateUsers(message);
+    //       }
+    //     });
+    //   }
 
-      if (data.type === "connection") {
-        updateUsers(data);
-      }
+    //   if (data.type === "connection") {
+    //     updateUsers(data);
+    //   }
 
-      if (data.type === "disconnection") {
-        updateUsers(data);
-      }
-    },
+    //   if (data.type === "disconnection") {
+    //     updateUsers(data);
+    //   }
+    // },
     share: true,
   });
 
