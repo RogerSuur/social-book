@@ -23,14 +23,15 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="signup" element={<Signup />} />
 
-            <Route path="profile" element={<Profile />} />
-            <Route path="posts" element={<PostsPage />} />
-            <Route path="chat" element={<Chat />} />
-            <Route path="posts/:id" element={<Post />} />
-            <Route path="categories/:id" element={<Category />} />
-            <Route path="logout" element={<Logout />} />
-            <Route path="*" element={<NoPage />} />
-            {/* <Route element={<RequireAuth />}></Route> */}
+            <Route element={<RequireAuth />}>
+              <Route path="profile" element={<Profile />} />
+              <Route path="posts" element={<PostsPage />} />
+              <Route path="chat" element={<Chat />} />
+              <Route path="posts/:id" element={<Post />} />
+              <Route path="categories/:id" element={<Category />} />
+              <Route path="logout" element={<Logout />} />
+              <Route path="*" element={<NoPage />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

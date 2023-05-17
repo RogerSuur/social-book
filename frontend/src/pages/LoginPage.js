@@ -11,7 +11,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/posts";
+  const from = location.state?.from?.pathname || "/profile";
 
   const [formData, setFormData] = useState({
     username: "",
