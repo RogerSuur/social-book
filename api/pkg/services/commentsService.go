@@ -2,6 +2,7 @@ package services
 
 import (
 	"SocialNetworkRestApi/api/pkg/models"
+	"errors"
 	"log"
 	"os"
 	"time"
@@ -9,6 +10,7 @@ import (
 
 type ICommentService interface {
 	GetPostComments(userId int, offset int) ([]*commentJSON, error)
+	CreateComment(comment *models.Comment) error
 }
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
@@ -53,4 +55,21 @@ func (s *CommentService) GetPostComments(postId int, offset int) ([]*commentJSON
 	}
 
 	return comments, nil
+}
+
+func (s *CommentService) CreateComment(comment *models.Comment) error {
+
+	if len(comment.Content) == 0 {
+		err := errors.New("comment content too short")
+		s.Logger.Printf("CreateComment error: %s", err)
+		return err
+	}
+
+	_, err := s.CommentRepository.Insert(comment)
+
+	if err != nil {
+		log.Printf("CreateComment error: %s", err)
+	}
+
+	return err
 }
