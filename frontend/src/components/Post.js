@@ -9,7 +9,7 @@ const Post = () => {
 
   useEffect(() => {
     const loadPost = async () => {
-      console.log("loadPost ComponentPost");
+      // console.log("loadPost ComponentPost");
       await axios
         .get(`http://localhost:8000/posts/${id}`, {
           withCredentials: true,

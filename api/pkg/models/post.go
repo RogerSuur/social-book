@@ -3,7 +3,6 @@ package models
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -171,10 +170,10 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*FeedP
 		posts = append(posts, post)
 	}
 
-	for _, post := range posts {
-		fmt.Printf("ID: %d\nUser ID: %d\nContent: %s\nCreated At: %v\nImage Path: %s\nPrivacy Type: %d\n\n",
-			post.Id, post.UserId, post.Content, post.CreatedAt, post.ImagePath, post.PrivacyType)
-	}
+	// for _, post := range posts {
+	// 	fmt.Printf("ID: %d\nUser ID: %d\nContent: %s\nCreated At: %v\nImage Path: %s\nPrivacy Type: %d\n\n",
+	// 		post.Id, post.UserId, post.Content, post.CreatedAt, post.ImagePath, post.PrivacyType)
+	// }
 
 	if err = rows.Err(); err != nil {
 		return nil, err

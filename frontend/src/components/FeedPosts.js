@@ -7,26 +7,28 @@ const FEEDPOSTS_URL = `http://localhost:8000/feedposts/`;
 
 const FeedPosts = (props) => {
   const { offset } = props;
-  const [postid, setPostId] = useState(null);
+  // const [postid, setPostId] = useState(null);
   const mapFeedPosts = (post) => {
-    console.log("COMMENTCOUNT", post.commentCount);
-    const numComments = 3;
+    const numComments = post.commentCount;
+
+    // console.log("FEEDposts numcomments", numComments);
 
     return (
       <>
         <div className="content-area" key={post.id}>
-          <div className="row">{post.userId}</div>
+          Postid{post.id}
+          <div className="row">UserId{post.userId}</div>
           <div className="row">{post.content}</div>
           <div className="row">
             {new Date(post.createdAt).toLocaleString("et-EE")}
           </div>
-          {/* ADD A LINK TO comments if not empty*/}
-          {post.commentCount !== 0 && (
+          {post.commentCount !== 0 ? (
             <div className="row">
-              <a href={`/comments/${post.id}`}>{post.commentCount} comments</a>
-              {/* <Comments postid={post.id}/> */}
-              <Comments />
+              <p>{post.commentCount} comments</p>
+              <Comments postid={post.id} />
             </div>
+          ) : (
+            <p>Be the first to leave a comment</p>
           )}
           <CreateComment />
         </div>

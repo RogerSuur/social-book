@@ -11,20 +11,18 @@ const CreatePost = (props) => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
-  console.log("CreatePost privacytype", formData.privacyType);
 
   // errordata state
   const [errMsg, setErrMsg] = useState("");
 
   // muudab meie form state valuesi
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type } = event.target;
 
     setFormData((prevFormData) => {
-      console.log(prevFormData);
       return {
         ...prevFormData,
-        [name]: value,
+        [name]: type === "radio" ? parseInt(value) : value,
       };
     });
     console.log(formData);
@@ -32,7 +30,6 @@ const CreatePost = (props) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("Posted data:", formData);
     try {
       const response = await axios.post(
         "http://localhost:8000/post",
@@ -64,6 +61,7 @@ const CreatePost = (props) => {
         {errMsg && <h2>{errMsg}</h2>}
         <form onSubmit={handleSubmit}>
           <textarea
+            type="text"
             placeholder="Write something..."
             onChange={handleChange}
             value={formData.content}
@@ -105,45 +103,5 @@ const CreatePost = (props) => {
     </>
   );
 };
-
-// see on tehtud posti kohta et m''rata privacy type
-
-/* <fieldset>
-                <legend>Current employment status</legend>
-                
-                <input 
-                    type="radio"
-                    id="unemployed"
-                    name="employment"
-                    value="unemployed"
-                    checked={formData.employment === "unemployed"}
-                    onChange={handleChange}
-                />
-                <label htmlFor="unemployed">Unemployed</label>
-                <br />
-                
-                <input 
-                    type="radio"
-                    id="part-time"
-                    name="employment"
-                    value="part-time"
-                    checked={formData.employment === "part-time"}
-                    onChange={handleChange}
-                />
-                <label htmlFor="part-time">Part-time</label>
-                <br />
-                
-                <input 
-                    type="radio"
-                    id="full-time"
-                    name="employment"
-                    value="full-time"
-                    checked={formData.employment === "full-time"}
-                    onChange={handleChange}
-                />
-                <label htmlFor="full-time">Full-time</label>
-                <br />
-                
-            </fieldset> */
 
 export default CreatePost;
