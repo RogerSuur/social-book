@@ -3,6 +3,7 @@ package services
 import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 )
@@ -51,7 +52,7 @@ func (s *PostService) CreatePost(post *models.Post) error {
 }
 
 func (s *PostService) GetFeedPosts(userId int, offset int) ([]*feedPostJSON, error) {
-
+	fmt.Println("userId", userId)
 	posts, err := s.PostRepository.GetAllFeedPosts(userId, offset)
 
 	if err != nil {
@@ -72,6 +73,7 @@ func (s *PostService) GetFeedPosts(userId int, offset int) ([]*feedPostJSON, err
 			p.CreatedAt,
 		})
 	}
+	fmt.Println("feedPosts:", feedPosts)
 
 	return feedPosts, nil
 }

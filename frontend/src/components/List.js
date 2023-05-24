@@ -4,6 +4,7 @@ import axios from "axios";
 const List = ({ url, mapFunction }) => {
   const [listData, setListData] = useState([]);
   useEffect(() => {
+    console.log(url)
     const fetchData = async () => {
       await axios
         .get(url, {

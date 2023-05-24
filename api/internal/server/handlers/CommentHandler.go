@@ -3,6 +3,7 @@ package handlers
 import (
 	"SocialNetworkRestApi/api/internal/server/utils"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -19,6 +20,8 @@ func (app *Application) Comments(rw http.ResponseWriter, r *http.Request) {
 		//Get postId from endpoint and parse
 		postIdStr := vars["postId"]
 		postId, err := strconv.Atoi(postIdStr)
+
+		fmt.Println("postIdStr", postIdStr)
 
 		if postId < 0 || err != nil {
 			app.Logger.Printf("DATA PARSE error: %v", err)

@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import CreateComment from "./CreateComment";
 
-const Comments = () => {
+const Comments = (props) => {
   const [comments, setComments] = useState([]);
-  const { id } = useParams();
+  const { postid: id } = props;
   const [first, setFirst] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -13,11 +13,14 @@ const Comments = () => {
     setLoading((prevLoading) => !prevLoading);
   };
 
+  // localhost:8000/comments/postid/offset
+
   useEffect(() => {
+    console.log("POST ID IN COMMENTS", props.id);
     const loadComments = async () => {
       try {
         await axios
-          .get(`http://localhost:8000/comments/${id}`, {
+          .get(`http://localhost:8000/comments/${props.id}/0`, {
             withCredentials: true,
           })
           .then((response) => {
@@ -32,11 +35,10 @@ const Comments = () => {
     };
 
     loadComments();
-  }, [loading]);
+  }, [id, loading]);
 
   return (
     <>
-      <CreateComment handler={loader} />
       {first && <h2>Be the first to leave a comment</h2>}
       {comments.length > 0 && (
         <div className="content-area">

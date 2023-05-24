@@ -12,9 +12,10 @@ import (
 
 func Seed(repos *models.Repositories) {
 
-	SeedUsers(repos.UserRepo)
-	SeedFollowers(repos)
-	SeedPosts(repos)
+	// SeedUsers(repos.UserRepo)
+	// SeedFollowers(repos)
+	// SeedPosts(repos.PostRepo)
+
 	// SeedComments(repos.CommentRepo)
 
 	//Single value test

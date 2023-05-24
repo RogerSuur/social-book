@@ -3,6 +3,7 @@ package models
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -124,7 +125,7 @@ func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*FeedPost, error) {
 
 	//Change value if needed for testing purposes
-	// currentUserId = 1
+	// currentUserId = 11
 
 	stmt := `SELECT p.id, p.user_id, p.content, p.created_at, p.image_path, privacy_type_id, COUNT(DISTINCT c.id) FROM posts p 
 	LEFT JOIN  followers f ON  
@@ -170,10 +171,10 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*FeedP
 		posts = append(posts, post)
 	}
 
-	// for _, post := range posts {
-	// 	fmt.Printf("ID: %d\nUser ID: %d\nContent: %s\nCreated At: %v\nImage Path: %s\nPrivacy Type: %d\n\n",
-	// 		post.Id, post.UserId, post.Content, post.CreatedAt, post.ImagePath, post.PrivacyType)
-	// }
+	for _, post := range posts {
+		fmt.Printf("ID: %d\nUser ID: %d\nContent: %s\nCreated At: %v\nImage Path: %s\nPrivacy Type: %d\n\n",
+			post.Id, post.UserId, post.Content, post.CreatedAt, post.ImagePath, post.PrivacyType)
+	}
 
 	if err = rows.Err(); err != nil {
 		return nil, err
