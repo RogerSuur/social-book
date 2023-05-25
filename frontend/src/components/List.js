@@ -1,20 +1,29 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
 
-const List = ({ url, mapFunction }) => {
-  const [listData, setListData] = useState([]);
-  useEffect(() => {
-    // console.log("list data request");
-    const fetchData = async () => {
-      await axios
-        .get(url, {
-          withCredentials: true,
-        })
-        .then((response) => setListData(response.data));
-    };
-    fetchData();
-  }, []);
-  const renderedList = listData.map(mapFunction);
+// const List = ({ url, mapFunction }) => {
+//   const [listData, setListData] = useState([]);
+//   useEffect(() => {
+//     // console.log("list data request");
+//     const fetchData = async () => {
+//       await axios
+//         .get(url, {
+//           withCredentials: true,
+//         })
+//         .then((response) => setListData(response.data));
+//     };
+//     fetchData();
+//   }, []);
+//   const renderedList = listData.map(mapFunction);
+//   return <div>{renderedList}</div>;
+// };
+// export default List;
+
+import React from "react";
+
+const List = ({ data, mapFunction }) => {
+  const renderedList = data.map(mapFunction);
   return <div>{renderedList}</div>;
 };
+
 export default List;

@@ -3,14 +3,10 @@ import Comments from "./Comments";
 import List from "./List";
 import CreateComment from "./CreateComment";
 
-const FEEDPOSTS_URL = `http://localhost:8000/feedposts/`;
-
 const FeedPosts = (props) => {
-  const { offset } = props;
+  const { posts } = props;
   // const [postid, setPostId] = useState(null);
   const mapFeedPosts = (post) => {
-    const numComments = post.commentCount;
-
     // console.log("FEEDposts numcomments", numComments);
 
     return (
@@ -36,7 +32,9 @@ const FeedPosts = (props) => {
     );
   };
 
-  return <List url={`${FEEDPOSTS_URL}${offset}`} mapFunction={mapFeedPosts} />;
+  const renderedPosts = posts.map(mapFeedPosts);
+
+  return <div>{renderedPosts}</div>;
 };
 
 export default FeedPosts;

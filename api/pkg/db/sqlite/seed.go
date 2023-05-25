@@ -12,11 +12,11 @@ import (
 
 func Seed(repos *models.Repositories) {
 
-	// SeedUsers(repos.UserRepo)
-	// SeedFollowers(repos)
-	// SeedPosts(repos.PostRepo)
+	SeedUsers(repos.UserRepo)
+	//SeedFollowers(repos)
+	SeedPosts(repos)
 
-	// SeedComments(repos.CommentRepo)
+	SeedComments(repos.CommentRepo)
 
 	//Single value test
 	/* test, err := repos.SessionRepo.GetByToken("b48976a7-64e0-4ff5-a816-6362dbcb1aa0")

@@ -3,7 +3,6 @@ import { useState } from "react";
 import axios from "axios";
 
 const CreatePost = (props) => {
-  // state kus sees hoiame vormidatat
   const initialFormData = {
     content: "",
     imagePath: "",
@@ -15,7 +14,6 @@ const CreatePost = (props) => {
   // errordata state
   const [errMsg, setErrMsg] = useState("");
 
-  // muudab meie form state valuesi
   const handleChange = (event) => {
     const { name, value, type } = event.target;
 
@@ -25,7 +23,7 @@ const CreatePost = (props) => {
         [name]: type === "radio" ? parseInt(value) : value,
       };
     });
-    console.log(formData);
+    // console.log(formData);
   };
 
   const handleSubmit = async (event) => {
@@ -41,7 +39,7 @@ const CreatePost = (props) => {
       );
 
       setErrMsg(response.data?.message);
-      // n'itab lihtsalt et on 'ra loadinud
+
       props.handler();
     } catch (err) {
       if (!err?.response) {
@@ -51,7 +49,6 @@ const CreatePost = (props) => {
       }
     }
 
-    // teeb p'rast lihtsalt tyhjaks vormi
     setFormData(initialFormData);
   };
 

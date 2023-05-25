@@ -4,7 +4,6 @@ import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -45,7 +44,7 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 			PrivacyType: enums.PrivacyType(JSONdata.PrivacyType),
 		}
 
-		fmt.Println("Post", post)
+		// fmt.Println("Post", post)
 
 		err = app.PostService.CreatePost(post)
 
