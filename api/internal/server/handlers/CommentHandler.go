@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"SocialNetworkRestApi/api/internal/server/utils"
 	"SocialNetworkRestApi/api/pkg/models"
 	"encoding/json"
 	"net/http"
@@ -59,7 +58,6 @@ func (app *Application) Comments(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) Comment(rw http.ResponseWriter, r *http.Request) {
-	utils.SetCors(&rw, r)
 
 	switch r.Method {
 	case "POST":
