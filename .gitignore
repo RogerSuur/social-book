@@ -34,3 +34,4 @@ setupTests.js
 build/
 
 /images
+/frontend/public/images

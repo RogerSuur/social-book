@@ -17,7 +17,6 @@ type insertCommentJSON struct {
 }
 
 func (app *Application) Comments(rw http.ResponseWriter, r *http.Request) {
-	utils.SetCors(&rw, r)
 
 	switch r.Method {
 	case "GET":

@@ -21,6 +21,17 @@ type User struct {
 	IsPublic  bool
 }
 
+type SignupJSON struct {
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirmPassword"`
+	FirstName       string `json:"firstName"`
+	LastName        string `json:"lastName"`
+	Birthday        string `json:"dateOfBirth"`
+	Nickname        string `json:"nickname"`
+	About           string `json:"about"`
+}
+
 type IUserRepository interface {
 	Insert(*User) (int64, error)
 	Update(*User) error
@@ -30,6 +41,7 @@ type IUserRepository interface {
 	CheckIfNicknameExists(nickname string, id int64) error
 	GetAllUserFollowers(id int) ([]*User, error)
 	GetAllFollowedBy(id int) ([]*User, error)
+	UpdateImage(id int64, imagePath string) error
 }
 
 type UserRepository struct {
@@ -80,7 +92,7 @@ func (repo UserRepository) Insert(user *User) (int64, error) {
 
 func (repo UserRepository) Update(user *User) error {
 	query := `UPDATE users SET forname = ?, surname = ?, email = ?, password = ?, birthday = ?, 
-	nickname = ?, about = ?, image_path = ?, isPublic = ? WHERE id = ?`
+	nickname = ?, about = ?, image_path = ?, is_public = ? WHERE id = ?`
 
 	args := []interface{}{
 		user.FirstName,
@@ -201,4 +213,12 @@ func (repo UserRepository) GetAllFollowedBy(id int) ([]*User, error) {
 	}
 
 	return users, nil
+}
+
+func (repo UserRepository) UpdateImage(id int64, imagePath string) error {
+	query := `UPDATE users SET image_path = ? WHERE id = ?`
+
+	_, err := repo.DB.Exec(query, imagePath, id)
+
+	return err
 }

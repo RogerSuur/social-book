@@ -105,6 +105,8 @@ func (repo FollowerRepository) GetFollowingById(followingId int64) ([]*Follower,
 
 	}
 
+	repo.Logger.Printf("Found %d followers for user %d", len(followers), followingId)
+
 	return followers, err
 }
 
@@ -127,6 +129,8 @@ func (repo FollowerRepository) GetFollowersById(followerId int64) ([]*Follower, 
 		}
 
 	}
+
+	repo.Logger.Printf("User %d found following %d users", len(following), followerId)
 
 	return following, err
 }
