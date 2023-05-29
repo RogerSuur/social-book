@@ -6,7 +6,7 @@ body {
   min-width: 320px;
   margin: 0;
   font-family: "Inter", sans-serif;
-  background-color:rgb(245, 233, 218)
+  background-color:rgb(255, 255, 255)
 }
 
 nav {
@@ -114,6 +114,96 @@ hr {
 
 .text-link:visited {
   color: darkblue;
+}
+.smooth-input {
+  display: block;
+      margin: 0 auto;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 10px;
+      outline: none;
+      width: 500px;
+      height: 50px;
+}
+.login-input {
+  display: block;
+      margin: 0 auto;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 10px;
+      outline: none;
+      width: 460px;
+      height: 50px;
+}
+.input-label {
+  font-size: 15px;
+  color: rgb(66, 59, 59);
+  margin-right: 450px; /* Adjust the margin as desired */
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+.input-label1 {
+  font-size: 15px;
+  color: rgb(66, 59, 59);
+  margin-right: 420px; /* Adjust the margin as desired */
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+.input-label2 {
+  font-size: 15px;
+  color: rgb(66, 59, 59);
+  margin-right: 365px; /* Adjust the margin as desired */
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+.input-label3 {
+  font-size: 15px;
+  color: rgb(66, 59, 59);
+  margin-right: 355px; /* Adjust the margin as desired */
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+
+.log-in {
+  font-size: 15px;
+  color: rgb(66, 59, 59);
+  margin-left: 5px; /* Adjust the margin as desired */
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+.input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 7vh;
+}
+
+.big-button {
+  font-size: 24px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  width: 500px;
+  color: #FFFFFF;
+  border: none;
+  background-color: #c2c2c2;
+}
+
+.log-button {
+  font-size: 24px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  width: 360px;
+  color: #FFFFFF;
+  border: none;
+  background-color: #c2c2c2;
+}
+.center1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10vh;
 }
 
 .text-link:hover {

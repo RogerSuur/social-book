@@ -69,29 +69,46 @@ const Login = () => {
   return (
     <>
       {errMsg && <h2>{errMsg}</h2>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Email or username"
-          onChange={handleChange}
-          name="username"
-          value={formData.username}
-          required
-          autoFocus
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={handleChange}
-          name="password"
-          value={formData.password}
-          required
-        />
-        <button>Sign In</button>
-      </form>
-      <div>
-        Do not have an account? <Link to={`/signup`}>Sign up</Link>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+  <div style={{ width: "500px", height: "450px", border: "1px solid #ccc", borderRadius: "20px", padding: "20px" }}>
+    <form onSubmit={handleSubmit}>
+    <h1 >Sign in</h1>
+    
+      <label class="log-in">Email or username</label>
+      
+      <input  class= "login-input"
+        type="text"
+        placeholder="Email or username"
+        onChange={handleChange}
+        name="username"
+        value={formData.username}
+        required
+        autoFocus
+        
+      />
+      <br />
+       <label  class="log-in">Password</label>
+      <input  class= "login-input"
+        type="password"
+        placeholder="Password"
+        onChange={handleChange}
+        name="password"
+        value={formData.password}
+        required
+       
+      />
+      
+      <div class="center1">
+      <button class = "log-button">
+        Sign In
+      </button>
       </div>
+    </form>
+    <div style={{ marginTop: "10px", textAlign: "center" }}>
+      Do not have an account? <Link to={`/signup`}>Sign up</Link>
+    </div>
+  </div>
+</div>
     </>
   );
 };
