@@ -31,7 +31,7 @@ const ProfileInfo = (props) => {
         })
         .then((response) => {
           setUser(response.data.user);
-          console.log(response.data.user, "USRRR");
+          // console.log(response.data.user, "USRRR");
         });
     };
     loadUser();
@@ -66,8 +66,8 @@ const ProfileInfo = (props) => {
     setModalOpen(true);
   };
 
-  console.log(isDirty, "DIRTY");
-  console.log(user, "USER");
+  // console.log(isDirty, "DIRTY");
+  // console.log(user, "USER");
 
   return (
     <>
