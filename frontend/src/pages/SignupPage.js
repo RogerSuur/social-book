@@ -57,31 +57,19 @@ const Signup = () => {
       }
     }
   };
+  
 
   return (
+    
     <>
       {errMsg && <h3>{errMsg}</h3>}
       <form onSubmit={handleSubmit(onSubmit)}>
-        <input
-          placeholder="First Name"
-          {...register("firstName", {
-            required: "Please enter your first name",
-          })}
-        />
-        {errors.firstName && <p>{errors.firstName.message}</p>}
-        <br />
+      <h1 class="center">Sing up for FREE to start networking</h1>
+      <div class="input-container">
+      <label for="smooth-input" class="input-label">Email</label>
 
-        <input
-          placeholder="Last Name"
-          {...register("lastName", {
-            required: "Please enter your last name",
-          })}
-        />
-        {errors.lastName && <p>{errors.lastName.message}</p>}
-        <br />
-
-        <input
-          placeholder="Email address"
+      <input  class= "smooth-input"
+          placeholder="Enter your email address"
           {...register("email", {
             required: "Please enter your email address",
             pattern: {
@@ -92,12 +80,15 @@ const Signup = () => {
             },
           })}
         />
+        </div>
         {errors.email && <p>{errors.email.message}</p>}
+       
         <br />
-
-        <input
+        <div class="input-container">
+      <label for="smooth-input" class="input-label1">Password</label>
+        <input  class= "smooth-input"
           type="password"
-          placeholder="Password"
+          placeholder="Enter your password"
           {...register("password", {
             required: "Please enter your password",
             minLength: {
@@ -111,10 +102,13 @@ const Signup = () => {
             },
           })}
         />
+        </div>
         {errors.password && <p>{errors.password.message}</p>}
+        
         <br />
-
-        <input
+        <div class="input-container">
+      <label for="smooth-input" class="input-label2">Confirm password</label>
+        <input  class= "smooth-input"
           type="password"
           placeholder="Confirm password"
           {...register("confirmPassword", {
@@ -124,10 +118,65 @@ const Signup = () => {
               value === watch("password") || "The passwords do not match",
           })}
         />
+          </div>
         {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
+        
+        <br />
+        <div class="input-container">
+      <label for="smooth-input" class="input-label1">First name</label>
+        <input class= "smooth-input"
+        
+        placeholder="Enter your first name"
+        {...register("firstName", {
+          required: "Please enter your first name",
+        })}
+      />
+      </div>
+      {errors.firstName && <p>{errors.firstName.message}</p>}
+        
+        <br />
+        <div class="input-container">
+      <label for="smooth-input" class="input-label1">Last name</label>
+        <input  class= "smooth-input"
+          placeholder="Enter your last name"
+          {...register("lastName", {
+            required: "Please enter your last name",
+          })}
+        />
+        </div>
+        {errors.lastName && <p>{errors.lastName.message}</p>}
+        
+        <br />
+        <div class="input-container">
+      <label for="smooth-input" class="input-label3">Nickname (optional)</label>
+        <input class= "smooth-input"
+          placeholder="Enter your nickname"
+          {...register("nickname", {
+            maxLength: {
+              value: 32,
+              message:
+                "The nickname should not be longer than 32 characters long",
+            },
+            pattern: {
+              value: /^[a-zA-Z0-9._ ]{0,32}$/,
+              message:
+                "The nickname can only contain letters, numbers, spaces, dots (.) and underscores (_)",
+            },
+          })}
+        />
+        </div>
+        {errors.nickname && <p>{errors.nickname.message}</p>}
+        <br />
+        <div class="input-container">
+      <label for="smooth-input" class="input-label3">About you (optional)</label>
+         <textarea class= "smooth-input"
+          placeholder="Write something about yourself"
+          {...register("about")}
+        />
+         </div>
         <br />
 
-        <input
+        <input class= "smooth-input"
           type="date"
           {...register("dateOfBirth", {
             required: "Please enter your birth date",
@@ -142,33 +191,11 @@ const Signup = () => {
         />
         {errors.dateOfBirth && <p>{errors.dateOfBirth.message}</p>}
         <br />
-        <input
-          placeholder="Nickname"
-          {...register("nickname", {
-            maxLength: {
-              value: 32,
-              message:
-                "The nickname should not be longer than 32 characters long",
-            },
-            pattern: {
-              value: /^[a-zA-Z0-9._ ]{0,32}$/,
-              message:
-                "The nickname can only contain letters, numbers, spaces, dots (.) and underscores (_)",
-            },
-          })}
-        />
-        {errors.nickname && <p>{errors.nickname.message}</p>}
-        <br />
-
-        <textarea
-          placeholder="Write something about yourself"
-          {...register("about")}
-        />
-        <br />
-
-        <button>Sign Up</button>
+        <div class="center">
+        <button  class="big-button">Sign Up</button>
+        </div>
       </form>
-      <div>
+      <div class="center">
         Already have an account? <Link to={`/login`}>Sign in</Link>
       </div>
     </>
