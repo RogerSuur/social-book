@@ -4,10 +4,18 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"time"
 )
 
 type Event struct {
-	// TODO
+	Id          int
+	GroupId     int
+	UserId      int
+	CreatedAt   time.Time
+	EventTime   time.Time
+	TimeSpan    time.Duration
+	Title       string
+	Description string
 }
 
 type IEventRepository interface {

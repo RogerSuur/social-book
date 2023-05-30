@@ -4,10 +4,18 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"time"
 )
 
 type Message struct {
-	// TODO
+	Id          int
+	SenderId    int
+	RecipientId int
+	GroupId     int
+	Content     string
+	ImagePath   string
+	SentAt      time.Time
+	ReadAt      time.Time
 }
 
 type IMessageRepository interface {

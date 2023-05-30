@@ -4,10 +4,23 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"time"
 )
 
 type Notification struct {
-	// TODO
+	Id                    int
+	ReceiverId            int
+	NotificationDetailsId int
+	SeenAt                time.Time
+	Reaction              bool
+}
+
+type NotificationDetails struct {
+	Id                    int
+	SenderId              int
+	NotificationDetailsId int
+	EntityId              int
+	CreatedAt             time.Time
 }
 
 type INotificationRepository interface {
