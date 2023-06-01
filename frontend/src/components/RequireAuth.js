@@ -63,7 +63,8 @@ const RequireAuth = () => {
     authorisation();
   }, [location]);
 
-  const {} = useWebSocket(socketUrl, {
+  const { sendJsonMessage } = useWebSocket(socketUrl, {
+    onOpen: console.log("opened"),
     // onMessage: (event) => {
     //   let data = JSON.parse(event.data);
     //   if (location.pathname !== "/chat") {
@@ -95,6 +96,10 @@ const RequireAuth = () => {
     // },
     share: true,
   });
+
+  useEffect(() => {
+    sendJsonMessage("hello");
+  }, [location]);
 
   return auth ? (
     <Outlet

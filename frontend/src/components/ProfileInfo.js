@@ -15,7 +15,7 @@ const ProfileEditor = () => {
   useEffect(() => {
     const loadUser = async () => {
       await axios
-        .get(PROFILE_URL + `${id}`, {
+        .get(`http://localhost:8000/profile/${id}`, {
           withCredentials: true,
         })
         .then((response) => {
