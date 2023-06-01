@@ -14,6 +14,7 @@ const List = ({ url, mapFunction }) => {
     fetchData();
   }, []);
   const renderedList = listData.map(mapFunction);
+  console.log(renderedList[0].key);
   return <div>{renderedList}</div>;
 };
 export default List;

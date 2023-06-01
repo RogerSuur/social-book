@@ -1,12 +1,14 @@
 import List from "../components/List.js";
+import { Link } from "react-router-dom";
 
-//insert correct URL
 const FOLLOWERS_URL = "http://localhost:8000/followers";
 
 const Followers = () => {
   const mapFollowers = (follower) => (
     <li key={follower.id}>
-      {follower.firstName} {follower.lastName}
+      <Link to={`/profile/${follower.id}`}>
+        {follower.firstName} {follower.lastName}
+      </Link>
     </li>
   );
 
