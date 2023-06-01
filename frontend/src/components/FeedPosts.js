@@ -31,7 +31,7 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
   }, []);
 
   const renderPost = (post, index) => {
-    const { id, userId, content, createdAt, commentCount } = post;
+    const { id, userId, userName, content, createdAt, commentCount } = post;
     const isLastPost = index === posts.length - 1;
 
     console.log(post);
@@ -43,7 +43,7 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
         ref={isLastPost ? lastPostElementRef : null}
       >
         <div>Post ID: {id}</div>
-        <div className="row">UserId{userId}</div>
+        <div className="row">{userName}</div>
         <div className="row">{content}</div>
         <div className="row">{new Date(createdAt).toLocaleString("et-EE")}</div>
         {commentCount !== 0 ? (
