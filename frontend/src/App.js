@@ -9,6 +9,7 @@ import Login from "./pages/LoginPage";
 import NoPage from "./pages/NoPage";
 import Category from "./pages/CategoryPage";
 import RequireAuth from "./components/RequireAuth";
+import ProfileInfo from "./components/ProfileInfo";
 //import RequireGuest from "./components/RequireGuest";
 import Logout from "./components/Logout";
 
@@ -25,6 +26,7 @@ function App() {
 
             <Route element={<RequireAuth />}>
               <Route path="profile" element={<Profile />} />
+              <Route path="profile/:id" element={<ProfileInfo />} />
               <Route path="posts" element={<PostsPage />} />
               <Route path="chat" element={<Chat />} />
               <Route path="posts/:id" element={<Post />} />
