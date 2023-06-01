@@ -15,7 +15,7 @@ const ProfileEditor = () => {
   useEffect(() => {
     const loadUser = async () => {
       await axios
-        .get(`http://localhost:8000/profile/${id}`, {
+        .get(PROFILE_URL + `${id}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -99,8 +99,12 @@ const ProfileEditor = () => {
             <div className="column-title">User Profile is public</div>
             <div className="column">{user.isPublic}</div>
           </div>
-          <button onClick={handleFollow}>Follow</button>
-          <button onClick={handleFollow}>Unfollow</button>
+          <button disabled={user.follow} onClick={handleFollow}>
+            Follow
+          </button>
+          <button disabled={!user.follow} onClick={handleFollow}>
+            Unfollow
+          </button>
         </div>
       )}
     </>
