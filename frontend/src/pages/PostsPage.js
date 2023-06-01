@@ -6,37 +6,59 @@ import { makeRequest } from "../services/makeRequest";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
-  const [isPostsLoading, setPostsLoading] = useState(false);
   const [error, setError] = useState(null);
-  let offset = 0;
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
 
   const handlePostUpdate = () => {
-    setPostsLoading(!isPostsLoading);
+    setOffset(0);
+    setPosts([]);
+  };
+
+  const handlePageChange = () => {
+    setOffset((prevOffset) => prevOffset + 1);
   };
 
   useEffect(() => {
+    const abortController = new AbortController();
     const loadPosts = async () => {
       try {
-        const response = await makeRequest(`feedposts/${offset}`);
-        setPosts(response);
+        const response = await makeRequest(`feedposts/${offset}`, {
+          signal: abortController.signal,
+        });
+        setPosts((prevPosts) => {
+          return [...prevPosts, ...response];
+        });
+        setHasMore(response.length > 0);
       } catch (error) {
         setError(error.message);
-        // setLoading(false);
       }
 
       // try {
-      //   const response = await axios.get(`http://localhost:8000/feedposts/${offset}`, {
-      //     withCredentials: true,
+      //   const response = await axios.get(
+      //     `http://localhost:8000/feedposts/${offset}`,
+      //     {
+      //       withCredentials: true,
+      //       signal: abortController.signal,
+      //     }
+      //   );
+      //   setPosts((prevPosts) => {
+      //     const newPosts = response.data.filter(
+      //       (post) => !prevPosts.some((prevPost) => prevPost.id === post.id)
+      //     );
+      //     return [...prevPosts, ...newPosts];
       //   });
-      //   setPosts(response.data);
       // } catch (error) {
       //   setError(error.message);
       // }
       // setLoading(false);
     };
-
     loadPosts();
-  }, [isPostsLoading, offset]);
+
+    return () => {
+      abortController.abort();
+    };
+  }, [offset]);
 
   return (
     <>
@@ -45,7 +67,11 @@ const Posts = () => {
         <div className="error">{error}</div>
       ) : (
         <div className="content-area">
-          <FeedPosts posts={posts} />
+          <FeedPosts
+            posts={posts}
+            hasMore={hasMore}
+            onLoadMore={handlePageChange}
+          />
         </div>
       )}
     </>
