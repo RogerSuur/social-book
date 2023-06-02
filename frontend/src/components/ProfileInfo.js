@@ -12,6 +12,8 @@ const ProfileInfo = () => {
   const { id } = useParams();
   const [errMsg, setErrMsg] = useState("");
   const { socketUrl } = useOutletContext();
+  const { sendJsonMessage, lastJsonMessage } =
+    useWebSocketConnection(socketUrl);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -27,11 +29,12 @@ const ProfileInfo = () => {
     loadUser();
   }, []);
 
-  const sendJsonMessage = useWebSocketConnection(socketUrl);
+  const handleFollow = () => {
+    sendJsonMessage({ type: "follow", following_id: user.id });
+  };
 
-  const handleClick = (message) => {
-    console.log("here");
-    sendJsonMessage(message);
+  const handleUnfollow = () => {
+    sendJsonMessage({ type: "unfollow", following_id: user.id });
   };
 
   return (
@@ -87,13 +90,10 @@ const ProfileInfo = () => {
             <div className="column-title">User Profile is public</div>
             <div className="column">{user.isPublic}</div>
           </div>
-          <button disabled={user.follow} onClick={() => handleClick("follow")}>
+          <button disabled={user.follow} onClick={handleFollow}>
             Follow
           </button>
-          <button
-            disabled={user.follow}
-            onClick={() => handleClick("unfollow")}
-          >
+          <button disabled={!user.follow} onClick={handleUnfollow}>
             Unfollow
           </button>
         </div>

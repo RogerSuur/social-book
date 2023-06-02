@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import useWebSocket from "react-use-websocket";
 
 export const useWebSocketConnection = (socketUrl) => {
@@ -17,5 +16,5 @@ export const useWebSocketConnection = (socketUrl) => {
   //   }
   // }, [lastJsonMessage, onMessage]);
 
-  return sendJsonMessage;
+  return { sendJsonMessage, lastJsonMessage };
 };
