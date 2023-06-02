@@ -2,7 +2,7 @@ import { useLocation, Navigate, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
-import useWebSocket from "react-use-websocket";
+import { useWebSocketConnection } from "../utils/useWebSocketConnection";
 
 const AUTH_URL = "http://localhost:8000/auth";
 const WS_URL = `ws://localhost:8000/ws`;
@@ -63,14 +63,16 @@ const RequireAuth = () => {
     authorisation();
   }, [location]);
 
-  const { lastMessage, sendJsonMessage } = useWebSocket(socketUrl, {
-    onOpen: console.log("opened"),
-    share: true,
-  });
+  // const { lastMessage, sendJsonMessage } = useWebSocket(socketUrl, {
+  //   onOpen: console.log("opened"),
+  //   share: true,
+  // });
 
-  useEffect(() => {
-    sendJsonMessage("hello");
-  }, [location]);
+  // useEffect(() => {
+  //   sendJsonMessage("hello");
+  // }, [location]);
+
+  useWebSocketConnection(socketUrl, "msg");
 
   return auth ? (
     <Outlet
