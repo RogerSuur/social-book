@@ -4,15 +4,32 @@ import (
 	"SocialNetworkRestApi/api/pkg/services"
 	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	var userID int
+	var err error
+	app.Logger.Printf("Looking for ID: %s", id)
 
-	userID, err := app.UserService.GetUserID(r)
-	if err != nil {
-		app.Logger.Printf("Cannot get user ID: %s", err)
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
-		return
+	if id == "" {
+		userID, err = app.UserService.GetUserID(r)
+		if err != nil {
+			app.Logger.Printf("Cannot get user ID: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		userID, err = strconv.Atoi(id)
+		if err != nil {
+			app.Logger.Printf("Cannot parse user ID: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	userData, err := app.UserService.GetUserData(int64(userID))

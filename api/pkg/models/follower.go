@@ -89,7 +89,7 @@ func (repo FollowerRepository) GetById(id int64) (*Follower, error) {
 }
 
 func (repo FollowerRepository) GetFollowingById(followingId int64) ([]*Follower, error) {
-	query := `SELECT following_id, follower_id, accepted, active FROM followers WHERE following_id = ?`
+	query := `SELECT following_id, follower_id, accepted, active FROM followers WHERE follower_id = ?`
 	rows, err := repo.DB.Query(query, followingId)
 
 	if err != nil {
@@ -117,7 +117,7 @@ func (repo FollowerRepository) GetFollowingById(followingId int64) ([]*Follower,
 }
 
 func (repo FollowerRepository) GetFollowersById(followerId int64) ([]*Follower, error) {
-	query := `SELECT following_id, follower_id, accepted, active FROM followers WHERE follower_id = ?`
+	query := `SELECT following_id, follower_id, accepted, active FROM followers WHERE following_id = ?`
 	rows, err := repo.DB.Query(query, followerId)
 
 	if err != nil {
@@ -139,7 +139,7 @@ func (repo FollowerRepository) GetFollowersById(followerId int64) ([]*Follower, 
 		}
 	}
 
-	repo.Logger.Printf("User %d found following %d users", len(following), followerId)
+	repo.Logger.Printf("User %d found following %d users", followerId, len(following))
 
 	return following, err
 }

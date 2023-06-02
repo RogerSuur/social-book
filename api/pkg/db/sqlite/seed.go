@@ -19,7 +19,7 @@ func Seed(repos models.Repositories) {
 
 	//SeedComments(repos.CommentRepo)
 	// SeedGroups(db)
-	// SeedFollowers(db)
+	//SeedFollowers(repos.FollowerRepo)
 
 	// env := models.CreateEnv(db)
 
