@@ -6,7 +6,9 @@ const FOLLOWERS_URL = "http://localhost:8000/followers";
 const Followers = () => {
   const mapFollowers = (follower) => (
     <li key={follower.id}>
-      {follower.firstName} {follower.lastName}
+      <Link to={`/profile/${follower.id}`}>
+        {follower.firstName} {follower.lastName}
+      </Link>
     </li>
   );
 

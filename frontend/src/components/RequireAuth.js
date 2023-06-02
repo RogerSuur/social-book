@@ -63,37 +63,8 @@ const RequireAuth = () => {
     authorisation();
   }, [location]);
 
-  const { sendJsonMessage } = useWebSocket(socketUrl, {
+  const { lastMessage, sendJsonMessage } = useWebSocket(socketUrl, {
     onOpen: console.log("opened"),
-    // onMessage: (event) => {
-    //   let data = JSON.parse(event.data);
-    //   if (location.pathname !== "/chat") {
-    //     if (!Array.isArray(data)) {
-    //       if (data.type === "") {
-    //         window.alert(`${data.sender_username} says ${data.body}`);
-    //       }
-    //     }
-    //   }
-
-    //   if (Array.isArray(data)) {
-    //     data.forEach((message) => {
-    //       if (message.type === "connection") {
-    //         if (message.myself === true) {
-    //           setSenderId(message.user_id);
-    //         }
-    //         updateUsers(message);
-    //       }
-    //     });
-    //   }
-
-    //   if (data.type === "connection") {
-    //     updateUsers(data);
-    //   }
-
-    //   if (data.type === "disconnection") {
-    //     updateUsers(data);
-    //   }
-    // },
     share: true,
   });
 
