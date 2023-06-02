@@ -13,7 +13,6 @@ type WebsocketServer struct {
 }
 
 func (w *WebsocketServer) WShandler(rw http.ResponseWriter, r *http.Request) {
-	w.upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := w.upgrader.Upgrade(rw, r, nil)
 	if err != nil {
 		log.Println("Cannot upgrade:", err)
@@ -44,6 +43,12 @@ func New() *WebsocketServer {
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
+			CheckOrigin: func(r *http.Request) bool {
+				// required for CORS
+				// should return true if origin is allowed
+				// origin := r.Header.Get("Origin")
+				return true
+			},
 		},
 		clients: make(map[*websocket.Conn]bool),
 	}
