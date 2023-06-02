@@ -14,9 +14,9 @@ func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 	id := vars["id"]
 	var userID int
 	var err error
-	app.Logger.Printf("Looking for ID: %s", id)
 
 	if id == "" {
+		app.Logger.Printf("Fetching user ID from session for Profile handler")
 		userID, err = app.UserService.GetUserID(r)
 		if err != nil {
 			app.Logger.Printf("Cannot get user ID: %s", err)
@@ -24,6 +24,7 @@ func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
+		app.Logger.Printf("Using user ID (%v) provided in the URL for Profile handler", id)
 		userID, err = strconv.Atoi(id)
 		if err != nil {
 			app.Logger.Printf("Cannot parse user ID: %s", err)
