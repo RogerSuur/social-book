@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useWebSocketConnection } from "../hooks/useWebSocketConnection";
+import { useOutletContext } from "react-router-dom";
 
 const PROFILE_URL = "http://localhost:8000/profile/";
 const PROFILE_FOLLOW_URL = "http://localhost:8000/profile/follow";
 
-const ProfileEditor = () => {
+const ProfileInfo = () => {
   const [user, setUser] = useState({});
   const { id } = useParams();
   const [errMsg, setErrMsg] = useState("");
-
-  console.log(PROFILE_URL);
+  const { socketUrl } = useOutletContext();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -26,24 +27,11 @@ const ProfileEditor = () => {
     loadUser();
   }, []);
 
-  const handleFollow = async () => {
-    // try {
-    //   const response = await axios.post(
-    //     PROFILE_FOLLOW_URL,
-    //     JSON.stringify(data),
-    //     {
-    //       withCredentials: true,
-    //       headers: { "Content-Type": "application/json" },
-    //     }
-    //   );
-    //   console.log("RESPONSE:", JSON.stringify(response));
-    // } catch (err) {
-    //   if (!err?.response) {
-    //     setErrMsg("No Server Response");
-    //   } else if (err.response?.status > 200) {
-    //     setErrMsg("Internal Server Error");
-    //   }
-    // }
+  const sendJsonMessage = useWebSocketConnection(socketUrl);
+
+  const handleClick = (message) => {
+    console.log("here");
+    sendJsonMessage(message);
   };
 
   return (
@@ -99,10 +87,13 @@ const ProfileEditor = () => {
             <div className="column-title">User Profile is public</div>
             <div className="column">{user.isPublic}</div>
           </div>
-          <button disabled={user.follow} onClick={handleFollow}>
+          <button disabled={user.follow} onClick={() => handleClick("follow")}>
             Follow
           </button>
-          <button disabled={!user.follow} onClick={handleFollow}>
+          <button
+            disabled={user.follow}
+            onClick={() => handleClick("unfollow")}
+          >
             Unfollow
           </button>
         </div>
@@ -111,4 +102,4 @@ const ProfileEditor = () => {
   );
 };
 
-export default ProfileEditor;
+export default ProfileInfo;

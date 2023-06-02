@@ -2,7 +2,7 @@ import { useLocation, Navigate, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
-import { useWebSocketConnection } from "../utils/useWebSocketConnection";
+import { useWebSocketConnection } from "../hooks/useWebSocketConnection";
 
 const AUTH_URL = "http://localhost:8000/auth";
 const WS_URL = `ws://localhost:8000/ws`;
