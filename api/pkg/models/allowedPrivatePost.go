@@ -13,7 +13,7 @@ type AllowedPostModel struct {
 	DB *sql.DB
 }
 
-func (m AllowedPostModel) Insert(allowedPost *AllowedPost) (int64, error) {
+func (repo AllowedPostModel) Insert(allowedPost *AllowedPost) (int64, error) {
 	query := `INSERT INTO allowed_private_posts (post_id, user_id)
 	VALUES(?, ?)`
 
@@ -22,7 +22,7 @@ func (m AllowedPostModel) Insert(allowedPost *AllowedPost) (int64, error) {
 		allowedPost.UserId,
 	}
 
-	result, err := m.DB.Exec(query, args...)
+	result, err := repo.DB.Exec(query, args...)
 
 	if err != nil {
 		return 0, err
