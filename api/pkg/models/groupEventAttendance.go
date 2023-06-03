@@ -15,12 +15,11 @@ type GroupEventAttendanceModel struct {
 
 func (repo GroupEventAttendanceModel) Insert(attendance *GroupEventAttendance) (int64, error) {
 	query := `INSERT INTO group_event_attendance (user_id, event_id, is_attending)
-	VALUES(?, ?, ?)`
+	VALUES(?, ?)`
 
 	args := []interface{}{
 		attendance.PostId,
 		attendance.UserId,
-		false,
 	}
 
 	result, err := repo.DB.Exec(query, args...)
