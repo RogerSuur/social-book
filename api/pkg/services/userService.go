@@ -106,13 +106,13 @@ func (s *UserService) UpdateUserData(userID int64, updateData ProfileUpdateJSON)
 	switch {
 	case updateData.Nickname != user.Nickname:
 		if len(updateData.Nickname) < 3 {
-			log.Printf("User nickname too short")
+			s.Logger.Printf("User nickname too short")
 			return errors.New("nickname")
 		}
 
 		err = s.UserRepo.CheckIfNicknameExists(updateData.Nickname, userID)
 		if err == nil {
-			log.Printf("User nickname already exists")
+			s.Logger.Printf("User nickname already exists")
 			return errors.New("nickname")
 		}
 		user.Nickname = updateData.Nickname

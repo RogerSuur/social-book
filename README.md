@@ -9,6 +9,7 @@
 - [Database access organising](https://www.alexedwards.net/blog/organising-database-access) example
 - [Designing a notification system](https://tannguyenit95.medium.com/designing-a-notification-system-1da83ca971bc) example
 - [Service pattern (project structure)](https://www.alexedwards.net/blog/the-fat-service-pattern)
+- [Websocket architecture](https://programmingpercy.tech/blog/mastering-websockets-with-go/)
 
 ## Running frontend server
 

@@ -24,7 +24,7 @@ func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		app.Logger.Printf("Using user ID (%v) provided in the URL for Profile handler", id)
+		app.Logger.Printf("Using user ID provided in the URL (user %v) for Profile handler", id)
 		userID, err = strconv.Atoi(id)
 		if err != nil {
 			app.Logger.Printf("Cannot parse user ID: %s", err)

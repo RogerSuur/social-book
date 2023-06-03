@@ -38,15 +38,18 @@ func main() {
 	logger.Println("successfully migrated DB..")
 
 	repos := models.InitRepositories(db)
+	userServices := services.InitUserService(
+		repos.UserRepo,
+		repos.SessionRepo,
+		repos.FollowerRepo,
+	)
 
 	app := &handlers.Application{
 		Logger: logger,
-		WS:     websocket.New(),
-		UserService: services.InitUserService(
-			repos.UserRepo,
-			repos.SessionRepo,
-			repos.FollowerRepo,
+		WS: websocket.InitWebsocket(
+			userServices,
 		),
+		UserService: userServices,
 		PostService: services.InitPostService(
 			repos.PostRepo,
 		),
