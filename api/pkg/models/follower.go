@@ -95,6 +95,7 @@ func (repo FollowerRepository) GetFollowingById(followingId int64) ([]*Follower,
 
 	followers := []*Follower{}
 
+	defer rows.Close()
 	for rows.Next() {
 		follower := &Follower{}
 
@@ -102,6 +103,8 @@ func (repo FollowerRepository) GetFollowingById(followingId int64) ([]*Follower,
 		if err != nil {
 			return nil, err
 		}
+
+		followers = append(followers, follower)
 
 	}
 
@@ -120,7 +123,9 @@ func (repo FollowerRepository) GetFollowersById(followerId int64) ([]*Follower, 
 
 	following := []*Follower{}
 
+	defer rows.Close()
 	for rows.Next() {
+
 		follower := &Follower{}
 
 		err := rows.Scan(&follower.FollowingId, &follower.FollowerId, &follower.Accepted)
@@ -128,6 +133,7 @@ func (repo FollowerRepository) GetFollowersById(followerId int64) ([]*Follower, 
 			return nil, err
 		}
 
+		following = append(following, follower)
 	}
 
 	repo.Logger.Printf("User %d found following %d users", followerId, len(following))
