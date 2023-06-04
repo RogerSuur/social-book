@@ -8,6 +8,8 @@ const Comments = (postId) => {
   // const { postid: id } = props.postid;
   const [first, setFirst] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  let offset = 0;
 
   const loader = () => {
     setLoading((prevLoading) => !prevLoading);

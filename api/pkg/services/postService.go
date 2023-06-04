@@ -27,6 +27,7 @@ func InitPostService(postRepo *models.PostRepository) *PostService {
 type feedPostJSON struct {
 	Id           int       `json:"id"`
 	UserId       int       `json:"userId"`
+	UserName     string    `json:"userName"`
 	Content      string    `json:"content"`
 	ImagePath    string    `json:"imagePath"`
 	CommentCount int       `json:"commentCount"`
@@ -66,6 +67,7 @@ func (s *PostService) GetFeedPosts(userId int, offset int) ([]*feedPostJSON, err
 		feedPosts = append(feedPosts, &feedPostJSON{
 			p.Id,
 			p.UserId,
+			p.UserName,
 			p.Content,
 			p.ImagePath,
 			p.CommentCount,

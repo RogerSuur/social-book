@@ -20,6 +20,7 @@ type Post struct {
 type FeedPost struct {
 	Id           int
 	UserId       int
+	UserName     string
 	Content      string
 	CommentCount int
 	ImagePath    string
@@ -126,7 +127,9 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*FeedP
 	//Change value if needed for testing purposes
 	// currentUserId = 11
 
-	stmt := `SELECT p.id, p.user_id, p.content, p.created_at, p.image_path, privacy_type_id, COUNT(DISTINCT c.id) FROM posts p 
+	stmt := `SELECT p.id, p.user_id, u.nickname, p.content, p.created_at, p.image_path, privacy_type_id, COUNT(DISTINCT c.id) FROM posts p 
+	LEFT JOIN users u on
+	p.user_id = u.id
 	LEFT JOIN  followers f ON  
 	p.user_id = f.following_id
 	LEFT JOIN allowed_private_posts app ON
@@ -163,7 +166,7 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*FeedP
 	for rows.Next() {
 		post := &FeedPost{}
 
-		err := rows.Scan(&post.Id, &post.UserId, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.CommentCount)
+		err := rows.Scan(&post.Id, &post.UserId, &post.UserName, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.CommentCount)
 		if err != nil {
 			return nil, err
 		}
