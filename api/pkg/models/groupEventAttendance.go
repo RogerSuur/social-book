@@ -2,6 +2,8 @@ package models
 
 import (
 	"database/sql"
+	"log"
+	"os"
 )
 
 type GroupEventAttendance struct {
@@ -9,11 +11,23 @@ type GroupEventAttendance struct {
 	PostId int
 }
 
-type GroupEventAttendanceModel struct {
-	DB *sql.DB
+type IGroupEventAttendanceRepository interface {
+	Insert(attendance *GroupEventAttendance) (int64, error)
 }
 
-func (repo GroupEventAttendanceModel) Insert(attendance *GroupEventAttendance) (int64, error) {
+type GroupEventAttendanceRepository struct {
+	Logger *log.Logger
+	DB     *sql.DB
+}
+
+func NewGroupEventAttendanceRepo(db *sql.DB) *GroupEventAttendanceRepository {
+	return &GroupEventAttendanceRepository{
+		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		DB:     db,
+	}
+}
+
+func (repo GroupEventAttendanceRepository) Insert(attendance *GroupEventAttendance) (int64, error) {
 	query := `INSERT INTO group_event_attendance (user_id, event_id, is_attending)
 	VALUES(?, ?)`
 
