@@ -67,6 +67,7 @@ func (repo EventRepository) Insert(event *Event) (int64, error) {
 	return lastId, nil
 }
 
+// Get all group events
 func (repo EventRepository) GetAllByGroupId(id int) ([]*Event, error) {
 
 	query := `SELECT id, group_id, user_id, created_at, event_time, timespan, title, description FROM group_events WHERE group_id = ?`
@@ -93,9 +94,33 @@ func (repo EventRepository) GetAllByGroupId(id int) ([]*Event, error) {
 	return events, err
 }
 
-func (repo EventRepository) GetAllByUserId(userId int) ([]*Event, error) {
+// Get all events by user
+func (repo EventRepository) GetAllByUserId(id int) ([]*Event, error) {
 	//TODO
 	//Get all events by attending user
+	query := `SELECT DISTINCT ge.id, group_id, ge.user_id, ge.created_at, ge.event_time, ge.timespan, ge.title, ge.description FROM group_events ge
+	INNER JOIN group_event_atenndance gea
+	ON gea.group_id = ge.group_id
+	WHERE gea.user_id = ? AND WHERE (gea.attending = true OR gea.attending IS NULL)`
 
-	return nil, nil
+	rows, err := repo.DB.Query(query, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	events := []*Event{}
+
+	for rows.Next() {
+		event := &Event{}
+
+		err := rows.Scan(&event.Id, &event.GroupId, &event.UserId, &event.CreatedAt, &event.EventTime, &event.TimeSpan, &event.TimeSpan, &event.Title, &event.Description)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	repo.Logger.Printf("Found %d events for group %d", len(events), id)
+
+	return events, err
 }

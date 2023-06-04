@@ -44,8 +44,8 @@ func (repo GroupRepository) Insert(group *Group) (int64, error) {
 		group.CreatorId,
 		group.Title,
 		group.Description,
-		group.ImagePath,
 		time.Now(),
+		group.ImagePath,
 	}
 
 	result, err := repo.DB.Exec(query, args...)

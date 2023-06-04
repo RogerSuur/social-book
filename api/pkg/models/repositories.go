@@ -15,6 +15,7 @@ type Repositories struct {
 	EventRepo        *EventRepository
 	MessageRepo      *MessageRepository
 	NotificationRepo *NotificationRepository
+	GroupUserRepo    *GroupUserRepository
 }
 
 // InitRepositories should be called in main.go
@@ -28,6 +29,7 @@ func InitRepositories(db *sql.DB) *Repositories {
 	eventRepo := NewEventRepo(db)
 	messageRepo := NewMessageRepo(db)
 	notificationRepo := NewNotificationRepo(db)
+	groupUserRepo := NewGroupUserRepo(db)
 
 	return &Repositories{
 		UserRepo:         userRepo,
@@ -39,5 +41,6 @@ func InitRepositories(db *sql.DB) *Repositories {
 		EventRepo:        eventRepo,
 		MessageRepo:      messageRepo,
 		NotificationRepo: notificationRepo,
+		GroupUserRepo:    groupUserRepo,
 	}
 }
