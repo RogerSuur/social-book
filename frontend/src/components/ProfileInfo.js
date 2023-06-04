@@ -23,7 +23,7 @@ const ProfileInfo = () => {
         })
         .then((response) => {
           setUser(response.data.user);
-          console.log(response.data.user, "USRRR");
+          // console.log(response.data.user, "USRRR");
         });
     };
     loadUser();

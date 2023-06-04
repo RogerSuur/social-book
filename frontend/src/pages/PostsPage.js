@@ -6,12 +6,12 @@ import { makeRequest } from "../services/makeRequest";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [isPostsLoading, setPostsLoading] = useState(false);
   const [error, setError] = useState(null);
   let offset = 0;
 
-  const loader = () => {
-    setLoading(true);
+  const handlePostUpdate = () => {
+    setPostsLoading(!isPostsLoading);
   };
 
   useEffect(() => {
@@ -19,10 +19,9 @@ const Posts = () => {
       try {
         const response = await makeRequest(`feedposts/${offset}`);
         setPosts(response);
-        setLoading(false);
       } catch (error) {
         setError(error.message);
-        setLoading(false);
+        // setLoading(false);
       }
 
       // try {
@@ -33,14 +32,15 @@ const Posts = () => {
       // } catch (error) {
       //   setError(error.message);
       // }
+      // setLoading(false);
     };
 
     loadPosts();
-  }, [loading, offset]);
+  }, [isPostsLoading, offset]);
 
   return (
     <>
-      <CreatePost handler={loader} />
+      <CreatePost onPostsUpdate={handlePostUpdate} />
       {error ? (
         <div className="error">{error}</div>
       ) : (

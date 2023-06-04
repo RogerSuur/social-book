@@ -40,7 +40,7 @@ const CreatePost = (props) => {
 
       setErrMsg(response.data?.message);
 
-      props.handler();
+      props.onPostsUpdate();
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");

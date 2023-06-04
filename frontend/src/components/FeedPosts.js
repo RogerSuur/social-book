@@ -1,38 +1,33 @@
 import React, { useState, useEffect } from "react";
 import Comments from "./Comments";
-import List from "./List";
 import CreateComment from "./CreateComment";
 
 const FeedPosts = (props) => {
   const { posts } = props;
   // const [postid, setPostId] = useState(null);
-  const mapFeedPosts = (post) => {
-    // console.log("FEEDposts numcomments", numComments);
+  const renderPost = (post) => {
+    const { id, userId, content, createdAt, commentCount } = post;
 
     return (
-      <>
-        <div className="content-area" key={post.id}>
-          Postid{post.id}
-          <div className="row">UserId{post.userId}</div>
-          <div className="row">{post.content}</div>
+      <div className="content-area" key={id}>
+        <div>Post ID: {id}</div>
+        <div className="row">UserId{userId}</div>
+        <div className="row">{content}</div>
+        <div className="row">{new Date(createdAt).toLocaleString("et-EE")}</div>
+        {commentCount !== 0 ? (
           <div className="row">
-            {new Date(post.createdAt).toLocaleString("et-EE")}
+            <p>{commentCount} comments</p>
+            <Comments postid={id} />
           </div>
-          {post.commentCount !== 0 ? (
-            <div className="row">
-              <p>{post.commentCount} comments</p>
-              <Comments postid={post.id} />
-            </div>
-          ) : (
-            <p>Be the first to leave a comment</p>
-          )}
-          <CreateComment />
-        </div>
-      </>
+        ) : (
+          <p>Be the first to leave a comment</p>
+        )}
+        <CreateComment />
+      </div>
     );
   };
 
-  const renderedPosts = posts.map(mapFeedPosts);
+  const renderedPosts = posts.map(renderPost);
 
   return <div>{renderedPosts}</div>;
 };
