@@ -16,6 +16,7 @@ type Repositories struct {
 	MessageRepo      *MessageRepository
 	NotificationRepo *NotificationRepository
 	GroupUserRepo    *GroupUserRepository
+	AllowedPostRepo  *AllowedPostRepository
 }
 
 // InitRepositories should be called in main.go
@@ -30,6 +31,7 @@ func InitRepositories(db *sql.DB) *Repositories {
 	messageRepo := NewMessageRepo(db)
 	notificationRepo := NewNotificationRepo(db)
 	groupUserRepo := NewGroupUserRepo(db)
+	allowedPostRepo := NewAllowedPostRepo(db)
 
 	return &Repositories{
 		UserRepo:         userRepo,
@@ -42,5 +44,6 @@ func InitRepositories(db *sql.DB) *Repositories {
 		MessageRepo:      messageRepo,
 		NotificationRepo: notificationRepo,
 		GroupUserRepo:    groupUserRepo,
+		AllowedPostRepo:  allowedPostRepo,
 	}
 }
