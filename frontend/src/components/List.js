@@ -1,5 +1,5 @@
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const List = ({ url, mapFunction }) => {
   const [listData, setListData] = useState([]);

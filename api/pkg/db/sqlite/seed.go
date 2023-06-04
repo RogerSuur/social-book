@@ -13,7 +13,7 @@ import (
 func Seed(repos *models.Repositories) {
 
 	SeedUsers(repos.UserRepo)
-	//SeedFollowers(repos)
+	SeedFollowers(repos)
 	SeedPosts(repos)
 
 	SeedComments(repos.CommentRepo)
