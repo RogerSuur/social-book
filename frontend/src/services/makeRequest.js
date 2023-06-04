@@ -7,7 +7,7 @@ const api = axios.create({
 
 export async function makeRequest(url, options) {
   try {
-    const res = await api(url, options);
+    const res = await api.get(url, options);
     return res.data;
   } catch (error) {
     return await Promise.reject(error?.response?.data?.message ?? "Error");

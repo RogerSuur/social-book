@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
 import axios from "axios";
 
-const CreateComment = (props) => {
-  const { id } = useParams();
+const CreateComment = ({ postid }) => {
+  // const { postid } = useParams();
+  // console.log(postid);
   const [formData, setFormData] = useState({
-    post_id: id,
-    body: "",
+    postId: postid,
+    content: "",
   });
   const [errMsg, setErrMsg] = useState("");
 
@@ -23,10 +23,11 @@ const CreateComment = (props) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log(formData);
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/createcomment",
+        "http://localhost:8000/insertcomment",
         JSON.stringify(formData),
         { withCredentials: true },
         {
@@ -35,11 +36,11 @@ const CreateComment = (props) => {
       );
 
       setErrMsg(response.data?.message);
-      props.handler();
+      //props.handler();
       if (!errMsg) {
         setFormData({
-          post_id: id,
-          body: "",
+          postId: postid,
+          content: "",
         });
       }
     } catch (err) {
@@ -61,8 +62,8 @@ const CreateComment = (props) => {
           <textarea
             placeholder="Your comment goes here"
             onChange={handleChange}
-            value={formData.body}
-            name="body"
+            value={formData.content}
+            name="content"
           />
           <button>Post</button>
         </form>

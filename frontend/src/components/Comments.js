@@ -15,11 +15,6 @@ const Comments = (postId) => {
     setLoading((prevLoading) => !prevLoading);
   };
 
-  // localhost:8000/comments/postid/offset
-
-  // console.log("comments", comments, "postId", postId);
-  // console.log("first", first);
-
   useEffect(() => {
     // console.log("useeffect comments postId", postId.postid);
     const loadComments = async () => {
