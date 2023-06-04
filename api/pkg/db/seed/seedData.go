@@ -1,4 +1,4 @@
-package database
+package seed
 
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
@@ -18,12 +18,13 @@ type SeedUser struct {
 }
 
 type SeedPost struct {
-	Id      int
-	Content string
-	// ImagePath   string
+	Id            int
+	Content       string
 	PrivacyType   enums.PrivacyType
 	CommentSet    []*SeedComment
 	LoremComments int
+	// ImagePath   string
+
 }
 
 type SeedComment struct {
@@ -275,75 +276,3 @@ var SeedCommentDataSetA1 = []*SeedComment{
 		Content:   "Yoga is a game-changer! I've been practicing for years and it's helped me maintain both my physical and mental health. Excited to see you share your knowledge and passion with others.",
 	},
 }
-
-// // 22 rows of lorem ipsum comments from the same person
-// var SeedCommentDataSetC1 = []*SeedComment{
-// 	{
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	},
-// 	{
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	},
-// }
