@@ -2,28 +2,37 @@ import React from "react";
 import { useState, useEffect } from "react";
 import FeedPosts from "../components/FeedPosts";
 import CreatePost from "../components/CreatePost";
-import axios from "axios";
-
+import { makeRequest } from "../services/makeRequest";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
-  let offset = 0
+  const [error, setError] = useState(null);
+  let offset = 0;
 
   const loader = () => {
-    setLoading((prevLoading) => !prevLoading);
+    setLoading(true);
   };
 
   useEffect(() => {
     const loadPosts = async () => {
-      await axios
-        .get(`http://localhost:8000/feedposts/${offset}`, {
-          withCredentials: true,
-        })
-        .then((response) =>  {{
-          console.log(response.data);
-         setPosts(response.data)}}
-        );
+      try {
+        const response = await makeRequest(`feedposts/${offset}`);
+        setPosts(response);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+
+      // try {
+      //   const response = await axios.get(`http://localhost:8000/feedposts/${offset}`, {
+      //     withCredentials: true,
+      //   });
+      //   setPosts(response.data);
+      // } catch (error) {
+      //   setError(error.message);
+      // }
     };
 
     loadPosts();
@@ -32,9 +41,13 @@ const Posts = () => {
   return (
     <>
       <CreatePost handler={loader} />
-      <div className="content-area">
-       <FeedPosts offset={offset}/>
-      </div>
+      {error ? (
+        <div className="error">{error}</div>
+      ) : (
+        <div className="content-area">
+          <FeedPosts posts={posts} />
+        </div>
+      )}
     </>
   );
 };

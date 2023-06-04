@@ -1,35 +1,40 @@
+import React, { useState, useEffect } from "react";
+import Comments from "./Comments";
 import List from "./List";
-
-
-const FEEDPOSTS_URL = `http://localhost:8000/feedposts/`;
+import CreateComment from "./CreateComment";
 
 const FeedPosts = (props) => {
-  const { offset } = props;
-    const mapFeedPosts = (post) => {
+  const { posts } = props;
+  // const [postid, setPostId] = useState(null);
+  const mapFeedPosts = (post) => {
+    // console.log("FEEDposts numcomments", numComments);
 
-      const numComments = 7
-
-      return (
+    return (
+      <>
         <div className="content-area" key={post.id}>
-          <div className="row">{post.userId}</div>
+          Postid{post.id}
+          <div className="row">UserId{post.userId}</div>
           <div className="row">{post.content}</div>
           <div className="row">
             {new Date(post.createdAt).toLocaleString("et-EE")}
           </div>
-          {/* ADD A LINK TO comments if not empty*/}
-          {/* {post.comments !== 0 && <div className="row"> 7 comments</div>} */}
-          {post.comments !== 0 && (
-        <div className="row">
-          <a href={`/comments/${post.id}`}>{numComments} comments</a>
+          {post.commentCount !== 0 ? (
+            <div className="row">
+              <p>{post.commentCount} comments</p>
+              <Comments postid={post.id} />
+            </div>
+          ) : (
+            <p>Be the first to leave a comment</p>
+          )}
+          <CreateComment />
         </div>
-      )}
-        </div>
-      )  
-  }
+      </>
+    );
+  };
 
+  const renderedPosts = posts.map(mapFeedPosts);
 
-  return <List url={`${FEEDPOSTS_URL}${offset}`} mapFunction={mapFeedPosts} />;
-}
-
+  return <div>{renderedPosts}</div>;
+};
 
 export default FeedPosts;

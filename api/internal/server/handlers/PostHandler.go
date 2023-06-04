@@ -23,19 +23,28 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 		decoder.DisallowUnknownFields()
 
 		JSONdata := &createPostJSON{}
-		err := decoder.Decode(JSONdata)
+		err := decoder.Decode(&JSONdata)
 
 		if err != nil {
 			app.Logger.Printf("JSON error: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
 		}
 
+		userId, err := app.UserService.GetUserID(r)
+
+		if err != nil {
+			app.Logger.Printf("Failed fetching user: %v", err)
+			http.Error(rw, "Get user error", http.StatusBadRequest)
+		}
+
 		post := &models.Post{
-			UserId:      JSONdata.UserId,
+			UserId:      userId,
 			ImagePath:   JSONdata.ImagePath,
 			Content:     JSONdata.Content,
 			PrivacyType: enums.PrivacyType(JSONdata.PrivacyType),
 		}
+
+		// fmt.Println("Post", post)
 
 		err = app.PostService.CreatePost(post)
 

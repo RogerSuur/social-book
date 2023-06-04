@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
 
 const List = ({ url, mapFunction }) => {
   const [listData, setListData] = useState([]);
@@ -17,4 +17,5 @@ const List = ({ url, mapFunction }) => {
   //console.log(renderedList[0].key);
   return <div>{renderedList}</div>;
 };
+
 export default List;

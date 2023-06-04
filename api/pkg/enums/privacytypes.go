@@ -3,7 +3,8 @@ package enums
 type PrivacyType int64
 
 const (
-	Private PrivacyType = iota
+	None PrivacyType = iota
 	Public
+	Private
 	SubPrivate
 )

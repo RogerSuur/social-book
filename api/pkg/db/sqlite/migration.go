@@ -10,6 +10,8 @@
 // api/pkg/db/migrations/sqlite/000004_messages.up.sql
 // api/pkg/db/migrations/sqlite/000005_notifications.down.sql
 // api/pkg/db/migrations/sqlite/000005_notifications.up.sql
+// api/pkg/db/migrations/sqlite/000006_alter_posts_followers_groups.down.sql
+// api/pkg/db/migrations/sqlite/000006_alter_posts_followers_groups.up.sql
 // DO NOT EDIT!
 
 package database
@@ -152,7 +154,7 @@ func _000002_posts_commentsUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000002_posts_comments.up.sql", size: 1075, mode: os.FileMode(420), modTime: time.Unix(1682006392, 0)}
+	info := bindataFileInfo{name: "000002_posts_comments.up.sql", size: 1075, mode: os.FileMode(420), modTime: time.Unix(1682667635, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -277,6 +279,46 @@ func _000005_notificationsUpSql() (*asset, error) {
 	return a, nil
 }
 
+var __000006_alter_posts_followers_groupsDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
+
+func _000006_alter_posts_followers_groupsDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__000006_alter_posts_followers_groupsDownSql,
+		"000006_alter_posts_followers_groups.down.sql",
+	)
+}
+
+func _000006_alter_posts_followers_groupsDownSql() (*asset, error) {
+	bytes, err := _000006_alter_posts_followers_groupsDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "000006_alter_posts_followers_groups.down.sql", size: 0, mode: os.FileMode(420), modTime: time.Unix(1683832514, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __000006_alter_posts_followers_groupsUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x64\x8e\x41\x0a\xc2\x30\x10\x45\xf7\x39\xc5\x2c\xf5\x0c\x59\xc5\x66\x14\x21\xa6\x12\x23\xb8\x2b\xc1\xc6\x3a\x10\x49\x68\x46\xbd\xbe\x8b\x22\x58\xbb\x7e\xef\x3f\xbe\x32\x1e\x1d\x78\xb5\x31\x08\x25\x57\xae\xa0\x5d\x7b\x84\xa6\x35\xe7\x83\x05\x26\x4e\x51\x0a\xb1\xb4\x84\xd2\xfa\x6b\x0d\x63\x7e\x96\x8e\x7a\xd8\x5b\x8f\x3b\x74\x20\x1c\x6e\xd1\xa1\x6d\xf0\x34\xc1\xba\xa2\x7e\x2d\xc5\x3c\x34\x91\xdf\x10\x3d\xc2\x10\xbb\x12\xf8\x0e\x1e\x2f\xfe\x7f\x70\xcb\x29\xe5\x77\x1c\xe7\x1f\xc3\x95\xe9\x15\xe5\x27\x00\x00\xff\xff\xd2\x1d\x6f\x6b\xc9\x00\x00\x00")
+
+func _000006_alter_posts_followers_groupsUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__000006_alter_posts_followers_groupsUpSql,
+		"000006_alter_posts_followers_groups.up.sql",
+	)
+}
+
+func _000006_alter_posts_followers_groupsUpSql() (*asset, error) {
+	bytes, err := _000006_alter_posts_followers_groupsUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "000006_alter_posts_followers_groups.up.sql", size: 201, mode: os.FileMode(420), modTime: time.Unix(1683832717, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -339,6 +381,8 @@ var _bindata = map[string]func() (*asset, error){
 	"000004_messages.up.sql": _000004_messagesUpSql,
 	"000005_notifications.down.sql": _000005_notificationsDownSql,
 	"000005_notifications.up.sql": _000005_notificationsUpSql,
+	"000006_alter_posts_followers_groups.down.sql": _000006_alter_posts_followers_groupsDownSql,
+	"000006_alter_posts_followers_groups.up.sql": _000006_alter_posts_followers_groupsUpSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -391,6 +435,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"000004_messages.up.sql": &bintree{_000004_messagesUpSql, map[string]*bintree{}},
 	"000005_notifications.down.sql": &bintree{_000005_notificationsDownSql, map[string]*bintree{}},
 	"000005_notifications.up.sql": &bintree{_000005_notificationsUpSql, map[string]*bintree{}},
+	"000006_alter_posts_followers_groups.down.sql": &bintree{_000006_alter_posts_followers_groupsDownSql, map[string]*bintree{}},
+	"000006_alter_posts_followers_groups.up.sql": &bintree{_000006_alter_posts_followers_groupsUpSql, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory

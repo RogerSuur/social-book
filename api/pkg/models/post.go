@@ -11,16 +11,25 @@ import (
 type Post struct {
 	Id          int
 	UserId      int
-	Title       string
 	Content     string
 	ImagePath   string
 	CreatedAt   time.Time
 	PrivacyType enums.PrivacyType
 }
 
+type FeedPost struct {
+	Id           int
+	UserId       int
+	Content      string
+	CommentCount int
+	ImagePath    string
+	CreatedAt    time.Time
+	PrivacyType  enums.PrivacyType
+}
+
 type IPostRepository interface {
 	GetAllByUserId(id int64) ([]*Post, error)
-	GetAllFeedPosts(currentUserId int, offset int) ([]*Post, error)
+	GetAllFeedPosts(currentUserId int, offset int) ([]*FeedPost, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
 	GetCommentCount(postId int) (int, error)
@@ -41,12 +50,11 @@ func NewPostRepo(db *sql.DB) *PostRepository {
 const FeedLimit = 10
 
 func (repo PostRepository) Insert(post *Post) (int64, error) {
-	query := `INSERT INTO posts (user_id, title, content, created_at, image_path, privacy_type_id)
-	VALUES(?, ?, ?, ?, ?, ?)`
+	query := `INSERT INTO posts (user_id, content, created_at, image_path, privacy_type_id)
+	VALUES(?, ?, ?, ?, ?)`
 
 	args := []interface{}{
 		post.UserId,
-		post.Title,
 		post.Content,
 		time.Now(),
 		post.ImagePath,
@@ -65,24 +73,24 @@ func (repo PostRepository) Insert(post *Post) (int64, error) {
 		return 0, err
 	}
 
-	repo.Logger.Printf("Inserted post '%s' by user %d (last insert ID: %d)", post.Title, post.UserId, lastId)
+	repo.Logger.Printf("Inserted post by user %d (last insert ID: %d)", post.UserId, lastId)
 
 	return lastId, nil
 }
 
 func (repo PostRepository) GetById(id int64) (*Post, error) {
-	query := `SELECT id, user_id,  title, content, created_at, image_path, privacy_type_id FROM posts WHERE id = ?`
+	query := `SELECT id, user_id, content, created_at, image_path, privacy_type_id FROM posts WHERE id = ?`
 	row := repo.DB.QueryRow(query, id)
 	post := &Post{}
 
-	err := row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
+	err := row.Scan(&post.Id, &post.UserId, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
 
 	return post, err
 }
 
 func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 
-	stmt := `SELECT id, user_id,  title, content, created_at, image_path, privacy_type_id FROM posts p
+	stmt := `SELECT id, user_id, content, created_at, image_path, privacy_type_id FROM posts p
 	WHERE user_id = ?
     ORDER BY created_at DESC`
 
@@ -98,7 +106,7 @@ func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 	for rows.Next() {
 		post := &Post{}
 
-		err := rows.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
+		err := rows.Scan(&post.Id, &post.UserId, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
 		if err != nil {
 			return nil, err
 		}
@@ -113,22 +121,25 @@ func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 }
 
 // Return all posts to the current user by offset
-func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*Post, error) {
+func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*FeedPost, error) {
 
 	//Change value if needed for testing purposes
-	currentUserId = 1
+	// currentUserId = 11
 
-	stmt := `SELECT p.id, p.user_id, p.content, p.created_at, p.image_path, privacy_type_id FROM posts p 
+	stmt := `SELECT p.id, p.user_id, p.content, p.created_at, p.image_path, privacy_type_id, COUNT(DISTINCT c.id) FROM posts p 
 	LEFT JOIN  followers f ON  
 	p.user_id = f.following_id
 	LEFT JOIN allowed_private_posts app ON
 	p.id = app.post_id
+	LEFT JOIN comments c ON
+	p.id = c.post_id
 	WHERE privacy_type_id = 1 
-	OR privacy_type_id = 2 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND f.active = 1
-	OR privacy_type_id = 3 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND f.active = 1 AND app.id IS NOT NULL AND app.user_id = ?
+	OR privacy_type_id = 2 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 
+	OR privacy_type_id = 3 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND app.id IS NOT NULL AND app.user_id = ?
 	OR p.user_id = ?
+	OR p.group_id IS NOT NULL
 	GROUP BY p.id
-	ORDER BY created_at DESC
+	ORDER BY p.created_at DESC
 	LIMIT ? OFFSET ?`
 
 	args := []interface{}{
@@ -147,12 +158,12 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*Post,
 
 	defer rows.Close()
 
-	posts := []*Post{}
+	posts := []*FeedPost{}
 
 	for rows.Next() {
-		post := &Post{}
+		post := &FeedPost{}
 
-		err := rows.Scan(&post.Id, &post.UserId, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
+		err := rows.Scan(&post.Id, &post.UserId, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.CommentCount)
 		if err != nil {
 			return nil, err
 		}

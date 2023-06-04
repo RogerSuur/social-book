@@ -3,21 +3,27 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import CreateComment from "./CreateComment";
 
-const Comments = () => {
+const Comments = (postId) => {
   const [comments, setComments] = useState([]);
-  const { id } = useParams();
-  const [first, setFirst] = useState(false);
+  // const { postid: id } = props.postid;
+  const [first, setFirst] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const loader = () => {
     setLoading((prevLoading) => !prevLoading);
   };
 
+  // localhost:8000/comments/postid/offset
+
+  // console.log("comments", comments, "postId", postId);
+  // console.log("first", first);
+
   useEffect(() => {
+    // console.log("useeffect comments postId", postId.postid);
     const loadComments = async () => {
       try {
         await axios
-          .get(`http://localhost:8000/comments/${id}`, {
+          .get(`http://localhost:8000/comments/${postId.postid}/0`, {
             withCredentials: true,
           })
           .then((response) => {
@@ -36,35 +42,29 @@ const Comments = () => {
 
   return (
     <>
-      <CreateComment handler={loader} />
-      {first && <h2>Be the first to leave a comment</h2>}
-      {comments.length > 0 && (
-        <div className="content-area">
-          <div className="row">
-            <div className="column">
-              {comments.map((comment) => (
-                <>
-                  <div key={comment.comment_id}>{comment.body}</div>
-                  <div className="row">
-                    <div className="column">
-                      <p>
-                        <small>
-                          {new Date(comment.comment_datetime).toLocaleString(
-                            "et-EE"
-                          )}
-                        </small>
-                      </p>
-                    </div>
-                    <div className="column">{comment.username}</div>
+      <div className="content-area">
+        <div className="row">
+          <div className="column">
+            {comments.map((comment) => (
+              <>
+                <div key={comment.comment_id}>{comment.content}</div>
+                <div className="row">
+                  <div className="column">
+                    <p>
+                      <small>
+                        {new Date(comment.createdAt).toLocaleString("et-EE")}
+                      </small>
+                    </p>
                   </div>
+                  <div className="column">{comment.userId}</div>
+                </div>
 
-                  <hr />
-                </>
-              ))}
-            </div>
+                <hr />
+              </>
+            ))}
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 };

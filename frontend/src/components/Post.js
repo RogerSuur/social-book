@@ -9,6 +9,7 @@ const Post = () => {
 
   useEffect(() => {
     const loadPost = async () => {
+      // console.log("loadPost ComponentPost");
       await axios
         .get(`http://localhost:8000/posts/${id}`, {
           withCredentials: true,
@@ -23,7 +24,6 @@ const Post = () => {
     <>
       <div className="content-area">
         <div className="column-title">
-          <h1>{post.title}</h1>
           <h2>{post.body}</h2>
           <sub>{post.username}</sub>
           <sub>{new Date(post.post_datetime).toLocaleString("et-EE")}</sub>

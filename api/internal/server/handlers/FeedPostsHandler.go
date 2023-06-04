@@ -23,6 +23,11 @@ func (app *Application) FeedPosts(rw http.ResponseWriter, r *http.Request) {
 
 		userID, err := app.UserService.GetUserID(r)
 
+		if err != nil {
+			app.Logger.Printf("Failed fetching user: %v", err)
+			http.Error(rw, "Get user error", http.StatusBadRequest)
+		}
+
 		feed, err := app.PostService.GetFeedPosts(userID, offsetInt)
 
 		if err != nil {

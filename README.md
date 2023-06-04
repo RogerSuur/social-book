@@ -20,6 +20,9 @@
 
 - `go run ./api/.`
 
+If you wish to seed the database, run the command:
+- `go run ./api/. seed`
+
 ## Database
 
 - Creating new database migration: <br/>
@@ -30,4 +33,4 @@
 
 - Updating the migration.go file code:
 
-        go-bindata -o api/pkg/db/sqlite/migration.go   -prefix api/pkg/db migrations/sqlite/  -pkg database api/pkg/db/migrations/sqlite
+        go-bindata -o api/pkg/db/sqlite/migration.go   -prefix api/pkg/db/migrations/sqlite/  -pkg database api/pkg/db/migrations/sqlite
