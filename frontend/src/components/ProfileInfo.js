@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { useWebSocketConnection } from "../hooks/useWebSocketConnection";
+import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import { useOutletContext } from "react-router-dom";
 
 const PROFILE_URL = "http://localhost:8000/profile/";
-const PROFILE_FOLLOW_URL = "http://localhost:8000/profile/follow";
 
 const ProfileInfo = () => {
   const [user, setUser] = useState({});
@@ -18,7 +17,7 @@ const ProfileInfo = () => {
   useEffect(() => {
     const loadUser = async () => {
       await axios
-        .get(`http://localhost:8000/profile/${id}`, {
+        .get(PROFILE_URL + id, {
           withCredentials: true,
         })
         .then((response) => {
@@ -29,12 +28,20 @@ const ProfileInfo = () => {
     loadUser();
   }, []);
 
+  console.log(user, "OTHER USER");
+
   const handleFollow = () => {
-    sendJsonMessage({ type: "follow", following_id: user.id });
+    sendJsonMessage({
+      type: "follow_request",
+      data: user.id,
+    });
   };
 
   const handleUnfollow = () => {
-    sendJsonMessage({ type: "unfollow", following_id: user.id });
+    sendJsonMessage({
+      type: "unfollow_request",
+      data: { following_id: user.id },
+    });
   };
 
   return (
@@ -88,7 +95,7 @@ const ProfileInfo = () => {
           </div>
           <div className="row">
             <div className="column-title">User Profile is public</div>
-            <div className="column">{user.isPublic}</div>
+            <div className="column">{user.isPublic ? "Yes" : "No"}</div>
           </div>
           <button disabled={user.follow} onClick={handleFollow}>
             Follow

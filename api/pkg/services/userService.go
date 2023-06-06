@@ -120,6 +120,9 @@ func (s *UserService) UpdateUserData(userID int64, updateData ProfileUpdateJSON)
 	case updateData.About != user.About:
 		user.About = updateData.About
 
+	case updateData.IsPublic != user.IsPublic:
+		user.IsPublic = updateData.IsPublic
+
 	default:
 		return errors.New("no data to update")
 

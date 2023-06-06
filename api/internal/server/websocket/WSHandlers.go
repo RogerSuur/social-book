@@ -3,6 +3,7 @@ package websocket
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 type Payload struct {
@@ -52,6 +53,7 @@ func (w *WebsocketServer) routePayloads(payload Payload, client *Client) error {
 func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 	// c.clientID
 	var followerID int
+	fmt.Println(p)
 	err := json.Unmarshal(p.Data, &followerID)
 	if err != nil {
 		return err

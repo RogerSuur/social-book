@@ -18,6 +18,23 @@ nav {
   border-radius: 0 0 10px 10px;
 }
 
+.chat-sidebar {
+  position: fixed;
+  align-items: flex-end;
+  top: 0;
+  right: 0;
+  height: 100%;
+  margin-right: auto;
+  background-color: #f2f2f2;
+}
+
+.require-auth-container {
+  display: flex;
+  align-content: space-evenly;
+  height: 100vh;
+  width: 100vw;
+}
+
 /* .nav-visible {
   display: flex;
 }

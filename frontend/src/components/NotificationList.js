@@ -1,15 +1,48 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import useWebSocketConnection from "../hooks/useWebSocketConnection";
+import Notification from "../components/Notification";
+import { useOutletContext } from "react-router-dom";
+import axios from "axios";
+
+const NOTIFICATIONS_URL = "http://localhost:8000/notifications/";
+const WS_URL = `ws://localhost:8000/ws`;
 
 const NotificationList = () => {
+  const [notifications, setNotifications] = useState([]);
+  const { lastJsonMessage } = useWebSocketConnection(WS_URL);
+
+  useEffect(() => {
+    const loadNotifications = async () => {
+      await axios
+        .get(NOTIFICATIONS_URL, {
+          withCredentials: true,
+        })
+        .then((response) => {
+          setNotifications(response.data);
+        });
+    };
+    loadNotifications();
+  }, []);
+
+  useEffect(() => {
+    if (lastJsonMessage && lastJsonMessage.type !== "new_message") {
+      setNotifications((prevNotifications) => {
+        return [lastJsonMessage, ...prevNotifications];
+      });
+    }
+  }, [lastJsonMessage]);
+
+  const renderedNotifications = notifications.map((notification, index) => (
+    <li key={index}>
+      <Notification notification={notification} />
+    </li>
+  ));
+
   return (
     <>
-      <ul className="list-group">
-        <li className="list-group-item">An item</li>
-        <li className="list-group-item">A second item</li>
-        <li className="list-group-item">A third item</li>
-        <li className="list-group-item">A fourth item</li>
-        <li className="list-group-item">And a fifth one</li>
-      </ul>
+      {notifications.length === 0
+        ? "You have no notifications"
+        : renderedNotifications}
     </>
   );
 };

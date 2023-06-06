@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import NotificationList from "../components/NotificationList.js";
 
 const Navbar = () => {
   const { auth } = useAuth();
-  const navigate = useNavigate();
+  const location = useLocation();
   const [toggle, setToggle] = useState(false);
 
   useEffect(() => {
-    navigate("/profile", { replace: true });
-  }, []);
+    setToggle(false);
+  }, [location]);
 
   const handleToggle = () => {
     setToggle(!toggle);
@@ -34,7 +34,7 @@ const Navbar = () => {
               </li>
             </>
           )}
-          <li onClick={handleToggle}>Notifications</li>
+          {auth && <li onClick={handleToggle}>Notifications</li>}
           <li>
             <Link className="text-link" to="/profile">
               Profile
@@ -57,7 +57,7 @@ const Navbar = () => {
           </li>
         </ul>
       </nav>
-      {toggle && <NotificationList />}
+      {auth && toggle && <NotificationList />}
       <Outlet />
     </>
   );
