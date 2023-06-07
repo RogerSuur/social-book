@@ -1,6 +1,7 @@
+import Chatbox from "../components/Chatbox";
+
 const SingleChatItem = ({ chat, index, toggleChat, isOpen }) => {
   const handleToggle = () => {
-    console.log(index);
     toggleChat(index);
   };
 
@@ -13,7 +14,7 @@ const SingleChatItem = ({ chat, index, toggleChat, isOpen }) => {
           {chat.first_name} {chat.last_name}
         </p>
       </div>
-      {isOpen && <div>Chat</div>}
+      {isOpen && <Chatbox toggleChat={toggleChat} chat={chat} />}
     </>
   );
 };

@@ -4,9 +4,9 @@ import useAuth from "../hooks/useAuth";
 import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import ChatTest from "../components/ChatTest";
+import { WS_URL } from "../utils/routes";
 
 const AUTH_URL = "http://localhost:8000/auth";
-const WS_URL = `ws://localhost:8000/ws`;
 
 const RequireAuth = () => {
   const { auth, setAuth } = useAuth();
