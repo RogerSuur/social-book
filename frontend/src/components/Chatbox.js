@@ -26,9 +26,10 @@ const Chatbox = ({ toggleChat, chat }) => {
 
   useEffect(() => {
     if (lastJsonMessage && lastJsonMessage.type === "message_history") {
-      setMessageHistory((prevMessageHistory) => {
-        [...lastJsonMessage?.data?.messages, ...prevMessageHistory];
-      });
+      setMessageHistory((prevMessageHistory) => [
+        ...lastJsonMessage?.data?.messages,
+        ...prevMessageHistory,
+      ]);
     }
   }, [lastJsonMessage]);
 
