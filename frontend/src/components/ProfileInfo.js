@@ -3,8 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import { useOutletContext } from "react-router-dom";
-
-const PROFILE_URL = "http://localhost:8000/profile/";
+import { PROFILE_URL } from "../utils/routes";
 
 const ProfileInfo = () => {
   const [user, setUser] = useState({});
@@ -26,7 +25,7 @@ const ProfileInfo = () => {
         });
     };
     loadUser();
-  }, []);
+  }, [id]);
 
   console.log(user, "OTHER USER");
 

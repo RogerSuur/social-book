@@ -2,21 +2,20 @@ import SingleChatlistItem from "../components/SingleChatlistItem";
 import React, { useState, useEffect } from "react";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import Chatbox from "../components/Chatbox";
-import Notification from "../components/Notification";
-import axios from "axios";
+import MessageNotification from "../components/MessageNotification";
 import { WS_URL } from "../utils/routes";
 
 const ChatTest = ({}) => {
   const [openChat, setOpenChat] = useState(0);
   const [chatlist, setChatlist] = useState([]);
-  const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
+  const { lastJsonMessage } = useWebSocketConnection(WS_URL);
 
   console.log(openChat);
 
   const chatter = [
     { first_name: "Chill", last_name: "Bill", userid: 1 },
     { first_name: "Scary", last_name: "Mary", userid: 2 },
-    { first_name: "B", last_name: "Mary", userid: 3 },
+    { first_name: "B", last_name: "Mary", username: "bloodymary", userid: 3 },
     { first_name: "A", last_name: "Mary", userid: 4 },
     { first_name: "V", last_name: "Mary", userid: 5 },
     { first_name: "C", last_name: "Mary", userid: 6 },
@@ -39,7 +38,6 @@ const ChatTest = ({}) => {
     { first_name: "V", last_name: "Mary", userid: 22 },
   ];
 
-  // Function to toggle a chat
   const toggleChat = (chatId) => {
     if (openChat !== chatId) {
       setOpenChat(chatId);
@@ -53,6 +51,7 @@ const ChatTest = ({}) => {
           setChatlist([...lastJsonMessage.data]);
           break;
         case "message":
+          break;
       }
     }
   }, [lastJsonMessage]);
@@ -73,9 +72,12 @@ const ChatTest = ({}) => {
   ));
 
   return (
-    <div className="chat-sidebar">
-      <ul>{renderedChats}</ul>
-    </div>
+    <>
+      <MessageNotification />
+      <div className="chat-sidebar">
+        <ul>{renderedChats}</ul>
+      </div>
+    </>
   );
 };
 

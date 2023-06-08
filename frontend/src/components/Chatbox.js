@@ -1,6 +1,7 @@
 import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Chatbox = ({ toggleChat, chat }) => {
   const [messageHistory, setMessageHistory] = useState([]);
@@ -12,7 +13,7 @@ const Chatbox = ({ toggleChat, chat }) => {
     },
   });
 
-  console.log(message, "MESS");
+  console.log(chat.userid, "CHATID");
 
   const closeChat = () => {
     toggleChat(0);
@@ -59,7 +60,9 @@ const Chatbox = ({ toggleChat, chat }) => {
   const chatbox = (
     <div className="chatbox">
       <div className="chat-title">
-        {chat.first_name} {chat.last_name}
+        <Link to={`/profile/${chat.userid}`}>
+          {chat.first_name} {chat.last_name}
+        </Link>
         <button onClick={closeChat}>Close</button>
       </div>
       <div className="message-history">Messages</div>

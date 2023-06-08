@@ -1,17 +1,21 @@
-const SingleChatlistItem = ({ chat, userid, toggleChat, isOpen }) => {
+const SingleChatlistItem = ({ chat, userid, toggleChat }) => {
   const handleToggle = () => {
     toggleChat(userid);
   };
 
-  console.log(isOpen, userid, "OPEN");
+  let listItem;
 
-  return (
-    <div onClick={handleToggle}>
+  if (chat?.username) {
+    listItem = <p>{chat.username}</p>;
+  } else {
+    listItem = (
       <p>
         {chat.first_name} {chat.last_name}
       </p>
-    </div>
-  );
+    );
+  }
+
+  return <div onClick={handleToggle}>{listItem}</div>;
 };
 
 export default SingleChatlistItem;
