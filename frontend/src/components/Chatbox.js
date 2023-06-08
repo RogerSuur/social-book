@@ -25,11 +25,27 @@ const Chatbox = ({ toggleChat, chat }) => {
   }, []);
 
   useEffect(() => {
-    if (lastJsonMessage && lastJsonMessage.type === "message_history") {
-      setMessageHistory((prevMessageHistory) => [
-        ...lastJsonMessage?.data?.messages,
-        ...prevMessageHistory,
-      ]);
+    if (lastJsonMessage) {
+      switch (lastJsonMessage.type) {
+        case "message_history":
+          setMessageHistory((prevMessageHistory) => [
+            ...lastJsonMessage?.data?.messages,
+            ...prevMessageHistory,
+          ]);
+          break;
+        case "message":
+          if (
+            (lastJsonMessage?.data?.sender_id === chat.userid &&
+              lastJsonMessage?.data?.group_id === 0) ||
+            lastJsonMessage?.data?.recipient_id === chat.userid ||
+            lastJsonMessage?.data?.group_id === chat.group_id
+          ) {
+            setMessageHistory((prevMessageHistory) => [
+              ...prevMessageHistory,
+              lastJsonMessage?.data,
+            ]);
+          }
+      }
     }
   }, [lastJsonMessage]);
 
