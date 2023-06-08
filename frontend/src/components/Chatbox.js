@@ -1,6 +1,6 @@
 import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Chatbox = ({ toggleChat, chat }) => {
@@ -12,6 +12,25 @@ const Chatbox = ({ toggleChat, chat }) => {
       body: "",
     },
   });
+
+  const loadMessages = () => {
+    sendJsonMessage({
+      type: "request_message_history",
+      data: { userid: chat.userid },
+    });
+  };
+
+  useEffect(() => {
+    loadMessages();
+  }, []);
+
+  useEffect(() => {
+    if (lastJsonMessage && lastJsonMessage.type === "message_history") {
+      setMessageHistory((prevMessageHistory) => {
+        [...lastJsonMessage?.data?.messages, ...prevMessageHistory];
+      });
+    }
+  }, [lastJsonMessage]);
 
   console.log(chat.userid, "CHATID");
 
@@ -29,6 +48,8 @@ const Chatbox = ({ toggleChat, chat }) => {
       };
     });
   };
+
+  const renderedMessages = <p>Message</p>;
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -65,7 +86,7 @@ const Chatbox = ({ toggleChat, chat }) => {
         </Link>
         <button onClick={closeChat}>Close</button>
       </div>
-      <div className="message-history">Messages</div>
+      <div className="message-history">{renderedMessages}</div>
       <div className="message-box">
         <form onSubmit={handleSubmit}>
           <input
