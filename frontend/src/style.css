@@ -48,10 +48,15 @@ nav {
   font-weight: bold;
 }
 
-.message-box {
+.message-history {
   border: 1px solid black;
   height: 200px; /* Adjust this value as needed */
   overflow-y: auto;
+}
+
+.message-box {
+  border: 1px solid black;
+  height: 50px; /* Adjust this value as needed */
 }
 
 /* .chatbox {
