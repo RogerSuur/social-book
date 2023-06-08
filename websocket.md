@@ -1,19 +1,38 @@
 # JSON structure for Websocket messages
 
 ## chat message
+
 ```JSON
 {
-    "type": "new_message",
+    "type": "message",
     "data": {
         "recipient_id": 123, // 0 if group chat
-        "grouop_id": 123, // 0 if private chat
-        "content": "message content",
-        "timestamp": "2006-01-02T15:04:05Z07:00"
+        "group_id": 123, // 0 if private chat
+        "body": "message content",
+        "timestamp": "2006-01-02T15:04:05Z07:00" //won't be sending from frontend, but still need to receive it
+    }
+}
+```
+
+## chatlist
+
+```JSON
+{
+    "type": "chatlist",
+    "data": {
+        "userid": 123, // 0 if group
+        "group_id": 123, // 0 if user
+        "username": "username", //group name if group
+        "first_name": "first name", //omit the field if group
+        "last_name": "last name", //omit the field if group
+        "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any, might use it to sort chats by last message
+        "avatarImage": "link" // if will be used in chatlist
     }
 }
 ```
 
 ## follow request
+
 ```JSON
 {
     "type": "follow_request",
@@ -24,6 +43,7 @@
 ```
 
 ## follow accept
+
 ```JSON
 {
     "type": "follow_accept",
@@ -34,6 +54,7 @@
 ```
 
 ## follow reject
+
 ```JSON
 {
     "type": "follow_reject",
@@ -44,6 +65,7 @@
 ```
 
 ## unfollow
+
 ```JSON
 {
     "type": "unfollow",
@@ -54,6 +76,7 @@
 ```
 
 ## send group invite
+
 ```JSON
 {
     "type": "group_invite",
@@ -65,6 +88,7 @@
 ```
 
 ## group invite accept
+
 ```JSON
 {
     "type": "group_accept",
@@ -75,6 +99,7 @@
 ```
 
 ## group invite reject
+
 ```JSON
 {
     "type": "group_reject",

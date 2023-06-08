@@ -35,23 +35,23 @@ const Chatbox = ({ toggleChat, chat }) => {
     if (chat?.group_id > 0) {
       console.log({
         ...message,
-        data: { ...message.data, recepient_id: chat.group_id },
+        data: { ...message.data, recipient_id: chat.group_id },
       });
       // sendJsonMessage({
       //   ...message,
-      //   data: { ...message.data, recepient_id: chat.group_id },
+      //   data: { ...message.data, recipient_id: chat.group_id },
       // });
     } else {
       console.log(
         {
           ...message,
-          data: { ...message.data, recepient_id: chat.userid },
+          data: { ...message.data, recipient_id: chat.userid },
         },
         "SENDING"
       );
       // sendJsonMessage({
       //   ...message,
-      //   data: { ...message.data, recepient_id: chat.userid },
+      //   data: { ...message.data, recipient_id: chat.userid },
       // });
     }
     setMessage({ ...message, data: { body: "" } });
