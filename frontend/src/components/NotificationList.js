@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import Notification from "../components/Notification";
-import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 
 const NOTIFICATIONS_URL = "http://localhost:8000/notifications/";
@@ -24,25 +23,59 @@ const NotificationList = () => {
     loadNotifications();
   }, []);
 
+  const handleNotificationClose = (id) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notification) => notification?.data?.id !== id)
+    );
+  };
+
+  const notif = [
+    {
+      type: "follow_request",
+      data: { id: 1, following_id: 3, username: "Jim Boles" },
+    },
+    {
+      type: "group_invite",
+      data: {
+        id: 2,
+        sender_id: 1,
+        username: "Jo-Jo",
+        group_id: 1,
+        group_name: "Funky Animals",
+      },
+    },
+    {
+      type: "group_join",
+      data: {
+        id: 3,
+        sender_id: 3,
+        username: "Kevin Bacon",
+        group_id: 2,
+        group_name: "Bad Weather",
+      },
+    },
+  ];
+
   useEffect(() => {
-    if (lastJsonMessage && lastJsonMessage.type !== "new_message") {
+    if (lastJsonMessage && lastJsonMessage.type !== "message") {
       setNotifications((prevNotifications) => {
         return [lastJsonMessage, ...prevNotifications];
       });
     }
   }, [lastJsonMessage]);
 
-  const renderedNotifications = notifications.map((notification, index) => (
-    <li key={index}>
-      <Notification notification={notification} />
+  const renderedNotifications = notif.map((notification) => (
+    <li key={notification?.data?.id}>
+      <Notification
+        notification={notification}
+        onClose={handleNotificationClose}
+      />
     </li>
   ));
 
   return (
     <>
-      {notifications.length === 0
-        ? "You have no notifications"
-        : renderedNotifications}
+      {notif.length === 0 ? "You have no notifications" : renderedNotifications}
     </>
   );
 };
