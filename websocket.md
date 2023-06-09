@@ -6,7 +6,11 @@
 {
     "type": "message",
     "data": {
+        "id": 1, // message id
+        "sender_id": 1,
+        "sender_name" : "sdfs", // username (if exists) or first name last name
         "recipient_id": 123, // 0 if group chat
+        "recipient_name": "somename", // username (if exists) or first name last name
         "group_id": 123, // 0 if private chat
         "body": "message content",
         "timestamp": "2006-01-02T15:04:05Z07:00" //won't be sending from frontend, but still need to receive it
@@ -20,13 +24,14 @@
 {
     "type": "chatlist",
     "data": {
-        "userid": 123, // 0 if group
+        "users" : [{"userid": 123, // 0 if group
         "group_id": 123, // 0 if user
         "username": "username", //group name if group
         "first_name": "first name", //omit the field if group
         "last_name": "last name", //omit the field if group
         "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any, might use it to sort chats by last message
         "avatarImage": "link" // if will be used in chatlist
+        }]
     }
 }
 ```
@@ -37,7 +42,65 @@
 {
     "type": "follow_request",
     "data": {
+        "id": 1, //notification id
         "following_id": 123,
+        "name": "something" // either a username (if exists) or firstname and lastname
+    }
+}
+```
+
+## group invite - someone inviting you
+
+```JSON
+{
+    "type": "group_invite",
+    "data": {
+        "id": 1, //notification id
+        "group_id": 123,
+        "group_name": "somename",
+        "sender_id": 123,
+        "sender_name": "adsad", // either a username (if exists) or firstname and lastname
+    }
+}
+```
+
+## group join - someone wants to join a group you created
+
+```JSON
+{
+    "type": "group_join",
+    "data": {
+        "id": 1, //notification id
+        "group_id": 123,
+        "group_name": "somename",
+        "sender_id": 123,
+        "sender_name": "adsad", // either a username (if exists) or firstname and lastname
+    }
+}
+```
+
+## event
+
+```JSON
+{
+    "type": "event",
+    "data": {
+        "id": 1, //notification id
+        "event_id": 123,
+        "event_name": "somename",
+        "event_datetime": "2023-06-05 16:01:00.303095707+03:00" //time of start
+    }
+}
+```
+
+## response
+
+```JSON
+{
+    "type": "response",
+    "data": {
+        "id": 1, // notification id
+        "reaction": true || false,
     }
 }
 ```
@@ -71,18 +134,6 @@
     "type": "unfollow",
     "data": {
         "following_id": 123,
-    }
-}
-```
-
-## send group invite
-
-```JSON
-{
-    "type": "group_invite",
-    "data": {
-        "group_id": 123,
-        "recipient_id": 123,
     }
 }
 ```

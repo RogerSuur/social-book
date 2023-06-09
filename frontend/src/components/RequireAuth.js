@@ -78,7 +78,7 @@ const RequireAuth = () => {
           users,
           setUsers,
         }}
-      ></Outlet>
+      />
       <ChatTest className="chat-sidebar" chatlist={users} />
     </div>
   ) : (

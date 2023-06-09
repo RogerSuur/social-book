@@ -34,12 +34,24 @@ nav {
   position: fixed;
   bottom:0;
   transform: translate(-100%, 0);
-  width: 200px; /* Adjust this value as needed */
+  width: 200px; 
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 9999; /* Adjust this value as needed */
+  z-index: 9999; 
+}
+
+.notification-list {
+  position: fixed;
+  top: 80px;
+  left: 1vw;
+  width: 400px; 
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 9999; 
 }
 
 .chat-title {
@@ -50,13 +62,13 @@ nav {
 
 .message-history {
   border: 1px solid black;
-  height: 200px; /* Adjust this value as needed */
+  height: 200px; 
   overflow-y: auto;
 }
 
 .message-box {
   border: 1px solid black;
-  height: 50px; /* Adjust this value as needed */
+  height: 50px; 
 }
 
 /* .chatbox {

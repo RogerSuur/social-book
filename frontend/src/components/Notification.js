@@ -81,9 +81,13 @@ const Notification = ({ notification, onClose }) => {
   //   sendJsonMessage(msg);
   // };
 
-  const acceptButton = <button onClick={handleAccept}>Accept</button>;
+  const acceptButton = (text = "Accept") => (
+    <button onClick={handleAccept}>{text}</button>
+  );
 
-  const rejectButton = <button onClick={handleReject}>Reject</button>;
+  const rejectButton = (text = "Reject") => (
+    <button onClick={handleReject}>{text}</button>
+  );
 
   const followRequestNotification = () => {
     return (
@@ -92,8 +96,8 @@ const Notification = ({ notification, onClose }) => {
           {notification?.data?.username}
         </Link>{" "}
         wants to follow you
-        {acceptButton}
-        {rejectButton}
+        {acceptButton()}
+        {rejectButton()}
       </>
     );
   };
@@ -108,8 +112,8 @@ const Notification = ({ notification, onClose }) => {
         <Link to={`/groups/${notification?.data?.group_id}`}>
           {notification?.data?.group_name}
         </Link>
-        {acceptButton}
-        {rejectButton}
+        {acceptButton()}
+        {rejectButton()}
       </>
     );
   };
@@ -124,8 +128,22 @@ const Notification = ({ notification, onClose }) => {
         <Link to={`/groups/${notification?.data?.group_id}`}>
           {notification?.data?.group_name}
         </Link>
-        {acceptButton}
-        {rejectButton}
+        {acceptButton()}
+        {rejectButton()}
+      </>
+    );
+  };
+
+  const eventNotification = () => {
+    return (
+      <>
+        <Link to={`/events/${notification?.data?.event_id}`}>
+          {notification?.data?.event_name}
+        </Link>{" "}
+        is going to take place at{" "}
+        {new Date(notification?.data?.event_datetime).toLocaleString("et-EE")}
+        {acceptButton("Going")}
+        {rejectButton("Not going")}
       </>
     );
   };
@@ -139,12 +157,6 @@ const Notification = ({ notification, onClose }) => {
     case "follow_accept":
       notificationMessage = `${notification.data.username} accepted your follow request`;
       break;
-    case "follow_reject":
-      notificationMessage = `${notification.data.username} rejected your follow request`;
-      break;
-    case "unfollow":
-      notificationMessage = `${notification.data.username} unfollowed you`;
-      break;
     case "group_invite":
       notificationMessage = groupInviteNotification();
       break;
@@ -154,8 +166,8 @@ const Notification = ({ notification, onClose }) => {
     case "group_accept":
       console.log(notification, "group_accept");
       break;
-    case "group_reject":
-      console.log(notification, "group_reject");
+    case "event":
+      notificationMessage = eventNotification();
       break;
     default:
       break;

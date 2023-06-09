@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import Notification from "../components/Notification";
 import axios from "axios";
+import { WS_URL } from "../utils/routes";
 
 const NOTIFICATIONS_URL = "http://localhost:8000/notifications/";
-const WS_URL = `ws://localhost:8000/ws`;
 
-const NotificationList = () => {
+const NotificationList = ({ setToggle }) => {
+  const ref = useRef(null);
   const [notifications, setNotifications] = useState([]);
   const { lastJsonMessage } = useWebSocketConnection(WS_URL);
 
@@ -28,6 +29,20 @@ const NotificationList = () => {
       prevNotifications.filter((notification) => notification?.data?.id !== id)
     );
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setToggle(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref]);
 
   const notif = [
     {
@@ -54,6 +69,15 @@ const NotificationList = () => {
         group_name: "Bad Weather",
       },
     },
+    {
+      type: "event",
+      data: {
+        id: 4,
+        event_id: 1,
+        event_name: "Fyre Party",
+        event_datetime: "2023-06-05 16:01:00.303095707+03:00",
+      },
+    },
   ];
 
   useEffect(() => {
@@ -65,18 +89,20 @@ const NotificationList = () => {
   }, [lastJsonMessage]);
 
   const renderedNotifications = notif.map((notification) => (
-    <li key={notification?.data?.id}>
-      <Notification
-        notification={notification}
-        onClose={handleNotificationClose}
-      />
-    </li>
+    <div className="notification">
+      <li key={notification?.data?.id}>
+        <Notification
+          notification={notification}
+          onClose={handleNotificationClose}
+        />
+      </li>
+    </div>
   ));
 
   return (
-    <>
+    <div className="notification-list" ref={ref}>
       {notif.length === 0 ? "You have no notifications" : renderedNotifications}
-    </>
+    </div>
   );
 };
 
