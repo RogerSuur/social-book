@@ -4,6 +4,7 @@ import (
 	"SocialNetworkRestApi/api/internal/server/handlers"
 	"SocialNetworkRestApi/api/internal/server/router"
 	"SocialNetworkRestApi/api/pkg/db/seed"
+	"SocialNetworkRestApi/api/internal/server/websocket"
 	database "SocialNetworkRestApi/api/pkg/db/sqlite"
 	"SocialNetworkRestApi/api/pkg/models"
 	"SocialNetworkRestApi/api/pkg/services"
@@ -38,14 +39,18 @@ func main() {
 	logger.Println("successfully migrated DB..")
 
 	repos := models.InitRepositories(db)
+	userServices := services.InitUserService(
+		repos.UserRepo,
+		repos.SessionRepo,
+		repos.FollowerRepo,
+	)
 
 	app := &handlers.Application{
 		Logger: logger,
-		UserService: services.InitUserService(
-			repos.UserRepo,
-			repos.SessionRepo,
-			repos.FollowerRepo,
+		WS: websocket.InitWebsocket(
+			userServices,
 		),
+		UserService: userServices,
 		PostService: services.InitPostService(
 			repos.PostRepo,
 		),
