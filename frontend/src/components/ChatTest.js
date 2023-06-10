@@ -8,9 +8,17 @@ import { WS_URL } from "../utils/routes";
 const ChatTest = ({}) => {
   const [openChat, setOpenChat] = useState(0);
   const [chatlist, setChatlist] = useState([]);
-  const { lastJsonMessage } = useWebSocketConnection(WS_URL);
+  const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
 
-  console.log(openChat);
+  const loadChatlist = () => {
+    sendJsonMessage({
+      type: "request_chatlist",
+    });
+  };
+
+  useEffect(() => {
+    loadChatlist();
+  }, []);
 
   const chatter = [
     { first_name: "Chill", last_name: "Bill", userid: 1 },
@@ -45,14 +53,12 @@ const ChatTest = ({}) => {
   };
 
   useEffect(() => {
-    if (lastJsonMessage && lastJsonMessage.type === "chatlist") {
-      switch (lastJsonMessage.type) {
-        case "chatlist":
-          setChatlist([...lastJsonMessage.data]);
-          break;
-        case "message":
-          break;
-      }
+    switch (lastJsonMessage?.type) {
+      case "chatlist":
+        setChatlist([...lastJsonMessage.data]);
+        break;
+      case "message":
+        break;
     }
   }, [lastJsonMessage]);
 

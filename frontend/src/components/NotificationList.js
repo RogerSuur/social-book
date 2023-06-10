@@ -11,19 +11,6 @@ const NotificationList = ({ setToggle }) => {
   const [notifications, setNotifications] = useState([]);
   const { lastJsonMessage } = useWebSocketConnection(WS_URL);
 
-  useEffect(() => {
-    const loadNotifications = async () => {
-      await axios
-        .get(NOTIFICATIONS_URL, {
-          withCredentials: true,
-        })
-        .then((response) => {
-          setNotifications(response.data);
-        });
-    };
-    loadNotifications();
-  }, []);
-
   const handleNotificationClose = (id) => {
     setNotifications((prevNotifications) =>
       prevNotifications.filter((notification) => notification?.data?.id !== id)

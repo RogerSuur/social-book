@@ -12,9 +12,18 @@
         "recipient_id": 123, // 0 if group chat
         "recipient_name": "somename", // username (if exists) or first name last name
         "group_id": 123, // 0 if private chat
+        "group_name": "name", //empty if private chat
         "body": "message content",
         "timestamp": "2006-01-02T15:04:05Z07:00" //won't be sending from frontend, but still need to receive it
     }
+}
+```
+
+## request chatlist
+
+```JSON
+{
+    "type": "request_chatlist",
 }
 ```
 
@@ -26,11 +35,42 @@
     "data": {
         "users" : [{"userid": 123, // 0 if group
         "group_id": 123, // 0 if user
-        "username": "username", //group name if group
-        "first_name": "first name", //omit the field if group
-        "last_name": "last name", //omit the field if group
+        "name": "username", // username (if exists) or firstname lastname || group name if group
         "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any, might use it to sort chats by last message
-        "avatarImage": "link" // if will be used in chatlist
+        "avatarImage": "link" // empty if no image or group
+        }]
+    }
+}
+```
+
+## request message history
+
+```JSON
+{
+    "type": "request_message_history",
+    "data": {
+        "id": 1, //0 if group chat
+        "group_id": 1, // 0 if private chat
+    }
+}
+```
+
+## message history
+
+```JSON
+{
+    "type": "message_history",
+    "data": {
+        "messages" : [{
+            "id": 1, //message id
+            "sender_id": 123, // 0 if group
+            "sender_name": "username", // either a  username (if exists) or firstname and lastname
+            "recipient_id": 1, // 0 if group
+            "recipient_name": 1, // either a username (if   exists) or firstname and lastname && empty if     group
+            "group_id": 123, // 0 if user
+            "group_name": "name", //empty if user
+            "body": "message",
+            "timestamp": "2023-06-05 16:01:00.303095707 +03:00",
         }]
     }
 }
