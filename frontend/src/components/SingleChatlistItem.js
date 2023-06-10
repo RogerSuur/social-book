@@ -1,19 +1,24 @@
-const SingleChatlistItem = ({ chat, userid, toggleChat }) => {
+const SingleChatlistItem = ({ chat, toggleChat }) => {
+  const id = chat?.userid > 0 ? [chat.userid, 0] : [0, chat.group_id];
+
   const handleToggle = () => {
-    toggleChat(userid);
+    toggleChat(id);
   };
 
-  let listItem;
-
-  if (chat?.username) {
-    listItem = <p>{chat.username}</p>;
-  } else {
-    listItem = (
-      <p>
-        {chat.first_name} {chat.last_name}
-      </p>
-    );
-  }
+  const listItem = (
+    <p>
+      {chat.name}
+      {/* <img
+        style={{
+          width: "10px",
+          height: "10px",
+          objectFit: "cover",
+          objectPosition: "0% 100%",
+        }}
+        src={`images/${id}/${chat.avatarImage}`}
+      ></img> */}
+    </p>
+  );
 
   return <div onClick={handleToggle}>{listItem}</div>;
 };

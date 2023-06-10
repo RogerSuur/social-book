@@ -33,6 +33,7 @@
 {
     "type": "chatlist",
     "data": {
+        "userid": 1, //own id
         "users" : [{"userid": 123, // 0 if group
         "group_id": 123, // 0 if user
         "name": "username", // username (if exists) or firstname lastname || group name if group

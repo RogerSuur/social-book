@@ -19,6 +19,11 @@ nav {
   border-radius: 0 0 10px 10px;
 }
 
+.own-message {
+  color: green;
+  right: 0;
+}
+
 .chat-sidebar {
   position: fixed;
   align-self: flex-start;

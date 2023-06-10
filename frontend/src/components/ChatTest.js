@@ -6,8 +6,9 @@ import MessageNotification from "../components/MessageNotification";
 import { WS_URL } from "../utils/routes";
 
 const ChatTest = ({}) => {
-  const [openChat, setOpenChat] = useState(0);
+  const [openChat, setOpenChat] = useState([0, 0]);
   const [chatlist, setChatlist] = useState([]);
+  const [user, setUser] = useState(0);
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
 
   const loadChatlist = () => {
@@ -21,41 +22,48 @@ const ChatTest = ({}) => {
   }, []);
 
   const chatter = [
-    { first_name: "Chill", last_name: "Bill", userid: 1 },
-    { first_name: "Scary", last_name: "Mary", userid: 2 },
-    { first_name: "B", last_name: "Mary", username: "bloodymary", userid: 3 },
-    { first_name: "A", last_name: "Mary", userid: 4 },
-    { first_name: "V", last_name: "Mary", userid: 5 },
-    { first_name: "C", last_name: "Mary", userid: 6 },
-    { first_name: "D", last_name: "Mary", userid: 7 },
-    { first_name: "E", last_name: "Mary", userid: 8 },
-    { first_name: "F", last_name: "Mary", userid: 9 },
-    { first_name: "G", last_name: "Mary", userid: 10 },
-    { first_name: "H", last_name: "Mary", userid: 11 },
-    { first_name: "I", last_name: "Mary", userid: 12 },
-    { first_name: "J", last_name: "Mary", userid: 13 },
-    { first_name: "K", last_name: "Mary", userid: 14 },
-    { first_name: "L", last_name: "Mary", userid: 15 },
-    { first_name: "M", last_name: "Mary", userid: 16 },
-    { first_name: "N", last_name: "Mary", userid: 17 },
-    { first_name: "O", last_name: "Mary", userid: 18 },
-    { first_name: "P", last_name: "Mary", userid: 19 },
-    { first_name: "S", last_name: "Mary", userid: 20 },
-    { first_name: "T", last_name: "Mary", userid: 21 },
-    { first_name: "U", last_name: "Mary", userid: 22 },
-    { first_name: "V", last_name: "Mary", userid: 22 },
+    { name: "Chill Bill", userid: 1 },
+    { name: "Scary Mary", userid: 2 },
+    { name: "bloodymary", userid: 3 },
+    { name: "Best group", userid: 0, group_id: 4 },
+    { name: "V Mary", userid: 5 },
+    { name: "C Mary", userid: 6 },
+    { name: "D Mary", userid: 7 },
+    { name: "E Mary", userid: 8 },
+    { name: "Better group", userid: 0, group_id: 2 },
+    { name: "G Mary", userid: 10 },
+    { name: "H Mary", userid: 11 },
+    { name: "I Mary", userid: 12 },
+    { name: "J Mary", userid: 13 },
+    { name: "K Mary", userid: 14 },
+    { name: "L Mary", userid: 15 },
+    { name: "M Mary", userid: 16 },
+    { name: "N Mary", userid: 17 },
+    { name: "O Mary", userid: 18 },
+    { name: "P Mary", userid: 19 },
+    { name: "S Mary", userid: 20 },
+    { name: "T Mary", userid: 21 },
+    { name: "U Mary", userid: 22 },
+    { name: "V Mary", userid: 22 },
   ];
 
   const toggleChat = (chatId) => {
     if (openChat !== chatId) {
+      console.log(chatId, "chatID");
       setOpenChat(chatId);
     }
   };
 
+  const useriddd = 1;
+
+  const checkOpenChat = (open) =>
+    open.every((value, index) => value === openChat[index]);
+
   useEffect(() => {
     switch (lastJsonMessage?.type) {
       case "chatlist":
-        setChatlist([...lastJsonMessage.data]);
+        setChatlist([...lastJsonMessage?.data?.users]);
+        setUser(...lastJsonMessage?.data?.userid);
         break;
       case "message":
         break;
@@ -65,14 +73,11 @@ const ChatTest = ({}) => {
   const renderedChats = chatter.map((chat, index) => (
     <>
       <li key={index + 1}>
-        <SingleChatlistItem
-          userid={chat.userid}
-          chat={chat}
-          toggleChat={toggleChat}
-        />
+        <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
       </li>
-      {openChat === chat.userid && (
-        <Chatbox toggleChat={toggleChat} chat={chat} />
+      {(checkOpenChat([chat?.userid, 0]) ||
+        checkOpenChat([0, chat?.group_id])) && (
+        <Chatbox toggleChat={toggleChat} chat={chat} user={useriddd} />
       )}
     </>
   ));

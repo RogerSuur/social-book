@@ -48,7 +48,7 @@ const RequireAuth = () => {
           withCredentials: true,
         });
 
-        console.log(JSON.stringify(response));
+        console.log(JSON.stringify(response), "RESPONSE!!!!!!!!!!!!!!!!!!!");
         setAuth(true);
       } catch (err) {
         if (!err?.response) {
