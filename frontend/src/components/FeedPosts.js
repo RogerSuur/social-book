@@ -1,10 +1,11 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import Comments from "./Comments";
-import CreateComment from "./CreateComment";
 
 const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
   const observer = useRef();
   const [isPostsLoading, setPostsLoading] = useState(false);
+  const [hasComments, sethasComments] = useState({});
+  const [commentsCount, setCommentsCount] = useState();
 
   async function toggleSpinner() {
     setPostsLoading((prev) => !prev);
@@ -12,6 +13,19 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
       setPostsLoading((prev) => !prev);
     }, 800);
   }
+
+  const updateCommentCount = (postId, addCount) => {
+    setCommentsCount((prevCount) => prevCount + addCount);
+  };
+
+  useEffect(() => {
+    const isFirst = {};
+    posts.forEach((post) => {
+      isFirst[post.id] = post.commentCount === 0;
+      setCommentsCount(posts.commentCount);
+    });
+    sethasComments(isFirst);
+  }, [posts]);
 
   const lastPostElementRef = useCallback((node) => {
     if (observer.current) {
@@ -31,10 +45,16 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
   }, []);
 
   const renderPost = (post, index) => {
-    const { id, userId, userName, content, createdAt, commentCount } = post;
+    const {
+      id,
+      userId,
+      imagePath,
+      userName,
+      content,
+      createdAt,
+      commentCount,
+    } = post;
     const isLastPost = index === posts.length - 1;
-
-    console.log(post);
 
     return (
       <div
@@ -44,20 +64,23 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
       >
         <div>Post ID: {id}</div>
         <div className="row">{userName}</div>
-        <div className="row">{content}</div>
+        <div className="row">
+          {content}
+          {imagePath}
+        </div>
         <div className="row">{new Date(createdAt).toLocaleString("et-EE")}</div>
-        {commentCount !== 0 ? (
-          <div className="row">
-            <p>{commentCount} comments</p>
-            <Comments postid={id} />
-          </div>
-        ) : (
-          <p>Be the first to leave a comment</p>
-        )}
-        <CreateComment postid={id} />
+        <div className="row">
+          <Comments
+            postId={id}
+            commentCount={commentCount}
+            updateCommentCount={updateCommentCount}
+          />
+        </div>
+        {hasComments[id] && <p>Be the first to leave a comment</p>}
       </div>
     );
   };
+
   const renderedPosts = posts.map(renderPost);
   return (
     <>

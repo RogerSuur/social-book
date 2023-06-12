@@ -8,10 +8,13 @@ const Posts = () => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
+  const [loadMore, setLoadMore] = useState(true);
   const [hasMore, setHasMore] = useState(false);
 
   const handlePostUpdate = () => {
+    // console.log("handlePostUpdate", posts, offset);
     setOffset(0);
+    setLoadMore(!loadMore);
     setPosts([]);
   };
 
@@ -33,32 +36,13 @@ const Posts = () => {
       } catch (error) {
         setError(error.message);
       }
-
-      // try {
-      //   const response = await axios.get(
-      //     `http://localhost:8000/feedposts/${offset}`,
-      //     {
-      //       withCredentials: true,
-      //       signal: abortController.signal,
-      //     }
-      //   );
-      //   setPosts((prevPosts) => {
-      //     const newPosts = response.data.filter(
-      //       (post) => !prevPosts.some((prevPost) => prevPost.id === post.id)
-      //     );
-      //     return [...prevPosts, ...newPosts];
-      //   });
-      // } catch (error) {
-      //   setError(error.message);
-      // }
-      // setLoading(false);
     };
     loadPosts();
 
     return () => {
       abortController.abort();
     };
-  }, [offset]);
+  }, [offset, loadMore]);
 
   return (
     <>

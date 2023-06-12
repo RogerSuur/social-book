@@ -1,29 +1,28 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const CreateComment = ({ postid }) => {
+const CreateComment = ({ postId, onCommentsUpdate }) => {
   // const { postid } = useParams();
-  // console.log(postid);
+
   const [formData, setFormData] = useState({
-    postId: postid,
+    postId: postId,
     content: "",
   });
   const [errMsg, setErrMsg] = useState("");
 
   const handleChange = (event) => {
-    const { name, value, type, checked } = event.target;
+    const { name, value } = event.target;
 
     setFormData((prevFormData) => {
       return {
         ...prevFormData,
-        [name]: type === "checkbox" ? checked : value,
+        [name]: value,
       };
     });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(formData);
 
     try {
       const response = await axios.post(
@@ -36,10 +35,11 @@ const CreateComment = ({ postid }) => {
       );
 
       setErrMsg(response.data?.message);
-      //props.handler();
+      onCommentsUpdate(1);
+
       if (!errMsg) {
         setFormData({
-          postId: postid,
+          postId: postId,
           content: "",
         });
       }
