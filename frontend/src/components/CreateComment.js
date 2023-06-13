@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const CreateComment = ({ postId, onCommentsUpdate }) => {
-  // const { postid } = useParams();
-
   const [formData, setFormData] = useState({
     postId: postId,
     content: "",
@@ -35,7 +33,7 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
       );
 
       setErrMsg(response.data?.message);
-      onCommentsUpdate(1);
+      onCommentsUpdate();
 
       if (!errMsg) {
         setFormData({

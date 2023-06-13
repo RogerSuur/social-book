@@ -2,38 +2,26 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CreateComment from "./CreateComment";
 
-const Comments = ({ postId, commentCount, updateCommentCount }) => {
+const Comments = ({ postId, commentCount }) => {
   const [comments, setComments] = useState([]);
   const [error, setError] = useState(null);
-  // const { postid: id } = props.postid;
-  const [commentsToShow, setCommentsToShow] = useState(commentCount);
+  const [commentCountUpdate, setCommentsCountUpdate] = useState(commentCount);
+  const [commentsToShow, setCommentsToShow] = useState(
+    commentCount > 5 ? commentCount : 0
+  );
 
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const handleCommentsUpdate = (add) => {
-    console.log("handleCOmmentsUdate", add);
+  const handleCommentsUpdate = () => {
+    setCommentsCountUpdate((prev) => prev + 1);
+    setOffset(0);
     setLoading(!loading);
-    setCommentsToShow((prev) => prev + add);
-    updateCommentCount(add);
-    // setOffset(0);
   };
 
   useEffect(() => {
     const abortController = new AbortController();
     const loadComments = async () => {
-      console.log(
-        "loadmorecomments",
-        "postId",
-        postId,
-        "offset",
-        offset,
-        "commentCount",
-        commentCount,
-        "commentsToShow",
-        commentsToShow
-      );
-      // console.log("commentsToShow", commentsToShow);
       try {
         await axios
           .get(`http://localhost:8000/comments/${postId}/${offset}`, {
@@ -41,27 +29,19 @@ const Comments = ({ postId, commentCount, updateCommentCount }) => {
             signal: abortController.signal,
           })
           .then((response) => {
-            // if (commentCount > 5) {
             setComments((prevComments) => {
               const commentIds = new Set(
                 prevComments.map((comment) => comment.id)
               );
-              console.log(commentIds);
               const newComments = response.data.filter(
                 (comment) => !commentIds.has(comment.id)
               );
-              console.log(commentIds, newComments);
               const updatedComments = [...newComments, ...prevComments];
-              console.log(updatedComments);
               const sortedComments = updatedComments.sort(
                 (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
               );
-              console.log(sortedComments);
               return sortedComments;
             });
-            // } else {
-            //   setComments(response.data);
-            // }
           });
       } catch (err) {
         if (err.response?.status === 404) {
@@ -77,14 +57,11 @@ const Comments = ({ postId, commentCount, updateCommentCount }) => {
     };
   }, [offset, loading]);
 
-  function showMoreComments(e) {
-    console.log(e.target);
-    if (commentCount > 4) {
+  function showMoreComments() {
+    if (commentCountUpdate > 4) {
       setOffset(offset + 1);
       setCommentsToShow(commentsToShow - 5);
     }
-    // console.log("offset", offset);
-    //here we need to increase the offset of comments
   }
 
   return (
@@ -116,12 +93,13 @@ const Comments = ({ postId, commentCount, updateCommentCount }) => {
           </div>
           {commentsToShow > 5 ? (
             <p>
-              <a onClick={showMoreComments}>
+              <button onClick={showMoreComments}>
                 {commentsToShow - 5} more comment
                 {commentsToShow - 5 === 1 ? "" : "s"}
-              </a>
+              </button>
             </p>
           ) : null}
+          {!commentCountUpdate && <p>Be the first to leave a comment</p>}
           <CreateComment
             postId={postId}
             onCommentsUpdate={handleCommentsUpdate}

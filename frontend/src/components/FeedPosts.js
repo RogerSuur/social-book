@@ -1,11 +1,9 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import Comments from "./Comments";
 
 const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
   const observer = useRef();
   const [isPostsLoading, setPostsLoading] = useState(false);
-  const [hasComments, sethasComments] = useState({});
-  const [commentsCount, setCommentsCount] = useState();
 
   async function toggleSpinner() {
     setPostsLoading((prev) => !prev);
@@ -13,19 +11,6 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
       setPostsLoading((prev) => !prev);
     }, 800);
   }
-
-  const updateCommentCount = (postId, addCount) => {
-    setCommentsCount((prevCount) => prevCount + addCount);
-  };
-
-  useEffect(() => {
-    const isFirst = {};
-    posts.forEach((post) => {
-      isFirst[post.id] = post.commentCount === 0;
-      setCommentsCount(posts.commentCount);
-    });
-    sethasComments(isFirst);
-  }, [posts]);
 
   const lastPostElementRef = useCallback((node) => {
     if (observer.current) {
@@ -47,7 +32,7 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
   const renderPost = (post, index) => {
     const {
       id,
-      userId,
+      // userId,
       imagePath,
       userName,
       content,
@@ -70,13 +55,8 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
         </div>
         <div className="row">{new Date(createdAt).toLocaleString("et-EE")}</div>
         <div className="row">
-          <Comments
-            postId={id}
-            commentCount={commentCount}
-            updateCommentCount={updateCommentCount}
-          />
+          <Comments postId={id} commentCount={commentCount} />
         </div>
-        {hasComments[id] && <p>Be the first to leave a comment</p>}
       </div>
     );
   };
