@@ -2,6 +2,8 @@ package models
 
 import (
 	"database/sql"
+	"log"
+	"os"
 )
 
 type AllowedPost struct {
@@ -9,11 +11,23 @@ type AllowedPost struct {
 	PostId int
 }
 
-type AllowedPostModel struct {
-	DB *sql.DB
+type IAllowedPostRepository interface {
+	Insert(allowedPost *AllowedPost) (int64, error)
 }
 
-func (m AllowedPostModel) Insert(allowedPost *AllowedPost) (int64, error) {
+type AllowedPostRepository struct {
+	Logger *log.Logger
+	DB     *sql.DB
+}
+
+func NewAllowedPostRepo(db *sql.DB) *AllowedPostRepository {
+	return &AllowedPostRepository{
+		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		DB:     db,
+	}
+}
+
+func (repo AllowedPostRepository) Insert(allowedPost *AllowedPost) (int64, error) {
 	query := `INSERT INTO allowed_private_posts (post_id, user_id)
 	VALUES(?, ?)`
 
@@ -22,7 +36,7 @@ func (m AllowedPostModel) Insert(allowedPost *AllowedPost) (int64, error) {
 		allowedPost.UserId,
 	}
 
-	result, err := m.DB.Exec(query, args...)
+	result, err := repo.DB.Exec(query, args...)
 
 	if err != nil {
 		return 0, err

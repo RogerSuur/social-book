@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"SocialNetworkRestApi/api/internal/server/websocket"
 	"SocialNetworkRestApi/api/pkg/services"
 	"fmt"
 	"log"
@@ -9,6 +10,7 @@ import (
 
 type Application struct {
 	Logger         *log.Logger
+	WS             *websocket.WebsocketServer
 	UserService    services.IUserService
 	PostService    services.IPostService
 	CommentService services.ICommentService

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import UserPosts from "./UserPosts.js";
 import Followers from "./Followers.js";
 import Following from "./Following.js";
-import ProfileInfo from "./ProfileInfo.js";
+import ProfileEditor from "./ProfileEditor.js";
 
 const ProfileContent = ({ selected }) => {
   const [displayedContent, setDisplayedContent] = useState(null);
@@ -20,7 +20,7 @@ const ProfileContent = ({ selected }) => {
         setDisplayedContent(<Following />);
         break;
       default:
-        setDisplayedContent(<ProfileInfo />);
+        setDisplayedContent(<ProfileEditor />);
         break;
     }
   }, [selected]);

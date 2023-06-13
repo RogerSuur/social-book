@@ -2,7 +2,7 @@ import { useLocation, Navigate, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
-import useWebSocket from "react-use-websocket";
+import { useWebSocketConnection } from "../hooks/useWebSocketConnection";
 
 const AUTH_URL = "http://localhost:8000/auth";
 const WS_URL = `ws://localhost:8000/ws`;
@@ -17,28 +17,28 @@ const RequireAuth = () => {
 
   console.log(location, "LOC AUTH");
 
-  const updateUsers = (message) => {
-    const { user_id, username, online, datetime } = message;
+  // const updateUsers = (message) => {
+  //   const { user_id, username, online, datetime } = message;
 
-    setUsers((prevUsers) =>
-      [
-        ...prevUsers.filter(
-          (user) => user.user_id !== user_id && user.user_id !== sender_id
-        ),
-        { user_id, username, online, datetime },
-      ].sort((a, b) =>
-        a.datetime < b.datetime
-          ? 1
-          : b.datetime < a.datetime
-          ? -1
-          : a.username.toLowerCase() > b.username.toLowerCase()
-          ? 1
-          : a.username.toLowerCase() < b.username.toLowerCase()
-          ? -1
-          : 0
-      )
-    );
-  };
+  //   setUsers((prevUsers) =>
+  //     [
+  //       ...prevUsers.filter(
+  //         (user) => user.user_id !== user_id && user.user_id !== sender_id
+  //       ),
+  //       { user_id, username, online, datetime },
+  //     ].sort((a, b) =>
+  //       a.datetime < b.datetime
+  //         ? 1
+  //         : b.datetime < a.datetime
+  //         ? -1
+  //         : a.username.toLowerCase() > b.username.toLowerCase()
+  //         ? 1
+  //         : a.username.toLowerCase() < b.username.toLowerCase()
+  //         ? -1
+  //         : 0
+  //     )
+  //   );
+  // };
 
   useEffect(() => {
     const authorisation = async () => {
@@ -63,38 +63,16 @@ const RequireAuth = () => {
     authorisation();
   }, [location]);
 
-  const {} = useWebSocket(socketUrl, {
-    onMessage: (event) => {
-      let data = JSON.parse(event.data);
-      if (location.pathname !== "/chat") {
-        if (!Array.isArray(data)) {
-          if (data.type === "") {
-            window.alert(`${data.sender_username} says ${data.body}`);
-          }
-        }
-      }
+  // const { lastMessage, sendJsonMessage } = useWebSocket(socketUrl, {
+  //   onOpen: console.log("opened"),
+  //   share: true,
+  // });
 
-      if (Array.isArray(data)) {
-        data.forEach((message) => {
-          if (message.type === "connection") {
-            if (message.myself === true) {
-              setSenderId(message.user_id);
-            }
-            updateUsers(message);
-          }
-        });
-      }
+  // useEffect(() => {
+  //   sendJsonMessage("hello");
+  // }, [location]);
 
-      if (data.type === "connection") {
-        updateUsers(data);
-      }
-
-      if (data.type === "disconnection") {
-        updateUsers(data);
-      }
-    },
-    share: true,
-  });
+  useWebSocketConnection(socketUrl, "msg");
 
   return auth ? (
     <Outlet
