@@ -1,6 +1,67 @@
 # JSON structure for Websocket messages
 
-## chat message
+## 1. BACKEND to FRONTEND
+
+### 1.1 notification
+```JSON
+{
+    "type": "notification",
+    "data": {
+        "notification_type": "follow_request" || "group_invite" || "group_request" || "event" || "follow_accept" || "group_accept" || "event_accept" || "follow_reject" || "group_reject" || "event_reject",
+        "id": 1, // notification id
+        "sender_id": 123,
+        "sender_name": "something", // either a username (if exists) or firstname and lastname
+        "group_id": 123, // 0 if not group
+        "group_name": "something", // empty if not group
+        "event_id": 123, // 0 if not event
+        "event_name": "something", // empty if not event
+        "event_datetime": "2006-01-02T15:04:05Z07:00", // empty if not event
+        "reaction": true || false, // empty if not response
+    }
+}
+```
+
+### 1.2 chatlist
+
+```JSON
+{
+    "type": "chatlist",
+    "data": {
+        "userid": 1, //own id
+        "users" : [{"userid": 123, // 0 if group
+        "group_id": 123, // 0 if user
+        "name": "username", // username (if exists) or firstname lastname || group name if group
+        "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any, might use it to sort chats by last message
+        "avatarImage": "link" // empty if no image or group
+        }]
+    }
+}
+```
+
+### 1.3 message history
+
+```JSON
+{
+    "type": "message_history",
+    "data": {
+        "messages" : [{
+            "id": 1, //message id
+            "sender_id": 123, // 0 if group
+            "sender_name": "username", // either a  username (if exists) or firstname and lastname
+            "recipient_id": 1, // 0 if group
+            "recipient_name": 1, // either a username (if   exists) or firstname and lastname && empty if     group
+            "group_id": 123, // 0 if user
+            "group_name": "name", //empty if user
+            "body": "message",
+            "timestamp": "2006-01-02T15:04:05Z07:00",
+        }]
+    }
+}
+```
+
+## 2. DUPLEX
+
+### 2.1 chat message
 
 ```JSON
 {
@@ -19,7 +80,9 @@
 }
 ```
 
-## request chatlist
+## 3. FRONTEND to BACKEND
+
+### 3.1 request chatlist
 
 ```JSON
 {
@@ -27,114 +90,52 @@
 }
 ```
 
-## chatlist
-
-```JSON
-{
-    "type": "chatlist",
-    "data": {
-        "userid": 1, //own id
-        "users" : [{"userid": 123, // 0 if group
-        "group_id": 123, // 0 if user
-        "name": "username", // username (if exists) or firstname lastname || group name if group
-        "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any, might use it to sort chats by last message
-        "avatarImage": "link" // empty if no image or group
-        }]
-    }
-}
-```
-
-## request message history
+### 3.2 request message history
 
 ```JSON
 {
     "type": "request_message_history",
     "data": {
-        "id": 1, //0 if group chat
-        "group_id": 1, // 0 if private chat
+        "id": 123, //0 if group chat
+        "group_id": 123, // 0 if private chat
     }
 }
 ```
 
-## message history
-
-```JSON
-{
-    "type": "message_history",
-    "data": {
-        "messages" : [{
-            "id": 1, //message id
-            "sender_id": 123, // 0 if group
-            "sender_name": "username", // either a  username (if exists) or firstname and lastname
-            "recipient_id": 1, // 0 if group
-            "recipient_name": 1, // either a username (if   exists) or firstname and lastname && empty if     group
-            "group_id": 123, // 0 if user
-            "group_name": "name", //empty if user
-            "body": "message",
-            "timestamp": "2023-06-05 16:01:00.303095707 +03:00",
-        }]
-    }
-}
-```
-
-## follow request
+### 3.3 follow request
 
 ```JSON
 {
     "type": "follow_request",
     "data": {
-        "id": 1, //notification id
-        "following_id": 123,
-        "name": "something" // either a username (if exists) or firstname and lastname
+        "id": 123,
     }
 }
 ```
 
-## group invite - someone inviting you
+### 3.4 unfollow
 
 ```JSON
 {
-    "type": "group_invite",
+    "type": "unfollow",
     "data": {
-        "id": 1, //notification id
-        "group_id": 123,
-        "group_name": "somename",
-        "sender_id": 123,
-        "sender_name": "adsad", // either a username (if exists) or firstname and lastname
+        "id": 123,
     }
 }
 ```
 
-## group join - someone wants to join a group you created
+### 3.5 group request - someone wants to join a group you created
 
 ```JSON
 {
-    "type": "group_join",
+    "type": "group_request", // was group_join, but changed to match follow_request
     "data": {
-        "id": 1, //notification id
-        "group_id": 123,
-        "group_name": "somename",
-        "sender_id": 123,
-        "sender_name": "adsad", // either a username (if exists) or firstname and lastname
+        "id": 123,
     }
 }
 ```
 
-## event
-
-```JSON
-{
-    "type": "event",
-    "data": {
-        "id": 1, //notification id
-        "event_id": 123,
-        "event_name": "somename",
-        "event_datetime": "2023-06-05 16:01:00.303095707+03:00" //time of start
-    }
-}
-```
-
-## response
+### 3.6 response - a response to any notification
 
 ```JSON
 {
@@ -142,61 +143,6 @@
     "data": {
         "id": 1, // notification id
         "reaction": true || false,
-    }
-}
-```
-
-## follow accept
-
-```JSON
-{
-    "type": "follow_accept",
-    "data": {
-        "follower_id": 123,
-    }
-}
-```
-
-## follow reject
-
-```JSON
-{
-    "type": "follow_reject",
-    "data": {
-        "follower_id": 123,
-    }
-}
-```
-
-## unfollow
-
-```JSON
-{
-    "type": "unfollow",
-    "data": {
-        "following_id": 123,
-    }
-}
-```
-
-## group invite accept
-
-```JSON
-{
-    "type": "group_accept",
-    "data": {
-        "group_id": 123,
-    }
-}
-```
-
-## group invite reject
-
-```JSON
-{
-    "type": "group_reject",
-    "data": {
-        "group_id": 123,
     }
 }
 ```
