@@ -48,13 +48,13 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
         ref={isLastPost ? lastPostElementRef : null}
       >
         <div>Post ID: {id}</div>
-        <div className="row">{userName}</div>
-        <div className="row">
+        <div className="row3">{userName}</div>
+        <div className="row2">
           {content}
           {imagePath}
         </div>
         <div className="row">{new Date(createdAt).toLocaleString("et-EE")}</div>
-        <div className="row">
+        <div className="comment-section">
           <Comments postId={id} commentCount={commentCount} />
         </div>
       </div>

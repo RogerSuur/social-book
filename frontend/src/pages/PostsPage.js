@@ -50,7 +50,7 @@ const Posts = () => {
       {error ? (
         <div className="error">{error}</div>
       ) : (
-        <div className="content-area">
+        <div className="content-as">
           <FeedPosts
             posts={posts}
             hasMore={hasMore}

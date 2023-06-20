@@ -57,9 +57,9 @@ const CreatePost = (props) => {
       <div className="content-area">
         {errMsg && <h2>{errMsg}</h2>}
         <form onSubmit={handleSubmit}>
-          <textarea
+        <textarea className="area-text"
             type="text"
-            placeholder="Write something..."
+            placeholder="Write what's on your mind"
             onChange={handleChange}
             value={formData.content}
             name="content"
@@ -94,7 +94,7 @@ const CreatePost = (props) => {
           />
           <label htmlFor="subPrivate">subPrivate</label>
 
-          <button>Post</button>
+          <button className="post-button">Post</button>
         </form>
       </div>
     </>
