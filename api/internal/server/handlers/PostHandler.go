@@ -8,10 +8,11 @@ import (
 )
 
 type createPostJSON struct {
-	UserId      int    `json:"userId"`
-	Content     string `json:"content"`
-	ImagePath   string `json:"imagePath"`
-	PrivacyType int    `json:"privacyType"`
+	UserId      int      `json:"userId"`
+	Content     string   `json:"content"`
+	ImagePath   string   `json:"imagePath"`
+	PrivacyType int      `json:"privacyType"`
+	Receivers   []string `json:"selectedReceivers"`
 }
 
 func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
@@ -42,6 +43,7 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 			ImagePath:   JSONdata.ImagePath,
 			Content:     JSONdata.Content,
 			PrivacyType: enums.PrivacyType(JSONdata.PrivacyType),
+			Receivers:   JSONdata.Receivers,
 		}
 
 		// fmt.Println("Post", post)
