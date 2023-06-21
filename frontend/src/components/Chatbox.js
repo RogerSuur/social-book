@@ -16,7 +16,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   console.log(chat);
 
   const defaultImage = () =>
-    chat.userid > 0 ? "defaultuser.jpg" : "defaultgroup.png";
+    chat.userid ? "defaultuser.jpg" : "defaultgroup.png";
 
   const imageHandler = () => {
     const source = chat?.avatarImage
@@ -151,7 +151,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   const loadMessages = () => {
     sendJsonMessage({
       type: "request_message_history",
-      data: { userid: chat.userid },
+      data: { id: chat.userid, group_id: chat.group_id },
     });
   };
 
