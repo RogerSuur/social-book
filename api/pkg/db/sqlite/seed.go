@@ -163,8 +163,8 @@ func SeedFollowers(repos *models.Repositories) {
 				}
 
 				tempFollowing := &models.Follower{
-					FollowingId: followedUser.Id,
-					FollowerId:  seedUser.Id,
+					FollowingId: int64(followedUser.Id),
+					FollowerId:  int64(seedUser.Id),
 					Accepted:    true,
 				}
 
