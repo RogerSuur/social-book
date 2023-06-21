@@ -4,7 +4,7 @@ import FeedPosts from "../components/FeedPosts";
 import CreatePost from "../components/CreatePost";
 import { makeRequest } from "../services/makeRequest";
 
-const Posts = () => {
+const Posts = ({ showCreatePost, showCreateComment }) => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -46,7 +46,8 @@ const Posts = () => {
 
   return (
     <>
-      <CreatePost onPostsUpdate={handlePostUpdate} />
+      {/* <CreatePost onPostsUpdate={handlePostUpdate} /> */}
+      {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
       {error ? (
         <div className="error">{error}</div>
       ) : (
@@ -55,6 +56,7 @@ const Posts = () => {
             posts={posts}
             hasMore={hasMore}
             onLoadMore={handlePageChange}
+            showCreateComment={showCreateComment}
           />
         </div>
       )}

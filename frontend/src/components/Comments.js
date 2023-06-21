@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CreateComment from "./CreateComment";
 
-const Comments = ({ postId, commentCount }) => {
+const Comments = ({ postId, commentCount, showCreateComment }) => {
   const [comments, setComments] = useState([]);
   const [error, setError] = useState(null);
   const [commentCountUpdate, setCommentsCountUpdate] = useState(commentCount);
@@ -70,40 +70,48 @@ const Comments = ({ postId, commentCount }) => {
         <div className="error">{error}</div>
       ) : (
         <div className="content-area">
-          <div className="row">
-            <div className="column">
-              {comments.map((comment) => (
-                <>
-                  <div key={comment.comment_id}>{comment.content}</div>
-                  <div className="row">
-                    <div className="column">
-                      <p>
-                        <small>
-                          {new Date(comment.createdAt).toLocaleString("et-EE")}
-                        </small>
-                      </p>
+          {commentCountUpdate > 0 && (
+            <div className="row">
+              <div className="column">
+                {comments.map((comment) => (
+                  <>
+                    <div key={comment.comment_id}>{comment.content}</div>
+                    <div className="row">
+                      <div className="column">
+                        <p>
+                          <small>
+                            {new Date(comment.createdAt).toLocaleString(
+                              "et-EE"
+                            )}
+                          </small>
+                        </p>
+                      </div>
+                      <div className="column">{comment.userId}</div>
                     </div>
-                    <div className="column">{comment.userId}</div>
-                  </div>
 
-                  <hr />
-                </>
-              ))}
+                    <hr />
+                  </>
+                ))}
+              </div>
             </div>
-          </div>
-          {commentsToShow > 5 ? (
+          )}
+          {commentsToShow > 5 && (
             <p>
               <button onClick={showMoreComments}>
                 {commentsToShow - 5} more comment
                 {commentsToShow - 5 === 1 ? "" : "s"}
               </button>
             </p>
-          ) : null}
-          {!commentCountUpdate && <p>Be the first to leave a comment</p>}
-          <CreateComment
-            postId={postId}
-            onCommentsUpdate={handleCommentsUpdate}
-          />
+          )}
+          {!commentCountUpdate && showCreateComment && (
+            <p>Be the first to leave a comment</p>
+          )}
+          {showCreateComment && (
+            <CreateComment
+              postId={postId}
+              onCommentsUpdate={handleCommentsUpdate}
+            />
+          )}
         </div>
       )}
     </>

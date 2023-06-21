@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import UserPosts from "./UserPosts.js";
+import Posts from "../pages/PostsPage.js";
 import Followers from "./Followers.js";
 import Following from "./Following.js";
 import ProfileEditor from "./ProfileEditor.js";
@@ -10,7 +10,7 @@ const ProfileContent = ({ selected }) => {
   useEffect(() => {
     switch (selected) {
       case "your-posts":
-        setDisplayedContent(<UserPosts />);
+        setDisplayedContent(null);
         break;
       case "followers":
         console.log("FOLLOWERS SELECTED");
@@ -25,7 +25,14 @@ const ProfileContent = ({ selected }) => {
     }
   }, [selected]);
 
-  return <div className="profile-content">{displayedContent}</div>;
+  return (
+    <div className="profile-content">
+      {displayedContent}
+      {selected === "your-posts" && (
+        <Posts showCreatePost={false} showCreateComment={false} />
+      )}
+    </div>
+  );
 };
 
 export default ProfileContent;
