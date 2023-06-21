@@ -98,3 +98,14 @@ func (w *WebsocketServer) removeClient(client *Client) {
 		delete(w.clients, client)
 	}
 }
+
+func (w *WebsocketServer) getClientByUserID(TargetID int) *Client {
+	w.RLock()
+	defer w.RUnlock()
+	for client := range w.clients {
+		if client.clientID == TargetID {
+			return client
+		}
+	}
+	return nil
+}

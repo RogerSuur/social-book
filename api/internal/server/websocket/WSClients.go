@@ -13,7 +13,7 @@ type Client struct {
 	connection *websocket.Conn
 	clientID   int
 	manager    *WebsocketServer
-	gate       chan []byte
+	gate       chan Payload
 }
 
 var (
@@ -33,7 +33,7 @@ func NewClient(conn *websocket.Conn, userID int, manager *WebsocketServer) *Clie
 		connection: conn,
 		clientID:   userID,
 		manager:    manager,
-		gate:       make(chan []byte),
+		gate:       make(chan Payload),
 	}
 }
 

@@ -49,7 +49,6 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 	// check if follow request already exists
 	_, err = s.FollowerRepo.GetByFollowerAndFollowing(followerId, followingId)
 	if err == nil {
-		s.Logger.Printf("Follow request already exists: %s", err)
 		return -1, errors.New("follow request already exists")
 	}
 

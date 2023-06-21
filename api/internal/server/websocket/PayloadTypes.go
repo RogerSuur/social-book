@@ -13,6 +13,17 @@ type RequestPayload struct {
 	GroupID  int  `json:"group_id"`
 }
 
+type NotificationPayload struct {
+	NotificationType string `json:"notification_type"`
+	NotificationID   int    `json:"notification_id"`
+	SenderID         int    `json:"sender_id"`
+	SenderName       string `json:"sender_name"`
+	GroupID          int    `json:"group_id"`
+	GroupName        string `json:"group_name"`
+	EventID          int    `json:"event_id"`
+	EventName        string `json:"event_name"`
+}
+
 type MessagePayload struct {
 	MessageID     int    `json:"message_id"`
 	SenderID      int    `json:"sender_id"`

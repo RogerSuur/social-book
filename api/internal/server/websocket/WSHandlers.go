@@ -67,14 +67,45 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 	}
 	w.Logger.Printf("User %v found", user.Email)
 
-	value, err := w.notificationService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
+	followRequestId, err := w.notificationService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
 	if err != nil {
 		return err
 	}
 
-	w.Logger.Printf("Created follow request with id %v", value)
+	w.Logger.Printf("Created follow request with id %v", followRequestId)
 
-	// TODO: send notification to user by WS
+	// broadcast to recipient
+	userData, err := w.userService.GetUserData(int64(c.clientID))
+	if err != nil {
+		return err
+	}
+
+	recipientClient := w.getClientByUserID(data.ID)
+
+	if recipientClient == nil {
+		w.Logger.Printf("Recipient client not found")
+		return nil
+	}
+
+	w.Logger.Printf("Recipient client found")
+
+	dataToSend, err := json.Marshal(
+		&NotificationPayload{
+			NotificationType: "follow_request",
+			NotificationID:   int(followRequestId),
+			SenderID:         c.clientID,
+			SenderName:       userData.FirstName + " " + userData.LastName,
+		},
+	)
+
+	if err != nil {
+		return err
+	}
+
+	recipientClient.gate <- Payload{
+		Type: "notification",
+		Data: dataToSend,
+	}
 
 	return nil
 }
