@@ -32,14 +32,14 @@ const ProfileInfo = () => {
   const handleFollow = () => {
     sendJsonMessage({
       type: "follow_request",
-      data: user.id,
+      data: { id: user.id },
     });
   };
 
   const handleUnfollow = () => {
     sendJsonMessage({
-      type: "unfollow_request",
-      data: { following_id: user.id },
+      type: "unfollow",
+      data: { id: user.id },
     });
   };
 
