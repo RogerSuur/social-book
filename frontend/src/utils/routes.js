@@ -1,2 +1,10 @@
 export const WS_URL = `ws://localhost:8000/ws`;
 export const PROFILE_URL = "http://localhost:8000/profile/";
+export const NOTIFICATIONS_URL = "http://localhost:8000/notifications/";
+export const USER_GROUPS_URL = "http://localhost:8000/usergroups";
+export const GROUP_USERS_URL = "http://localhost:8000/groups";
+export const USER_CREATED_GROUPS_URL = "http://localhost:8000/mygroups";
+export const FOLLOWERS_URL = "http://localhost:8000/followers";
+export const FOLLOWING_URL = "http://localhost:8000/following";
+export const ACCEPTED_EVENTS_URL = "http://localhost:8000/userevents";
+export const GROUP_PAGE_URL = "http://localhost:8000/groups";

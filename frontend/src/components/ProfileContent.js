@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import UserPosts from "./UserPosts.js";
-import Followers from "./Followers.js";
-import Following from "./Following.js";
-import ProfileEditor from "./ProfileEditor.js";
+import UserPosts from "../components/UserPosts.js";
+import GenericUserList from "../components/GenericUserList.js";
+import ProfileEditor from "../components/ProfileEditor.js";
+import { FOLLOWERS_URL, FOLLOWING_URL } from "../utils/routes.js";
 
 const ProfileContent = ({ selected }) => {
   const [displayedContent, setDisplayedContent] = useState(null);
@@ -13,11 +13,10 @@ const ProfileContent = ({ selected }) => {
         setDisplayedContent(<UserPosts />);
         break;
       case "followers":
-        console.log("FOLLOWERS SELECTED");
-        setDisplayedContent(<Followers />);
+        setDisplayedContent(<GenericUserList url={FOLLOWERS_URL} />);
         break;
       case "following":
-        setDisplayedContent(<Following />);
+        setDisplayedContent(<GenericUserList url={FOLLOWING_URL} />);
         break;
       default:
         setDisplayedContent(<ProfileEditor />);

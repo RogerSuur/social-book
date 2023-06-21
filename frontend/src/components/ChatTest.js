@@ -22,29 +22,29 @@ const ChatTest = ({}) => {
   }, []);
 
   const chatter = [
-    { name: "Chill Bill", userid: 1 },
-    { name: "Scary Mary", userid: 2 },
-    { name: "bloodymary", userid: 3 },
+    { name: "Chill Bill", userid: 1, group_id: 0 },
+    { name: "Scary Mary", userid: 2, group_id: 0 },
+    { name: "bloodymary", userid: 3, group_id: 0 },
     { name: "Best group", userid: 0, group_id: 4 },
-    { name: "V Mary", userid: 5 },
-    { name: "C Mary", userid: 6 },
-    { name: "D Mary", userid: 7 },
-    { name: "E Mary", userid: 8 },
+    { name: "V Mary", userid: 5, group_id: 0 },
+    { name: "C Mary", userid: 6, group_id: 0 },
+    { name: "D Mary", userid: 7, group_id: 0 },
+    { name: "E Mary", userid: 8, group_id: 0 },
     { name: "Better group", userid: 0, group_id: 2 },
-    { name: "G Mary", userid: 10 },
-    { name: "H Mary", userid: 11 },
-    { name: "I Mary", userid: 12 },
-    { name: "J Mary", userid: 13 },
-    { name: "K Mary", userid: 14 },
-    { name: "L Mary", userid: 15 },
-    { name: "M Mary", userid: 16 },
-    { name: "N Mary", userid: 17 },
-    { name: "O Mary", userid: 18 },
-    { name: "P Mary", userid: 19 },
-    { name: "S Mary", userid: 20 },
-    { name: "T Mary", userid: 21 },
-    { name: "U Mary", userid: 22 },
-    { name: "V Mary", userid: 22 },
+    { name: "G Mary", userid: 10, group_id: 0 },
+    { name: "H Mary", userid: 11, group_id: 0 },
+    { name: "I Mary", userid: 12, group_id: 0 },
+    { name: "J Mary", userid: 13, group_id: 0 },
+    { name: "K Mary", userid: 14, group_id: 0 },
+    { name: "L Mary", userid: 15, group_id: 0 },
+    { name: "M Mary", userid: 16, group_id: 0 },
+    { name: "N Mary", userid: 17, group_id: 0 },
+    { name: "O Mary", userid: 18, group_id: 0 },
+    { name: "P Mary", userid: 19, group_id: 0 },
+    { name: "S Mary", userid: 20, group_id: 0 },
+    { name: "T Mary", userid: 21, group_id: 0 },
+    { name: "U Mary", userid: 22, group_id: 0 },
+    { name: "V Mary", userid: 23, group_id: 0 },
   ];
 
   const toggleChat = (chatId) => {
@@ -57,7 +57,13 @@ const ChatTest = ({}) => {
   const useriddd = 1;
 
   const checkOpenChat = (open) =>
-    open.every((value, index) => value === openChat[index]);
+    open.every((value, index) => {
+      console.log(value, "value");
+      console.log(index, "index");
+      console.log(openChat[index], "OPENCHAT index");
+      console.log(value === openChat[index], "VALUI");
+      return value === openChat[index];
+    });
 
   useEffect(() => {
     switch (lastJsonMessage?.type) {
@@ -75,9 +81,11 @@ const ChatTest = ({}) => {
       <li key={index + 1}>
         <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
       </li>
-      {(checkOpenChat([chat?.userid, 0]) ||
-        checkOpenChat([0, chat?.group_id])) && (
-        <Chatbox toggleChat={toggleChat} chat={chat} user={useriddd} />
+      {checkOpenChat([chat?.userid, chat?.group_id]) && (
+        <>
+          {console.log(openChat, "OPEN CHAT")}
+          <Chatbox toggleChat={toggleChat} chat={chat} user={useriddd} />
+        </>
       )}
     </>
   ));

@@ -1,8 +1,9 @@
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import NotificationList from "../components/NotificationList.js";
 import NotificationPopup from "../components/NotificationPopup";
+import axios from "axios";
 import { useState, useEffect } from "react";
-import { WS_URL } from "../utils/routes";
+import { WS_URL, NOTIFICATIONS_URL } from "../utils/routes";
 
 const NotificationNavbarItem = () => {
   const [toggle, setToggle] = useState(false);
@@ -11,23 +12,36 @@ const NotificationNavbarItem = () => {
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [notifications, setNotifications] = useState([]);
 
-  const loadNotifications = () => {
-    sendJsonMessage({
-      type: "notifications",
-    });
-  };
-
   useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        await axios
+          .get(NOTIFICATIONS_URL, {
+            withCredentials: true,
+          })
+          .then((response) => {
+            setNotifications(response.data);
+          });
+      } catch (err) {
+        if (err.response?.status > 200) {
+          console.log(err);
+        }
+      }
+    };
+
     loadNotifications();
   }, []);
 
+  // const loadNotifications = () => {
+  //   sendJsonMessage({
+  //     type: "notifications",
+  //   });
+  // };
+
   useEffect(() => {
-    if (lastJsonMessage?.type === "notifications") {
-      setNotifications(lastJsonMessage?.data?.notifications);
-    } else if (
-      lastJsonMessage?.type !== "message" &&
-      lastJsonMessage?.type !== "chatlist"
-    ) {
+    const exceptions = ["message", "chatlist", "message_history"];
+
+    if (!exceptions.includes(lastJsonMessage?.type)) {
       setNewNotification(lastJsonMessage?.data);
       setNotificationTimer(true);
 
