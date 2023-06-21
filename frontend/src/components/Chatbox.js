@@ -160,8 +160,6 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     }
   }, [lastJsonMessage]);
 
-  console.log(chat.userid, "CHATID");
-
   const closeChat = () => {
     toggleChat(0);
   };
@@ -178,11 +176,8 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   };
 
   const renderedMessages = sms.map((msg) => {
-    console.log(msg.sender_id, "SENDER");
-    console.log(user, "USRRRRRR");
     switch (msg.sender_id) {
       case user:
-        console.log("OWN");
         return <p className="own-message">{msg.body}</p>;
       default:
         return <p className="message">{msg.body}</p>;
