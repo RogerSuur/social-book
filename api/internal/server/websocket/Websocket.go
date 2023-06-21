@@ -99,7 +99,7 @@ func (w *WebsocketServer) removeClient(client *Client) {
 	}
 }
 
-func (w *WebsocketServer) getClientByUserID(TargetID int) *Client {
+func (w *WebsocketServer) getClientByUserID(TargetID int64) *Client {
 	w.RLock()
 	defer w.RUnlock()
 	for client := range w.clients {

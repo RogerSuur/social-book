@@ -12,7 +12,7 @@ const CommentLimit = 10
 type Comment struct {
 	Id        int
 	PostId    int
-	UserId    int
+	UserId    int64
 	Content   string
 	ImagePath string
 	CreatedAt time.Time

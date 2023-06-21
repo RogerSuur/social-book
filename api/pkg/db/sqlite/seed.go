@@ -82,7 +82,7 @@ func SeedPosts(repos *models.Repositories) {
 			for _, seedPost := range seedUser.PostSet {
 				tempPost := &models.Post{
 					Content:     seedPost.Content,
-					UserId:      seedUser.Id,
+					UserId:      int64(seedUser.Id),
 					PrivacyType: seedPost.PrivacyType,
 				}
 
@@ -203,7 +203,7 @@ func SeedComments(repo *models.CommentRepository) {
 	for i := 0; i < 10; i++ {
 		tempComment := &models.Comment{
 			Content: faker.Sentence(),
-			UserId:  i + 1,
+			UserId:  int64(i + 1),
 			PostId:  i + 1,
 		}
 

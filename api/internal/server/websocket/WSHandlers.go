@@ -80,7 +80,7 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 		return err
 	}
 
-	recipientClient := w.getClientByUserID(data.ID)
+	recipientClient := w.getClientByUserID(int64(data.ID))
 
 	if recipientClient == nil {
 		w.Logger.Printf("Recipient client not found")
@@ -93,7 +93,7 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 		&NotificationPayload{
 			NotificationType: "follow_request",
 			NotificationID:   int(followRequestId),
-			SenderID:         c.clientID,
+			SenderID:         int(c.clientID),
 			SenderName:       userData.FirstName + " " + userData.LastName,
 		},
 	)

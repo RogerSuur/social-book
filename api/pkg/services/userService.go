@@ -24,6 +24,7 @@ type ProfileJSON struct {
 	AvatarImage string `json:"avatarImage"`
 	CreatedAt   string `json:"createdAt"`
 	IsPublic    bool   `json:"isPublic"`
+	IsFollowed  bool   `json:"isFollowed"`
 }
 
 type ProfileUpdateJSON struct {
@@ -53,7 +54,7 @@ type IUserService interface {
 	CreateUser(user *models.User) (int64, error)
 	UpdateUserData(userID int64, updateData ProfileUpdateJSON) error
 	GetUserData(userID int64) (*ProfileJSON, error)
-	GetUserID(r *http.Request) (int, error)
+	GetUserID(r *http.Request) (int64, error)
 	SetCookie(w http.ResponseWriter, sessionToken string)
 	ClearCookie(w http.ResponseWriter)
 	UserLogin(user *models.User) (string, error)
@@ -61,6 +62,7 @@ type IUserService interface {
 	UserRegister(user *models.User) (string, error)
 	GetUserFollowers(userID int64) ([]FollowerData, error)
 	GetUserFollowing(userID int64) ([]FollowerData, error)
+	IsFollowed(followerID int64, followingID int64) bool
 	UpdateUserImage(userID int64, file multipart.File, fileHeader *multipart.FileHeader) error
 }
 
@@ -306,7 +308,7 @@ func (s *UserService) ClearCookie(w http.ResponseWriter) {
 	http.SetCookie(w, &cookie)
 }
 
-func (s *UserService) GetUserID(r *http.Request) (int, error) {
+func (s *UserService) GetUserID(r *http.Request) (int64, error) {
 
 	cookie, err := r.Cookie("session")
 	if err != nil {
@@ -331,12 +333,12 @@ func (s *UserService) GetUserFollowers(userID int64) ([]FollowerData, error) {
 	followersData := []FollowerData{}
 
 	for _, follower := range followers {
-		user, err := s.UserRepo.GetById(int64(follower.FollowerId))
+		user, err := s.UserRepo.GetById(follower.FollowerId)
 		if err != nil {
 			return nil, err
 		}
 		follower := FollowerData{
-			UserID:      user.Id,
+			UserID:      int(user.Id),
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
 			Nickname:    user.Nickname,
@@ -359,12 +361,12 @@ func (s *UserService) GetUserFollowing(userID int64) ([]FollowerData, error) {
 	followingData := []FollowerData{}
 
 	for _, follower := range following {
-		user, err := s.UserRepo.GetById(int64(follower.FollowingId))
+		user, err := s.UserRepo.GetById(follower.FollowingId)
 		if err != nil {
 			return nil, err
 		}
 		following := FollowerData{
-			UserID:      user.Id,
+			UserID:      int(user.Id),
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
 			Nickname:    user.Nickname,
@@ -375,6 +377,16 @@ func (s *UserService) GetUserFollowing(userID int64) ([]FollowerData, error) {
 	}
 
 	return followingData, nil
+}
+
+func (s *UserService) IsFollowed(userID int64, followerID int64) bool {
+
+	_, err := s.FollowerRepo.GetByFollowerAndFollowing(userID, followerID)
+	if err != nil {
+		return false
+	}
+
+	return true
 }
 
 func (s *UserService) UpdateUserImage(userID int64, imageFile multipart.File, header *multipart.FileHeader) error {
