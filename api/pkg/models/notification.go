@@ -7,15 +7,17 @@ import (
 )
 
 type Notification struct {
-	ReceiverId      int64
-	FollowRequestId int64
-	GroupInviteId   int64
-	GroupRequestId  int64
-	EventId         int64
-	Reaction        bool
+	ReceiverId       int64
+	NotificationType string
+	SenderID         int64
+	EntityId         int64
+	CreatedAt        string
+	SeenAt           string
+	Reaction         bool
 }
 
 type INotificationRepository interface {
+	GetNotificationType(notificationType string) (int64, error)
 	Insert(notification *Notification) (int64, error)
 }
 
@@ -31,29 +33,83 @@ func NewNotificationRepo(db *sql.DB) *NotificationRepository {
 	}
 }
 
-func (repo NotificationRepository) Insert(notification *Notification) (int64, error) {
-	query := `INSERT INTO notifications (receiver_id, follow_request_id, group_invite_id, group_request_id, event_id, reaction)
-	VALUES(?, ?, ?, ?, ?, ?)`
+func (repo NotificationRepository) GetNotificationType(notificationType string) (int64, error) {
+	query := `SELECT id FROM notification_types WHERE type = ?`
 
 	args := []interface{}{
-		notification.ReceiverId,
-		notification.FollowRequestId,
-		notification.GroupInviteId,
-		notification.GroupRequestId,
-		notification.EventId,
-		notification.Reaction,
+		notificationType,
+	}
+
+	var id int64
+
+	err := repo.DB.QueryRow(query, args...).Scan(&id)
+
+	if err != nil {
+		repo.Logger.Printf("Error getting notification type: %s", err.Error())
+		return -1, err
+	}
+
+	return id, nil
+}
+
+func (repo NotificationRepository) Insert(notification *Notification) (int64, error) {
+
+	/*
+		NotificationTypeID, err := repo.GetNotificationType(notification.NotificationType)
+
+		if err != nil {
+			repo.Logger.Printf("Error getting notification type: %s", err.Error())
+			return -1, err
+		}
+	*/
+
+	NotificationTypeID := 0 // temporary until types table is updated
+
+	query := `INSERT INTO notification_details (sender_id, notification_type_id, entity_id, created_at)
+	VALUES(?, ?, ?, ?)`
+
+	args := []interface{}{
+		notification.SenderID,
+		NotificationTypeID,
+		notification.EntityId,
+		notification.CreatedAt,
 	}
 
 	result, err := repo.DB.Exec(query, args...)
 
 	if err != nil {
-		return 0, err
+		repo.Logger.Printf("Error inserting notification details: %s", err.Error())
+		return -1, err
 	}
 
 	lastId, err := result.LastInsertId()
 
 	if err != nil {
-		return 0, err
+		repo.Logger.Printf("Error getting last insert ID: %s", err.Error())
+		return -1, err
+	}
+
+	query = `INSERT INTO notifications (receiver_id, notification_details_id, seen_at, reaction)
+	VALUES(?, ?, ?, ?)`
+
+	args = []interface{}{
+		notification.ReceiverId,
+		lastId,
+		notification.SeenAt,
+		notification.Reaction,
+	}
+
+	result, err = repo.DB.Exec(query, args...)
+
+	if err != nil {
+		repo.Logger.Printf("Error inserting notification: %s", err.Error())
+		return -1, err
+	}
+
+	lastId, err = result.LastInsertId()
+
+	if err != nil {
+		return -1, err
 	}
 
 	repo.Logger.Printf("Inserted notification for user %d (last insert ID: %d)", notification.ReceiverId, lastId)

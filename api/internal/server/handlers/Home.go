@@ -9,11 +9,12 @@ import (
 )
 
 type Application struct {
-	Logger         *log.Logger
-	WS             *websocket.WebsocketServer
-	UserService    services.IUserService
-	PostService    services.IPostService
-	CommentService services.ICommentService
+	Logger              *log.Logger
+	WS                  *websocket.WebsocketServer
+	UserService         services.IUserService
+	NotificationService services.INotificationService
+	PostService         services.IPostService
+	CommentService      services.ICommentService
 }
 
 // func InitApplication(repositories *models.Repositories) *Application {

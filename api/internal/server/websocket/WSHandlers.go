@@ -60,14 +60,21 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 		return err
 	}
 	w.Logger.Printf("User %v wants to start following user %v", c.clientID, data.ID)
-	follwoReqId, err := w.userService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
+
+	user, err := w.userService.GetUserData(int64(c.clientID))
 	if err != nil {
 		return err
 	}
-	err = w.notificationService.CreateFollowRequestNotification(int64(data.ID), follwoReqId)
+	w.Logger.Printf("User %v found", user.Email)
+
+	value, err := w.notificationService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
 	if err != nil {
 		return err
 	}
+
+	w.Logger.Printf("Created follow request with id %v", value)
+
+	// TODO: send notification to user by WS
 
 	return nil
 }

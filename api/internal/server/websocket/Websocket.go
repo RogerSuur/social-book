@@ -52,7 +52,7 @@ func (w *WebsocketServer) WShandler(rw http.ResponseWriter, r *http.Request) {
 
 }
 
-func InitWebsocket(UserService *services.UserService) *WebsocketServer {
+func InitWebsocket(UserService *services.UserService, notificationService *services.NotificationService) *WebsocketServer {
 	w := &WebsocketServer{
 		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
 		upgrader: websocket.Upgrader{
@@ -60,9 +60,10 @@ func InitWebsocket(UserService *services.UserService) *WebsocketServer {
 			WriteBufferSize: 1024,
 			CheckOrigin:     checkOrigin,
 		},
-		clients:     make(ClientList),
-		handlers:    make(map[string]PayloadHandler),
-		userService: UserService,
+		clients:             make(ClientList),
+		handlers:            make(map[string]PayloadHandler),
+		userService:         UserService,
+		notificationService: notificationService,
 	}
 	w.setupHandlers()
 	return w
