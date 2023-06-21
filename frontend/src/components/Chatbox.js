@@ -13,6 +13,28 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     },
   });
 
+  console.log(chat);
+
+  const defaultImage = () =>
+    chat.userid > 0 ? "defaultuser.jpg" : "defaultgroup.png";
+
+  const imageHandler = () => {
+    const source = chat?.avatarImage
+      ? `images/${chat.id}/${chat.avatarImage}`
+      : defaultImage();
+
+    const image = (
+      <img
+        style={{
+          width: "20px",
+          height: "20px",
+        }}
+        src={source}
+      ></img>
+    );
+    return image;
+  };
+
   const sms = [
     {
       id: 1, //message id
@@ -222,6 +244,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     <div className="chatbox">
       <div className="chat-title">
         {chatName}
+        {imageHandler()}
         <button onClick={closeChat}>Close</button>
       </div>
       <div className="message-history">{renderedMessages}</div>
