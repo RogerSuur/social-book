@@ -7,7 +7,12 @@ import (
 )
 
 type Notification struct {
-	// TODO
+	ReceiverId      int64
+	FollowRequestId int64
+	GroupInviteId   int64
+	GroupRequestId  int64
+	EventId         int64
+	Reaction        bool
 }
 
 type INotificationRepository interface {
@@ -27,8 +32,31 @@ func NewNotificationRepo(db *sql.DB) *NotificationRepository {
 }
 
 func (repo NotificationRepository) Insert(notification *Notification) (int64, error) {
+	query := `INSERT INTO notifications (receiver_id, follow_request_id, group_invite_id, group_request_id, event_id, reaction)
+	VALUES(?, ?, ?, ?, ?, ?)`
 
-	//TODO
-	//insert new notification into database
-	return 0, nil
+	args := []interface{}{
+		notification.ReceiverId,
+		notification.FollowRequestId,
+		notification.GroupInviteId,
+		notification.GroupRequestId,
+		notification.EventId,
+		notification.Reaction,
+	}
+
+	result, err := repo.DB.Exec(query, args...)
+
+	if err != nil {
+		return 0, err
+	}
+
+	lastId, err := result.LastInsertId()
+
+	if err != nil {
+		return 0, err
+	}
+
+	repo.Logger.Printf("Inserted notification for user %d (last insert ID: %d)", notification.ReceiverId, lastId)
+
+	return lastId, nil
 }
