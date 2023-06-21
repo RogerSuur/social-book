@@ -16,7 +16,6 @@
         "event_id": 123, // 0 if not event
         "event_name": "something", // empty if not event
         "event_datetime": "2006-01-02T15:04:05Z07:00", // empty if not event
-        "reaction": true || false, // empty if not response
     }
 }
 ```

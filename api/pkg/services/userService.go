@@ -61,7 +61,7 @@ type IUserService interface {
 	UserRegister(user *models.User) (string, error)
 	GetUserFollowers(userID int64) ([]FollowerData, error)
 	GetUserFollowing(userID int64) ([]FollowerData, error)
-	CreateFollowRequest(followerID int64, followingID int64) error
+	CreateFollowRequest(followerID int64, followingID int64) (int64, error)
 	UpdateUserImage(userID int64, file multipart.File, fileHeader *multipart.FileHeader) error
 }
 
@@ -375,23 +375,42 @@ func (s *UserService) GetUserFollowing(userID int64) ([]FollowerData, error) {
 	return followingData, nil
 }
 
-func (s *UserService) CreateFollowRequest(followerID int64, followingID int64) error {
+func (s *UserService) CreateFollowRequest(followerID int64, followingID int64) (int64, error) {
 	// check if follower and following exist
 	_, err := s.UserRepo.GetById(followerID)
 	if err != nil {
 		s.Logger.Printf("Follower not found: %s", err)
-		return err
+		return 0, err
 	}
 	_, err = s.UserRepo.GetById(followingID)
 	if err != nil {
 		s.Logger.Printf("Following not found: %s", err)
-		return err
+		return 0, err
 	}
 
 	// check if follow request already exists
-	//_, err = s.FollowerRepo.GetByFollowerAndFollowing(followerID, followingID)
+	_, err = s.FollowerRepo.GetByFollowerAndFollowing(followerID, followingID)
+	if err == nil {
+		s.Logger.Printf("Follow request already exists: %s", err)
+		return 0, errors.New("follow request already exists")
+	}
 
-	return nil
+	// create follow request
+	follower := &models.Follower{
+		FollowerId:  followerID,
+		FollowingId: followingID,
+		Accepted:    false,
+	}
+
+	lastID, err := s.FollowerRepo.Insert(follower)
+	if err != nil {
+		s.Logger.Printf("Cannot insert follow request: %s", err)
+		return 0, err
+	}
+
+	s.Logger.Printf("Follow request created: %d", lastID)
+
+	return lastID, nil
 }
 
 func (s *UserService) UpdateUserImage(userID int64, imageFile multipart.File, header *multipart.FileHeader) error {

@@ -17,11 +17,12 @@ type IWebsocketServer interface {
 }
 
 type WebsocketServer struct {
-	Logger      *log.Logger
-	upgrader    websocket.Upgrader
-	clients     ClientList
-	handlers    map[string]PayloadHandler
-	userService services.IUserService
+	Logger              *log.Logger
+	upgrader            websocket.Upgrader
+	clients             ClientList
+	handlers            map[string]PayloadHandler
+	userService         services.IUserService
+	notificationService services.INotificationService
 	sync.RWMutex
 }
 
