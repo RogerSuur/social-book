@@ -60,7 +60,8 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 		return err
 	}
 	w.Logger.Printf("User %v wants to start following user %v", c.clientID, data.ID)
-	return nil
+	err = w.userService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
+	return err
 }
 
 func (w *WebsocketServer) UnfollowHandler(p Payload, c *Client) error {

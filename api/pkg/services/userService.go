@@ -61,6 +61,7 @@ type IUserService interface {
 	UserRegister(user *models.User) (string, error)
 	GetUserFollowers(userID int64) ([]FollowerData, error)
 	GetUserFollowing(userID int64) ([]FollowerData, error)
+	CreateFollowRequest(followerID int64, followingID int64) error
 	UpdateUserImage(userID int64, file multipart.File, fileHeader *multipart.FileHeader) error
 }
 
@@ -372,6 +373,25 @@ func (s *UserService) GetUserFollowing(userID int64) ([]FollowerData, error) {
 	}
 
 	return followingData, nil
+}
+
+func (s *UserService) CreateFollowRequest(followerID int64, followingID int64) error {
+	// check if follower and following exist
+	_, err := s.UserRepo.GetById(followerID)
+	if err != nil {
+		s.Logger.Printf("Follower not found: %s", err)
+		return err
+	}
+	_, err = s.UserRepo.GetById(followingID)
+	if err != nil {
+		s.Logger.Printf("Following not found: %s", err)
+		return err
+	}
+
+	// check if follow request already exists
+	//_, err = s.FollowerRepo.GetByFollowerAndFollowing(followerID, followingID)
+
+	return nil
 }
 
 func (s *UserService) UpdateUserImage(userID int64, imageFile multipart.File, header *multipart.FileHeader) error {
