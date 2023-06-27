@@ -83,11 +83,11 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 	recipientClient := w.getClientByUserID(int64(data.ID))
 
 	if recipientClient == nil {
-		w.Logger.Printf("Recipient client not found")
+		w.Logger.Printf("Recipient client not found (recipient offline)")
 		return nil
 	}
 
-	w.Logger.Printf("Recipient client found")
+	w.Logger.Printf("Recipient client found (recipient online)")
 
 	dataToSend, err := json.Marshal(
 		&NotificationPayload{
@@ -106,6 +106,8 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 		Type: "notification",
 		Data: dataToSend,
 	}
+
+	w.Logger.Printf("Sent notification to recipient")
 
 	return nil
 }

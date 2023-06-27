@@ -4,12 +4,12 @@ CREATE TABLE IF NOT EXISTS notification_types(
     entity TEXT NOT NULL
 );
 
-INSERT INTO notification_types (id, entity, name)
+INSERT INTO notification_types (id, name, entity)
 VALUES 
-(0, "followers", "user follow request"),
-(1, "groups", "group invitation"),
-(2, "groups", "group join request"),
-(3, "group_events", "group event");
+(0, "follow_request", "followers"),
+(1, "group_request", "groups"),
+(2, "group_invite", "groups"),
+(3, "event_invite", "group_events");
 
 
 
