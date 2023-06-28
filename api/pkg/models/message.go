@@ -45,9 +45,34 @@ func (repo MessageRepository) Insert(event *Message) (int64, error) {
 }
 
 func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
-	//TODO
-	//get users from database
-	return nil, nil
+	//get all users from database except myself
+
+	query := `SELECT id, first_name, last_name, nickname, avatar_image FROM users WHERE id != ?`
+
+	rows, err := repo.DB.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := []*User{}
+
+	for rows.Next() {
+		user := &User{}
+		err := rows.Scan(
+			&user.Id,
+			&user.FirstName,
+			&user.LastName,
+			&user.Nickname,
+			&user.ImagePath,
+		)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
 }
 
 func (repo MessageRepository) GetLastMessage(userId int64, otherId int64) (*Message, error) {
