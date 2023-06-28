@@ -1,7 +1,6 @@
 package services
 
 import (
-	"SocialNetworkRestApi/api/pkg/models"
 	"regexp"
 
 	"golang.org/x/crypto/bcrypt"
@@ -15,17 +14,17 @@ type Services struct {
 }
 
 // InitServices returns a new Controllers
-func InitServices(repositories *models.Repositories) *Services {
-	return &Services{
-		UserService: InitUserService(
-			repositories.UserRepo,
-			repositories.SessionRepo,
-			repositories.FollowerRepo,
-		),
-		PostService:    InitPostService(repositories.PostRepo),
-		CommentService: InitCommentService(repositories.CommentRepo),
-	}
-}
+// func InitServices(repositories *models.Repositories) *Services {
+// 	return &Services{
+// 		UserService: InitUserService(
+// 			repositories.UserRepo,
+// 			repositories.SessionRepo,
+// 			repositories.FollowerRepo,
+// 		),
+// 		PostService:    InitPostService(repositories.PostRepo, repositories.AllowedPostRepo),
+// 		CommentService: InitCommentService(repositories.CommentRepo),
+// 	}
+// }
 
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

@@ -1,9 +1,11 @@
 package services
 
 import (
+	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -14,13 +16,16 @@ type IPostService interface {
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
 type PostService struct {
-	Logger         *log.Logger
-	PostRepository models.IPostRepository
+	Logger                *log.Logger
+	PostRepository        models.IPostRepository
+	AllowedPostRepository models.IAllowedPostRepository
 }
 
-func InitPostService(postRepo *models.PostRepository) *PostService {
+func InitPostService(logger *log.Logger, postRepo *models.PostRepository, allowedPostRepo *models.AllowedPostRepository) *PostService {
 	return &PostService{
-		PostRepository: postRepo,
+		Logger:                logger,
+		PostRepository:        postRepo,
+		AllowedPostRepository: allowedPostRepo,
 	}
 }
 
@@ -42,7 +47,25 @@ func (s *PostService) CreatePost(post *models.Post) error {
 		return err
 	}
 
-	_, err := s.PostRepository.Insert(post)
+	postId, err := s.PostRepository.Insert(post)
+
+	if post.PrivacyType == enums.SubPrivate {
+		for _, receiver := range post.Receivers {
+
+			receiverId, err := strconv.Atoi(receiver)
+
+			if err != nil {
+				s.Logger.Printf("CreatePost atoi parse error: %s", err)
+			}
+
+			allowedPost := models.AllowedPost{
+				UserId: receiverId,
+				PostId: int(postId),
+			}
+
+			s.AllowedPostRepository.Insert(&allowedPost)
+		}
+	}
 
 	if err != nil {
 		log.Printf("CreatePost error: %s", err)
