@@ -63,6 +63,7 @@ type IUserService interface {
 	GetUserFollowers(userID int64) ([]FollowerData, error)
 	GetUserFollowing(userID int64) ([]FollowerData, error)
 	IsFollowed(followerID int64, followingID int64) bool
+	Unfollow(followerID int64, followingID int64) error
 	UpdateUserImage(userID int64, file multipart.File, fileHeader *multipart.FileHeader) error
 }
 
@@ -387,6 +388,21 @@ func (s *UserService) IsFollowed(userID int64, followerID int64) bool {
 	}
 
 	return true
+}
+
+func (s *UserService) Unfollow(userID int64, followerID int64) error {
+
+	follower, err := s.FollowerRepo.GetByFollowerAndFollowing(userID, followerID)
+	if err != nil {
+		return err
+	}
+
+	err = s.FollowerRepo.Delete(follower)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *UserService) UpdateUserImage(userID int64, imageFile multipart.File, header *multipart.FileHeader) error {

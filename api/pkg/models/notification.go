@@ -34,7 +34,7 @@ func NewNotificationRepo(db *sql.DB) *NotificationRepository {
 }
 
 func (repo NotificationRepository) GetNotificationType(notificationType string) (int64, error) {
-	query := `SELECT id FROM notification_types WHERE type = ?`
+	query := `SELECT id FROM notification_types WHERE name = ?`
 
 	args := []interface{}{
 		notificationType,
@@ -54,16 +54,12 @@ func (repo NotificationRepository) GetNotificationType(notificationType string) 
 
 func (repo NotificationRepository) Insert(notification *Notification) (int64, error) {
 
-	/*
-		NotificationTypeID, err := repo.GetNotificationType(notification.NotificationType)
+	NotificationTypeID, err := repo.GetNotificationType(notification.NotificationType)
 
-		if err != nil {
-			repo.Logger.Printf("Error getting notification type: %s", err.Error())
-			return -1, err
-		}
-	*/
-
-	NotificationTypeID := 0 // temporary until types table is updated
+	if err != nil {
+		repo.Logger.Printf("Error getting notification type: %s", err.Error())
+		return -1, err
+	}
 
 	query := `INSERT INTO notification_details (sender_id, notification_type_id, entity_id, created_at)
 	VALUES(?, ?, ?, ?)`
