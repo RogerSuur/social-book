@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-const CommentLimit = 10
+const CommentLimit = 5
 
 type Comment struct {
 	Id        int
@@ -92,8 +92,8 @@ func (repo CommentRepository) GetAllByPostId(postId int, offset int) ([]*Comment
 
 	args := []interface{}{
 		postId,
-		FeedLimit,
-		(offset * FeedLimit),
+		CommentLimit,
+		(offset * CommentLimit),
 	}
 
 	rows, err := repo.DB.Query(query, args...)

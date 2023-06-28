@@ -44,8 +44,8 @@ func (repo GroupRepository) Insert(group *Group) (int64, error) {
 		group.CreatorId,
 		group.Title,
 		group.Description,
-		group.ImagePath,
 		time.Now(),
+		group.ImagePath,
 	}
 
 	result, err := repo.DB.Exec(query, args...)
@@ -109,7 +109,34 @@ func (repo GroupRepository) GetAllByCreatorId(userId int) ([]*Group, error) {
 
 func (repo GroupRepository) GetAllByMemberId(userId int) ([]*Group, error) {
 
-	//TODO
-	//Get all groups the user is member of, by id
-	return nil, nil
+	stmt := `SELECT DISTINCT g.id, g.creator_id,  g.title, g.description, g.created_at, g.image_path FROM groups g
+	INNER JOIN user_groups ug ON
+	g.id = ug.group_id
+	WHERE ug.user_id = ?
+    ORDER BY title ASC`
+
+	rows, err := repo.DB.Query(stmt, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	groups := []*Group{}
+
+	for rows.Next() {
+		group := &Group{}
+
+		err := rows.Scan(&group.Id, &group.CreatorId, &group.Title, &group.Description, &group.CreatedAt, &group.ImagePath)
+		if err != nil {
+			return nil, err
+		}
+		groups = append(groups, group)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return groups, nil
 }

@@ -26,7 +26,10 @@ function App() {
             <Route element={<RequireAuth />}>
               <Route path="profile" element={<Profile />} />
               <Route path="profile/:id" element={<ProfileInfo />} />
-              <Route path="posts" element={<PostsPage />} />
+              <Route
+                path="posts"
+                element={<PostsPage showCreatePost={true} />}
+              />
               <Route path="posts/:id" element={<Post />} />
               <Route path="categories/:id" element={<Category />} />
               <Route path="logout" element={<Logout />} />

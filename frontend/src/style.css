@@ -333,3 +333,21 @@ hr {
   }
 
 }
+
+.spinner {
+  z-index: 999;
+  position: fixed;
+  bottom: 10px;
+  width: 120px;
+  height: 120px;
+  border: 6px solid black;
+  border-color: black transparent black transparent;
+  border-radius: 50%;
+  animation: spin 1.3s linear infinite; 
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

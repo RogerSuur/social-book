@@ -8,19 +8,20 @@ import (
 )
 
 type Message struct {
-	Id            int64     `json:"id"`
-	SenderId      int64     `json:"sender_id"`
-	SenderName    string    `json:"sender_name"`
-	RecipientId   int64     `json:"receiver_id"`
-	RecipientName string    `json:"receiver_name"`
-	GroupId       int64     `json:"group_id"`
-	GroupName     string    `json:"group_name"`
-	Content       string    `json:"body"`
-	Timestamp     time.Time `json:"timestamp"`
+	Id          int
+	SenderId    int
+	RecipientId int
+	GroupId     int
+	Content     string
+	ImagePath   string
+	SentAt      time.Time
+	ReadAt      time.Time
 }
 
 type IMessageRepository interface {
 	Insert(event *Message) (int64, error)
+	GetMessagesByGroupId(groupId int) ([]*Message, error)
+	GetMessagesByUserIds(userId int, secondUserId int) ([]*Message, error)
 	GetChatUsers(id int64) ([]*User, error)
 	GetLastMessage(userId int64, otherId int64) (*Message, error)
 }
@@ -37,11 +38,108 @@ func NewMessageRepo(db *sql.DB) *MessageRepository {
 	}
 }
 
-func (repo MessageRepository) Insert(event *Message) (int64, error) {
+func (repo MessageRepository) Insert(message *Message) (int64, error) {
+	query := `INSERT INTO messages (sender_id, recipient_id, group_id, content, image_path, sent_at)
+	VALUES(?, ?, ?, ?, ?, ?)`
 
+	args := []interface{}{
+		message.SenderId,
+		message.RecipientId,
+		message.GroupId,
+		message.Content,
+		message.ImagePath,
+		message.SentAt,
+	}
+
+	result, err := repo.DB.Exec(query, args...)
+
+	if err != nil {
+		return 0, err
+	}
+
+	lastId, err := result.LastInsertId()
+
+	if err != nil {
+		return 0, err
+	}
+
+	repo.Logger.Printf("Inserted message by user %d, to group/user %d/%d (last insert ID: %d)", message.SenderId, message.GroupId, message.RecipientId, lastId)
+
+	return lastId, nil
+}
+func (repo MessageRepository) Update(message *Message) error {
 	//TODO
-	//insert new message into database
-	return 0, nil
+	//Update methid needed when readAt is being used
+	return nil
+}
+
+func (repo MessageRepository) GetMessagesByGroupId(groupId int) ([]*Message, error) {
+	stmt := `SELECT id, sender_id, recipient_id, group_id, content, image_path, sent_at, read_at FROM messages m
+	WHERE group_id = ?
+    ORDER BY sent_at DESC`
+
+	rows, err := repo.DB.Query(stmt, groupId)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	messages := []*Message{}
+
+	for rows.Next() {
+		message := &Message{}
+
+		err := rows.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.ImagePath, &message.SentAt, &message.ReadAt)
+		if err != nil {
+			return nil, err
+		}
+		messages = append(messages, message)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return messages, nil
+}
+
+func (repo MessageRepository) GetMessagesByUserIds(userId int, secondUserId int) ([]*Message, error) {
+	stmt := `SELECT id, sender_id, recipient_id, group_id, content, image_path, sent_at, read_at FROM messages m
+	WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) 
+    ORDER BY sent_at DESC`
+
+	args := []interface{}{
+		userId,
+		secondUserId,
+		secondUserId,
+		userId,
+	}
+
+	rows, err := repo.DB.Query(stmt, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	messages := []*Message{}
+
+	for rows.Next() {
+		message := &Message{}
+
+		err := rows.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.ImagePath, &message.SentAt, &message.ReadAt)
+		if err != nil {
+			return nil, err
+		}
+		messages = append(messages, message)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return messages, nil
 }
 
 func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {

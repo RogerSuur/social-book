@@ -1,22 +1,20 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
 import axios from "axios";
 
-const CreateComment = (props) => {
-  const { id } = useParams();
+const CreateComment = ({ postId, onCommentsUpdate }) => {
   const [formData, setFormData] = useState({
-    post_id: id,
-    body: "",
+    postId: postId,
+    content: "",
   });
   const [errMsg, setErrMsg] = useState("");
 
   const handleChange = (event) => {
-    const { name, value, type, checked } = event.target;
+    const { name, value } = event.target;
 
     setFormData((prevFormData) => {
       return {
         ...prevFormData,
-        [name]: type === "checkbox" ? checked : value,
+        [name]: value,
       };
     });
   };
@@ -26,7 +24,7 @@ const CreateComment = (props) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/createcomment",
+        "http://localhost:8000/insertcomment",
         JSON.stringify(formData),
         { withCredentials: true },
         {
@@ -35,11 +33,12 @@ const CreateComment = (props) => {
       );
 
       setErrMsg(response.data?.message);
-      props.handler();
+      onCommentsUpdate();
+
       if (!errMsg) {
         setFormData({
-          post_id: id,
-          body: "",
+          postId: postId,
+          content: "",
         });
       }
     } catch (err) {
@@ -61,8 +60,8 @@ const CreateComment = (props) => {
           <textarea
             placeholder="Your comment goes here"
             onChange={handleChange}
-            value={formData.body}
-            name="body"
+            value={formData.content}
+            name="content"
           />
           <button>Post</button>
         </form>

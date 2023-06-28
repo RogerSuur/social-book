@@ -1,4 +1,4 @@
-package database
+package seed
 
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
@@ -18,12 +18,13 @@ type SeedUser struct {
 }
 
 type SeedPost struct {
-	Id      int
-	Content string
-	// ImagePath   string
+	Id            int
+	Content       string
 	PrivacyType   enums.PrivacyType
 	CommentSet    []*SeedComment
 	LoremComments int
+	// ImagePath   string
+
 }
 
 type SeedComment struct {
@@ -41,7 +42,7 @@ var SeedUserData = []*SeedUser{
 		About:           "Hey there, I'm Ann! I'm a fitness enthusiast and nutrition coach. I'm passionate about helping others achieve their health and wellness goals through personalized meal plans and exercise routines. In my free time, I enjoy trying out new healthy recipes, practicing yoga, and spending time with my two rescue dogs.",
 		IsPublic:        true,
 		PostSet:         SeedPostsDataSetA,
-		FollowingEmails: []string{"c@c.com", "d@d.com"},
+		FollowingEmails: []string{"c@c.com"},
 	},
 	{
 		FirstName:       "Benjamin",
@@ -51,17 +52,16 @@ var SeedUserData = []*SeedUser{
 		About:           "Hi, I'm Benjamin! I'm a freelance writer and avid traveler. I love exploring new cultures and cuisines, and I'm always on the lookout for my next adventure. When I'm not writing or traveling, you can find me hiking, reading a good book, or practicing my photography skills.",
 		IsPublic:        true,
 		PostSet:         SeedPostsDataSetB,
-		FollowingEmails: []string{"a@a.com", "d@d.com"},
+		FollowingEmails: []string{"a@a.com", "f@f.com"},
 	},
 	{
-		FirstName:       "Carlos",
-		LastName:        "Cortez",
-		Email:           "c@c.com",
-		Nickname:        "Carlito",
-		About:           "Hi, my name is Carlos! I'm a software developer with a love for all things tech. I specialize in building mobile and web applications, and I'm always looking for new and innovative ways to solve complex problems through code. When I'm not coding, you can find me playing video games or tinkering with my latest DIY project.",
-		IsPublic:        false,
-		PostSet:         SeedPostsDataSetC,
-		FollowingEmails: []string{"a@a.com", "d@d.com"},
+		FirstName: "Carlos",
+		LastName:  "Cortez",
+		Email:     "c@c.com",
+		Nickname:  "Carlito",
+		About:     "Hi, my name is Carlos! I'm a software developer with a love for all things tech. I specialize in building mobile and web applications, and I'm always looking for new and innovative ways to solve complex problems through code. When I'm not coding, you can find me playing video games or tinkering with my latest DIY project.",
+		IsPublic:  false,
+		PostSet:   SeedPostsDataSetC,
 	},
 	{
 		FirstName: "Deanna",
@@ -77,6 +77,45 @@ var SeedUserData = []*SeedUser{
 		Email:     "e@e.com",
 		Nickname:  "EvansCode",
 		About:     "Hey, I'm Ethan Evans. I'm a software engineer with over 10 years of experience in the industry. I'm passionate about using technology to solve real-world problems and improve people's lives. When I'm not coding, I enjoy playing basketball and exploring new restaurants in the city.",
+	},
+	{
+		FirstName:       "Felix",
+		LastName:        "Fitzgerald",
+		Email:           "f@f.com",
+		Nickname:        "FelixTheExplorer",
+		About:           "Hi, I'm Felix! I'm here to bring the fun to your screen with my adventures, jokes, and love for all things entertaining. Let's have a blast together!",
+		FollowingEmails: []string{"a@a.com", "b@b.com", "c@c.com", "d@d.com", "e@e.com"},
+	},
+	{
+		FirstName:       "Grace",
+		LastName:        "Garner",
+		Email:           "g@g.com",
+		Nickname:        "GracefulG",
+		About:           "Hey there! I'm Grace, and I'm all about spreading good vibes. Join me on my groovy journey filled with positivity, music, and inspiring moments.",
+		FollowingEmails: []string{"c@c.com", "f@f.com"},
+	},
+	{
+		FirstName:       "Harper",
+		LastName:        "Harrison",
+		Email:           "h@h.com",
+		Nickname:        "Harrison Hord",
+		About:           "Welcome to my world of happiness! I'm Harper, a joyful soul who loves to explore, laugh, and share smiles. Let's create happy memories together!",
+		FollowingEmails: []string{"c@c.com", "f@f.com"},
+	},
+	{
+		FirstName:       "Isaac",
+		LastName:        "Ingram",
+		Email:           "i@i.com",
+		Nickname:        "ImpressiveIsaac",
+		About:           "Greetings, folks! I'm Isaac, and I'm here to impress you with my musical talents, random facts, and a sprinkle of charm. Let's make some magic!",
+		FollowingEmails: []string{"f@f.com"},
+	},
+	{
+		FirstName: "Jasmine",
+		LastName:  "Jenkins",
+		Email:     "j@j.com",
+		Nickname:  "10Jasmine01",
+		About:     "Embrace the joy! I'm Jasmine, a foodie, traveler, and happiness seeker. Join me on a journey filled with flavors, laughter, and beautiful moments.",
 	},
 	{
 		FirstName: "Lorem",
@@ -277,75 +316,3 @@ var SeedCommentDataSetA1 = []*SeedComment{
 		Content:   "Yoga is a game-changer! I've been practicing for years and it's helped me maintain both my physical and mental health. Excited to see you share your knowledge and passion with others.",
 	},
 }
-
-// // 22 rows of lorem ipsum comments from the same person
-// var SeedCommentDataSetC1 = []*SeedComment{
-// 	{
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	},
-// 	{
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	}, {
-// 		UserEmail: "b@b.com",
-// 		Content:   faker.Sentence(),
-// 	},
-// }

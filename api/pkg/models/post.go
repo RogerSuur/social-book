@@ -15,6 +15,7 @@ type Post struct {
 	ImagePath   string
 	CreatedAt   time.Time
 	PrivacyType enums.PrivacyType
+	Receivers   []string
 }
 
 type FeedPost struct {

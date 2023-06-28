@@ -1,72 +1,117 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import axios from "axios";
 import CreateComment from "./CreateComment";
 
-const Comments = (postId) => {
+const Comments = ({ postId, commentCount, showCreateComment }) => {
   const [comments, setComments] = useState([]);
-  // const { postid: id } = props.postid;
-  const [first, setFirst] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
-  let offset = 0;
+  const [error, setError] = useState(null);
+  const [commentCountUpdate, setCommentsCountUpdate] = useState(commentCount);
+  const [commentsToShow, setCommentsToShow] = useState(
+    commentCount > 5 ? commentCount : 0
+  );
 
-  const loader = () => {
-    setLoading((prevLoading) => !prevLoading);
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const handleCommentsUpdate = () => {
+    setCommentsCountUpdate((prev) => prev + 1);
+    setOffset(0);
+    setLoading(!loading);
   };
 
-  // localhost:8000/comments/postid/offset
-
-  // console.log("comments", comments, "postId", postId);
-  // console.log("first", first);
-
   useEffect(() => {
-    // console.log("useeffect comments postId", postId.postid);
+    const abortController = new AbortController();
     const loadComments = async () => {
       try {
         await axios
-          .get(`http://localhost:8000/comments/${postId.postid}/0`, {
+          .get(`http://localhost:8000/comments/${postId}/${offset}`, {
             withCredentials: true,
+            signal: abortController.signal,
           })
           .then((response) => {
-            setComments(response.data);
-            setFirst(false);
+            setComments((prevComments) => {
+              const commentIds = new Set(
+                prevComments.map((comment) => comment.id)
+              );
+              const newComments = response.data.filter(
+                (comment) => !commentIds.has(comment.id)
+              );
+              const updatedComments = [...newComments, ...prevComments];
+              const sortedComments = updatedComments.sort(
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+              );
+              return sortedComments;
+            });
           });
       } catch (err) {
         if (err.response?.status === 404) {
-          setFirst(true);
+          setError(err.message);
         }
       }
     };
 
     loadComments();
-  }, [loading]);
+
+    return () => {
+      abortController.abort();
+    };
+  }, [offset, loading]);
+
+  function showMoreComments() {
+    if (commentCountUpdate > 4) {
+      setOffset(offset + 1);
+      setCommentsToShow(commentsToShow - 5);
+    }
+  }
 
   return (
     <>
-      <div className="content-area">
-        <div className="row">
-          <div className="column">
-            {comments.map((comment) => (
-              <>
-                <div key={comment.comment_id}>{comment.content}</div>
-                <div className="row">
-                  <div className="column">
-                    <p>
-                      <small>
-                        {new Date(comment.createdAt).toLocaleString("et-EE")}
-                      </small>
-                    </p>
-                  </div>
-                  <div className="column">{comment.userId}</div>
-                </div>
+      {error ? (
+        <div className="error">{error}</div>
+      ) : (
+        <div className="content-area">
+          {commentCountUpdate > 0 && (
+            <div className="row">
+              <div className="column">
+                {comments.map((comment) => (
+                  <>
+                    <div key={comment.comment_id}>{comment.content}</div>
+                    <div className="row">
+                      <div className="column">
+                        <p>
+                          <small>
+                            {new Date(comment.createdAt).toLocaleString(
+                              "et-EE"
+                            )}
+                          </small>
+                        </p>
+                      </div>
+                      <div className="column">{comment.userId}</div>
+                    </div>
 
-                <hr />
-              </>
-            ))}
-          </div>
+                    <hr />
+                  </>
+                ))}
+              </div>
+            </div>
+          )}
+          {commentsToShow > 5 && (
+            <p>
+              <button onClick={showMoreComments}>
+                {commentsToShow - 5} more comment
+                {commentsToShow - 5 === 1 ? "" : "s"}
+              </button>
+            </p>
+          )}
+          {!commentCountUpdate && <p>Be the first to leave a comment</p>}
+          {
+            <CreateComment
+              postId={postId}
+              onCommentsUpdate={handleCommentsUpdate}
+            />
+          }
         </div>
-      </div>
+      )}
     </>
   );
 };

@@ -3,6 +3,7 @@ package main
 import (
 	"SocialNetworkRestApi/api/internal/server/handlers"
 	"SocialNetworkRestApi/api/internal/server/router"
+	"SocialNetworkRestApi/api/pkg/db/seed"
 	"SocialNetworkRestApi/api/internal/server/websocket"
 	database "SocialNetworkRestApi/api/pkg/db/sqlite"
 	"SocialNetworkRestApi/api/pkg/models"
@@ -77,7 +78,7 @@ func main() {
 	if len(args) > 1 {
 		switch args[1] {
 		case "seed":
-			database.Seed(repos)
+			seed.Seed(repos)
 		default:
 			break
 		}

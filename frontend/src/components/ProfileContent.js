@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Posts from "../pages/PostsPage.js";
 import UserPosts from "../components/UserPosts.js";
 import GenericUserList from "../components/GenericUserList.js";
 import ProfileEditor from "../components/ProfileEditor.js";
@@ -10,7 +11,7 @@ const ProfileContent = ({ selected }) => {
   useEffect(() => {
     switch (selected) {
       case "your-posts":
-        setDisplayedContent(<UserPosts />);
+        setDisplayedContent(null);
         break;
       case "followers":
         setDisplayedContent(<GenericUserList url={FOLLOWERS_URL} />);
@@ -24,7 +25,12 @@ const ProfileContent = ({ selected }) => {
     }
   }, [selected]);
 
-  return <div className="profile-content">{displayedContent}</div>;
+  return (
+    <div className="profile-content">
+      {displayedContent}
+      {selected === "your-posts" && <Posts />}
+    </div>
+  );
 };
 
 export default ProfileContent;

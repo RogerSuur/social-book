@@ -5,49 +5,60 @@ import CreatePost from "../components/CreatePost";
 import { makeRequest } from "../services/makeRequest";
 import GroupSidebar from "../components/GroupSidebar";
 
-const Posts = () => {
+const Posts = ({ showCreatePost }) => {
   const [posts, setPosts] = useState([]);
-  const [isPostsLoading, setPostsLoading] = useState(false);
   const [error, setError] = useState(null);
-  let offset = 0;
+  const [offset, setOffset] = useState(0);
+  const [loadMore, setLoadMore] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
 
   const handlePostUpdate = () => {
-    setPostsLoading(!isPostsLoading);
+    // console.log("handlePostUpdate", posts, offset);
+    setOffset(0);
+    setLoadMore(!loadMore);
+    setPosts([]);
+  };
+
+  const handlePageChange = () => {
+    setOffset((prevOffset) => prevOffset + 1);
   };
 
   useEffect(() => {
+    const abortController = new AbortController();
     const loadPosts = async () => {
       try {
-        const response = await makeRequest(`feedposts/${offset}`);
-        setPosts(response);
+        const response = await makeRequest(`feedposts/${offset}`, {
+          signal: abortController.signal,
+        });
+        setPosts((prevPosts) => {
+          return [...prevPosts, ...response];
+        });
+        setHasMore(response.length > 0);
       } catch (error) {
         setError(error.message);
-        // setLoading(false);
       }
-
-      // try {
-      //   const response = await axios.get(`http://localhost:8000/feedposts/${offset}`, {
-      //     withCredentials: true,
-      //   });
-      //   setPosts(response.data);
-      // } catch (error) {
-      //   setError(error.message);
-      // }
-      // setLoading(false);
     };
-
     loadPosts();
-  }, [isPostsLoading, offset]);
+
+    return () => {
+      abortController.abort();
+    };
+  }, [offset, loadMore]);
 
   return (
     <>
+      {/* <CreatePost onPostsUpdate={handlePostUpdate} /> */}
       <GroupSidebar />
-      <CreatePost onPostsUpdate={handlePostUpdate} />
+      {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
       {error ? (
         <div className="error">{error}</div>
       ) : (
         <div className="content-area">
-          <FeedPosts posts={posts} />
+          <FeedPosts
+            posts={posts}
+            hasMore={hasMore}
+            onLoadMore={handlePageChange}
+          />
         </div>
       )}
     </>

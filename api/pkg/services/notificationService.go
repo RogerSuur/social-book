@@ -73,8 +73,7 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 		NotificationType: "follow_request",
 		SenderID:         followerId,
 		EntityId:         lastID,
-		CreatedAt:        time.Now().Format("2006-01-02T15:04:05Z07:00"),
-		SeenAt:           "",
+		CreatedAt:        time.Now(),
 		Reaction:         false,
 	}
 

@@ -1,4 +1,4 @@
-package database
+package seed
 
 import (
 	"SocialNetworkRestApi/api/pkg/models"
@@ -14,33 +14,9 @@ func Seed(repos *models.Repositories) {
 
 	SeedUsers(repos.UserRepo)
 	SeedFollowers(repos)
+
 	SeedPosts(repos)
-
-	SeedComments(repos.CommentRepo)
-
-	//Single value test
-	/* test, err := repos.SessionRepo.GetByToken("b48976a7-64e0-4ff5-a816-6362dbcb1aa0")
-
-	if err != nil {
-		repos.UserRepo.Logger.Printf("%+v\n", err)
-	} */
-
-	// //Array TEST
-	// tests, err := env.Groups.GetAllByCreatorId(1)
-
-	// if err != nil {
-	// 	repos.UserRepo.Logger.Printf("%+v\n", err)
-
-	// } else {
-	// repos.UserRepo.Logger.Printf("%+v\n", test)
-
-	// 	for _, v := range tests {
-	// 		repos.UserRepo.Logger.Printf("%+v\n", v)
-
-	// 	}
-
-	// }
-
+	SeedGroups(repos)
 }
 
 // Seed database users from predefined dataset
@@ -163,7 +139,7 @@ func SeedFollowers(repos *models.Repositories) {
 				}
 
 				tempFollowing := &models.Follower{
-					FollowingId: int64(followedUser.Id),
+					FollowingId: followedUser.Id,
 					FollowerId:  int64(seedUser.Id),
 					Accepted:    true,
 				}
@@ -179,84 +155,48 @@ func SeedFollowers(repos *models.Repositories) {
 		}
 	}
 
-	// for i := 0; i < 10; i++ {
-	// 	tempFollower := &models.Follower{
-	// 		FollowingId: i + 1,
-	// 		FollowerId:  i + 11,
-	// 		Accepted:    true,
-	// 	}
-
-	// 	_, err := repo.Insert(tempFollower)
-
-	// 	// logger.Printf("%+v\n", tempFollower)
-
-	// 	if err != nil {
-	// 		logger.Println(err)
-	// 	}
-
-	// }
 }
 
-func SeedComments(repo *models.CommentRepository) {
+func SeedGroups(repos *models.Repositories) {
 	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
-	for i := 0; i < 10; i++ {
-		tempComment := &models.Comment{
-			Content: faker.Sentence(),
-			UserId:  int64(i + 1),
-			PostId:  i + 1,
-		}
+	for _, group := range SeedGroupsData {
 
-		id, err := repo.Insert(tempComment)
-
-		tempComment.Id = int(id)
-
-		// logger.Printf("%+v\n", tempComment)
+		user, err := repos.UserRepo.GetByEmail(group.CreatorEmail)
 
 		if err != nil {
-			logger.Println(err)
+			logger.Printf("%+v\n", err)
 		}
 
-	}
-}
-
-func SeedGroups(repo *models.GroupRepository) {
-	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
-
-	for i := 0; i < 10; i++ {
 		tempGroup := &models.Group{
-			Title:       faker.Word(),
-			Description: faker.Sentence(),
-			CreatorId:   i + 1,
+			Title:       group.Title,
+			Description: group.Description,
+			CreatorId:   int(user.Id),
 		}
 
-		_, err := repo.Insert(tempGroup)
-
-		// logger.Printf("%+v\n", tempGroup)
+		id, err := repos.GroupRepo.Insert(tempGroup)
 
 		if err != nil {
-			logger.Println(err)
+			logger.Printf("%+v\n", err)
+		}
+
+		//Add group users
+		for _, groupUserEmail := range group.Users {
+			groupUser, err := repos.UserRepo.GetByEmail(groupUserEmail)
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+			tempGroupUser := &models.GroupUser{
+				UserId:  int(groupUser.Id),
+				GroupId: int(id),
+			}
+
+			_, err = repos.GroupUserRepo.Insert(tempGroupUser)
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
 		}
 
 	}
+
 }
-
-// func SeedSessions(repo *models.SessionRepository) {
-// 	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
-
-// 	for i := 0; i < 10; i++ {
-// 		session := &models.Session{
-// 			UserId: i + 1,
-// 			Token:  faker.UUIDHyphenated(),
-// 		}
-
-// 		_, err := repo.Insert(session)
-
-// 		//logger.Printf("%+v\n", session)
-
-// 		if err != nil {
-// 			logger.Println(err)
-// 		}
-
-// 	}
-// }

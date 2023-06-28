@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"time"
 )
 
 type Notification struct {
@@ -11,8 +12,8 @@ type Notification struct {
 	NotificationType string
 	SenderID         int64
 	EntityId         int64
-	CreatedAt        string
-	SeenAt           string
+	CreatedAt        time.Time `json:"created_at"`
+	SeenAt           time.Time `json:"seen_at"`
 	Reaction         bool
 }
 
