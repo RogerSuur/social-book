@@ -130,7 +130,25 @@ func (w *WebsocketServer) RequestChatlistHandler(p Payload, c *Client) error {
 	if err != nil {
 		return err
 	}
-	w.Logger.Printf("Chatlist successfully retrieved: %v", chatlist)
+	w.Logger.Printf("Chatlist successfully retrieved (%v chats)", len(chatlist))
+
+	dataToSend, err := json.Marshal(
+		&ChatListPayload{
+			UserID:   int(c.clientID),
+			Chatlist: chatlist,
+		},
+	)
+
+	if err != nil {
+		return err
+	}
+
+	c.gate <- Payload{
+		Type: "chatlist",
+		Data: dataToSend,
+	}
+
+	w.Logger.Printf("Sent chatlist to user %v", c.clientID)
 
 	return nil
 }

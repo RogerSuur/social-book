@@ -24,6 +24,7 @@ type IMessageRepository interface {
 	GetMessagesByUserIds(userId int64, secondUserId int64) ([]*Message, error)
 	GetChatUsers(id int64) ([]*User, error)
 	GetLastMessage(userId int64, otherId int64, isGroup bool) (*Message, error)
+	GetUnreadCount(userId int64, otherId int64, isGroup bool) (int64, error)
 }
 
 type MessageRepository struct {
@@ -208,4 +209,34 @@ func (repo MessageRepository) GetLastMessage(userId int64, otherId int64, isGrou
 	}
 
 	return message, nil
+}
+
+func (repo MessageRepository) GetUnreadCount(userId int64, otherId int64, isGroup bool) (int64, error) {
+	var query string
+	var args []interface{}
+
+	if isGroup {
+		query = `SELECT COUNT(*) FROM messages WHERE group_id = ? AND read_at IS NULL`
+		args = []interface{}{
+			otherId,
+		}
+	} else {
+		query = `SELECT COUNT(*) FROM messages WHERE (sender_id = ? AND recipient_id = ?) AND read_at IS NULL`
+		args = []interface{}{
+			otherId,
+			userId,
+		}
+	}
+
+	row := repo.DB.QueryRow(query, args...)
+
+	var count int64
+
+	err := row.Scan(&count)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }

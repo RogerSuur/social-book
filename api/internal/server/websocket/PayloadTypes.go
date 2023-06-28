@@ -1,6 +1,9 @@
 package websocket
 
-import "encoding/json"
+import (
+	"SocialNetworkRestApi/api/pkg/services"
+	"encoding/json"
+)
 
 type Payload struct {
 	Type string          `json:"type"`
@@ -34,4 +37,9 @@ type MessagePayload struct {
 	GroupName     string `json:"group_name"`
 	MessageBody   string `json:"body"`
 	Timestamp     string `json:"timestamp"`
+}
+
+type ChatListPayload struct {
+	UserID   int                     `json:"user_id"`
+	Chatlist []services.ChatListUser `json:"chatlist"`
 }

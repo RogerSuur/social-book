@@ -38,6 +38,7 @@ type ChatListUser struct {
 	Name        string    `json:"name"`
 	Timestamp   time.Time `json:"timestamp"`
 	AvatarImage string    `json:"avatar_image"`
+	UnreadCount int       `json:"unread_count"`
 }
 
 func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
@@ -62,12 +63,18 @@ func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
 			lastMessage.SentAt = user.CreatedAt
 		}
 
+		unreadCount, err := s.ChatRepo.GetUnreadCount(userID, int64(user.Id), false)
+		if err != nil {
+			return nil, err
+		}
+
 		chatData := ChatListUser{
 			UserID:      int(user.Id),
 			GroupID:     0,
 			Name:        user.Nickname,
 			Timestamp:   lastMessage.SentAt,
 			AvatarImage: user.ImagePath,
+			UnreadCount: int(unreadCount),
 		}
 		chatlistData = append(chatlistData, chatData)
 	}
