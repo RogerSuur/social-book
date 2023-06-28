@@ -15,6 +15,7 @@ type Application struct {
 	NotificationService services.INotificationService
 	PostService         services.IPostService
 	CommentService      services.ICommentService
+	ChatService         services.IChatService
 }
 
 // func InitApplication(repositories *models.Repositories) *Application {

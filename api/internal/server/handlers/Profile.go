@@ -35,7 +35,6 @@ func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		app.Logger.Println("Users: ", RequestingUserID, userID)
 		IsFollowed = app.UserService.IsFollowed(RequestingUserID, userID)
 	}
 

@@ -124,7 +124,15 @@ func (w *WebsocketServer) UnfollowHandler(p Payload, c *Client) error {
 }
 
 func (w *WebsocketServer) RequestChatlistHandler(p Payload, c *Client) error {
-	w.Logger.Println(p)
+	w.Logger.Printf("User %v has requested chatlist", c.clientID)
+
+	/*
+		chatlist, err := w.chatService.GetChatlist(int64(c.clientID))
+		if err != nil {
+			return err
+		}
+		w.Logger.Printf("Chatlist successfully retrieved: %v", chatlist)
+	*/
 	return nil
 }
 

@@ -13,6 +13,7 @@ type Services struct {
 	NotificationService INotificationService
 	PostService         IPostService
 	CommentService      ICommentService
+	ChatService         IChatService
 }
 
 // InitServices returns a new Controllers
@@ -31,6 +32,10 @@ func InitServices(repositories *models.Repositories) *Services {
 		),
 		PostService:    InitPostService(repositories.PostRepo),
 		CommentService: InitCommentService(repositories.CommentRepo),
+		ChatService: InitChatService(
+			repositories.UserRepo,
+			repositories.MessageRepo,
+		),
 	}
 }
 

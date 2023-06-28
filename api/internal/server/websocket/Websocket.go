@@ -23,6 +23,7 @@ type WebsocketServer struct {
 	handlers            map[string]PayloadHandler
 	userService         services.IUserService
 	notificationService services.INotificationService
+	chatService         services.IChatService
 	sync.RWMutex
 }
 

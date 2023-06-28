@@ -27,12 +27,15 @@
     "type": "chatlist",
     "data": {
         "userid": 1, //own id
-        "users" : [{"userid": 123, // 0 if group
-        "group_id": 123, // 0 if user
-        "name": "username", // username (if exists) or firstname lastname || group name if group
-        "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any, might use it to sort chats by last message
-        "avatarImage": "link" // empty if no image or group
-        }]
+        "chatlist" : [
+            {
+                "user_id": 123, // 0 if group
+                "group_id": 123, // 0 if user
+                "name": "username" || "firstname lastname" || "group name", // username (if exists) or combined full name or group name if group
+                "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any, might use it to sort chats by last message
+                "avatar_image": "link" // empty if no image or group
+            }
+        ]
     }
 }
 ```

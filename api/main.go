@@ -64,6 +64,10 @@ func main() {
 		CommentService: services.InitCommentService(
 			repos.CommentRepo,
 		),
+		ChatService: services.InitChatService(
+			repos.UserRepo,
+			repos.MessageRepo,
+		),
 	}
 
 	args := os.Args
