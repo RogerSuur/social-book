@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import Comments from "./Comments";
 
-const FeedPosts = ({ posts, onLoadMore, hasMore, showCreateComment }) => {
+const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
   const observer = useRef();
   const [isPostsLoading, setPostsLoading] = useState(false);
 
@@ -55,11 +55,7 @@ const FeedPosts = ({ posts, onLoadMore, hasMore, showCreateComment }) => {
         </div>
         <div className="row">{new Date(createdAt).toLocaleString("et-EE")}</div>
         <div className="row">
-          <Comments
-            postId={id}
-            commentCount={commentCount}
-            showCreateComment={showCreateComment}
-          />
+          <Comments postId={id} commentCount={commentCount} />
         </div>
       </div>
     );

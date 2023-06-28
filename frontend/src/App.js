@@ -29,9 +29,7 @@ function App() {
               <Route path="profile/:id" element={<ProfileInfo />} />
               <Route
                 path="posts"
-                element={
-                  <PostsPage showCreatePost={true} showCreateComment={true} />
-                }
+                element={<PostsPage showCreatePost={true} />}
               />
               <Route path="chat" element={<Chat />} />
               <Route path="posts/:id" element={<Post />} />

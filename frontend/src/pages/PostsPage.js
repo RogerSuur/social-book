@@ -4,7 +4,7 @@ import FeedPosts from "../components/FeedPosts";
 import CreatePost from "../components/CreatePost";
 import { makeRequest } from "../services/makeRequest";
 
-const Posts = ({ showCreatePost, showCreateComment }) => {
+const Posts = ({ showCreatePost }) => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -56,7 +56,6 @@ const Posts = ({ showCreatePost, showCreateComment }) => {
             posts={posts}
             hasMore={hasMore}
             onLoadMore={handlePageChange}
-            showCreateComment={showCreateComment}
           />
         </div>
       )}

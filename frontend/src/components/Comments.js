@@ -103,15 +103,13 @@ const Comments = ({ postId, commentCount, showCreateComment }) => {
               </button>
             </p>
           )}
-          {!commentCountUpdate && showCreateComment && (
-            <p>Be the first to leave a comment</p>
-          )}
-          {showCreateComment && (
+          {!commentCountUpdate && <p>Be the first to leave a comment</p>}
+          {
             <CreateComment
               postId={postId}
               onCommentsUpdate={handleCommentsUpdate}
             />
-          )}
+          }
         </div>
       )}
     </>

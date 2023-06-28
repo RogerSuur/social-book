@@ -28,9 +28,7 @@ const ProfileContent = ({ selected }) => {
   return (
     <div className="profile-content">
       {displayedContent}
-      {selected === "your-posts" && (
-        <Posts showCreatePost={false} showCreateComment={false} />
-      )}
+      {selected === "your-posts" && <Posts />}
     </div>
   );
 };
