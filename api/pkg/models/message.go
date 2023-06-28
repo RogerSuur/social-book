@@ -8,10 +8,10 @@ import (
 )
 
 type Message struct {
-	Id          int
-	SenderId    int
-	RecipientId int
-	GroupId     int
+	Id          int64
+	SenderId    int64
+	RecipientId int64
+	GroupId     int64
 	Content     string
 	ImagePath   string
 	SentAt      time.Time
@@ -20,10 +20,10 @@ type Message struct {
 
 type IMessageRepository interface {
 	Insert(event *Message) (int64, error)
-	GetMessagesByGroupId(groupId int) ([]*Message, error)
-	GetMessagesByUserIds(userId int, secondUserId int) ([]*Message, error)
+	GetMessagesByGroupId(groupId int64) ([]*Message, error)
+	GetMessagesByUserIds(userId int64, secondUserId int64) ([]*Message, error)
 	GetChatUsers(id int64) ([]*User, error)
-	GetLastMessage(userId int64, otherId int64) (*Message, error)
+	GetLastMessage(userId int64, otherId int64, isGroup bool) (*Message, error)
 }
 
 type MessageRepository struct {
@@ -69,11 +69,11 @@ func (repo MessageRepository) Insert(message *Message) (int64, error) {
 }
 func (repo MessageRepository) Update(message *Message) error {
 	//TODO
-	//Update methid needed when readAt is being used
+	//Update method needed when readAt is being used
 	return nil
 }
 
-func (repo MessageRepository) GetMessagesByGroupId(groupId int) ([]*Message, error) {
+func (repo MessageRepository) GetMessagesByGroupId(groupId int64) ([]*Message, error) {
 	stmt := `SELECT id, sender_id, recipient_id, group_id, content, image_path, sent_at, read_at FROM messages m
 	WHERE group_id = ?
     ORDER BY sent_at DESC`
@@ -104,7 +104,7 @@ func (repo MessageRepository) GetMessagesByGroupId(groupId int) ([]*Message, err
 	return messages, nil
 }
 
-func (repo MessageRepository) GetMessagesByUserIds(userId int, secondUserId int) ([]*Message, error) {
+func (repo MessageRepository) GetMessagesByUserIds(userId int64, secondUserId int64) ([]*Message, error) {
 	stmt := `SELECT id, sender_id, recipient_id, group_id, content, image_path, sent_at, read_at FROM messages m
 	WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) 
     ORDER BY sent_at DESC`
@@ -173,8 +173,39 @@ func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
 	return users, nil
 }
 
-func (repo MessageRepository) GetLastMessage(userId int64, otherId int64) (*Message, error) {
-	//TODO
+func (repo MessageRepository) GetLastMessage(userId int64, otherId int64, isGroup bool) (*Message, error) {
 	//get last message from database
-	return nil, nil
+	var query string
+	var args []interface{}
+
+	if isGroup {
+		query = `SELECT id, sender_id, recipient_id, group_id, content, image_path, sent_at, read_at FROM messages WHERE group_id = ? ORDER BY sent_at DESC LIMIT 1`
+		args = []interface{}{
+			otherId,
+		}
+	} else {
+		query = `SELECT id, sender_id, recipient_id, group_id, content, image_path, sent_at, read_at FROM messages WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) ORDER BY sent_at DESC LIMIT 1`
+		args = []interface{}{
+			userId,
+			otherId,
+			otherId,
+			userId,
+		}
+	}
+
+	row := repo.DB.QueryRow(query, args...)
+
+	message := &Message{}
+
+	err := row.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.ImagePath, &message.SentAt, &message.ReadAt)
+
+	if err == sql.ErrNoRows {
+		return &Message{}, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return message, nil
 }

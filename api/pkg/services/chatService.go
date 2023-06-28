@@ -54,16 +54,20 @@ func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
 			user.Nickname = user.FirstName + " " + user.LastName
 		}
 
-		//lastMessage, err := s.ChatRepo.GetLastMessage(userID, int64(user.Id))
+		lastMessage, err := s.ChatRepo.GetLastMessage(userID, int64(user.Id), false)
 		if err != nil {
 			return nil, err
 		}
+		if lastMessage == nil {
+			lastMessage.SentAt = user.CreatedAt
+		}
 
 		chatData := ChatListUser{
-			UserID:    int(user.Id),
-			GroupID:   0,
-			Name:      user.Nickname,
-			Timestamp: time.Now(), // lastMessage.Timestamp
+			UserID:      int(user.Id),
+			GroupID:     0,
+			Name:        user.Nickname,
+			Timestamp:   lastMessage.SentAt,
+			AvatarImage: user.ImagePath,
 		}
 		chatlistData = append(chatlistData, chatData)
 	}
