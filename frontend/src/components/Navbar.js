@@ -1,20 +1,9 @@
-import { useEffect, useState } from "react";
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import NotificationList from "../components/NotificationList.js";
+import NotificationNavbarItem from "../components/NotificationNavbarItem";
 
 const Navbar = () => {
   const { auth } = useAuth();
-  const navigate = useNavigate();
-  const [toggle, setToggle] = useState(false);
-
-  useEffect(() => {
-    navigate("/profile", { replace: true });
-  }, []);
-
-  const handleToggle = () => {
-    setToggle(!toggle);
-  };
 
   return (
     <>
@@ -34,7 +23,7 @@ const Navbar = () => {
               </li>
             </>
           )}
-          <li onClick={handleToggle}>Notifications</li>
+          {auth && <NotificationNavbarItem />}
           <li>
             <Link className="text-link" to="/profile">
               Profile
@@ -46,18 +35,12 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link className="text-link" to="/chat">
-              Inbox
-            </Link>
-          </li>
-          <li>
             <Link className="text-link" id="logout" to="/logout">
               Logout
             </Link>
           </li>
         </ul>
       </nav>
-      {toggle && <NotificationList />}
       <Outlet />
     </>
   );

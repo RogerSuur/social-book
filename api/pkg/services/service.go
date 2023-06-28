@@ -9,9 +9,11 @@ import (
 
 // Services contains all the controllers
 type Services struct {
-	UserService    IUserService
-	PostService    IPostService
-	CommentService ICommentService
+	UserService         IUserService
+	NotificationService INotificationService
+	PostService         IPostService
+	CommentService      ICommentService
+	ChatService         IChatService
 }
 
 // InitServices returns a new Controllers
@@ -21,9 +23,19 @@ func InitServices(repositories *models.Repositories) *Services {
 			repositories.UserRepo,
 			repositories.SessionRepo,
 			repositories.FollowerRepo,
+			repositories.NotificationRepo,
+		),
+		NotificationService: InitNotificationService(
+			repositories.UserRepo,
+			repositories.FollowerRepo,
+			repositories.NotificationRepo,
 		),
 		PostService:    InitPostService(repositories.PostRepo),
 		CommentService: InitCommentService(repositories.CommentRepo),
+		ChatService: InitChatService(
+			repositories.UserRepo,
+			repositories.MessageRepo,
+		),
 	}
 }
 

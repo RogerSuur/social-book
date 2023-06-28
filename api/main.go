@@ -43,20 +43,34 @@ func main() {
 		repos.UserRepo,
 		repos.SessionRepo,
 		repos.FollowerRepo,
+		repos.NotificationRepo,
+	)
+	notificationServices := services.InitNotificationService(
+		repos.UserRepo,
+		repos.FollowerRepo,
+		repos.NotificationRepo,
+	)
+	chatServices := services.InitChatService(
+		repos.UserRepo,
+		repos.MessageRepo,
 	)
 
 	app := &handlers.Application{
 		Logger: logger,
 		WS: websocket.InitWebsocket(
 			userServices,
+			notificationServices,
+			chatServices,
 		),
-		UserService: userServices,
+		UserService:         userServices,
+		NotificationService: notificationServices,
 		PostService: services.InitPostService(
 			repos.PostRepo,
 		),
 		CommentService: services.InitCommentService(
 			repos.CommentRepo,
 		),
+		ChatService: chatServices,
 	}
 
 	args := os.Args
