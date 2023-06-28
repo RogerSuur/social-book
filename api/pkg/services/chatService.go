@@ -4,6 +4,7 @@ import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"log"
 	"os"
+	"time"
 )
 
 type IChatService interface {
@@ -32,11 +33,11 @@ type Message struct {
 }
 
 type ChatListUser struct {
-	UserID      int    `json:"user_id"`
-	GroupID     int    `json:"group_id"`
-	Name        string `json:"name"`
-	Timestamp   string `json:"timestamp"`
-	AvatarImage string `json:"avatar_image"`
+	UserID      int       `json:"user_id"`
+	GroupID     int       `json:"group_id"`
+	Name        string    `json:"name"`
+	Timestamp   time.Time `json:"timestamp"`
+	AvatarImage string    `json:"avatar_image"`
 }
 
 func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
@@ -53,7 +54,7 @@ func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
 			user.Nickname = user.FirstName + " " + user.LastName
 		}
 
-		lastMessage, err := s.ChatRepo.GetLastMessage(userID, int64(user.Id))
+		//lastMessage, err := s.ChatRepo.GetLastMessage(userID, int64(user.Id))
 		if err != nil {
 			return nil, err
 		}
@@ -62,7 +63,7 @@ func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
 			UserID:    int(user.Id),
 			GroupID:   0,
 			Name:      user.Nickname,
-			Timestamp: lastMessage.Timestamp.String(),
+			Timestamp: time.Now(), // lastMessage.Timestamp
 		}
 		chatlistData = append(chatlistData, chatData)
 	}

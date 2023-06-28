@@ -47,7 +47,7 @@ func (repo MessageRepository) Insert(event *Message) (int64, error) {
 func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
 	//get all users from database except myself
 
-	query := `SELECT id, first_name, last_name, nickname, avatar_image FROM users WHERE id != ?`
+	query := `SELECT id, forname, surname, nickname, image_path FROM users WHERE id != ?`
 
 	rows, err := repo.DB.Query(query, id)
 	if err != nil {
