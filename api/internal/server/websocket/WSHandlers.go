@@ -5,11 +5,6 @@ import (
 	"errors"
 )
 
-type Payload struct {
-	Type string          `json:"type"`
-	Data json.RawMessage `json:"data"`
-}
-
 type PayloadHandler func(payload Payload, client *Client) error
 
 var (
@@ -17,24 +12,23 @@ var (
 )
 
 const (
-	FollowRequest = "follow_request"
-	FollowAccept  = "follow_accept"
-	NewMessage    = "new_message"
-	GroupInvite   = "group_invite"
-	GroupAccept   = "group_accept"
+	FollowRequest   = "follow_request"
+	Unfollow        = "unfollow"
+	RequestChatlist = "request_chatlist"
+	MessageHistory  = "request_message_history"
+	Message         = "message"
+	GroupRequest    = "group_request"
+	Response        = "response"
 )
-
-type SendMessagePayload struct {
-	RecipientID int    `json:"recipient_id"`
-	Message     string `json:"message"`
-}
 
 func (w *WebsocketServer) setupHandlers() {
 	w.handlers[FollowRequest] = w.FollowRequestHandler
-	w.handlers[FollowAccept] = w.FollowAcceptHandler
-	w.handlers[NewMessage] = w.NewMessageHandler
-	w.handlers[GroupInvite] = w.GroupInviteHandler
-	w.handlers[GroupAccept] = w.GroupAcceptHandler
+	w.handlers[Unfollow] = w.UnfollowHandler
+	w.handlers[RequestChatlist] = w.RequestChatlistHandler
+	w.handlers[MessageHistory] = w.MessageHistoryHandler
+	w.handlers[Message] = w.NewMessageHandler
+	w.handlers[GroupRequest] = w.GroupRequestHandler
+	w.handlers[Response] = w.ResponseHandler
 }
 
 func (w *WebsocketServer) routePayloads(payload Payload, client *Client) error {
@@ -49,19 +43,105 @@ func (w *WebsocketServer) routePayloads(payload Payload, client *Client) error {
 	return nil
 }
 
-func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
-	// c.clientID
-	var followerID int
-	err := json.Unmarshal(p.Data, &followerID)
+func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
+	data := &RequestPayload{}
+	err := json.Unmarshal(p.Data, &data)
 	if err != nil {
 		return err
 	}
-	w.Logger.Printf("User %v wants to start following user %v", c.clientID, followerID)
+	w.Logger.Printf("User %v responded to notification %v with %v", c.clientID, data.ID, data.Reaction)
 	return nil
 }
 
-func (w *WebsocketServer) FollowAcceptHandler(p Payload, c *Client) error {
-	w.Logger.Println(p)
+func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
+	data := &RequestPayload{}
+	err := json.Unmarshal(p.Data, &data)
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("User %v wants to start following user %v", c.clientID, data.ID)
+
+	followRequestId, err := w.notificationService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
+	if err != nil {
+		return err
+	}
+
+	w.Logger.Printf("Created follow request with id %v", followRequestId)
+
+	// broadcast to recipient
+	userData, err := w.userService.GetUserData(int64(c.clientID))
+	if err != nil {
+		return err
+	}
+
+	recipientClient := w.getClientByUserID(int64(data.ID))
+
+	if recipientClient == nil {
+		w.Logger.Printf("Recipient client not found (recipient offline)")
+		return nil
+	}
+
+	w.Logger.Printf("Recipient client found (recipient online)")
+
+	dataToSend, err := json.Marshal(
+		&NotificationPayload{
+			NotificationType: "follow_request",
+			NotificationID:   int(followRequestId),
+			SenderID:         int(c.clientID),
+			SenderName:       userData.FirstName + " " + userData.LastName,
+		},
+	)
+
+	if err != nil {
+		return err
+	}
+
+	recipientClient.gate <- Payload{
+		Type: "notification",
+		Data: dataToSend,
+	}
+
+	w.Logger.Printf("Sent notification to recipient")
+
+	return nil
+}
+
+func (w *WebsocketServer) UnfollowHandler(p Payload, c *Client) error {
+	data := &RequestPayload{}
+	err := json.Unmarshal(p.Data, &data)
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("User %v wants to unfollow user %v", c.clientID, data.ID)
+
+	err = w.userService.Unfollow(int64(c.clientID), int64(data.ID))
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("User successfully %v unfollowed user %v", c.clientID, data.ID)
+
+	return nil
+}
+
+func (w *WebsocketServer) RequestChatlistHandler(p Payload, c *Client) error {
+	w.Logger.Printf("User %v has requested chatlist", c.clientID)
+
+	chatlist, err := w.chatService.GetChatlist(int64(c.clientID))
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("Chatlist successfully retrieved: %v", chatlist)
+
+	return nil
+}
+
+func (w *WebsocketServer) MessageHistoryHandler(p Payload, c *Client) error {
+	data := &RequestPayload{}
+	err := json.Unmarshal(p.Data, &data)
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("User %v wants to open message history with user %v", c.clientID, data.ID)
 	return nil
 }
 
@@ -70,12 +150,12 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 	return nil
 }
 
-func (w *WebsocketServer) GroupInviteHandler(p Payload, c *Client) error {
-	w.Logger.Println(p)
-	return nil
-}
-
-func (w *WebsocketServer) GroupAcceptHandler(p Payload, c *Client) error {
-	w.Logger.Println(p)
+func (w *WebsocketServer) GroupRequestHandler(p Payload, c *Client) error {
+	data := &RequestPayload{}
+	err := json.Unmarshal(p.Data, &data)
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("User %v wants to join group %v", c.clientID, data.ID)
 	return nil
 }

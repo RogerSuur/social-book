@@ -2,16 +2,17 @@ import { useLocation, Navigate, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
-import { useWebSocketConnection } from "../hooks/useWebSocketConnection";
+import useWebSocketConnection from "../hooks/useWebSocketConnection";
+import ChatTest from "../components/ChatTest";
+import { WS_URL } from "../utils/routes";
 
 const AUTH_URL = "http://localhost:8000/auth";
-const WS_URL = `ws://localhost:8000/ws`;
 
 const RequireAuth = () => {
   const { auth, setAuth } = useAuth();
   const [socketUrl] = useState(WS_URL);
+  const { lastJsonMessage } = useWebSocketConnection(socketUrl);
   const [users, setUsers] = useState([]);
-  const [sender_id, setSenderId] = useState(0);
 
   const location = useLocation();
 
@@ -47,7 +48,7 @@ const RequireAuth = () => {
           withCredentials: true,
         });
 
-        console.log(JSON.stringify(response));
+        console.log(JSON.stringify(response), "RESPONSE!!!!!!!!!!!!!!!!!!!");
         setAuth(true);
       } catch (err) {
         if (!err?.response) {
@@ -63,26 +64,23 @@ const RequireAuth = () => {
     authorisation();
   }, [location]);
 
-  // const { lastMessage, sendJsonMessage } = useWebSocket(socketUrl, {
-  //   onOpen: console.log("opened"),
-  //   share: true,
-  // });
-
-  // useEffect(() => {
-  //   sendJsonMessage("hello");
-  // }, [location]);
-
-  useWebSocketConnection(socketUrl, "msg");
+  useEffect(() => {
+    if (lastJsonMessage && lastJsonMessage.type === "chatlist") {
+      setUsers(lastJsonMessage.data);
+    }
+  }, [lastJsonMessage]);
 
   return auth ? (
-    <Outlet
-      context={{
-        socketUrl,
-        users,
-        setUsers,
-        sender_id,
-      }}
-    />
+    <div className="require-auth-container">
+      <Outlet
+        context={{
+          socketUrl,
+          users,
+          setUsers,
+        }}
+      />
+      <ChatTest className="chat-sidebar" chatlist={users} />
+    </div>
   ) : (
     <Navigate to="/login" state={{ from: location }} replace />
   );
