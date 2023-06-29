@@ -3,8 +3,8 @@ package main
 import (
 	"SocialNetworkRestApi/api/internal/server/handlers"
 	"SocialNetworkRestApi/api/internal/server/router"
-	"SocialNetworkRestApi/api/pkg/db/seed"
 	"SocialNetworkRestApi/api/internal/server/websocket"
+	"SocialNetworkRestApi/api/pkg/db/seed"
 	database "SocialNetworkRestApi/api/pkg/db/sqlite"
 	"SocialNetworkRestApi/api/pkg/models"
 	"SocialNetworkRestApi/api/pkg/services"
@@ -53,6 +53,7 @@ func main() {
 		UserService: userServices,
 		PostService: services.InitPostService(
 			repos.PostRepo,
+			logger,
 		),
 		CommentService: services.InitCommentService(
 			repos.CommentRepo,

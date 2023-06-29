@@ -29,6 +29,7 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/comments/{postId}/{offset}", app.UserService.Authenticate(app.Comments)).Methods("GET")
 	r.HandleFunc("/insertcomment", app.UserService.Authenticate(app.Comment)).Methods("POST")
 	r.HandleFunc("/post", app.UserService.Authenticate(app.Post)).Methods("POST")
+	r.HandleFunc("/profileposts/{offset}", app.UserService.Authenticate(app.ProfilePosts)).Methods("GET")
 
 	return r
 }

@@ -3,6 +3,7 @@ package models
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -30,7 +31,7 @@ type FeedPost struct {
 }
 
 type IPostRepository interface {
-	GetAllByUserId(id int64) ([]*Post, error)
+	GetAllByUserId(id int, offset int) ([]*FeedPost, error)
 	GetAllFeedPosts(currentUserId int, offset int) ([]*FeedPost, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
@@ -90,28 +91,42 @@ func (repo PostRepository) GetById(id int64) (*Post, error) {
 	return post, err
 }
 
-func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
+func (repo PostRepository) GetAllByUserId(id int, offset int) ([]*FeedPost, error) {
 
-	stmt := `SELECT id, user_id, content, created_at, image_path, privacy_type_id FROM posts p
-	WHERE user_id = ?
-    ORDER BY created_at DESC`
+	stmt := `SELECT p.id, p.user_id, u.nickname, p.content, p.created_at, p.image_path, p.privacy_type_id, COUNT(DISTINCT c.id) FROM posts p
+	LEFT JOIN users u on
+	p.user_id = u.id
+	LEFT JOIN comments c ON
+	p.id = c.post_id
+	WHERE p.user_id = ?
+	GROUP BY p.id
+    ORDER BY p.created_at DESC
+	LIMIT ? OFFSET ?`
 
-	rows, err := repo.DB.Query(stmt, id)
+	args := []interface{}{
+		id,
+		FeedLimit,
+		(offset * FeedLimit),
+	}
+
+	rows, err := repo.DB.Query(stmt, args...)
 	if err != nil {
 		return nil, err
 	}
 
 	defer rows.Close()
 
-	posts := []*Post{}
+	posts := []*FeedPost{}
 
 	for rows.Next() {
-		post := &Post{}
+		post := &FeedPost{}
 
-		err := rows.Scan(&post.Id, &post.UserId, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType)
+		err := rows.Scan(&post.Id, &post.UserId, &post.UserName, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.CommentCount)
 		if err != nil {
 			return nil, err
 		}
+		fmt.Println(post)
+
 		posts = append(posts, post)
 	}
 
