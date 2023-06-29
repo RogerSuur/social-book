@@ -4,6 +4,7 @@ import NotificationPopup from "../components/NotificationPopup";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { WS_URL, NOTIFICATIONS_URL } from "../utils/routes";
+import notificationBell from "../images/notification_bell.png";
 
 const NotificationNavbarItem = () => {
   const [toggle, setToggle] = useState(false);
@@ -62,7 +63,7 @@ const NotificationNavbarItem = () => {
   return (
     <>
       <li onClick={handleToggle}>
-        Notifications
+        <img className="text-link" src={notificationBell} />
         {notificationCount > 0 && (
           <div className="notification-count">{notificationCount}</div>
         )}

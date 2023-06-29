@@ -1,6 +1,7 @@
 import { Outlet, Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import NotificationNavbarItem from "../components/NotificationNavbarItem";
+import logoutIcon from "../images/logout.png";
 
 const Navbar = () => {
   const { auth } = useAuth();
