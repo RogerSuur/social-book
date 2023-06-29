@@ -9,7 +9,7 @@ import (
 )
 
 type ICommentService interface {
-	GetPostComments(userId int, offset int) ([]*commentJSON, error)
+	GetPostComments(userId int, offset int) ([]*CommentJSON, error)
 	CreateComment(comment *models.Comment) error
 }
 
@@ -26,15 +26,16 @@ func InitCommentService(commentRepo *models.CommentRepository) *CommentService {
 	}
 }
 
-type commentJSON struct {
+type CommentJSON struct {
 	Id        int       `json:"id"`
 	UserId    int       `json:"userId"`
+	UserName  string    `json:"userName"`
 	Content   string    `json:"content"`
 	ImagePath string    `json:"imagePath"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 
-func (s *CommentService) GetPostComments(postId int, offset int) ([]*commentJSON, error) {
+func (s *CommentService) GetPostComments(postId int, offset int) ([]*CommentJSON, error) {
 
 	result, err := s.CommentRepository.GetAllByPostId(postId, offset)
 
@@ -42,12 +43,13 @@ func (s *CommentService) GetPostComments(postId int, offset int) ([]*commentJSON
 		s.Logger.Printf("Failed fetching comments: %s", err)
 	}
 
-	comments := []*commentJSON{}
+	comments := []*CommentJSON{}
 
 	for _, p := range result {
-		comments = append(comments, &commentJSON{
+		comments = append(comments, &CommentJSON{
 			p.Id,
 			p.UserId,
+			p.UserName,
 			p.Content,
 			p.ImagePath,
 			p.CreatedAt,

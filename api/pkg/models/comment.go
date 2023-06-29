@@ -18,8 +18,17 @@ type Comment struct {
 	CreatedAt time.Time
 }
 
+type PostComment struct {
+	Id        int
+	UserId    int
+	UserName  string
+	Content   string
+	ImagePath string
+	CreatedAt time.Time
+}
+
 type ICommentRepository interface {
-	GetAllByPostId(postId int, offset int) ([]*Comment, error)
+	GetAllByPostId(postId int, offset int) ([]*PostComment, error)
 	GetAllByUserId(userId int) ([]*Comment, error)
 	GetById(id int64) (*Comment, error)
 	Insert(comment *Comment) (int64, error)
@@ -84,10 +93,12 @@ func (repo CommentRepository) GetById(id int64) (*Comment, error) {
 	return comment, err
 }
 
-func (repo CommentRepository) GetAllByPostId(postId int, offset int) ([]*Comment, error) {
-	query := `SELECT id, post_id, user_id, content,  image_path, created_at FROM comments 
-	WHERE post_id = ? 
-	ORDER BY created_at DESC
+func (repo CommentRepository) GetAllByPostId(postId int, offset int) ([]*PostComment, error) {
+	query := `SELECT c.id, c.user_id, u.nickname, c.content,  c.image_path, c.created_at FROM comments c
+	LEFT JOIN users u ON
+	c.user_id = u.id
+	WHERE c.post_id = ? 
+	ORDER BY c.created_at DESC
 	LIMIT ? OFFSET ?`
 
 	args := []interface{}{
@@ -102,12 +113,12 @@ func (repo CommentRepository) GetAllByPostId(postId int, offset int) ([]*Comment
 	}
 
 	defer rows.Close()
-	comments := []*Comment{}
+	comments := []*PostComment{}
 
 	for rows.Next() {
-		comment := &Comment{}
+		comment := &PostComment{}
 
-		err := rows.Scan(&comment.Id, &comment.PostId, &comment.UserId, &comment.Content, &comment.ImagePath, &comment.CreatedAt)
+		err := rows.Scan(&comment.Id, &comment.UserId, &comment.UserName, &comment.Content, &comment.ImagePath, &comment.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
