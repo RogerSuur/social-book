@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 const CreatePost = (props) => {
@@ -7,27 +6,63 @@ const CreatePost = (props) => {
     content: "",
     imagePath: "",
     privacyType: 1,
+    selectedReceivers: [],
   };
 
   const [formData, setFormData] = useState(initialFormData);
+  const [followers, setFollowers] = useState([]);
 
   // errordata state
   const [errMsg, setErrMsg] = useState("");
 
   const handleChange = (event) => {
-    const { name, value, type } = event.target;
+    const { name, value, type, checked } = event.target;
 
     setFormData((prevFormData) => {
-      return {
+      const newFormData = {
         ...prevFormData,
         [name]: type === "radio" ? parseInt(value) : value,
       };
+
+      if (newFormData.privacyType !== 3) {
+        newFormData.selectedReceivers = [];
+      } else if (type === "checkbox") {
+        const selectedReceiver = [...prevFormData.selectedReceivers];
+        if (checked) {
+          selectedReceiver.push(value);
+        } else {
+          const index = selectedReceiver.indexOf(value);
+          if (index !== -1) {
+            selectedReceiver.splice(index, 1);
+          }
+        }
+        newFormData.selectedReceivers = selectedReceiver;
+      }
+
+      return newFormData;
     });
-    // console.log(formData);
   };
+
+  useEffect(() => {
+    const fetchFollowers = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/followers", {
+          withCredentials: true,
+        });
+        console.log(response);
+        setFollowers(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    if (formData.privacyType === 3) {
+      fetchFollowers();
+    }
+  }, [formData.privacyType]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     try {
       const response = await axios.post(
         "http://localhost:8000/post",
@@ -57,7 +92,8 @@ const CreatePost = (props) => {
       <div className="content-area">
         {errMsg && <h2>{errMsg}</h2>}
         <form onSubmit={handleSubmit}>
-        <textarea className="area-text"
+          <textarea
+            className="area-text"
             type="text"
             placeholder="Write what's on your mind"
             onChange={handleChange}
@@ -94,6 +130,24 @@ const CreatePost = (props) => {
           />
           <label htmlFor="subPrivate">subPrivate</label>
 
+          {formData.privacyType === 3 && (
+            <>
+              <legend>Choose receiver(s)</legend>
+              {followers.map((follower) => (
+                <div key={follower.id}>
+                  <label htmlFor={`receiver_${follower.id}`}>
+                    <input
+                      type="checkbox"
+                      name="selectedReceivers"
+                      onChange={handleChange}
+                      value={follower.id}
+                    />
+                    {follower.firstName} {follower.lastName}
+                  </label>
+                </div>
+              ))}
+            </>
+          )}
           <button className="post-button">Post</button>
         </form>
       </div>

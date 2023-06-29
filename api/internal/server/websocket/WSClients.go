@@ -11,9 +11,9 @@ type ClientList map[*Client]bool
 
 type Client struct {
 	connection *websocket.Conn
-	clientID   int
+	clientID   int64
 	manager    *WebsocketServer
-	gate       chan []byte
+	gate       chan Payload
 }
 
 var (
@@ -28,12 +28,12 @@ var (
 	maxMessageSize int64 = 512
 )
 
-func NewClient(conn *websocket.Conn, userID int, manager *WebsocketServer) *Client {
+func NewClient(conn *websocket.Conn, userID int64, manager *WebsocketServer) *Client {
 	return &Client{
 		connection: conn,
 		clientID:   userID,
 		manager:    manager,
-		gate:       make(chan []byte),
+		gate:       make(chan Payload),
 	}
 }
 
