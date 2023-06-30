@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import Notification from "../components/Notification";
-import axios from "axios";
 import { WS_URL } from "../utils/routes";
-
-const NOTIFICATIONS_URL = "http://localhost:8000/notifications/";
 
 const NotificationList = ({ setToggle }) => {
   const ref = useRef(null);
@@ -75,7 +72,7 @@ const NotificationList = ({ setToggle }) => {
     }
   }, [lastJsonMessage]);
 
-  const renderedNotifications = notif.map((notification) => (
+  const renderedNotifications = notifications.map((notification) => (
     <div className="notification">
       <li key={notification?.data?.id}>
         <Notification
@@ -88,7 +85,9 @@ const NotificationList = ({ setToggle }) => {
 
   return (
     <div className="notification-list" ref={ref}>
-      {notif.length === 0 ? "You have no notifications" : renderedNotifications}
+      {notifications.length === 0
+        ? "You have no notifications"
+        : renderedNotifications}
     </div>
   );
 };

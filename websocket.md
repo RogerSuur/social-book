@@ -3,6 +3,7 @@
 ## 1. BACKEND to FRONTEND
 
 ### 1.1 notification
+
 ```JSON
 {
     "type": "notification",
