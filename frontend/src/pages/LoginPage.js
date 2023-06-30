@@ -53,8 +53,6 @@ const Login = () => {
         password: "",
       });
 
-      console.log(from, "FROM");
-
       navigate(from, { replace: true });
     } catch (err) {
       if (!err?.response) {
@@ -117,7 +115,7 @@ const Login = () => {
             />
 
             <div className="center1">
-              <button class="log-button">Sign In</button>
+              <button className="log-button">Sign In</button>
             </div>
           </form>
           <div style={{ marginTop: "10px", textAlign: "center" }}>

@@ -16,8 +16,6 @@ const RequireAuth = () => {
 
   const location = useLocation();
 
-  console.log(location, "LOC AUTH");
-
   // const updateUsers = (message) => {
   //   const { user_id, username, online, datetime } = message;
 

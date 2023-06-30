@@ -32,30 +32,30 @@ const NotificationNavbarItem = () => {
     loadNotifications();
   }, []);
 
-  // const loadNotifications = () => {
-  //   sendJsonMessage({
-  //     type: "notifications",
-  //   });
-  // };
+  // useEffect(() => {
+  //   const exceptions = ["message", "chatlist", "message_history"];
 
-  useEffect(() => {
-    const exceptions = ["message", "chatlist", "message_history"];
+  //   if (!exceptions.includes(lastJsonMessage?.type)) {
+  //     setNewNotification(lastJsonMessage?.data);
+  //     setNotificationTimer(true);
 
-    if (!exceptions.includes(lastJsonMessage?.type)) {
-      setNewNotification(lastJsonMessage?.data);
-      setNotificationTimer(true);
+  //     const timer = setTimeout(() => {
+  //       setNotificationTimer(false);
+  //     }, 5000);
 
-      const timer = setTimeout(() => {
-        setNotificationTimer(false);
-      }, 5000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [lastJsonMessage]);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [lastJsonMessage]);
 
   const handleToggle = () => {
     setToggle(!toggle);
   };
+
+  useEffect(() => {
+    console.log(notifications);
+  }, [setNotifications]);
+
+  console.log(notifications, "NOTIFICATION");
 
   const notificationCount = notifications.length;
 
@@ -67,10 +67,16 @@ const NotificationNavbarItem = () => {
           <div className="notification-count">{notificationCount}</div>
         )}
       </li>
-      {notificationTimer && (
+      {/* {notificationTimer && (
         <NotificationPopup notification={newNotification} />
+      )} */}
+      {toggle && (
+        <NotificationList
+          notifications={notifications}
+          setNotifications={setNotifications}
+          setToggle={setToggle}
+        />
       )}
-      {toggle && <NotificationList setToggle={setToggle} />}
     </>
   );
 };

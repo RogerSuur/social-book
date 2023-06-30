@@ -13,10 +13,6 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     },
   });
 
-  console.log(chat);
-
-  console.log(messageHistory);
-
   const defaultImage = () =>
     chat.user_id ? "defaultuser.jpg" : "defaultgroup.png";
 

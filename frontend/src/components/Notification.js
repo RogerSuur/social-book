@@ -90,10 +90,12 @@ const Notification = ({ notification, onClose }) => {
   );
 
   const followRequestNotification = () => {
+    console.log(notification?.data?.sender_id);
+    console.log(notification?.data?.sender_name);
     return (
       <>
-        <Link to={`/profile/${notification?.data?.following_id}`}>
-          {notification?.data?.username}
+        <Link to={`/profile/${notification?.data?.sender_id}`}>
+          {notification?.data?.sender_name}
         </Link>{" "}
         wants to follow you
         {acceptButton()}
@@ -106,7 +108,7 @@ const Notification = ({ notification, onClose }) => {
     return (
       <>
         <Link to={`/profile/${notification?.data?.sender_id}`}>
-          {notification?.data?.username}
+          {notification?.data?.sender_name}
         </Link>{" "}
         invites you to join the group{" "}
         <Link to={`/groups/${notification?.data?.group_id}`}>
@@ -122,7 +124,7 @@ const Notification = ({ notification, onClose }) => {
     return (
       <>
         <Link to={`/profile/${notification?.data?.sender_id}`}>
-          {notification?.data?.username}
+          {notification?.data?.sender_name}
         </Link>{" "}
         wants to join your group{" "}
         <Link to={`/groups/${notification?.data?.group_id}`}>
@@ -148,32 +150,31 @@ const Notification = ({ notification, onClose }) => {
     );
   };
 
-  let notificationMessage;
+  const notificationMessage = () => {
+    switch (notification.notification_type) {
+      case "follow_request":
+        return followRequestNotification();
+      case "follow_accept":
+        notificationMessage = `${notification.data.username} accepted your follow request`;
+        break;
+      case "group_invite":
+        notificationMessage = groupInviteNotification();
+        break;
+      case "group_join":
+        notificationMessage = groupJoinNotification();
+        break;
+      case "group_accept":
+        console.log(notification, "group_accept");
+        break;
+      case "event":
+        notificationMessage = eventNotification();
+        break;
+      default:
+        break;
+    }
+  };
 
-  switch (notification.type) {
-    case "follow_request":
-      notificationMessage = followRequestNotification();
-      break;
-    case "follow_accept":
-      notificationMessage = `${notification.data.username} accepted your follow request`;
-      break;
-    case "group_invite":
-      notificationMessage = groupInviteNotification();
-      break;
-    case "group_join":
-      notificationMessage = groupJoinNotification();
-      break;
-    case "group_accept":
-      console.log(notification, "group_accept");
-      break;
-    case "event":
-      notificationMessage = eventNotification();
-      break;
-    default:
-      break;
-  }
-
-  return <div className="notification">{notificationMessage}</div>;
+  return <div>{notificationMessage()}</div>;
 };
 
 export default Notification;

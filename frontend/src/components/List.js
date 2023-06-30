@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const List = ({ url, mapFunction }) => {
-  console.log(url);
   const [listData, setListData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {

@@ -9,8 +9,6 @@ const RequireGuest = () => {
   const { auth, setAuth } = useAuth();
   const location = useLocation();
 
-  console.log(location, "LOC GUEST");
-
   useEffect(() => {
     const authorisation = async () => {
       try {
