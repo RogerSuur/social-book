@@ -4,6 +4,7 @@ import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"log"
 	"os"
+	"sort"
 	"time"
 )
 
@@ -43,14 +44,14 @@ type ChatListUser struct {
 
 func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
 
-	chatlist, err := s.ChatRepo.GetChatUsers(userID)
+	userList, err := s.ChatRepo.GetChatUsers(userID)
 	if err != nil {
 		return nil, err
 	}
 
 	chatlistData := []ChatListUser{}
 
-	for _, user := range chatlist {
+	for _, user := range userList {
 		if user.Nickname == "" {
 			user.Nickname = user.FirstName + " " + user.LastName
 		}
@@ -59,7 +60,7 @@ func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
 		if err != nil {
 			return nil, err
 		}
-		if lastMessage == nil {
+		if lastMessage.SentAt == (time.Time{}) {
 			lastMessage.SentAt = user.CreatedAt
 		}
 
@@ -78,6 +79,42 @@ func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
 		}
 		chatlistData = append(chatlistData, chatData)
 	}
+
+	groupList, err := s.ChatRepo.GetChatGroups(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, group := range groupList {
+		lastMessage, err := s.ChatRepo.GetLastMessage(userID, int64(group.Id), true)
+		if err != nil {
+			return nil, err
+		}
+		if lastMessage.SentAt == (time.Time{}) {
+			lastMessage.SentAt = group.CreatedAt
+		}
+
+		unreadCount, err := s.ChatRepo.GetUnreadCount(userID, int64(group.Id), true)
+		if err != nil {
+			return nil, err
+		}
+
+		chatData := ChatListUser{
+			UserID:      0,
+			GroupID:     int(group.Id),
+			Name:        group.Title,
+			Timestamp:   lastMessage.SentAt,
+			AvatarImage: group.ImagePath,
+			UnreadCount: int(unreadCount),
+		}
+		chatlistData = append(chatlistData, chatData)
+	}
+
+	// sort the chatlistData array by ChatListUser.Timestamp field in descending order
+
+	sort.Slice(chatlistData, func(i, j int) bool {
+		return chatlistData[i].Timestamp.Before(chatlistData[j].Timestamp)
+	})
 
 	return chatlistData, nil
 }

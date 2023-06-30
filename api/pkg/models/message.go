@@ -23,6 +23,7 @@ type IMessageRepository interface {
 	GetMessagesByGroupId(groupId int64) ([]*Message, error)
 	GetMessagesByUserIds(userId int64, secondUserId int64) ([]*Message, error)
 	GetChatUsers(id int64) ([]*User, error)
+	GetChatGroups(id int64) ([]*Group, error)
 	GetLastMessage(userId int64, otherId int64, isGroup bool) (*Message, error)
 	GetUnreadCount(userId int64, otherId int64, isGroup bool) (int64, error)
 }
@@ -146,7 +147,7 @@ func (repo MessageRepository) GetMessagesByUserIds(userId int64, secondUserId in
 func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
 	//get all users from database except myself
 
-	query := `SELECT id, forname, surname, nickname, image_path FROM users WHERE id != ?`
+	query := `SELECT id, forname, surname, nickname, image_path, created_at FROM users WHERE id != ?`
 
 	rows, err := repo.DB.Query(query, id)
 	if err != nil {
@@ -164,6 +165,7 @@ func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
 			&user.LastName,
 			&user.Nickname,
 			&user.ImagePath,
+			&user.CreatedAt,
 		)
 		if err != nil {
 			return nil, err
@@ -172,6 +174,36 @@ func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
 	}
 
 	return users, nil
+}
+
+func (repo MessageRepository) GetChatGroups(id int64) ([]*Group, error) {
+	//get all groups from user_groups where user is member and title and image_path from groups
+
+	query := `SELECT g.id, g.title, g.created_at, g.image_path FROM groups g JOIN user_groups ug ON g.id = ug.group_id WHERE ug.user_id = ?`
+
+	rows, err := repo.DB.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	groups := []*Group{}
+
+	for rows.Next() {
+		group := &Group{}
+		err := rows.Scan(
+			&group.Id,
+			&group.Title,
+			&group.CreatedAt,
+			&group.ImagePath,
+		)
+		if err != nil {
+			return nil, err
+		}
+		groups = append(groups, group)
+	}
+
+	return groups, nil
 }
 
 func (repo MessageRepository) GetLastMessage(userId int64, otherId int64, isGroup bool) (*Message, error) {
