@@ -1,5 +1,5 @@
 const SingleChatlistItem = ({ chat, toggleChat }) => {
-  const id = chat?.userid > 0 ? [chat.userid, 0] : [0, chat.group_id];
+  const id = chat?.user_id > 0 ? [chat.user_id, 0] : [0, chat.group_id];
 
   const handleToggle = () => {
     toggleChat(id);

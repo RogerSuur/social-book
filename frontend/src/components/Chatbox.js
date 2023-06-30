@@ -18,7 +18,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   console.log(messageHistory);
 
   const defaultImage = () =>
-    chat.userid ? "defaultuser.jpg" : "defaultgroup.png";
+    chat.user_id ? "defaultuser.jpg" : "defaultgroup.png";
 
   const imageHandler = () => {
     const source = chat?.avatarImage
@@ -153,7 +153,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   const loadMessages = () => {
     sendJsonMessage({
       type: "request_message_history",
-      data: { id: chat.userid, group_id: chat.group_id },
+      data: { id: chat.user_id, group_id: chat.group_id },
     });
   };
 
@@ -171,9 +171,9 @@ const Chatbox = ({ toggleChat, chat, user }) => {
         break;
       case "message":
         if (
-          (lastJsonMessage?.data?.sender_id === chat.userid &&
+          (lastJsonMessage?.data?.sender_id === chat.user_id &&
             lastJsonMessage?.data?.group_id === 0) ||
-          lastJsonMessage?.data?.recipient_id === chat.userid ||
+          lastJsonMessage?.data?.recipient_id === chat.user_id ||
           lastJsonMessage?.data?.group_id === chat.group_id
         ) {
           setMessageHistory((prevMessageHistory) => [
@@ -202,9 +202,17 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   const renderedMessages = sms.map((msg) => {
     switch (msg.sender_id) {
       case user:
-        return <p className="own-message">{msg.body}</p>;
+        return (
+          <p key={msg.id} className="own-message">
+            {msg.body}
+          </p>
+        );
       default:
-        return <p className="message">{msg.body}</p>;
+        return (
+          <p key={msg.id} className="message">
+            {msg.body}
+          </p>
+        );
     }
   });
 
@@ -223,21 +231,21 @@ const Chatbox = ({ toggleChat, chat, user }) => {
       console.log(
         {
           ...message,
-          data: { ...message.data, recipient_id: chat.userid },
+          data: { ...message.data, recipient_id: chat.user_id },
         },
         "SENDING"
       );
       // sendJsonMessage({
       //   ...message,
-      //   data: { ...message.data, recipient_id: chat.userid },
+      //   data: { ...message.data, recipient_id: chat.user_id },
       // });
     }
     setMessage({ ...message, data: { body: "" } });
   };
 
   const chatName =
-    chat?.userid > 0 ? (
-      <Link to={`/profile/${chat.userid}`}>{chat.name}</Link>
+    chat?.user_id > 0 ? (
+      <Link to={`/profile/${chat.user_id}`}>{chat.name}</Link>
     ) : (
       <Link to={`/groups/${chat.group_id}`}>{chat.name}</Link>
     );
