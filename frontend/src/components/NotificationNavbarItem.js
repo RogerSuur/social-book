@@ -55,8 +55,6 @@ const NotificationNavbarItem = () => {
     console.log(notifications);
   }, [setNotifications]);
 
-  console.log(notifications, "NOTIFICATION");
-
   const notificationCount = notifications.length;
 
   return (

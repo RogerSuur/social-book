@@ -90,8 +90,6 @@ const Notification = ({ notification, onClose }) => {
   );
 
   const followRequestNotification = () => {
-    console.log(notification?.data?.sender_id);
-    console.log(notification?.data?.sender_name);
     return (
       <>
         <Link to={`/profile/${notification?.data?.sender_id}`}>
