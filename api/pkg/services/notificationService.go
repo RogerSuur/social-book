@@ -9,7 +9,8 @@ import (
 )
 
 type INotificationService interface {
-	CreateFollowRequest(followerID int64, followingID int64) (int64, error)
+	GetUserNotifications(userId int64) ([]*models.NotificationJSON, error)
+	CreateFollowRequest(followerId int64, followingId int64) (int64, error)
 }
 
 type NotificationService struct {
@@ -30,6 +31,61 @@ func InitNotificationService(
 		FollowerRepo:           followerRepo,
 		NotificationRepository: notificationRepo,
 	}
+}
+
+func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.NotificationJSON, error) {
+
+	notifications, err := s.NotificationRepository.GetByReceiverId(userId)
+	if err != nil {
+		s.Logger.Printf("Cannot get user notifications: %s", err)
+		return nil, err
+	}
+
+	for _, notification := range notifications {
+
+		switch notification.NotificationType {
+		case "follow_request":
+			sender, err := s.UserRepo.GetById(notification.SenderId)
+			if err != nil {
+				s.Logger.Printf("Cannot get sender: %s", err)
+				return nil, err
+			}
+			if sender.Nickname == "" {
+				notification.SenderName = sender.FirstName + " " + sender.LastName
+			} else {
+				notification.SenderName = sender.Nickname
+			}
+			// COMMENTED OUT UNTIL GROUPS AND EVENTS ARE IMPLEMENTED
+			/*
+				case "group_invite":
+					group, err := s.GroupRepo.GetById(notification.EntityId)
+					if err != nil {
+						s.Logger.Printf("Cannot get group: %s", err)
+						return nil, err
+					}
+					notification.GroupName = group.Name
+				case "group_request":
+					group, err := s.GroupRepo.GetById(notification.EntityId)
+					if err != nil {
+						s.Logger.Printf("Cannot get group: %s", err)
+						return nil, err
+					}
+					notification.GroupName = group.Name
+				case "event_invite":
+					event, err := s.EventRepo.GetById(notification.EntityId)
+					if err != nil {
+						s.Logger.Printf("Cannot get event: %s", err)
+						return nil, err
+					}
+					notification.EventName = event.Name
+					notification.EventDate = event.Date.Format(time.RFC3339)
+			*/
+		}
+	}
+
+	s.Logger.Printf("User notifications returned: %d", len(notifications))
+
+	return notifications, nil
 }
 
 func (s *NotificationService) CreateFollowRequest(followerId int64, followingId int64) (int64, error) {
