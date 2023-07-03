@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 const Notification = ({ notification, onClose }) => {
   const { sendJsonMessage } = useWebSocketConnection(WS_URL);
 
+  console.log("NOTIFYING");
   // const handleResponse = (e) => {
   //   let msg;
 
@@ -149,7 +150,7 @@ const Notification = ({ notification, onClose }) => {
   };
 
   const notificationMessage = () => {
-    switch (notification.notification_type) {
+    switch (notification?.data?.notification_type) {
       case "follow_request":
         return followRequestNotification();
       case "follow_accept":

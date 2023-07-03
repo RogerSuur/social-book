@@ -13,6 +13,8 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
     );
   };
 
+  console.log(notifications, "LIST");
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
@@ -29,15 +31,16 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
 
   useEffect(() => {
     if (lastJsonMessage && lastJsonMessage.type !== "message") {
+      console.log(lastJsonMessage, "NSG");
       setNotifications((prevNotifications) => {
         return [lastJsonMessage, ...prevNotifications];
       });
     }
   }, [lastJsonMessage]);
 
-  const renderedNotifications = notifications.map((notification) => (
+  const renderedNotifications = notifications.map((notification, index) => (
     <div className="notification">
-      <li key={notification?.data?.id}>
+      <li key={index}>
         <Notification
           notification={notification}
           onClose={handleNotificationClose}

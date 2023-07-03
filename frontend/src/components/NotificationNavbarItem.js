@@ -13,6 +13,15 @@ const NotificationNavbarItem = () => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
+    if (lastJsonMessage && lastJsonMessage.type === "notification") {
+      console.log(lastJsonMessage, "NSG");
+      setNotifications((prevNotifications) => {
+        return [lastJsonMessage, ...prevNotifications];
+      });
+    }
+  }, [lastJsonMessage]);
+
+  useEffect(() => {
     const loadNotifications = async () => {
       try {
         await axios
@@ -50,10 +59,6 @@ const NotificationNavbarItem = () => {
   const handleToggle = () => {
     setToggle(!toggle);
   };
-
-  useEffect(() => {
-    console.log(notifications);
-  }, [setNotifications]);
 
   const notificationCount = notifications.length;
 
