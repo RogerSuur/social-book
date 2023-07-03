@@ -44,8 +44,8 @@ const ChatTest = ({}) => {
   }, [lastJsonMessage]);
 
   const renderedChats = chatlist.map((chat, index) => (
-    <>
-      <li key={index + 1}>
+    <div key={index + 1}>
+      <li>
         <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
       </li>
       {checkOpenChat([chat?.user_id, chat?.group_id]) && (
@@ -53,7 +53,7 @@ const ChatTest = ({}) => {
           <Chatbox toggleChat={toggleChat} chat={chat} user={user} />
         </>
       )}
-    </>
+    </div>
   ));
 
   return (
