@@ -15,6 +15,8 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
     );
   };
 
+  console.log(notifications, "NOTT");
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
@@ -50,39 +52,3 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
 };
 
 export default NotificationList;
-
-// const notif = [
-//   {
-//     type: "follow_request",
-//     data: { id: 1, following_id: 3, username: "Jim Boles" },
-//   },
-//   {
-//     type: "group_invite",
-//     data: {
-//       id: 2,
-//       sender_id: 1,
-//       username: "Jo-Jo",
-//       group_id: 1,
-//       group_name: "Funky Animals",
-//     },
-//   },
-//   {
-//     type: "group_join",
-//     data: {
-//       id: 3,
-//       sender_id: 3,
-//       username: "Kevin Bacon",
-//       group_id: 2,
-//       group_name: "Bad Weather",
-//     },
-//   },
-//   {
-//     type: "event",
-//     data: {
-//       id: 4,
-//       event_id: 1,
-//       event_name: "Fyre Party",
-//       event_datetime: "2023-06-05 16:01:00.303095707+03:00",
-//     },
-//   },
-// ];

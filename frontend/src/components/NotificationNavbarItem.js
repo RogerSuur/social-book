@@ -3,15 +3,15 @@ import NotificationList from "../components/NotificationList.js";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { WS_URL, NOTIFICATIONS_URL } from "../utils/routes";
-import { useLocation } from "react-router-dom";
 
 const NotificationNavbarItem = () => {
   const [toggle, setToggle] = useState(false);
-  const location = useLocation();
   // const [newNotification, setNewNotification] = useState();
   // const [notificationTimer, setNotificationTimer] = useState(false);
   const { lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [notifications, setNotifications] = useState([]);
+
+  console.log(notifications, "NOTLIST");
 
   useEffect(() => {
     if (lastJsonMessage && lastJsonMessage.type === "notification") {
@@ -39,7 +39,7 @@ const NotificationNavbarItem = () => {
     };
 
     loadNotifications();
-  }, [location]);
+  }, []);
 
   // useEffect(() => {
   //   const exceptions = ["message", "chatlist", "message_history"];

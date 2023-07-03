@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 const Notification = ({ notification, onClose }) => {
   const { sendJsonMessage } = useWebSocketConnection(WS_URL);
 
+  console.log(notification, "NOTIFICATION BASIC");
+
   const handleReject = () => {
     const msg = {
       type: "response",
