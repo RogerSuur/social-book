@@ -9,7 +9,9 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
 
   const handleNotificationClose = (id) => {
     setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification?.data?.id !== id)
+      prevNotifications.filter(
+        (notification) => notification?.data?.notification_id !== id
+      )
     );
   };
 

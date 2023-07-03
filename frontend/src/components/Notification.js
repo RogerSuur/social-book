@@ -6,83 +6,26 @@ const Notification = ({ notification, onClose }) => {
   const { sendJsonMessage } = useWebSocketConnection(WS_URL);
 
   console.log(notification, "NOTIFYING");
-  // const handleResponse = (e) => {
-  //   let msg;
-
-  //   switch (e) {
-  //     case true:
-  //       msg = { data: { id: notification?.data?.id, reaction: true } };
-  //       break;
-  //     case false:
-  //       msg = {
-  //         data: { id: notification?.data?.id, reaction: false },
-  //       };
-  //       break;
-  //     default:
-  //       break;
-  //   }
-
-  //   console.log({ type: "response", ...msg });
-  //   sendJsonMessage({ type: "response", ...msg });
-  // };
 
   const handleReject = () => {
-    console.log(notification?.data?.notification_id, "IDDD");
     const msg = {
       type: "response",
       data: { id: notification?.data?.notification_id, reaction: false },
     };
     console.log(msg);
     sendJsonMessage(msg);
-    onClose(notification?.data?.id);
+    onClose(notification?.data?.notification_id);
   };
 
   const handleAccept = () => {
-    console.log(notification?.data?.notification_id);
     const msg = {
       type: "response",
       data: { id: notification?.data?.notification_id, reaction: true },
     };
     console.log(msg);
     sendJsonMessage(msg);
-    onClose(notification?.data?.id);
+    onClose(notification?.data?.notification_id);
   };
-
-  // const handleFollowRequest = (e) => {
-  //   let msg;
-
-  //   switch (e) {
-  //     case true:
-  //       msg = { type: "follow_accept", data: { id: notification?.data?.id, reaction: true } };
-  //       break;
-  //     case false:
-  //       msg = { type: "follow_reject", data: { id: notification?.data?.id, reaction: false } };
-  //       break;
-  //     default:
-  //       break;
-  //   }
-
-  //   console.log(msg);
-  //   sendJsonMessage(msg);
-  // };
-
-  // const handleGroupInvite = (e) => {
-  //   let msg;
-
-  //   switch (e) {
-  //     case true:
-  //       msg = { type: "group_invite_accept", data: { id: notification?.data?.id, reaction: true } };
-  //       break;
-  //     case false:
-  //       msg = { type: "group_invite_reject", data: { id: notification?.data?.id, reaction: false } };
-  //       break;
-  //     default:
-  //       break;
-  //   }
-
-  //   console.log(msg);
-  //   sendJsonMessage(msg);
-  // };
 
   const acceptButton = (text = "Accept") => (
     <button onClick={handleAccept}>{text}</button>
