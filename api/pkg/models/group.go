@@ -16,6 +16,11 @@ type Group struct {
 	CreatedAt   time.Time
 }
 
+type UserGroup struct {
+	Id   int    `json:"groupId"`
+	Name string `json:"groupName"`
+}
+
 type IGroupRepository interface {
 	GetAllByCreatorId(userId int) ([]*Group, error)
 	GetAllByMemberId(userId int) ([]*Group, error)
