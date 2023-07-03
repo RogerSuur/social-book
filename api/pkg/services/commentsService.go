@@ -4,7 +4,6 @@ import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
 	"log"
-	"os"
 	"time"
 )
 
@@ -19,9 +18,9 @@ type CommentService struct {
 	CommentRepository models.ICommentRepository
 }
 
-func InitCommentService(commentRepo *models.CommentRepository) *CommentService {
+func InitCommentService(logger *log.Logger, commentRepo *models.CommentRepository) *CommentService {
 	return &CommentService{
-		Logger:            log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		Logger:            logger,
 		CommentRepository: commentRepo,
 	}
 }

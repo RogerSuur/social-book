@@ -3,11 +3,9 @@ package main
 import (
 	"SocialNetworkRestApi/api/internal/server/handlers"
 	"SocialNetworkRestApi/api/internal/server/router"
-	"SocialNetworkRestApi/api/internal/server/websocket"
 	"SocialNetworkRestApi/api/pkg/db/seed"
 	database "SocialNetworkRestApi/api/pkg/db/sqlite"
 	"SocialNetworkRestApi/api/pkg/models"
-	"SocialNetworkRestApi/api/pkg/services"
 	"fmt"
 	"log"
 	"net/http"
@@ -39,41 +37,8 @@ func main() {
 	logger.Println("successfully migrated DB..")
 
 	repos := models.InitRepositories(db)
-	userServices := services.InitUserService(
-		repos.UserRepo,
-		repos.SessionRepo,
-		repos.FollowerRepo,
-		repos.NotificationRepo,
-	)
-	notificationServices := services.InitNotificationService(
-		repos.UserRepo,
-		repos.FollowerRepo,
-		repos.NotificationRepo,
-	)
-	chatServices := services.InitChatService(
-		repos.UserRepo,
-		repos.MessageRepo,
-	)
 
-	app := &handlers.Application{
-		Logger: logger,
-		WS: websocket.InitWebsocket(
-			userServices,
-			notificationServices,
-			chatServices,
-		),
-		UserService:         userServices,
-		NotificationService: notificationServices,
-		PostService: services.InitPostService(
-			logger,
-			repos.PostRepo,
-			repos.AllowedPostRepo,
-		),
-		CommentService: services.InitCommentService(
-			repos.CommentRepo,
-		),
-		ChatService: chatServices,
-	}
+	app := handlers.InitApp(repos, logger)
 
 	args := os.Args
 

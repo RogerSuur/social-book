@@ -4,7 +4,6 @@ import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
 	"log"
-	"os"
 	"time"
 )
 
@@ -20,12 +19,13 @@ type NotificationService struct {
 }
 
 func InitNotificationService(
+	logger *log.Logger,
 	userRepo *models.UserRepository,
 	followerRepo *models.FollowerRepository,
 	notificationRepo *models.NotificationRepository,
 ) *NotificationService {
 	return &NotificationService{
-		Logger:                 log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		Logger:                 logger,
 		UserRepo:               userRepo,
 		FollowerRepo:           followerRepo,
 		NotificationRepository: notificationRepo,

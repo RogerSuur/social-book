@@ -3,7 +3,6 @@ package services
 import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"log"
-	"os"
 	"time"
 )
 
@@ -19,11 +18,12 @@ type ChatService struct {
 }
 
 func InitChatService(
+	logger *log.Logger,
 	userRepo *models.UserRepository,
 	chatRepo *models.MessageRepository,
 ) *ChatService {
 	return &ChatService{
-		Logger:   log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		Logger:   logger,
 		UserRepo: userRepo,
 		ChatRepo: chatRepo,
 	}

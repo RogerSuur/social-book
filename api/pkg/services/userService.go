@@ -8,7 +8,6 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"strings"
 
 	uuid "github.com/satori/go.uuid"
@@ -79,13 +78,14 @@ type UserService struct {
 
 // InitUserService initializes the user controller.
 func InitUserService(
+	logger *log.Logger,
 	userRepo *models.UserRepository,
 	sessionRepo *models.SessionRepository,
 	followerRepo *models.FollowerRepository,
 	notificationRepo *models.NotificationRepository,
 ) *UserService {
 	return &UserService{
-		Logger:           log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		Logger:           logger,
 		UserRepo:         userRepo,
 		SessionRepo:      sessionRepo,
 		FollowerRepo:     followerRepo,

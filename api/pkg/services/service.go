@@ -1,8 +1,6 @@
 package services
 
 import (
-	"SocialNetworkRestApi/api/pkg/models"
-	"log"
 	"regexp"
 
 	"golang.org/x/crypto/bcrypt"
@@ -18,27 +16,27 @@ type Services struct {
 }
 
 // InitServices returns a new Controllers
-func InitServices(repositories *models.Repositories, logger *log.Logger) *Services {
-	return &Services{
-		UserService: InitUserService(
-			repositories.UserRepo,
-			repositories.SessionRepo,
-			repositories.FollowerRepo,
-			repositories.NotificationRepo,
-		),
-		NotificationService: InitNotificationService(
-			repositories.UserRepo,
-			repositories.FollowerRepo,
-			repositories.NotificationRepo,
-		),
-		PostService:    InitPostService(logger, repositories.PostRepo, repositories.AllowedPostRepo),
-		CommentService: InitCommentService(repositories.CommentRepo),
-		ChatService: InitChatService(
-			repositories.UserRepo,
-			repositories.MessageRepo,
-		),
-	}
-}
+// func InitServices(repositories *models.Repositories, logger *log.Logger) *Services {
+// 	return &Services{
+// 		UserService: InitUserService(
+// 			repositories.UserRepo,
+// 			repositories.SessionRepo,
+// 			repositories.FollowerRepo,
+// 			repositories.NotificationRepo,
+// 		),
+// 		NotificationService: InitNotificationService(
+// 			repositories.UserRepo,
+// 			repositories.FollowerRepo,
+// 			repositories.NotificationRepo,
+// 		),
+// 		PostService:    InitPostService(logger, repositories.PostRepo, repositories.AllowedPostRepo),
+// 		CommentService: InitCommentService(repositories.CommentRepo),
+// 		ChatService: InitChatService(
+// 			repositories.UserRepo,
+// 			repositories.MessageRepo,
+// 		),
+// 	}
+// }
 
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
