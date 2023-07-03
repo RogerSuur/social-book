@@ -8,9 +8,10 @@ import (
 )
 
 type Notification struct {
+	Id               int64
 	ReceiverId       int64
+	SenderId         int64
 	NotificationType string
-	SenderID         int64
 	EntityId         int64
 	CreatedAt        time.Time
 	SeenAt           time.Time
@@ -31,7 +32,7 @@ type NotificationJSON struct {
 
 type INotificationRepository interface {
 	Insert(notification *Notification) (int64, error)
-	GetByReceiverId(receiverId int64) ([]*NotificationJSON, error)
+	GetByReceiverId(receiverId int64) ([]*Notification, error)
 	GetNotificationType(notificationType string) (int64, error)
 }
 
@@ -60,7 +61,7 @@ func (repo NotificationRepository) Insert(notification *Notification) (int64, er
 	VALUES(?, ?, ?, ?)`
 
 	args := []interface{}{
-		notification.SenderID,
+		notification.SenderId,
 		NotificationTypeID,
 		notification.EntityId,
 		notification.CreatedAt,
@@ -127,8 +128,15 @@ func (repo NotificationRepository) GetNotificationType(notificationType string) 
 	return id, nil
 }
 
-func (repo NotificationRepository) GetByReceiverId(userId int64) ([]*NotificationJSON, error) {
-	query := `SELECT n.id, n.notification_details_id, n.seen_at, n.reaction, nd.notification_type_id, nd.sender_id, nd.entity_id, nd.created_at, nt.name FROM notifications n
+func (repo NotificationRepository) GetByReceiverId(userId int64) ([]*Notification, error) {
+	/*
+		query := `SELECT n.id, nt.name, nd.sender_id, nd.created_at, n.seen_at, n.reaction FROM notifications n
+		JOIN notification_details nd ON n.notification_details_id = nd.id
+		JOIN notification_types nt ON nd.notification_type_id = nt.id
+		WHERE n.receiver_id = ?`
+	*/
+
+	query := `SELECT n.id, nt.name, nd.sender_id, n.reaction FROM notifications n
 	JOIN notification_details nd ON n.notification_details_id = nd.id
 	JOIN notification_types nt ON nd.notification_type_id = nt.id
 	WHERE n.receiver_id = ?`
@@ -146,12 +154,12 @@ func (repo NotificationRepository) GetByReceiverId(userId int64) ([]*Notificatio
 
 	defer rows.Close()
 
-	notifications := []*NotificationJSON{}
+	notifications := []*Notification{}
 
 	for rows.Next() {
-		var notification NotificationJSON
+		var notification Notification
 
-		err := rows.Scan(&notification.NotificationId, &notification.NotificationType, &notification.SenderId, &notification.SenderName, &notification.GroupId, &notification.GroupName, &notification.EventId, &notification.EventName, &notification.EventDate)
+		err := rows.Scan(&notification.Id, &notification.NotificationType, &notification.SenderId, &notification.Reaction)
 
 		if err != nil {
 			repo.Logger.Printf("Error scanning notification: %s", err.Error())

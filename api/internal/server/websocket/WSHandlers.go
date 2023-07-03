@@ -164,7 +164,20 @@ func (w *WebsocketServer) MessageHistoryHandler(p Payload, c *Client) error {
 }
 
 func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
-	w.Logger.Println(p)
+	data := &MessagePayload{}
+	err := json.Unmarshal(p.Data, &data)
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("User %v sent message to user %v", c.clientID, data.RecipientID)
+
+	/*
+		messageID, err := w.chatService.CreateMessage(int64(c.clientID), data)
+		if err != nil {
+			return err
+		}
+	*/
+
 	return nil
 }
 

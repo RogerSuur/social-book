@@ -41,8 +41,14 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 		return nil, err
 	}
 
-	for _, notification := range notifications {
+	NotificationJSON := []*models.NotificationJSON{}
 
+	for _, notification := range notifications {
+		singleNotification := &models.NotificationJSON{
+			NotificationType: notification.NotificationType,
+			NotificationId:   notification.Id,
+			SenderId:         notification.SenderId,
+		}
 		switch notification.NotificationType {
 		case "follow_request":
 			sender, err := s.UserRepo.GetById(notification.SenderId)
@@ -51,9 +57,9 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 				return nil, err
 			}
 			if sender.Nickname == "" {
-				notification.SenderName = sender.FirstName + " " + sender.LastName
+				singleNotification.SenderName = sender.FirstName + " " + sender.LastName
 			} else {
-				notification.SenderName = sender.Nickname
+				singleNotification.SenderName = sender.Nickname
 			}
 			// COMMENTED OUT UNTIL GROUPS AND EVENTS ARE IMPLEMENTED
 			/*
@@ -81,11 +87,12 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 					notification.EventDate = event.Date.Format(time.RFC3339)
 			*/
 		}
+		NotificationJSON = append(NotificationJSON, singleNotification)
 	}
 
-	s.Logger.Printf("User notifications returned: %d", len(notifications))
+	s.Logger.Printf("User notifications returned: %d", len(NotificationJSON))
 
-	return notifications, nil
+	return NotificationJSON, nil
 }
 
 func (s *NotificationService) CreateFollowRequest(followerId int64, followingId int64) (int64, error) {
@@ -127,7 +134,7 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 	notification := models.Notification{
 		ReceiverId:       followingId,
 		NotificationType: "follow_request",
-		SenderID:         followerId,
+		SenderId:         followerId,
 		EntityId:         lastID,
 		CreatedAt:        time.Now(),
 		Reaction:         false,
