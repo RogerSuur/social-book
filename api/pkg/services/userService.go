@@ -51,7 +51,6 @@ type FollowerData struct {
 
 type IUserService interface {
 	Authenticate(handler http.HandlerFunc) http.HandlerFunc
-	CreateUser(user *models.User) (int64, error)
 	UpdateUserData(userID int64, updateData ProfileUpdateJSON) error
 	GetUserData(userID int64) (*ProfileJSON, error)
 	GetUserID(r *http.Request) (int64, error)
@@ -91,14 +90,6 @@ func InitUserService(
 		FollowerRepo:     followerRepo,
 		NotificationRepo: notificationRepo,
 	}
-}
-
-func (s *UserService) CreateUser(user *models.User) (int64, error) {
-	// do validation/business rule validation here
-	// .. more user stuff
-	// finally, insert into the DB
-
-	return s.UserRepo.Insert(user)
 }
 
 func (s *UserService) UpdateUserData(userID int64, updateData ProfileUpdateJSON) error {
