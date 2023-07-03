@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const Notification = ({ notification, onClose }) => {
   const { sendJsonMessage } = useWebSocketConnection(WS_URL);
 
-  console.log("NOTIFYING");
+  console.log(notification, "NOTIFYING");
   // const handleResponse = (e) => {
   //   let msg;
 
@@ -27,9 +27,10 @@ const Notification = ({ notification, onClose }) => {
   // };
 
   const handleReject = () => {
+    console.log(notification?.data?.notification_id, "IDDD");
     const msg = {
       type: "response",
-      data: { id: notification?.data?.id, reaction: false },
+      data: { id: notification?.data?.notification_id, reaction: false },
     };
     console.log(msg);
     sendJsonMessage(msg);
@@ -37,9 +38,10 @@ const Notification = ({ notification, onClose }) => {
   };
 
   const handleAccept = () => {
+    console.log(notification?.data?.notification_id);
     const msg = {
       type: "response",
-      data: { id: notification?.data?.id, reaction: true },
+      data: { id: notification?.data?.notification_id, reaction: true },
     };
     console.log(msg);
     sendJsonMessage(msg);
@@ -153,21 +155,12 @@ const Notification = ({ notification, onClose }) => {
     switch (notification?.data?.notification_type) {
       case "follow_request":
         return followRequestNotification();
-      case "follow_accept":
-        notificationMessage = `${notification.data.username} accepted your follow request`;
-        break;
       case "group_invite":
-        notificationMessage = groupInviteNotification();
-        break;
+        return groupInviteNotification();
       case "group_join":
-        notificationMessage = groupJoinNotification();
-        break;
-      case "group_accept":
-        console.log(notification, "group_accept");
-        break;
+        return groupJoinNotification();
       case "event":
-        notificationMessage = eventNotification();
-        break;
+        return eventNotification();
       default:
         break;
     }

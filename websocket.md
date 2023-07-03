@@ -9,7 +9,7 @@
     "type": "notification",
     "data": {
         "notification_type": "follow_request" || "group_invite" || "group_request" || "event_invite",
-        "id": 1, // notification id
+        "notification_id": 1, // notification id
         "sender_id": 123,
         "sender_name": "something", // either a username (if exists) or firstname and lastname
         "group_id": 123, // 0 if not group

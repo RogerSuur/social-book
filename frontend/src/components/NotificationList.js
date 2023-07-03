@@ -13,8 +13,6 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
     );
   };
 
-  console.log(notifications, "LIST");
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {

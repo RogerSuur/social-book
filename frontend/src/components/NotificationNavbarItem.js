@@ -1,20 +1,20 @@
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import NotificationList from "../components/NotificationList.js";
-import NotificationPopup from "../components/NotificationPopup";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { WS_URL, NOTIFICATIONS_URL } from "../utils/routes";
+import { useLocation } from "react-router-dom";
 
 const NotificationNavbarItem = () => {
   const [toggle, setToggle] = useState(false);
-  const [newNotification, setNewNotification] = useState();
-  const [notificationTimer, setNotificationTimer] = useState(false);
-  const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
+  const location = useLocation();
+  // const [newNotification, setNewNotification] = useState();
+  // const [notificationTimer, setNotificationTimer] = useState(false);
+  const { lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     if (lastJsonMessage && lastJsonMessage.type === "notification") {
-      console.log(lastJsonMessage, "NSG");
       setNotifications((prevNotifications) => {
         return [lastJsonMessage, ...prevNotifications];
       });
@@ -39,7 +39,7 @@ const NotificationNavbarItem = () => {
     };
 
     loadNotifications();
-  }, []);
+  }, [location]);
 
   // useEffect(() => {
   //   const exceptions = ["message", "chatlist", "message_history"];

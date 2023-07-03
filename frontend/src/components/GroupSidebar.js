@@ -8,19 +8,20 @@ import {
 } from "../utils/routes";
 
 const GroupSidebar = () => {
-  const sidebarItems = (
-    <>
-      <li>
-        <GenericGroupList url={USER_GROUPS_URL} />
-      </li>
-      <li>
-        <GenericGroupList url={USER_CREATED_GROUPS_URL} />
-      </li>
-      <li>
-        <GenericEventList url={ACCEPTED_EVENTS_URL} />
-      </li>
-    </>
-  );
+  const sidebarItems = "sidebar";
+  // const sidebarItems = (
+  //   <>
+  //     <li>
+  //       <GenericGroupList url={USER_GROUPS_URL} />
+  //     </li>
+  //     <li>
+  //       <GenericGroupList url={USER_CREATED_GROUPS_URL} />
+  //     </li>
+  //     <li>
+  //       <GenericEventList url={ACCEPTED_EVENTS_URL} />
+  //     </li>
+  //   </>
+  // );
 
   return <ul className="group-sidebar">{sidebarItems}</ul>;
 };
