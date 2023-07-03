@@ -1,8 +1,10 @@
 package websocket
 
 import (
+	"SocialNetworkRestApi/api/pkg/models"
 	"encoding/json"
 	"errors"
+	"time"
 )
 
 type PayloadHandler func(payload Payload, client *Client) error
@@ -171,12 +173,73 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 	}
 	w.Logger.Printf("User %v sent message to user %v", c.clientID, data.RecipientID)
 
-	/*
-		messageID, err := w.chatService.CreateMessage(int64(c.clientID), data)
+	messageData := &models.Message{
+		SenderId:    int64(c.clientID),
+		RecipientId: int64(data.RecipientID),
+		GroupId:     int64(data.GroupID),
+		Content:     data.MessageBody,
+	}
+
+	messageID, err := w.chatService.CreateMessage(messageData)
+	if err != nil {
+		return err
+	}
+
+	w.Logger.Printf("Message successfully created with id %v", messageID)
+
+	// broadcast to recipient
+
+	recipientClient := w.getClientByUserID(int64(data.RecipientID))
+
+	if recipientClient == nil {
+		w.Logger.Printf("Recipient client not found (recipient offline)")
+	} else {
+		w.Logger.Printf("Recipient client found (recipient online)")
+
+		userData, err := w.userService.GetUserData(int64(c.clientID))
 		if err != nil {
 			return err
 		}
-	*/
+
+		if userData.Nickname == "" {
+			userData.Nickname = userData.FirstName + " " + userData.LastName
+		}
+
+		recipientData, err := w.userService.GetUserData(int64(data.RecipientID))
+		if err != nil {
+			return err
+		}
+
+		if recipientData.Nickname == "" {
+			recipientData.Nickname = recipientData.FirstName + " " + recipientData.LastName
+		}
+
+		dataToSend, err := json.Marshal(
+			&MessagePayload{
+				MessageID:     int(messageID),
+				SenderID:      int(c.clientID),
+				SenderName:    userData.Nickname,
+				RecipientID:   recipientData.UserID,
+				RecipientName: recipientData.Nickname,
+				//GroupID:       data.GroupID,
+				//GroupName:     data.GroupName,
+				MessageBody: data.MessageBody,
+				Timestamp:   time.Now().Format("2006-01-02 15:04:05"),
+			},
+		)
+
+		if err != nil {
+			return err
+		}
+
+		recipientClient.gate <- Payload{
+			Type: "message",
+			Data: dataToSend,
+		}
+
+		w.Logger.Printf("Sent message to recipient")
+
+	}
 
 	return nil
 }

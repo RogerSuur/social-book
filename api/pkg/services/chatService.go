@@ -11,6 +11,7 @@ import (
 type IChatService interface {
 	GetChatlist(userID int64) ([]ChatListUser, error)
 	GetLastMessage(userId int64, otherId int64) (*Message, error)
+	CreateMessage(message *models.Message) (int64, error)
 }
 
 type ChatService struct {
@@ -124,4 +125,28 @@ func (s *ChatService) GetLastMessage(userId int64, otherId int64) (*Message, err
 	//TODO
 
 	return nil, nil
+}
+
+func (s *ChatService) CreateMessage(message *models.Message) (int64, error) {
+
+	// check if users exist
+	_, err := s.UserRepo.GetById(message.SenderId)
+	if err != nil {
+		s.Logger.Println("User with id %d does not exist", message.SenderId)
+		return -1, err
+	}
+	_, err = s.UserRepo.GetById(message.RecipientId)
+	if err != nil {
+		s.Logger.Println("User with id %d does not exist", message.RecipientId)
+		return -1, err
+	}
+
+	lastID, err := s.ChatRepo.Insert(message)
+	if err != nil {
+		return -1, err
+	}
+
+	s.Logger.Println("Message created: %d", lastID)
+
+	return lastID, nil
 }
