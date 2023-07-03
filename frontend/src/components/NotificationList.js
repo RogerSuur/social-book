@@ -29,18 +29,9 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
     };
   }, [ref]);
 
-  useEffect(() => {
-    if (lastJsonMessage && lastJsonMessage.type !== "message") {
-      console.log(lastJsonMessage, "NSG");
-      setNotifications((prevNotifications) => {
-        return [lastJsonMessage, ...prevNotifications];
-      });
-    }
-  }, [lastJsonMessage]);
-
   const renderedNotifications = notifications.map((notification, index) => (
-    <div className="notification">
-      <li key={index}>
+    <div key={index} className="notification">
+      <li>
         <Notification
           notification={notification}
           onClose={handleNotificationClose}
