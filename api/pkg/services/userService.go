@@ -386,11 +386,7 @@ func (s *UserService) GetUserFollowing(userID int64) ([]FollowerData, error) {
 func (s *UserService) IsFollowed(userID int64, followerID int64) bool {
 
 	_, err := s.FollowerRepo.GetByFollowerAndFollowing(userID, followerID)
-	if err != nil {
-		return false
-	}
-
-	return true
+	return err == nil
 }
 
 func (s *UserService) Unfollow(userID int64, followerID int64) error {

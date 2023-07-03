@@ -132,12 +132,12 @@ func (s *ChatService) CreateMessage(message *models.Message) (int64, error) {
 	// check if users exist
 	_, err := s.UserRepo.GetById(message.SenderId)
 	if err != nil {
-		s.Logger.Println("User with id %d does not exist", message.SenderId)
+		s.Logger.Printf("User with id %d does not exist", message.SenderId)
 		return -1, err
 	}
 	_, err = s.UserRepo.GetById(message.RecipientId)
 	if err != nil {
-		s.Logger.Println("User with id %d does not exist", message.RecipientId)
+		s.Logger.Printf("User with id %d does not exist", message.RecipientId)
 		return -1, err
 	}
 
@@ -146,7 +146,7 @@ func (s *ChatService) CreateMessage(message *models.Message) (int64, error) {
 		return -1, err
 	}
 
-	s.Logger.Println("Message created: %d", lastID)
+	s.Logger.Printf("Message created: %d", lastID)
 
 	return lastID, nil
 }
