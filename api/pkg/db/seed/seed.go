@@ -60,9 +60,10 @@ func SeedPosts(repos *models.Repositories) {
 					Content:     seedPost.Content,
 					UserId:      seedUser.Id,
 					PrivacyType: seedPost.PrivacyType,
+					CreatedAt:   seedPost.CreatedAt,
 				}
 
-				postId, err := repos.PostRepo.Insert(tempPost)
+				postId, err := repos.PostRepo.InsertSeedPost(tempPost)
 				seedPost.Id = int(postId)
 				tempPost.Id = int(postId)
 

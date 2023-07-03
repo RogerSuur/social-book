@@ -199,3 +199,32 @@ func (m PostRepository) GetCommentCount(postId int) (int, error) {
 
 	return commentCount, nil
 }
+
+func (repo PostRepository) InsertSeedPost(post *Post) (int64, error) {
+	query := `INSERT INTO posts (user_id, content, created_at, image_path, privacy_type_id)
+	VALUES(?, ?, ?, ?, ?)`
+
+	args := []interface{}{
+		post.UserId,
+		post.Content,
+		post.CreatedAt,
+		post.ImagePath,
+		post.PrivacyType,
+	}
+
+	result, err := repo.DB.Exec(query, args...)
+
+	if err != nil {
+		return 0, err
+	}
+
+	lastId, err := result.LastInsertId()
+
+	if err != nil {
+		return 0, err
+	}
+
+	repo.Logger.Printf("Inserted post by user %d (last insert ID: %d)", post.UserId, lastId)
+
+	return lastId, nil
+}
