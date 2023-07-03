@@ -2,7 +2,6 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Profile from "./pages/ProfilePage";
 import PostsPage from "./pages/PostsPage";
-import Chat from "./pages/ChatPage";
 import Post from "./components/Post";
 import Signup from "./pages/SignupPage";
 import Login from "./pages/LoginPage";
@@ -31,7 +30,6 @@ function App() {
                 path="posts"
                 element={<PostsPage showCreatePost={true} />}
               />
-              <Route path="chat" element={<Chat />} />
               <Route path="posts/:id" element={<Post />} />
               <Route path="categories/:id" element={<Category />} />
               <Route path="logout" element={<Logout />} />

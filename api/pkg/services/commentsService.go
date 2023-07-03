@@ -48,7 +48,7 @@ func (s *CommentService) GetPostComments(postId int, offset int) ([]*CommentJSON
 	for _, p := range result {
 		comments = append(comments, &CommentJSON{
 			p.Id,
-			p.UserId,
+			int(p.UserId),
 			p.UserName,
 			p.Content,
 			p.ImagePath,

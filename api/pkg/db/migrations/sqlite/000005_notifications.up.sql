@@ -1,16 +1,15 @@
 CREATE TABLE IF NOT EXISTS notification_types(
 	id INTEGER PRIMARY KEY,
-    entity TEXT NOT NULL,
-    description TEXT NOT NULL,
-    template TEXT NOT NULL
+    name TEXT NOT NULL,
+    entity TEXT NOT NULL
 );
 
-INSERT INTO notification_types (id, entity, description, template)
+INSERT INTO notification_types (id, name, entity)
 VALUES 
-(0, "users", "user follow request", "User {username} has sent you a follow request."),
-(1, "groups", "group invitation", "User {username} invites you to join the group {groupname}"),
-(2, "groups", "group join request", "User {username} has sent you a request to join the group {groupname}"),
-(3, "group_events", "group event", "User {username} has created an event {eventname} for the group {groupname}");
+(0, "follow_request", "followers"),
+(1, "group_request", "groups"),
+(2, "group_invite", "groups"),
+(3, "event_invite", "group_events");
 
 
 

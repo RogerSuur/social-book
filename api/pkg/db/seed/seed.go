@@ -58,7 +58,7 @@ func SeedPosts(repos *models.Repositories) {
 			for _, seedPost := range seedUser.PostSet {
 				tempPost := &models.Post{
 					Content:     seedPost.Content,
-					UserId:      seedUser.Id,
+					UserId:      int64(seedUser.Id),
 					PrivacyType: seedPost.PrivacyType,
 					CreatedAt:   seedPost.CreatedAt,
 				}
@@ -141,7 +141,7 @@ func SeedFollowers(repos *models.Repositories) {
 
 				tempFollowing := &models.Follower{
 					FollowingId: followedUser.Id,
-					FollowerId:  seedUser.Id,
+					FollowerId:  int64(seedUser.Id),
 					Accepted:    true,
 				}
 
@@ -172,7 +172,7 @@ func SeedGroups(repos *models.Repositories) {
 		tempGroup := &models.Group{
 			Title:       group.Title,
 			Description: group.Description,
-			CreatorId:   user.Id,
+			CreatorId:   int(user.Id),
 		}
 
 		id, err := repos.GroupRepo.Insert(tempGroup)
@@ -188,7 +188,7 @@ func SeedGroups(repos *models.Repositories) {
 				logger.Printf("%+v\n", err)
 			}
 			tempGroupUser := &models.GroupUser{
-				UserId:  groupUser.Id,
+				UserId:  int(groupUser.Id),
 				GroupId: int(id),
 			}
 

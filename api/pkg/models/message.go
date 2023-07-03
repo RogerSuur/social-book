@@ -22,6 +22,8 @@ type IMessageRepository interface {
 	Insert(event *Message) (int64, error)
 	GetMessagesByGroupId(groupId int) ([]*Message, error)
 	GetMessagesByUserIds(userId int, secondUserId int) ([]*Message, error)
+	GetChatUsers(id int64) ([]*User, error)
+	GetLastMessage(userId int64, otherId int64) (*Message, error)
 }
 
 type MessageRepository struct {
@@ -138,4 +140,41 @@ func (repo MessageRepository) GetMessagesByUserIds(userId int, secondUserId int)
 	}
 
 	return messages, nil
+}
+
+func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
+	//get all users from database except myself
+
+	query := `SELECT id, forname, surname, nickname, image_path FROM users WHERE id != ?`
+
+	rows, err := repo.DB.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := []*User{}
+
+	for rows.Next() {
+		user := &User{}
+		err := rows.Scan(
+			&user.Id,
+			&user.FirstName,
+			&user.LastName,
+			&user.Nickname,
+			&user.ImagePath,
+		)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}
+
+func (repo MessageRepository) GetLastMessage(userId int64, otherId int64) (*Message, error) {
+	//TODO
+	//get last message from database
+	return nil, nil
 }

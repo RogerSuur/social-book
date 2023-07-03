@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import FeedPosts from "../components/FeedPosts";
 import CreatePost from "../components/CreatePost";
 import { makeRequest } from "../services/makeRequest";
+import GroupSidebar from "../components/GroupSidebar";
 
 const Posts = ({ showCreatePost }) => {
   const [posts, setPosts] = useState([]);
@@ -47,11 +48,12 @@ const Posts = ({ showCreatePost }) => {
   return (
     <>
       {/* <CreatePost onPostsUpdate={handlePostUpdate} /> */}
+      <GroupSidebar />
       {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
       {error ? (
         <div className="error">{error}</div>
       ) : (
-        <div className="content-area">
+        <div className="content-as">
           <FeedPosts
             posts={posts}
             hasMore={hasMore}
