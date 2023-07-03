@@ -5,14 +5,11 @@ import { Link } from "react-router-dom";
 const Notification = ({ notification, onClose }) => {
   const { sendJsonMessage } = useWebSocketConnection(WS_URL);
 
-  console.log(notification, "NOTIFYING");
-
   const handleReject = () => {
     const msg = {
       type: "response",
       data: { id: notification?.data?.notification_id, reaction: false },
     };
-    console.log(msg);
     sendJsonMessage(msg);
     onClose(notification?.data?.notification_id);
   };
@@ -22,7 +19,6 @@ const Notification = ({ notification, onClose }) => {
       type: "response",
       data: { id: notification?.data?.notification_id, reaction: true },
     };
-    console.log(msg);
     sendJsonMessage(msg);
     onClose(notification?.data?.notification_id);
   };
