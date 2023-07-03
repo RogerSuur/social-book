@@ -42,6 +42,7 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
     const isLastPost = index === posts.length - 1;
 
     return (
+      
       <div
         className="content-area"
         key={id}
@@ -58,6 +59,7 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
           <Comments postId={id} commentCount={commentCount} />
         </div>
       </div>
+      
     );
   };
 
