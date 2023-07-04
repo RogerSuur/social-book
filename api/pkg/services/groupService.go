@@ -8,6 +8,7 @@ import (
 type IGroupService interface {
 	GetUserGroups(userId int) ([]*models.UserGroup, error)
 	GetUserCreatedGroups(userId int) ([]*models.UserGroup, error)
+	GetGroupById(groupId int) (models.GroupJSON, error)
 }
 
 type GroupService struct {
@@ -34,8 +35,8 @@ func (s *GroupService) GetUserGroups(userId int) ([]*models.UserGroup, error) {
 
 	for _, p := range result {
 		groups = append(groups, &models.UserGroup{
-			Id:   p.Id,
-			Name: p.Title,
+			Id:    p.Id,
+			Title: p.Title,
 		})
 	}
 
@@ -54,10 +55,26 @@ func (s *GroupService) GetUserCreatedGroups(userId int) ([]*models.UserGroup, er
 
 	for _, p := range result {
 		groups = append(groups, &models.UserGroup{
-			Id:   p.Id,
-			Name: p.Title,
+			Id:    p.Id,
+			Title: p.Title,
 		})
 	}
 
 	return groups, nil
+}
+
+func (s *GroupService) GetGroupById(groupId int) (models.GroupJSON, error) {
+	result, err := s.GroupRepository.GetById(int64(groupId))
+
+	group := models.GroupJSON{
+		Title:       result.Title,
+		Description: result.Description,
+		ImagePath:   result.ImagePath,
+	}
+
+	if err != nil {
+		s.Logger.Printf("Failed fetching groups: %s", err)
+	}
+
+	return group, err
 }
