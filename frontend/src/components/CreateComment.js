@@ -54,10 +54,11 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
 
   return (
     <>
-      <div className="content-area">
+      <div style={{ maxWidth: '100%', width: '100%', maxHeight: '200px', overflow: 'hidden' }}>
         {errMsg && <h3>{errMsg}</h3>}
         <form onSubmit={handleSubmit}>
           <textarea
+          style={{ width: '90%', height: '100%', resize: 'none' }}
             placeholder="Your comment goes here"
             onChange={handleChange}
             value={formData.content}

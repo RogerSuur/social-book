@@ -8,8 +8,8 @@ import (
 )
 
 type GroupUser struct {
-	UserId   int
-	GroupId  int
+	UserId   int64
+	GroupId  int64
 	JoinedAt time.Time
 }
 

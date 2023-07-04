@@ -10,8 +10,8 @@ import (
 const CommentLimit = 5
 
 type Comment struct {
-	Id        int
-	PostId    int
+	Id        int64
+	PostId    int64
 	UserId    int64
 	Content   string
 	ImagePath string

@@ -6,8 +6,8 @@ import (
 )
 
 type IGroupService interface {
-	GetUserGroups(userId int) ([]*models.UserGroup, error)
-	GetUserCreatedGroups(userId int) ([]*models.UserGroup, error)
+	GetUserGroups(userId int64) ([]*models.UserGroup, error)
+	GetUserCreatedGroups(userId int64) ([]*models.UserGroup, error)
 	GetGroupById(groupId int) (models.GroupJSON, error)
 }
 
@@ -23,7 +23,7 @@ func InitGroupService(logger *log.Logger, groupRepo *models.GroupRepository) *Gr
 	}
 }
 
-func (s *GroupService) GetUserGroups(userId int) ([]*models.UserGroup, error) {
+func (s *GroupService) GetUserGroups(userId int64) ([]*models.UserGroup, error) {
 
 	result, err := s.GroupRepository.GetAllByMemberId(userId)
 
@@ -43,7 +43,7 @@ func (s *GroupService) GetUserGroups(userId int) ([]*models.UserGroup, error) {
 	return groups, nil
 }
 
-func (s *GroupService) GetUserCreatedGroups(userId int) ([]*models.UserGroup, error) {
+func (s *GroupService) GetUserCreatedGroups(userId int64) ([]*models.UserGroup, error) {
 
 	result, err := s.GroupRepository.GetAllByCreatorId(userId)
 
