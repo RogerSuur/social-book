@@ -10,12 +10,15 @@ import {
 const GroupSidebar = () => {
   const sidebarItems = (
     <>
+      <h1>Groups</h1>
       <li>
         <GenericGroupList url={USER_GROUPS_URL} />
       </li>
+      <h1>My groups</h1>
       <li>
         <GenericGroupList url={USER_CREATED_GROUPS_URL} />
       </li>
+      <h1>Events</h1>
       <li>
         <GenericEventList url={ACCEPTED_EVENTS_URL} />
       </li>
