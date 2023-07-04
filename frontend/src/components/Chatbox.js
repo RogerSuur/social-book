@@ -47,9 +47,11 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   useEffect(() => {
     switch (lastJsonMessage?.type) {
       case "message_history":
+        console.log(lastJsonMessage, "MSG HISTORY");
         if (lastJsonMessage?.data.length > 0) {
+          console.log("HRE");
           setMessageHistory((prevMessageHistory) => [
-            lastJsonMessage?.data?.messages,
+            ...lastJsonMessage?.data,
             ...prevMessageHistory,
           ]);
         }
@@ -85,10 +87,8 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     });
   };
 
-  console.log(messageHistory, "HISTORY");
-
   const getTime = (datetime) =>
-    datetime.toLocaleTimeString([], {
+    new Date(datetime).toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
@@ -121,15 +121,16 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     };
     if (chat?.group_id > 0) {
       msg.data.group_id = chat.group_id;
-      sendJsonMessage(msg);
     } else {
       msg.data.recipient_id = chat.user_id;
-      sendJsonMessage(msg);
     }
+    sendJsonMessage(msg);
+
     setMessageHistory((prevMessageHistory) => [
       ...prevMessageHistory,
-      { ...msg.data, timestamp: new Date() },
+      { ...msg.data, timestamp: new Date().toISOString() },
     ]);
+
     setMessage({ ...message, data: { body: "" } });
   };
 
@@ -148,6 +149,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
         <button onClick={closeChat}>Close</button>
       </div>
       <div className="message-history">{renderedMessages}</div>
+      <button onClick={() => console.log(messageHistory)}>Burron</button>
       <div className="message-box">
         <form onSubmit={handleSubmit}>
           <input

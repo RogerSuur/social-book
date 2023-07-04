@@ -27,9 +27,9 @@ const ChatTest = ({}) => {
     }
   };
 
-  const checkOpenChat = (open) =>
+  const checkChat = (open, checker) =>
     open.every((value, index) => {
-      return value === openChat[index];
+      return value === checker[index];
     });
 
   useEffect(() => {
@@ -39,6 +39,45 @@ const ChatTest = ({}) => {
         setUser(lastJsonMessage?.data?.user_id);
         break;
       case "message":
+        const userChat = chatlist.find((chat) =>
+          checkChat(
+            [chat?.user_id, chat?.group_id],
+            [lastJsonMessage?.data?.sender_id, lastJsonMessage?.data?.group_id]
+          )
+        );
+
+        if (!userChat) {
+          const {
+            sender_id,
+            sender_name,
+            group_id,
+            group_name,
+            timestamp,
+            avatar_image,
+          } = lastJsonMessage?.data;
+
+          const newChat = {
+            user_id: sender_id,
+            group_id,
+            timestamp,
+            avatar_image,
+            name: sender_name ? sender_name : group_name,
+          };
+
+          setChatlist((prevChatlist) => [newChat, ...prevChatlist]);
+        } else {
+          const filteredChatlist = chatlist.filter(
+            (chat) =>
+              !checkChat(
+                [chat?.user_id, chat?.group_id],
+                [
+                  lastJsonMessage?.data?.sender_id,
+                  lastJsonMessage?.data?.group_id,
+                ]
+              )
+          );
+          setChatlist([userChat, ...filteredChatlist]);
+        }
         break;
     }
   }, [lastJsonMessage]);
@@ -48,7 +87,7 @@ const ChatTest = ({}) => {
       <li>
         <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
       </li>
-      {checkOpenChat([chat?.user_id, chat?.group_id]) && (
+      {checkChat([chat?.user_id, chat?.group_id], openChat) && (
         <>
           <Chatbox toggleChat={toggleChat} chat={chat} user={user} />
         </>
