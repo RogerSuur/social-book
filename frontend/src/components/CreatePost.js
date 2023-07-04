@@ -89,7 +89,7 @@ const CreatePost = (props) => {
 
   return (
     <>
-      <div className="content-area">
+      <div className="post-area">
         {errMsg && <h2>{errMsg}</h2>}
         <form onSubmit={handleSubmit}>
           <textarea
