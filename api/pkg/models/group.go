@@ -22,8 +22,8 @@ type UserGroup struct {
 }
 
 type IGroupRepository interface {
-	GetAllByCreatorId(userId int) ([]*Group, error)
-	GetAllByMemberId(userId int) ([]*Group, error)
+	GetAllByCreatorId(userId int64) ([]*Group, error)
+	GetAllByMemberId(userId int64) ([]*Group, error)
 	GetById(id int64) (*Group, error)
 	Insert(group *Group) (int64, error)
 }
@@ -80,7 +80,7 @@ func (p GroupRepository) GetById(id int64) (*Group, error) {
 	return group, err
 }
 
-func (repo GroupRepository) GetAllByCreatorId(userId int) ([]*Group, error) {
+func (repo GroupRepository) GetAllByCreatorId(userId int64) ([]*Group, error) {
 
 	stmt := `SELECT id, creator_id,  title, description, created_at, image_path FROM groups
 	WHERE creator_id = ?
@@ -112,7 +112,7 @@ func (repo GroupRepository) GetAllByCreatorId(userId int) ([]*Group, error) {
 	return groups, nil
 }
 
-func (repo GroupRepository) GetAllByMemberId(userId int) ([]*Group, error) {
+func (repo GroupRepository) GetAllByMemberId(userId int64) ([]*Group, error) {
 
 	stmt := `SELECT DISTINCT g.id, g.creator_id,  g.title, g.description, g.created_at, g.image_path FROM groups g
 	INNER JOIN user_groups ug ON

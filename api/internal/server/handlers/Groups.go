@@ -17,7 +17,7 @@ func (app *Application) UserGroups(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		groups, err := app.GroupService.GetUserGroups(int(userId))
+		groups, err := app.GroupService.GetUserGroups(userId)
 
 		if err != nil {
 			app.Logger.Printf("Failed fetching groups: %v", err)
@@ -44,7 +44,7 @@ func (app *Application) MyGroups(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		groups, err := app.GroupService.GetUserCreatedGroups(int(userId))
+		groups, err := app.GroupService.GetUserCreatedGroups(userId)
 
 		if err != nil {
 			app.Logger.Printf("Failed fetching groups: %v", err)
