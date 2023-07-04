@@ -78,12 +78,12 @@ func SeedPosts(repos *models.Repositories) {
 					tempComment := &models.Comment{
 						Content: comments.Content,
 						UserId:  commentUser.Id,
-						PostId:  int(postId),
+						PostId:  postId,
 					}
 
 					id, err := repos.CommentRepo.Insert(tempComment)
 
-					tempComment.Id = int(id)
+					tempComment.Id = id
 
 					// logger.Printf("%+v\n", tempComment)
 
@@ -102,12 +102,12 @@ func SeedPosts(repos *models.Repositories) {
 					tempComment := &models.Comment{
 						Content: faker.Sentence(),
 						UserId:  loremUser.Id,
-						PostId:  int(postId),
+						PostId:  postId,
 					}
 
 					id, err := repos.CommentRepo.Insert(tempComment)
 
-					tempComment.Id = int(id)
+					tempComment.Id = id
 
 					// logger.Printf("%+v\n", tempComment)
 
