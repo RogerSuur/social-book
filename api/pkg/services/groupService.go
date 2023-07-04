@@ -8,7 +8,7 @@ import (
 type IGroupService interface {
 	GetUserGroups(userId int64) ([]*models.UserGroup, error)
 	GetUserCreatedGroups(userId int64) ([]*models.UserGroup, error)
-	GetGroupById(groupId int) (models.GroupJSON, error)
+	GetGroupById(groupId int64) (models.GroupJSON, error)
 }
 
 type GroupService struct {
@@ -63,8 +63,8 @@ func (s *GroupService) GetUserCreatedGroups(userId int64) ([]*models.UserGroup, 
 	return groups, nil
 }
 
-func (s *GroupService) GetGroupById(groupId int) (models.GroupJSON, error) {
-	result, err := s.GroupRepository.GetById(int64(groupId))
+func (s *GroupService) GetGroupById(groupId int64) (models.GroupJSON, error) {
+	result, err := s.GroupRepository.GetById(groupId)
 
 	group := models.GroupJSON{
 		Title:       result.Title,

@@ -32,6 +32,12 @@ type SignupJSON struct {
 	About           string `json:"about"`
 }
 
+type SimpleUserJSON struct {
+	Id        int
+	Nickname  string `json:"nickname"`
+	ImagePath string
+}
+
 type IUserRepository interface {
 	Insert(*User) (int64, error)
 	Update(*User) error

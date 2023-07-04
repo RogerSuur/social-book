@@ -16,6 +16,7 @@ type Application struct {
 	CommentService      services.ICommentService
 	ChatService         services.IChatService
 	GroupService        services.IGroupService
+	GroupMemberService  services.IGroupMemberService
 }
 
 func InitApp(repositories *models.Repositories, logger *log.Logger) *Application {
@@ -55,5 +56,6 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 		CommentService:      services.InitCommentService(logger, repositories.CommentRepo),
 		ChatService:         chatServices,
 		GroupService:        services.InitGroupService(logger, repositories.GroupRepo),
+		GroupMemberService:  services.InitGroupMemberService(logger, repositories.GroupUserRepo),
 	}
 }

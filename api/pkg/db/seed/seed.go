@@ -187,7 +187,7 @@ func SeedGroups(repos *models.Repositories) {
 			if err != nil {
 				logger.Printf("%+v\n", err)
 			}
-			tempGroupUser := &models.GroupUser{
+			tempGroupUser := &models.GroupMemberModel{
 				UserId:  groupUser.Id,
 				GroupId: id,
 			}
