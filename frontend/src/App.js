@@ -9,6 +9,7 @@ import NoPage from "./pages/NoPage";
 import Category from "./pages/CategoryPage";
 import RequireAuth from "./components/RequireAuth";
 import ProfileInfo from "./components/ProfileInfo";
+import GroupPage from "./pages/GroupPage";
 //import RequireGuest from "./components/RequireGuest";
 import Logout from "./components/Logout";
 
@@ -30,6 +31,7 @@ function App() {
                 path="posts"
                 element={<PostsPage showCreatePost={true} />}
               />
+              <Route path="/groups/:groupId" element={<GroupPage />} />
               <Route path="posts/:id" element={<Post />} />
               <Route path="categories/:id" element={<Category />} />
               <Route path="logout" element={<Logout />} />

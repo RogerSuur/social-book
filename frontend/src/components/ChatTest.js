@@ -58,10 +58,10 @@ const ChatTest = ({}) => {
 
   const checkOpenChat = (open) =>
     open.every((value, index) => {
-      console.log(value, "value");
-      console.log(index, "index");
-      console.log(openChat[index], "OPENCHAT index");
-      console.log(value === openChat[index], "VALUI");
+      // console.log(value, "value");
+      // console.log(index, "index");
+      // console.log(openChat[index], "OPENCHAT index");
+      // console.log(value === openChat[index], "VALUI");
       return value === openChat[index];
     });
 

@@ -7,5 +7,5 @@ export const USER_CREATED_GROUPS_URL = "http://localhost:8000/mygroups";
 export const FOLLOWERS_URL = "http://localhost:8000/followers";
 export const FOLLOWING_URL = "http://localhost:8000/following";
 export const ACCEPTED_EVENTS_URL = "http://localhost:8000/userevents";
-export const GROUP_PAGE_URL = "http://localhost:8000/groups/groupId";
+export const GROUP_PAGE_URL = "http://localhost:8000/groups/";
 export const SEARCH_URL = "http://localhost:8000/search";
