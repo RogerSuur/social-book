@@ -9,7 +9,7 @@ type IGroupService interface {
 	GetUserGroups(userId int64) ([]*models.UserGroup, error)
 	GetUserCreatedGroups(userId int64) ([]*models.UserGroup, error)
 	GetGroupById(groupId int64) (models.GroupJSON, error)
-	SearchGroups(searchString string) ([]*models.SearchResult, error)
+	SearchGroupsAndUsers(searchString string) ([]*models.SearchResult, error)
 }
 
 type GroupService struct {
@@ -80,9 +80,9 @@ func (s *GroupService) GetGroupById(groupId int64) (models.GroupJSON, error) {
 	return group, err
 }
 
-func (s *GroupService) SearchGroups(searchString string) ([]*models.SearchResult, error) {
+func (s *GroupService) SearchGroupsAndUsers(searchString string) ([]*models.SearchResult, error) {
 
-	result, err := s.GroupRepository.SearchByString(searchString)
+	result, err := s.GroupRepository.SearchGroupsAndUsersByString(searchString)
 
 	if err != nil {
 		s.Logger.Printf("Failed searching groups: %s", err)

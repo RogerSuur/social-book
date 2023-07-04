@@ -28,12 +28,19 @@ type GroupJSON struct {
 	ImagePath   string `json:"imagePath"`
 }
 
+type SearchResult struct {
+	GroupId   int64  `json:"groupId"`
+	UserId    int64  `json:"userId"`
+	Name      string `json:"name"`
+	ImagePath string `json:"imagePath"`
+}
+
 type IGroupRepository interface {
 	GetAllByCreatorId(userId int64) ([]*Group, error)
 	GetAllByMemberId(userId int64) ([]*Group, error)
 	GetById(id int64) (*Group, error)
 	Insert(group *Group) (int64, error)
-	SearchByString(searchString string) ([]*SearchResult, error)
+	SearchGroupsAndUsersByString(searchString string) ([]*SearchResult, error)
 }
 
 type GroupRepository struct {
@@ -154,7 +161,7 @@ func (repo GroupRepository) GetAllByMemberId(userId int64) ([]*Group, error) {
 	return groups, nil
 }
 
-func (repo GroupRepository) SearchByString(searchString string) ([]*SearchResult, error) {
+func (repo GroupRepository) SearchGroupsAndUsersByString(searchString string) ([]*SearchResult, error) {
 
 	formattedSearchString := fmt.Sprintf("%%%s%%", searchString)
 

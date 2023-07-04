@@ -14,7 +14,7 @@ func (app *Application) Search(rw http.ResponseWriter, r *http.Request) {
 		searchString := vars["searchcriteria"]
 		app.Logger.Println(searchString)
 
-		groupSearchResult, err := app.GroupService.SearchGroups(searchString)
+		groupSearchResult, err := app.GroupService.SearchGroupsAndUsers(searchString)
 
 		app.Logger.Println(groupSearchResult)
 
