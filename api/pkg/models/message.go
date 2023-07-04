@@ -145,11 +145,20 @@ func (repo MessageRepository) GetMessagesByUserIds(userId int64, secondUserId in
 }
 
 func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
-	//get all users from database except myself
+	// join these 3 queries:
 
-	query := `SELECT id, forname, surname, nickname, image_path, created_at FROM users WHERE id != ?`
+	query := `
+		SELECT u.id, u.forname, u.surname, u.nickname, u.image_path, u.created_at FROM users u 
+		JOIN followers f ON u.id = f.following_id WHERE f.follower_id = ?
+		UNION
+		SELECT u.id, u.forname, u.surname, u.nickname, u.image_path, u.created_at FROM users u
+		JOIN messages m ON u.id = m.sender_id WHERE m.recipient_id = ? GROUP BY u.id
+		UNION
+		SELECT u.id, u.forname, u.surname, u.nickname, u.image_path, u.created_at FROM users u
+		JOIN messages m ON u.id = m.recipient_id WHERE m.sender_id = ? GROUP BY u.id
+		`
 
-	rows, err := repo.DB.Query(query, id)
+	rows, err := repo.DB.Query(query, id, id, id)
 	if err != nil {
 		return nil, err
 	}
