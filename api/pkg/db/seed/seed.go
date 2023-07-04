@@ -188,8 +188,8 @@ func SeedGroups(repos *models.Repositories) {
 				logger.Printf("%+v\n", err)
 			}
 			tempGroupUser := &models.GroupUser{
-				UserId:  int(groupUser.Id),
-				GroupId: int(id),
+				UserId:  groupUser.Id,
+				GroupId: id,
 			}
 
 			_, err = repos.GroupUserRepo.Insert(tempGroupUser)
