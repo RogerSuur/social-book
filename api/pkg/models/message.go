@@ -42,7 +42,7 @@ func NewMessageRepo(db *sql.DB) *MessageRepository {
 
 func (repo MessageRepository) Insert(message *Message) (int64, error) {
 	query := `INSERT INTO messages (sender_id, recipient_id, group_id, content, sent_at)
-	VALUES(?, ?, ?, ?, ?, ?)`
+	VALUES(?, ?, ?, ?, ?)`
 
 	args := []interface{}{
 		message.SenderId,

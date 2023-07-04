@@ -141,6 +141,8 @@ func (s *ChatService) CreateMessage(message *models.Message) (int64, error) {
 		return -1, err
 	}
 
+	message.SentAt = time.Now()
+
 	lastID, err := s.ChatRepo.Insert(message)
 	if err != nil {
 		return -1, err
