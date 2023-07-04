@@ -94,18 +94,18 @@ const Chatbox = ({ toggleChat, chat, user }) => {
       hour12: false,
     });
 
-  const renderedMessages = messageHistory.map((msg) => {
+  const renderedMessages = messageHistory.map((msg, index) => {
     if (msg) {
       switch (msg.sender_id) {
         case user:
           return (
-            <p key={msg.id} className="own-message">
+            <p key={index} className="own-message">
               {getTime(msg.timestamp)} {msg.body}
             </p>
           );
         default:
           return (
-            <p key={msg.id} className="message">
+            <p key={index} className="message">
               {msg.body} {getTime(msg.timestamp)}
             </p>
           );
