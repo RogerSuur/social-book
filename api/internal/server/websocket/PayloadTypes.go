@@ -32,6 +32,7 @@ type MessagePayload struct {
 	MessageID     int       `json:"message_id"`
 	SenderID      int       `json:"sender_id"`
 	SenderName    string    `json:"sender_name"`
+	SenderImage   string    `json:"avatar_image"`
 	RecipientID   int       `json:"recipient_id"`
 	RecipientName string    `json:"recipient_name"`
 	GroupID       int       `json:"group_id"`

@@ -236,13 +236,14 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 		dataToSend, err := json.Marshal(
 			&MessagePayload{
 				MessageID:     int(messageID),
-				SenderID:      int(c.clientID),
+				SenderID:      userData.UserID,
 				SenderName:    userData.Nickname,
+				SenderImage:   userData.AvatarImage,
 				RecipientID:   recipientData.UserID,
 				RecipientName: recipientData.Nickname,
 				//GroupID:       data.GroupID,
 				//GroupName:     data.GroupName,
-				Content:   data.Content,
+				Content:   messageData.Content,
 				Timestamp: time.Now(),
 			},
 		)

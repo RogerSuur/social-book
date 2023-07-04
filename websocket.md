@@ -74,6 +74,7 @@
         "id": 1, // message id
         "sender_id": 1,
         "sender_name" : "sdfs", // username (if exists) or first name last name
+        "avatar_image": "link", // empty if no image
         "recipient_id": 123, // 0 if group chat
         "recipient_name": "somename", // username (if exists) or first name last name
         "group_id": 123, // 0 if private chat
