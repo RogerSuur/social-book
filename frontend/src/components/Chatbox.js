@@ -47,10 +47,13 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   useEffect(() => {
     switch (lastJsonMessage?.type) {
       case "message_history":
-        setMessageHistory((prevMessageHistory) => [
-          ...lastJsonMessage?.data?.messages,
-          ...prevMessageHistory,
-        ]);
+        if (lastJsonMessage?.data.length > 0) {
+          setMessageHistory((prevMessageHistory) => [
+            lastJsonMessage?.data?.messages,
+            ...prevMessageHistory,
+          ]);
+        }
+
         break;
       case "message":
         if (
@@ -82,47 +85,51 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     });
   };
 
+  console.log(messageHistory, "HISTORY");
+
+  const getTime = (datetime) =>
+    datetime.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+
   const renderedMessages = messageHistory.map((msg) => {
-    switch (msg.sender_id) {
-      case user:
-        return (
-          <p key={msg.id} className="own-message">
-            {msg.body}
-          </p>
-        );
-      default:
-        return (
-          <p key={msg.id} className="message">
-            {msg.body}
-          </p>
-        );
+    if (msg) {
+      switch (msg.sender_id) {
+        case user:
+          return (
+            <p key={msg.id} className="own-message">
+              {getTime(msg.timestamp)} {msg.body}
+            </p>
+          );
+        default:
+          return (
+            <p key={msg.id} className="message">
+              {msg.body} {getTime(msg.timestamp)}
+            </p>
+          );
+      }
     }
   });
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    let msg = {
+      ...message,
+      data: { ...message.data, sender_id: user, recipient_id: 0, group_id: 0 },
+    };
     if (chat?.group_id > 0) {
-      console.log({
-        ...message,
-        data: { ...message.data, recipient_id: 0, group_id: chat.group_id },
-      });
-      sendJsonMessage({
-        ...message,
-        data: { ...message.data, group_id: 0, recipient_id: chat.group_id },
-      });
+      msg.data.group_id = chat.group_id;
+      sendJsonMessage(msg);
     } else {
-      console.log(
-        {
-          ...message,
-          data: { ...message.data, recipient_id: chat.user_id },
-        },
-        "SENDING"
-      );
-      sendJsonMessage({
-        ...message,
-        data: { ...message.data, recipient_id: chat.user_id },
-      });
+      msg.data.recipient_id = chat.user_id;
+      sendJsonMessage(msg);
     }
+    setMessageHistory((prevMessageHistory) => [
+      ...prevMessageHistory,
+      { ...msg.data, timestamp: new Date() },
+    ]);
     setMessage({ ...message, data: { body: "" } });
   };
 
