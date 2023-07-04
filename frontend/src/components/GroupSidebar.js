@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import GenericGroupList from "../components/GenericGroupList";
 import GenericEventList from "../components/GenericEventList";
 import SearchBar from "./SearchBar";
@@ -7,12 +7,16 @@ import {
   USER_GROUPS_URL,
   ACCEPTED_EVENTS_URL,
 } from "../utils/routes";
+import { SearchResults } from "./SearchResults";
 
 const GroupSidebar = () => {
+  const [searchResults, setSearchResults] = useState([]);
+
   const sidebarItems = (
     <>
       <h1>Search</h1>
-      <SearchBar />
+      <SearchBar setSearchResults={setSearchResults} />
+      <SearchResults searchResults={searchResults} />
       <ul className="group-sidebar">
         <h1>Groups</h1>
         <li>
