@@ -10,6 +10,7 @@ import {
 const GroupSidebar = () => {
   const sidebarItems = (
     <>
+    <ul className="group-sidebar">
       <h1>Groups</h1>
       <li>
         <GenericGroupList url={USER_GROUPS_URL} />
@@ -22,10 +23,11 @@ const GroupSidebar = () => {
       <li>
         <GenericEventList url={ACCEPTED_EVENTS_URL} />
       </li>
+     </ul>
     </>
   );
 
-  return <ul className="group-sidebar">{sidebarItems}</ul>;
+  return <div className="group-extra">{sidebarItems} </div>;
 };
 
 export default GroupSidebar;
