@@ -3,6 +3,7 @@ package websocket
 import (
 	"SocialNetworkRestApi/api/pkg/services"
 	"encoding/json"
+	"time"
 )
 
 type Payload struct {
@@ -28,15 +29,15 @@ type NotificationPayload struct {
 }
 
 type MessagePayload struct {
-	MessageID     int    `json:"message_id"`
-	SenderID      int    `json:"sender_id"`
-	SenderName    string `json:"sender_name"`
-	RecipientID   int    `json:"recipient_id"`
-	RecipientName string `json:"recipient_name"`
-	GroupID       int    `json:"group_id"`
-	GroupName     string `json:"group_name"`
-	Content       string `json:"body"`
-	Timestamp     string `json:"timestamp"`
+	MessageID     int       `json:"message_id"`
+	SenderID      int       `json:"sender_id"`
+	SenderName    string    `json:"sender_name"`
+	RecipientID   int       `json:"recipient_id"`
+	RecipientName string    `json:"recipient_name"`
+	GroupID       int       `json:"group_id"`
+	GroupName     string    `json:"group_name"`
+	Content       string    `json:"body"`
+	Timestamp     time.Time `json:"timestamp"`
 }
 
 type ChatListPayload struct {

@@ -243,7 +243,7 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 				//GroupID:       data.GroupID,
 				//GroupName:     data.GroupName,
 				Content:   data.Content,
-				Timestamp: time.Now().String(),
+				Timestamp: time.Now(),
 			},
 		)
 

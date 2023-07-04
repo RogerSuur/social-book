@@ -50,8 +50,8 @@ type MessageJSON struct {
 	GroupId       int64     `json:"group_id"`
 	GroupName     string    `json:"group_name"`
 	Content       string    `json:"body"`
-	SentAt        time.Time `json:"sent_at"`
-	ReadAt        time.Time `json:"read_at"`
+	SentAt        time.Time `json:"timestamp"`
+	//ReadAt        time.Time `json:"read_at"`
 }
 
 func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
@@ -209,7 +209,7 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64) ([]*Message
 			GroupName:     "",
 			Content:       message.Content,
 			SentAt:        message.SentAt,
-			ReadAt:        message.ReadAt,
+			//ReadAt:        message.ReadAt,
 		}
 		messagesJSON = append(messagesJSON, messageJSON)
 	}
