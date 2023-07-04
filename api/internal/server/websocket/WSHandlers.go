@@ -162,6 +162,25 @@ func (w *WebsocketServer) MessageHistoryHandler(p Payload, c *Client) error {
 		return err
 	}
 	w.Logger.Printf("User %v wants to open message history with user %v", c.clientID, data.ID)
+
+	messages, err := w.chatService.GetMessageHistory(int64(c.clientID), int64(data.ID))
+	if err != nil {
+		return err
+	}
+
+	w.Logger.Printf("Message history successfully retrieved (%v messages)", len(messages))
+
+	dataToSend, err := json.Marshal(messages)
+
+	if err != nil {
+		return err
+	}
+
+	c.gate <- Payload{
+		Type: "message_history",
+		Data: dataToSend,
+	}
+
 	return nil
 }
 

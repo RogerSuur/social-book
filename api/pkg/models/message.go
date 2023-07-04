@@ -26,6 +26,7 @@ type IMessageRepository interface {
 	GetChatGroups(id int64) ([]*Group, error)
 	GetLastMessage(userId int64, otherId int64, isGroup bool) (*Message, error)
 	GetUnreadCount(userId int64, otherId int64, isGroup bool) (int64, error)
+	MarkMessagesAsRead(userId int64, otherId int64, isGroup bool) error
 }
 
 type MessageRepository struct {
@@ -106,7 +107,7 @@ func (repo MessageRepository) GetMessagesByGroupId(groupId int64) ([]*Message, e
 }
 
 func (repo MessageRepository) GetMessagesByUserIds(userId int64, secondUserId int64) ([]*Message, error) {
-	stmt := `SELECT id, sender_id, recipient_id, group_id, content, sent_at, read_at FROM messages m
+	stmt := `SELECT id, sender_id, recipient_id, group_id, content, sent_at FROM messages m
 	WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) 
     ORDER BY sent_at DESC`
 
@@ -129,7 +130,7 @@ func (repo MessageRepository) GetMessagesByUserIds(userId int64, secondUserId in
 	for rows.Next() {
 		message := &Message{}
 
-		err := rows.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.SentAt, &message.ReadAt)
+		err := rows.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.SentAt) //, &message.ReadAt)
 		if err != nil {
 			return nil, err
 		}
@@ -270,4 +271,34 @@ func (repo MessageRepository) GetUnreadCount(userId int64, otherId int64, isGrou
 	}
 
 	return count, nil
+}
+
+func (repo MessageRepository) MarkMessagesAsRead(userId int64, otherId int64, isGroup bool) error {
+	var query string
+	var args []interface{}
+	var now = time.Now()
+
+	if isGroup {
+		query = `UPDATE messages SET read_at = ? WHERE group_id = ? AND recipient_id = ?`
+		args = []interface{}{
+			now,
+			otherId,
+			userId,
+		}
+	} else {
+		query = `UPDATE messages SET read_at = ? WHERE sender_id = ? AND recipient_id = ?`
+		args = []interface{}{
+			now,
+			otherId,
+			userId,
+		}
+	}
+
+	_, err := repo.DB.Exec(query, args...)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

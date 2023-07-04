@@ -10,8 +10,9 @@ import (
 
 type IChatService interface {
 	GetChatlist(userID int64) ([]ChatListUser, error)
-	GetLastMessage(userId int64, otherId int64) (*Message, error)
+	GetLastMessage(userId int64, otherId int64) (*MessageJSON, error)
 	CreateMessage(message *models.Message) (int64, error)
+	GetMessageHistory(userId int64, otherId int64) ([]*MessageJSON, error)
 }
 
 type ChatService struct {
@@ -31,9 +32,6 @@ func InitChatService(
 	}
 }
 
-type Message struct {
-}
-
 type ChatListUser struct {
 	UserID      int       `json:"user_id"`
 	GroupID     int       `json:"group_id"`
@@ -41,6 +39,19 @@ type ChatListUser struct {
 	Timestamp   time.Time `json:"timestamp"`
 	AvatarImage string    `json:"avatar_image"`
 	UnreadCount int       `json:"unread_count"`
+}
+
+type MessageJSON struct {
+	Id            int64     `json:"id"`
+	SenderId      int64     `json:"sender_id"`
+	SenderName    string    `json:"sender_name"`
+	RecipientId   int64     `json:"recipient_id"`
+	RecipientName string    `json:"recipient_name"`
+	GroupId       int64     `json:"group_id"`
+	GroupName     string    `json:"group_name"`
+	Content       string    `json:"content"`
+	SentAt        time.Time `json:"sent_at"`
+	ReadAt        time.Time `json:"read_at"`
 }
 
 func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
@@ -120,7 +131,7 @@ func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
 	return chatlistData, nil
 }
 
-func (s *ChatService) GetLastMessage(userId int64, otherId int64) (*Message, error) {
+func (s *ChatService) GetLastMessage(userId int64, otherId int64) (*MessageJSON, error) {
 
 	//TODO
 
@@ -151,4 +162,63 @@ func (s *ChatService) CreateMessage(message *models.Message) (int64, error) {
 	s.Logger.Printf("Message created: %d", lastID)
 
 	return lastID, nil
+}
+
+func (s *ChatService) GetMessageHistory(userId int64, otherId int64) ([]*MessageJSON, error) {
+
+	// check if users exist
+	userData, err := s.UserRepo.GetById(userId)
+	if err != nil {
+		s.Logger.Printf("User with id %d does not exist", userId)
+		return nil, err
+	}
+	otherData, err := s.UserRepo.GetById(otherId)
+	if err != nil {
+		s.Logger.Printf("User with id %d does not exist", otherId)
+		return nil, err
+	}
+
+	// get messages
+	messages, err := s.ChatRepo.GetMessagesByUserIds(userId, otherId)
+	if err != nil {
+		return nil, err
+	}
+
+	messagesJSON := []*MessageJSON{}
+
+	if len(messages) == 0 {
+		return messagesJSON, nil
+	}
+
+	if userData.Nickname == "" {
+		userData.Nickname = userData.FirstName + " " + userData.LastName
+	}
+
+	if otherData.Nickname == "" {
+		otherData.Nickname = otherData.FirstName + " " + otherData.LastName
+	}
+
+	for _, message := range messages {
+		messageJSON := &MessageJSON{
+			Id:            message.Id,
+			SenderId:      message.SenderId,
+			SenderName:    userData.Nickname,
+			RecipientId:   message.RecipientId,
+			RecipientName: otherData.Nickname,
+			GroupId:       0,
+			GroupName:     "",
+			Content:       message.Content,
+			SentAt:        message.SentAt,
+			ReadAt:        message.ReadAt,
+		}
+		messagesJSON = append(messagesJSON, messageJSON)
+	}
+
+	// mark messages as read
+	err = s.ChatRepo.MarkMessagesAsRead(userId, otherId, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return messagesJSON, nil
 }
