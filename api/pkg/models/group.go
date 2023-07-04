@@ -8,8 +8,8 @@ import (
 )
 
 type Group struct {
-	Id          int
-	CreatorId   int
+	Id          int64
+	CreatorId   int64
 	Title       string
 	Description string
 	ImagePath   string
@@ -17,7 +17,7 @@ type Group struct {
 }
 
 type UserGroup struct {
-	Id   int    `json:"groupId"`
+	Id   int64  `json:"groupId"`
 	Name string `json:"groupName"`
 }
 
