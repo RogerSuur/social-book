@@ -1,8 +1,8 @@
 import { useEffect, useState, setError } from "react";
 import { makeRequest } from "../services/makeRequest.js";
 
-const SearchBar = () => {
-  const [searchResults, setSearchResults] = useState([]);
+const SearchBar = ({ setSearchResults }) => {
+  //   const [searchResults, setSearchResults] = useState([]);
   const [searchString, setSearchString] = useState("");
 
   //   useEffect(() => {
@@ -48,10 +48,10 @@ const SearchBar = () => {
   const handleChange = (e) => {
     if (!e.target.value) {
       setSearchResults([]);
+    } else {
+      setSearchString(e.target.value);
+      fetchData(searchString);
     }
-
-    setSearchString(e.target.value);
-    fetchData(searchString);
   };
 
   const handleSubmit = (e) => {
@@ -70,9 +70,9 @@ const SearchBar = () => {
         />
         {/* <button className="search-button">Search</button> */}
       </form>
-      {searchResults.map((result) => (
+      {/* {searchResults.map((result) => (
         <div key={result.id}>{result.name}</div>
-      ))}
+      ))} */}
     </>
   );
 };
