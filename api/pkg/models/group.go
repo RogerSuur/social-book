@@ -17,8 +17,14 @@ type Group struct {
 }
 
 type UserGroup struct {
-	Id   int64  `json:"groupId"`
-	Name string `json:"groupName"`
+	Id    int64  `json:"groupId"`
+	Title string `json:"groupName"`
+}
+
+type GroupJSON struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	ImagePath   string `json:"imagePath"`
 }
 
 type IGroupRepository interface {
