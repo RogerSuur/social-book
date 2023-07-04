@@ -212,12 +212,12 @@ func (repo MessageRepository) GetLastMessage(userId int64, otherId int64, isGrou
 	var args []interface{}
 
 	if isGroup {
-		query = `SELECT id, sender_id, recipient_id, group_id, content, sent_at, read_at FROM messages WHERE group_id = ? ORDER BY sent_at DESC LIMIT 1`
+		query = `SELECT id, sender_id, recipient_id, group_id, content, sent_at FROM messages WHERE group_id = ? ORDER BY sent_at DESC LIMIT 1`
 		args = []interface{}{
 			otherId,
 		}
 	} else {
-		query = `SELECT id, sender_id, recipient_id, group_id, content, sent_at, read_at FROM messages WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) ORDER BY sent_at DESC LIMIT 1`
+		query = `SELECT id, sender_id, recipient_id, group_id, content, sent_at FROM messages WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) ORDER BY sent_at DESC LIMIT 1`
 		args = []interface{}{
 			userId,
 			otherId,
@@ -230,7 +230,7 @@ func (repo MessageRepository) GetLastMessage(userId int64, otherId int64, isGrou
 
 	message := &Message{}
 
-	err := row.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.SentAt, &message.ReadAt)
+	err := row.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.SentAt) // , &message.ReadAt)
 
 	if err == sql.ErrNoRows {
 		return &Message{}, nil

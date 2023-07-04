@@ -49,7 +49,7 @@ type MessageJSON struct {
 	RecipientName string    `json:"recipient_name"`
 	GroupId       int64     `json:"group_id"`
 	GroupName     string    `json:"group_name"`
-	Content       string    `json:"content"`
+	Content       string    `json:"body"`
 	SentAt        time.Time `json:"sent_at"`
 	ReadAt        time.Time `json:"read_at"`
 }
@@ -125,7 +125,7 @@ func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
 	// sort the chatlistData array by ChatListUser.Timestamp field in descending order
 
 	sort.Slice(chatlistData, func(i, j int) bool {
-		return chatlistData[i].Timestamp.Before(chatlistData[j].Timestamp)
+		return chatlistData[i].Timestamp.After(chatlistData[j].Timestamp)
 	})
 
 	return chatlistData, nil

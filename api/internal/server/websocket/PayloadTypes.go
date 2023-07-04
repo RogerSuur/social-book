@@ -35,7 +35,7 @@ type MessagePayload struct {
 	RecipientName string `json:"recipient_name"`
 	GroupID       int    `json:"group_id"`
 	GroupName     string `json:"group_name"`
-	MessageBody   string `json:"body"`
+	Content       string `json:"body"`
 	Timestamp     string `json:"timestamp"`
 }
 

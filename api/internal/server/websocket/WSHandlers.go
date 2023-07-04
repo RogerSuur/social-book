@@ -196,7 +196,7 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 		SenderId:    int64(c.clientID),
 		RecipientId: int64(data.RecipientID),
 		GroupId:     int64(data.GroupID),
-		Content:     data.MessageBody,
+		Content:     data.Content,
 	}
 
 	messageID, err := w.chatService.CreateMessage(messageData)
@@ -242,8 +242,8 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 				RecipientName: recipientData.Nickname,
 				//GroupID:       data.GroupID,
 				//GroupName:     data.GroupName,
-				MessageBody: data.MessageBody,
-				Timestamp:   time.Now().Format("2006-01-02 15:04:05"),
+				Content:   data.Content,
+				Timestamp: time.Now().String(),
 			},
 		)
 
