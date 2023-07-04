@@ -10,7 +10,7 @@ import {
 const GroupSidebar = () => {
   const sidebarItems = (
     <>
-    <ul className="group-sidebar">
+    <ul >
       <h1>Groups</h1>
       <li>
         <GenericGroupList url={USER_GROUPS_URL} />

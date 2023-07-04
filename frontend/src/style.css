@@ -6,7 +6,7 @@ body {
   min-width: 320px;
   margin: 0;
   font-family: "Inter", sans-serif;
-  background-color:rgb(255, 255, 255)
+  background-color:rgb(236, 236, 236)
 }
 
 nav {
@@ -17,12 +17,12 @@ nav {
 
 .content-as{
   margin-top: auto;
+  order: 4;
 }
 
 .comment-section {
   margin-top: 20px;
   padding: 10px;
-  width: 80%;
   display: flex;
   position: sticky;
   top: 0;
@@ -68,17 +68,18 @@ nav {
 }
 
 .chat-sidebar {
-  position: fixed;
-  align-self: flex-start;
-  overflow-y: auto; 
-  min-width: 250px;
-  top: calc(100%+10px);
-  right: 0;
-  height: 90%;
-  background-color: #f2f2f2;
-  display: flex;
-  z-index: 999;
+  flex-basis: 20%;
+  box-shadow: 5px 5px 5px rgb(184, 184, 184);
+  background-color: #ffffff;
+  margin: 10px;
+  padding: 10px;
+  outline: none;
+  margin-left: 10px;
+  border-radius: 20px;
+  max-height: 600px;
+  overflow: auto;
   box-shadow: 0 0 8px black;
+  order: 3;
 }
 
 .chatbox {
@@ -91,6 +92,7 @@ nav {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 9999; 
   box-shadow: 0 0 8px black;
+  
 }
 
 .notification-list {
@@ -139,9 +141,9 @@ nav {
 } */
 
 .require-auth-container {
-  display:grid;
-  margin-right: 300px;
+  display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 
@@ -164,51 +166,46 @@ nav {
   background-color: rgb(252, 175, 74);
 } */
 .post-area{
-  position: absolute;
-  top: 100px; /* Adjust this value to match the height of your navbar */
-  left: 0;
-  right: 0;
-  margin: 3em auto;
-  display: flex;
-  max-width: 60%;
-  list-style-type: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: white;
-  border-radius: 20px;
-  box-shadow: 0 0 8px black;
-  font-size: 0.9rem;
-}
-
-.group-sidebar{
- 
-}
-
-.content-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 3em auto;
-  max-width: 80%;
-}
-
-.group-extra {
   margin-top: 3em;
+  margin-left: auto;
   margin-right: auto;
   margin-bottom: 3em;
-  display: flex;
+  
   max-width: 80%;
   list-style-type: none;
   flex-direction: column;
   justify-content: center;
-  padding: 0;
+  padding: 10px;
   align-items: center;
   background-color: white;
   border-radius: 20px;
   box-shadow: 0 0 8px black;
   font-size: 0.9rem;
   flex-shrink: 1;
+  max-height: 200px;
+  order: 2;
+}
+
+.post-container {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #dddddd;
+}
+
+.group-extra {
+  flex-basis: 20%;
+  box-shadow: 5px 5px 5px rgb(184, 184, 184);
+  background-color: #ffffff;
+  margin: 10px;
+  padding: 10px;
+  outline: none;
+  margin-left: 10px;
+  border-radius: 20px;
+  max-height: 600px;
+  overflow: auto;
+  box-shadow: 0 0 8px black;
+  order: 1;
+  
 }
 
 nav ul {
@@ -233,18 +230,18 @@ nav li {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 3em;
-  display: flex;
   max-width: 80%;
   list-style-type: none;
   flex-direction: column;
   justify-content: center;
-  padding: 0;
+  padding: 10px;
   align-items: center;
   background-color: white;
   border-radius: 20px;
   box-shadow: 0 0 8px black;
   font-size: 0.9rem;
   flex-shrink: 1;
+  
 }
 
 .content-area * {
