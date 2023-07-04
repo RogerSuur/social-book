@@ -36,9 +36,8 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/mygroups", app.UserService.Authenticate(app.MyGroups)).Methods("GET")
 	r.HandleFunc("/groups/{groupId}", app.UserService.Authenticate(app.Group)).Methods("GET")
 	r.HandleFunc("/groupmembers/{groupId}", app.UserService.Authenticate(app.GroupMembers)).Methods("GET")
+	//Search
+	r.HandleFunc("/search/{searchcriteria}", app.UserService.Authenticate(app.Search)).Methods("GET")
 
-	// ACCEPTED_EVENTS_URL = "http://localhost:8000/userevents";
-	// GROUP_USERS_URL = "http://localhost:8000/groupUsers/{groupId}";
-	// SEARCH_URL = "http://localhost:8000/search/";
 	return r
 }

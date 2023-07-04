@@ -4,6 +4,13 @@ import (
 	"database/sql"
 )
 
+type SearchResult struct {
+	GroupId   int64  `json:"groupId"`
+	UserId    int64  `json:"userId"`
+	Name      string `json:"name"`
+	ImagePath string `json:"imagePath"`
+}
+
 // Repositories contains all the repo structs
 type Repositories struct {
 	UserRepo             *UserRepository

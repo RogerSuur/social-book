@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -32,6 +33,7 @@ type IGroupRepository interface {
 	GetAllByMemberId(userId int64) ([]*Group, error)
 	GetById(id int64) (*Group, error)
 	Insert(group *Group) (int64, error)
+	SearchByString(searchString string) ([]*SearchResult, error)
 }
 
 type GroupRepository struct {
@@ -139,6 +141,46 @@ func (repo GroupRepository) GetAllByMemberId(userId int64) ([]*Group, error) {
 		group := &Group{}
 
 		err := rows.Scan(&group.Id, &group.CreatorId, &group.Title, &group.Description, &group.CreatedAt, &group.ImagePath)
+		if err != nil {
+			return nil, err
+		}
+		groups = append(groups, group)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return groups, nil
+}
+
+func (repo GroupRepository) SearchByString(searchString string) ([]*SearchResult, error) {
+
+	formattedSearchString := fmt.Sprintf("%%%s%%", searchString)
+
+	repo.Logger.Println(formattedSearchString)
+
+	stmt := `SELECT * FROM(SELECT 0 as UserId, g.Id as GroupId, g.Title as Name, g.image_path as ImagePath FROM groups g
+		UNION
+		SELECT u.Id as UserId, 0 as GroupId, u.nickname as Name, u.image_path as ImagePath FROM users u)
+	WHERE Name LIKE ?`
+
+	rows, err := repo.DB.Query(stmt, formattedSearchString)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	repo.Logger.Println()
+
+	groups := []*SearchResult{}
+
+	for rows.Next() {
+		group := &SearchResult{}
+
+		err := rows.Scan(&group.UserId, &group.GroupId, &group.Name, &group.ImagePath)
 		if err != nil {
 			return nil, err
 		}
