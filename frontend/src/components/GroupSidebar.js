@@ -14,7 +14,7 @@ const GroupSidebar = () => {
 
   const sidebarItems = (
     <>
-      <h1>Search</h1>
+      
       <SearchBar setSearchResults={setSearchResults} />
       <SearchResults searchResults={searchResults} />
       <ul className="group-sidebar">

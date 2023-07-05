@@ -33,10 +33,7 @@ const SearchBar = ({ setSearchResults }) => {
       {error && <div>Error: {error}</div>}
       <form id="form" onSubmit={handleSubmit} onChange={handleChange}>
         <input
-          className="search"
-          type="text"
-          id="search"
-          placeholder="Search.."
+          className="search-it" type="text" placeholder="Search here"
           onChange={handleChange}
         />
       </form>
