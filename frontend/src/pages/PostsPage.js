@@ -49,18 +49,20 @@ const Posts = ({ showCreatePost }) => {
     <>
       {/* <CreatePost onPostsUpdate={handlePostUpdate} /> */}
       {showCreatePost && <GroupSidebar />}
+      <div className="content-as">
       {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
       {error ? (
         <div className="error">{error}</div>
       ) : (
-        <div className="content-as">
+        
           <FeedPosts
             posts={posts}
             hasMore={hasMore}
             onLoadMore={handlePageChange}
           />
-        </div>
+        
       )}
+      </div>
     </>
   );
 };

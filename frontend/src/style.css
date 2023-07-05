@@ -29,7 +29,6 @@ nav {
   border-radius: 20px;
   font-size: 0.9rem;
   flex-shrink: 1;
-  order: 4;
 }
 
 .comment-section {
@@ -59,7 +58,7 @@ nav {
 }
 
 .area-text{
-  width: 50vw;
+  width: 100%;
   height: 10vh;
   background-color: #dddddd;
   border: none;
@@ -67,6 +66,9 @@ nav {
   color: black;
   font-size: 14px;
   border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .area-text::placeholder{
@@ -86,14 +88,28 @@ nav {
   margin: 10px;
   padding: 10px;
   outline: none;
-  margin-left: 10px;
   border-radius: 20px;
   max-height: 600px;
   overflow: auto;
   box-shadow: 0 0 8px black;
-  order: 3;
+  z-index: 9999;
+  min-width: 250px;
+  max-width: 350px;
 }
 
+/* Add media query for smaller screens */
+@media screen and (max-width: 768px) {
+  .chat-sidebar {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 200px; /* Adjust the width according to your preference */
+    height: 100%; /* Take full height of the viewport */
+    max-height: none; /* Remove max-height restriction */
+    overflow: auto;
+    z-index: 999; /* Ensure it appears above other elements if needed */
+  }
+}
 .chatbox {
   position: fixed;
   bottom:0;
@@ -155,7 +171,6 @@ nav {
 .require-auth-container {
   display: flex;
   justify-content: space-between;
-  flex-wrap: wrap;
 }
 
 
@@ -178,12 +193,10 @@ nav {
   background-color: rgb(252, 175, 74);
 } */
 .post-area{
-  margin-top: 3em;
+  margin-top: 5px;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 3em;
-  
-  max-width: 80%;
   list-style-type: none;
   flex-direction: column;
   justify-content: center;
@@ -195,7 +208,6 @@ nav {
   font-size: 0.9rem;
   flex-shrink: 1;
   max-height: 200px;
-  order: 2;
 }
 
 .post-container {
@@ -216,7 +228,7 @@ nav {
   max-height: 600px;
   overflow: auto;
   box-shadow: 0 0 8px black;
-  order: 1;
+  min-width: 250px;
   
 }
 .profile-content{
@@ -258,6 +270,69 @@ nav {
   
 }
 
+.top-part{
+  box-shadow: 0 0 8px rgb(172, 172, 172);
+  background-color: #ffffff;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.profile-column {
+  margin-left: 10px;
+}
+
+.profile-title {
+  font-weight: bold;
+  width: 150px;
+}
+
+.profile-title,
+.profile-column {
+  font-size: 16px;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.profile-actions {
+  margin-top: 20px;
+}
+
+.profile-actions button {
+  padding: 8px 16px;
+  background-color: #4267B2;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.profile-actions button:hover {
+  background-color: #3b5998;
+}
+
+.profile-actions input[type="checkbox"] {
+  margin-left: 5px;
+}
+
+.profile-actions button:disabled {
+  background-color: #9c9c9c;
+  cursor: not-allowed;
+}
+
 nav ul {
   list-style-type: none;
   margin: 0;
@@ -280,7 +355,7 @@ nav li {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 3em;
-  max-width: 80%;
+  
   list-style-type: none;
   flex-direction: column;
   justify-content: center;
@@ -492,7 +567,7 @@ hr {
     display: flex;
     flex-direction: row;
     font-size: 1.25rem;
-    z-index: 9999;
+    z-index: 9998;
   }
 
   nav ul {
