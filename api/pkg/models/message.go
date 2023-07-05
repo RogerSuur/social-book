@@ -145,7 +145,7 @@ func (repo MessageRepository) GetMessagesByUserIds(userId int64, secondUserId in
 }
 
 func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
-	// join these 3 queries:
+	// joint query of all users the user is following + all users the user has sent or received messages from
 
 	query := `
 		SELECT u.id, u.forname, u.surname, u.nickname, u.image_path, u.created_at FROM users u 

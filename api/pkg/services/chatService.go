@@ -10,7 +10,6 @@ import (
 
 type IChatService interface {
 	GetChatlist(userID int64) ([]ChatListUser, error)
-	GetLastMessage(userId int64, otherId int64) (*MessageJSON, error)
 	CreateMessage(message *models.Message) (int64, error)
 	GetMessageHistory(userId int64, otherId int64) ([]*MessageJSON, error)
 }
@@ -129,13 +128,6 @@ func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
 	})
 
 	return chatlistData, nil
-}
-
-func (s *ChatService) GetLastMessage(userId int64, otherId int64) (*MessageJSON, error) {
-
-	//TODO
-
-	return nil, nil
 }
 
 func (s *ChatService) CreateMessage(message *models.Message) (int64, error) {
