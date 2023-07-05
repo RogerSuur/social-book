@@ -31,7 +31,7 @@ function App() {
                 path="posts"
                 element={<PostsPage showCreatePost={true} />}
               />
-              <Route path="/groups/:groupId" element={<GroupPage />} />
+              <Route path="groups/:groupId" element={<GroupPage />} />
               <Route path="posts/:id" element={<Post />} />
               <Route path="categories/:id" element={<Category />} />
               <Route path="logout" element={<Logout />} />
