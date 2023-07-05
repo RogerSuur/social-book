@@ -11,6 +11,7 @@ type PayloadHandler func(payload Payload, client *Client) error
 
 var (
 	ErrPayloadTypeNotSupported = errors.New("this payload type is not supported")
+	ErrorInvalidPayload        = errors.New("invalid payload")
 )
 
 const (
@@ -161,9 +162,17 @@ func (w *WebsocketServer) MessageHistoryHandler(p Payload, c *Client) error {
 	if err != nil {
 		return err
 	}
-	w.Logger.Printf("User %v wants to open message history with user %v", c.clientID, data.ID)
 
-	messages, err := w.chatService.GetMessageHistory(int64(c.clientID), int64(data.ID))
+	if data.ID == 0 && data.GroupID > 0 {
+		w.Logger.Printf("User %v wants to open message history with group %v", c.clientID, data.GroupID)
+	} else if data.GroupID == 0 && data.ID > 0 {
+		w.Logger.Printf("User %v wants to open message history with user %v", c.clientID, data.ID)
+	} else {
+		w.Logger.Printf("Invalid request payload")
+		return ErrorInvalidPayload
+	}
+
+	messages, err := w.chatService.GetMessageHistory(int64(c.clientID), int64(data.ID), int64(data.GroupID))
 	if err != nil {
 		return err
 	}
@@ -190,7 +199,15 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 	if err != nil {
 		return err
 	}
-	w.Logger.Printf("User %v sent message to user %v", c.clientID, data.RecipientID)
+
+	if data.GroupID == 0 && data.RecipientID > 0 {
+		w.Logger.Printf("User %v sent message to user %v", c.clientID, data.RecipientID)
+	} else if data.RecipientID == 0 && data.GroupID > 0 {
+		w.Logger.Printf("User %v sent message to group %v", c.clientID, data.GroupID)
+	} else {
+		w.Logger.Printf("Invalid request payload")
+		return ErrorInvalidPayload
+	}
 
 	messageData := &models.Message{
 		SenderId:    int64(c.clientID),
@@ -207,6 +224,8 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 	w.Logger.Printf("Message successfully created with id %v", messageID)
 
 	// broadcast to recipient
+
+	// todo: check if recipient is group
 
 	recipientClient := w.getClientByUserID(int64(data.RecipientID))
 
@@ -270,6 +289,6 @@ func (w *WebsocketServer) GroupRequestHandler(p Payload, c *Client) error {
 	if err != nil {
 		return err
 	}
-	w.Logger.Printf("User %v wants to join group %v", c.clientID, data.ID)
+	w.Logger.Printf("User %v wants to join group %v", c.clientID, data.GroupID)
 	return nil
 }

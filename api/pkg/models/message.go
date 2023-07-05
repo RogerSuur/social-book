@@ -76,7 +76,7 @@ func (repo MessageRepository) Update(message *Message) error {
 }
 
 func (repo MessageRepository) GetMessagesByGroupId(groupId int64) ([]*Message, error) {
-	stmt := `SELECT id, sender_id, recipient_id, group_id, content, sent_at, read_at FROM messages m
+	stmt := `SELECT id, sender_id, recipient_id, group_id, content, sent_at FROM messages m
 	WHERE group_id = ?
     ORDER BY sent_at DESC`
 
@@ -92,7 +92,7 @@ func (repo MessageRepository) GetMessagesByGroupId(groupId int64) ([]*Message, e
 	for rows.Next() {
 		message := &Message{}
 
-		err := rows.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.SentAt, &message.ReadAt)
+		err := rows.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.SentAt) //, &message.ReadAt)
 		if err != nil {
 			return nil, err
 		}
