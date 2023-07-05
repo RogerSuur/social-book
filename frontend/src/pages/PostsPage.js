@@ -47,7 +47,6 @@ const Posts = ({ showCreatePost }) => {
 
   return (
     <>
-      {/* <CreatePost onPostsUpdate={handlePostUpdate} /> */}
       {showCreatePost && <GroupSidebar />}
       {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
       {error ? (

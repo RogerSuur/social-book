@@ -12,8 +12,6 @@ const NotificationNavbarItem = () => {
   const { lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [notifications, setNotifications] = useState([]);
 
-  console.log(notifications, "NOTLIST");
-
   useEffect(() => {
     if (lastJsonMessage && lastJsonMessage.type === "notification") {
       setNotifications((prevNotifications) => {
