@@ -48,7 +48,7 @@ const Posts = ({ showCreatePost }) => {
   return (
     <>
       {/* <CreatePost onPostsUpdate={handlePostUpdate} /> */}
-      <GroupSidebar />
+      {showCreatePost && <GroupSidebar />}
       {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
       {error ? (
         <div className="error">{error}</div>

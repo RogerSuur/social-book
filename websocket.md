@@ -3,12 +3,13 @@
 ## 1. BACKEND to FRONTEND
 
 ### 1.1 notification
+
 ```JSON
 {
     "type": "notification",
     "data": {
         "notification_type": "follow_request" || "group_invite" || "group_request" || "event_invite",
-        "id": 1, // notification id
+        "notification_id": 1, // notification id
         "sender_id": 123,
         "sender_name": "something", // either a username (if exists) or firstname and lastname
         "group_id": 123, // 0 if not group
@@ -33,7 +34,8 @@
                 "group_id": 123, // 0 if user
                 "name": "username" || "firstname lastname" || "group name", // username (if exists) or combined full name or group name if group
                 "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any, might use it to sort chats by last message
-                "avatar_image": "link" // empty if no image or group
+                "avatar_image": "link", // empty if no image or group
+                "unread_count": 123, // number of unread messages
             }
         ]
     }
@@ -72,6 +74,7 @@
         "id": 1, // message id
         "sender_id": 1,
         "sender_name" : "sdfs", // username (if exists) or first name last name
+        "avatar_image": "link", // empty if no image
         "recipient_id": 123, // 0 if group chat
         "recipient_name": "somename", // username (if exists) or first name last name
         "group_id": 123, // 0 if private chat

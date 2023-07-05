@@ -21,7 +21,6 @@ const ProfileInfo = () => {
         })
         .then((response) => {
           setUser(response.data.user);
-          // console.log(response.data.user, "USRRR");
         });
     };
     loadUser();
@@ -46,7 +45,7 @@ const ProfileInfo = () => {
   return (
     <>
       {user && (
-        <div className="content-area">
+        <div className="profile-area">
           <div className="row">
             <div className="column">
               <img
@@ -96,10 +95,10 @@ const ProfileInfo = () => {
             <div className="column-title">User Profile is public</div>
             <div className="column">{user.isPublic ? "Yes" : "No"}</div>
           </div>
-          <button disabled={user.follow} onClick={handleFollow}>
+          <button disabled={user.isFollowed} onClick={handleFollow}>
             Follow
           </button>
-          <button disabled={!user.follow} onClick={handleUnfollow}>
+          <button disabled={!user.isFollowed} onClick={handleUnfollow}>
             Unfollow
           </button>
         </div>

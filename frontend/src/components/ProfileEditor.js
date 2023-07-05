@@ -31,7 +31,6 @@ const ProfileEditor = (props) => {
         })
         .then((response) => {
           setUser(response.data.user);
-          console.log(response.data.user, "USRRR");
         });
     };
     loadUser();
@@ -66,13 +65,10 @@ const ProfileEditor = (props) => {
     setModalOpen(true);
   };
 
-  console.log(isDirty, "DIRTY");
-  console.log(user, "USER");
-
   return (
     <>
       {user && (
-        <div className="content-area">
+        <div className="profile-area">
           <div className="row">
             <div className="column">
               <img
