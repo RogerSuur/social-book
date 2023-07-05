@@ -1,14 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import GroupSidebar from "../components/GroupSidebar";
 import { GROUP_PAGE_URL } from "../utils/routes";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
   const { groupId } = useParams();
-  console.log(GROUP_PAGE_URL + groupId);
 
   useEffect(() => {
     const loadGroup = async () => {
@@ -19,7 +17,6 @@ const GroupPage = () => {
         })
         .then((response) => {
           setGroup(response.data);
-          console.log(response.data);
         });
     };
     loadGroup();
