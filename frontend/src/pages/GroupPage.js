@@ -3,6 +3,7 @@ import GroupSidebar from "../components/GroupSidebar";
 import { GROUP_PAGE_URL } from "../utils/routes";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import GroupMembers from "../components/GroupMembers";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -10,7 +11,6 @@ const GroupPage = () => {
 
   useEffect(() => {
     const loadGroup = async () => {
-      console.log("LOAD GROUP", GROUP_PAGE_URL + groupId);
       await axios
         .get(GROUP_PAGE_URL + groupId, {
           withCredentials: true,
@@ -36,6 +36,7 @@ const GroupPage = () => {
       ></img>
       <h1>{group.title}</h1>
       <p>{group.description}</p>
+      <GroupMembers groupId={groupId} />
       <GroupSidebar />
     </>
   );
