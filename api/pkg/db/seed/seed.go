@@ -3,7 +3,10 @@ package seed
 import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"SocialNetworkRestApi/api/pkg/services"
+	"encoding/base64"
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -35,12 +38,11 @@ func SeedUsers(repo *models.UserRepository) {
 			Password:  pwd,
 			Nickname:  seedUser.Nickname,
 			About:     seedUser.About,
-			ImagePath: faker.Word(),
 			Birthday:  date,
 		}
 
 		id, err := repo.Insert(tempUser)
-		seedUser.Id = int(id)
+		seedUser.Id = id
 
 		if err != nil {
 			logger.Println(err)
@@ -58,7 +60,7 @@ func SeedPosts(repos *models.Repositories) {
 			for _, seedPost := range seedUser.PostSet {
 				tempPost := &models.Post{
 					Content:     seedPost.Content,
-					UserId:      int64(seedUser.Id),
+					UserId:      seedUser.Id,
 					PrivacyType: seedPost.PrivacyType,
 					CreatedAt:   seedPost.CreatedAt,
 				}
@@ -141,7 +143,7 @@ func SeedFollowers(repos *models.Repositories) {
 
 				tempFollowing := &models.Follower{
 					FollowingId: followedUser.Id,
-					FollowerId:  int64(seedUser.Id),
+					FollowerId:  seedUser.Id,
 					Accepted:    true,
 				}
 
@@ -173,6 +175,7 @@ func SeedGroups(repos *models.Repositories) {
 			Title:       group.Title,
 			Description: group.Description,
 			CreatorId:   user.Id,
+			ImageBase64: toBase64Format(group.ImagePath),
 		}
 
 		id, err := repos.GroupRepo.Insert(tempGroup)
@@ -199,5 +202,46 @@ func SeedGroups(repos *models.Repositories) {
 		}
 
 	}
+
+}
+
+func toBase64(b []byte) string {
+	return base64.StdEncoding.EncodeToString(b)
+}
+
+func toBase64Format(imageName string) string {
+
+	if imageName != "" && imageName != "null" {
+
+		filepath := fmt.Sprintf("./api/pkg/db/seed/images/%s", imageName)
+
+		bytes, err := os.ReadFile(filepath)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var base64Encoding string
+
+		// Determine the content type of the image file
+		mimeType := http.DetectContentType(bytes)
+
+		// Prepend the appropriate URI scheme header depending
+		// on the MIME type
+		switch mimeType {
+		case "image/jpeg":
+			base64Encoding += "data:image/jpeg;base64,"
+		case "image/png":
+			base64Encoding += "data:image/png;base64,"
+		}
+
+		// Append the base64 encoded output
+		base64Encoding += toBase64(bytes)
+
+		// Print the full base64 representation of the image
+		// fmt.Println(base64Encoding)
+		return base64Encoding
+	}
+
+	return ""
 
 }

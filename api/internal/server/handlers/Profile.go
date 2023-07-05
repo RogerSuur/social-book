@@ -185,7 +185,7 @@ func (app *Application) UpdateUserImage(rw http.ResponseWriter, r *http.Request)
 	}
 	defer file.Close()
 
-	err = app.UserService.UpdateUserImage(int64(userID), file, header)
+	err = app.UserService.UpdateUserImage(userID, file, header)
 	if err != nil {
 		app.Logger.Printf("Cannot update user image: %s", err)
 		http.Error(rw, err.Error(), http.StatusInternalServerError)

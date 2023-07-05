@@ -6,6 +6,7 @@ import (
 	"SocialNetworkRestApi/api/pkg/db/seed"
 	database "SocialNetworkRestApi/api/pkg/db/sqlite"
 	"SocialNetworkRestApi/api/pkg/models"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"net/http"
@@ -16,10 +17,16 @@ type Config struct {
 	port int
 }
 
+func toBase64(b []byte) string {
+	return base64.StdEncoding.EncodeToString(b)
+}
+
 func main() {
 	config := &Config{port: 8000}
 
 	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
+
+	
 
 	//DATABASE
 	db, err := database.OpenDB()

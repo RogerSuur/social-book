@@ -6,7 +6,7 @@ import (
 )
 
 type SeedUser struct {
-	Id        int
+	Id        int64
 	FirstName string
 	LastName  string
 	Email     string
