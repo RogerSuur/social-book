@@ -11,6 +11,7 @@ import RequireAuth from "./components/RequireAuth";
 import ProfileInfo from "./components/ProfileInfo";
 //import RequireGuest from "./components/RequireGuest";
 import Logout from "./components/Logout";
+import GroupPage from "./pages/GroupPage";
 
 import "./style.css";
 
@@ -33,6 +34,7 @@ function App() {
               <Route path="posts/:id" element={<Post />} />
               <Route path="categories/:id" element={<Category />} />
               <Route path="logout" element={<Logout />} />
+              <Route path="/groups/:groupId" element={<GroupPage />} />
               <Route path="*" element={<NoPage />} />
             </Route>
           </Route>
