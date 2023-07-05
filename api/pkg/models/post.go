@@ -10,7 +10,7 @@ import (
 )
 
 type Post struct {
-	Id          int
+	Id          int64
 	UserId      int64
 	Content     string
 	ImagePath   string
@@ -20,8 +20,8 @@ type Post struct {
 }
 
 type FeedPost struct {
-	Id           int
-	UserId       int
+	Id           int64
+	UserId       int64
 	UserName     string
 	Content      string
 	CommentCount int
@@ -31,7 +31,7 @@ type FeedPost struct {
 }
 
 type IPostRepository interface {
-	GetAllByUserId(id int64) ([]*Post, error)
+	GetAllByUserId(id int64, offset int) ([]*FeedPost, error)
 	GetAllFeedPosts(currentUserId int64, offset int) ([]*FeedPost, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
@@ -91,7 +91,7 @@ func (repo PostRepository) GetById(id int64) (*Post, error) {
 	return post, err
 }
 
-func (repo PostRepository) GetAllByUserId(id int, offset int) ([]*FeedPost, error) {
+func (repo PostRepository) GetAllByUserId(id int64, offset int) ([]*FeedPost, error) {
 
 	stmt := `SELECT p.id, p.user_id, u.nickname, p.content, p.created_at, p.image_path, p.privacy_type_id, COUNT(DISTINCT c.id) FROM posts p
 	LEFT JOIN users u on

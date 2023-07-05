@@ -65,7 +65,7 @@ func SeedPosts(repos *models.Repositories) {
 
 				postId, err := repos.PostRepo.InsertSeedPost(tempPost)
 				seedPost.Id = int(postId)
-				tempPost.Id = int(postId)
+				tempPost.Id = postId
 
 				//Insert post comments
 				for _, comments := range seedPost.CommentSet {
