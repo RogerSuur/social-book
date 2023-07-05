@@ -31,7 +31,6 @@ const ProfileEditor = (props) => {
         })
         .then((response) => {
           setUser(response.data.user);
-          console.log(response.data.user, "USRRR");
         });
     };
     loadUser();
@@ -65,9 +64,6 @@ const ProfileEditor = (props) => {
   const handleModalClick = () => {
     setModalOpen(true);
   };
-
-  console.log(isDirty, "DIRTY");
-  console.log(user, "USER");
 
   return (
     <>

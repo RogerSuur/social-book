@@ -8,7 +8,8 @@ import (
 )
 
 type INotificationService interface {
-	CreateFollowRequest(followerID int64, followingID int64) (int64, error)
+	GetUserNotifications(userId int64) ([]*models.NotificationJSON, error)
+	CreateFollowRequest(followerId int64, followingId int64) (int64, error)
 }
 
 type NotificationService struct {
@@ -30,6 +31,68 @@ func InitNotificationService(
 		FollowerRepo:           followerRepo,
 		NotificationRepository: notificationRepo,
 	}
+}
+
+func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.NotificationJSON, error) {
+
+	notifications, err := s.NotificationRepository.GetByReceiverId(userId)
+	if err != nil {
+		s.Logger.Printf("Cannot get user notifications: %s", err)
+		return nil, err
+	}
+
+	NotificationJSON := []*models.NotificationJSON{}
+
+	for _, notification := range notifications {
+		singleNotification := &models.NotificationJSON{
+			NotificationType: notification.NotificationType,
+			NotificationId:   notification.Id,
+			SenderId:         notification.SenderId,
+		}
+		switch notification.NotificationType {
+		case "follow_request":
+			sender, err := s.UserRepo.GetById(notification.SenderId)
+			if err != nil {
+				s.Logger.Printf("Cannot get sender: %s", err)
+				return nil, err
+			}
+			if sender.Nickname == "" {
+				singleNotification.SenderName = sender.FirstName + " " + sender.LastName
+			} else {
+				singleNotification.SenderName = sender.Nickname
+			}
+			// COMMENTED OUT UNTIL GROUPS AND EVENTS ARE IMPLEMENTED
+			/*
+				case "group_invite":
+					group, err := s.GroupRepo.GetById(notification.EntityId)
+					if err != nil {
+						s.Logger.Printf("Cannot get group: %s", err)
+						return nil, err
+					}
+					notification.GroupName = group.Name
+				case "group_request":
+					group, err := s.GroupRepo.GetById(notification.EntityId)
+					if err != nil {
+						s.Logger.Printf("Cannot get group: %s", err)
+						return nil, err
+					}
+					notification.GroupName = group.Name
+				case "event_invite":
+					event, err := s.EventRepo.GetById(notification.EntityId)
+					if err != nil {
+						s.Logger.Printf("Cannot get event: %s", err)
+						return nil, err
+					}
+					notification.EventName = event.Name
+					notification.EventDate = event.Date.Format(time.RFC3339)
+			*/
+		}
+		NotificationJSON = append(NotificationJSON, singleNotification)
+	}
+
+	s.Logger.Printf("User notifications returned: %d", len(NotificationJSON))
+
+	return NotificationJSON, nil
 }
 
 func (s *NotificationService) CreateFollowRequest(followerId int64, followingId int64) (int64, error) {
@@ -71,7 +134,7 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 	notification := models.Notification{
 		ReceiverId:       followingId,
 		NotificationType: "follow_request",
-		SenderID:         followerId,
+		SenderId:         followerId,
 		EntityId:         lastID,
 		CreatedAt:        time.Now(),
 		Reaction:         false,

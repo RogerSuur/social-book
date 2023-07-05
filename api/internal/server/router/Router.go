@@ -38,6 +38,7 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/groupmembers/{groupId}", app.UserService.Authenticate(app.GroupMembers)).Methods("GET")
 	//Search
 	r.HandleFunc("/search/{searchcriteria}", app.UserService.Authenticate(app.Search)).Methods("GET")
+	r.HandleFunc("/notifications", app.UserService.Authenticate(app.Notifications)).Methods("GET")
 
 	return r
 }
