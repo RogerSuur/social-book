@@ -13,12 +13,8 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     },
   });
 
-  console.log(chat);
-
-  console.log(messageHistory);
-
   const defaultImage = () =>
-    chat.userid ? "defaultuser.jpg" : "defaultgroup.png";
+    chat.user_id ? "defaultuser.jpg" : "defaultgroup.png";
 
   const imageHandler = () => {
     const source = chat?.avatarImage
@@ -37,123 +33,10 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     return image;
   };
 
-  const sms = [
-    {
-      id: 1, //message id
-      sender_id: 2, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 1, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message1",
-      timestamp: "2023-06-05 16:01:00.303095707 +03:00",
-    },
-    {
-      id: 2, //message id
-      sender_id: 1, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 2, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message2",
-      timestamp: "2023-06-05 16:01:01.303095707 +03:00",
-    },
-    {
-      id: 3, //message id
-      sender_id: 2, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 1, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message3",
-      timestamp: "2023-06-05 16:01:02.303095707 +03:00",
-    },
-    {
-      id: 4, //message id
-      sender_id: 1, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 2, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message4",
-      timestamp: "2023-06-05 16:01:03.303095707 +03:00",
-    },
-    {
-      id: 5, //message id
-      sender_id: 2, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 1, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message5",
-      timestamp: "2023-06-05 16:01:04.303095707 +03:00",
-    },
-    {
-      id: 6, //message id
-      sender_id: 2, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 1, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message6",
-      timestamp: "2023-06-05 16:01:05.303095707 +03:00",
-    },
-    {
-      id: 7, //message id
-      sender_id: 1, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 2, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message7",
-      timestamp: "2023-06-05 16:01:06.303095707 +03:00",
-    },
-    {
-      id: 8, //message id
-      sender_id: 1, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 2, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message8",
-      timestamp: "2023-06-05 16:01:07.303095707 +03:00",
-    },
-    {
-      id: 9, //message id
-      sender_id: 1, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 2, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message9",
-      timestamp: "2023-06-05 16:01:08.303095707 +03:00",
-    },
-    {
-      id: 10, //message id
-      sender_id: 2, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 1, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message10",
-      timestamp: "2023-06-05 16:01:09.303095707 +03:00",
-    },
-  ];
-
   const loadMessages = () => {
     sendJsonMessage({
       type: "request_message_history",
-      data: { id: chat.userid, group_id: chat.group_id },
+      data: { id: chat.user_id, group_id: chat.group_id },
     });
   };
 
@@ -164,16 +47,21 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   useEffect(() => {
     switch (lastJsonMessage?.type) {
       case "message_history":
-        setMessageHistory((prevMessageHistory) => [
-          ...lastJsonMessage?.data?.messages,
-          ...prevMessageHistory,
-        ]);
+        console.log(lastJsonMessage, "MSG HISTORY");
+        if (lastJsonMessage?.data.length > 0) {
+          console.log("HRE");
+          setMessageHistory((prevMessageHistory) => [
+            ...lastJsonMessage?.data,
+            ...prevMessageHistory,
+          ]);
+        }
+
         break;
       case "message":
         if (
-          (lastJsonMessage?.data?.sender_id === chat.userid &&
+          (lastJsonMessage?.data?.sender_id === chat.user_id &&
             lastJsonMessage?.data?.group_id === 0) ||
-          lastJsonMessage?.data?.recipient_id === chat.userid ||
+          lastJsonMessage?.data?.recipient_id === chat.user_id ||
           lastJsonMessage?.data?.group_id === chat.group_id
         ) {
           setMessageHistory((prevMessageHistory) => [
@@ -199,45 +87,56 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     });
   };
 
-  const renderedMessages = sms.map((msg) => {
-    switch (msg.sender_id) {
-      case user:
-        return <p className="own-message">{msg.body}</p>;
-      default:
-        return <p className="message">{msg.body}</p>;
+  const getTime = (datetime) =>
+    new Date(datetime).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+
+  const renderedMessages = messageHistory.map((msg, index) => {
+    if (msg) {
+      switch (msg.sender_id) {
+        case user:
+          return (
+            <p key={index} className="own-message">
+              {getTime(msg.timestamp)} {msg.body}
+            </p>
+          );
+        default:
+          return (
+            <p key={index} className="message">
+              {msg.body} {getTime(msg.timestamp)}
+            </p>
+          );
+      }
     }
   });
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    let msg = {
+      ...message,
+      data: { ...message.data, sender_id: user, recipient_id: 0, group_id: 0 },
+    };
     if (chat?.group_id > 0) {
-      console.log({
-        ...message,
-        data: { ...message.data, recipient_id: chat.group_id },
-      });
-      // sendJsonMessage({
-      //   ...message,
-      //   data: { ...message.data, recipient_id: chat.group_id },
-      // });
+      msg.data.group_id = chat.group_id;
     } else {
-      console.log(
-        {
-          ...message,
-          data: { ...message.data, recipient_id: chat.userid },
-        },
-        "SENDING"
-      );
-      // sendJsonMessage({
-      //   ...message,
-      //   data: { ...message.data, recipient_id: chat.userid },
-      // });
+      msg.data.recipient_id = chat.user_id;
     }
+    sendJsonMessage(msg);
+
+    setMessageHistory((prevMessageHistory) => [
+      ...prevMessageHistory,
+      { ...msg.data, timestamp: new Date().toISOString() },
+    ]);
+
     setMessage({ ...message, data: { body: "" } });
   };
 
   const chatName =
-    chat?.userid > 0 ? (
-      <Link to={`/profile/${chat.userid}`}>{chat.name}</Link>
+    chat?.user_id > 0 ? (
+      <Link to={`/profile/${chat.user_id}`}>{chat.name}</Link>
     ) : (
       <Link to={`/groups/${chat.group_id}`}>{chat.name}</Link>
     );
@@ -250,6 +149,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
         <button onClick={closeChat}>Close</button>
       </div>
       <div className="message-history">{renderedMessages}</div>
+      <button onClick={() => console.log(messageHistory)}>Burron</button>
       <div className="message-box">
         <form onSubmit={handleSubmit}>
           <input

@@ -2,7 +2,6 @@ import useWebSocket from "react-use-websocket";
 
 const useWebSocketConnection = (socketUrl) => {
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
-    onOpen: () => console.log("WebSocket opened"),
     share: true,
   });
 

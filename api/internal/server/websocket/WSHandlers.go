@@ -1,8 +1,10 @@
 package websocket
 
 import (
+	"SocialNetworkRestApi/api/pkg/models"
 	"encoding/json"
 	"errors"
+	"time"
 )
 
 type PayloadHandler func(payload Payload, client *Client) error
@@ -130,7 +132,25 @@ func (w *WebsocketServer) RequestChatlistHandler(p Payload, c *Client) error {
 	if err != nil {
 		return err
 	}
-	w.Logger.Printf("Chatlist successfully retrieved: %v", chatlist)
+	w.Logger.Printf("Chatlist successfully retrieved (%v chats)", len(chatlist))
+
+	dataToSend, err := json.Marshal(
+		&ChatListPayload{
+			UserID:   int(c.clientID),
+			Chatlist: chatlist,
+		},
+	)
+
+	if err != nil {
+		return err
+	}
+
+	c.gate <- Payload{
+		Type: "chatlist",
+		Data: dataToSend,
+	}
+
+	w.Logger.Printf("Sent chatlist to user %v", c.clientID)
 
 	return nil
 }
@@ -142,11 +162,105 @@ func (w *WebsocketServer) MessageHistoryHandler(p Payload, c *Client) error {
 		return err
 	}
 	w.Logger.Printf("User %v wants to open message history with user %v", c.clientID, data.ID)
+
+	messages, err := w.chatService.GetMessageHistory(int64(c.clientID), int64(data.ID))
+	if err != nil {
+		return err
+	}
+
+	w.Logger.Printf("Message history successfully retrieved (%v messages)", len(messages))
+
+	dataToSend, err := json.Marshal(messages)
+
+	if err != nil {
+		return err
+	}
+
+	c.gate <- Payload{
+		Type: "message_history",
+		Data: dataToSend,
+	}
+
 	return nil
 }
 
 func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
-	w.Logger.Println(p)
+	data := &MessagePayload{}
+	err := json.Unmarshal(p.Data, &data)
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("User %v sent message to user %v", c.clientID, data.RecipientID)
+
+	messageData := &models.Message{
+		SenderId:    int64(c.clientID),
+		RecipientId: int64(data.RecipientID),
+		GroupId:     int64(data.GroupID),
+		Content:     data.Content,
+	}
+
+	messageID, err := w.chatService.CreateMessage(messageData)
+	if err != nil {
+		return err
+	}
+
+	w.Logger.Printf("Message successfully created with id %v", messageID)
+
+	// broadcast to recipient
+
+	recipientClient := w.getClientByUserID(int64(data.RecipientID))
+
+	if recipientClient == nil {
+		w.Logger.Printf("Recipient client not found (recipient offline)")
+	} else {
+		w.Logger.Printf("Recipient client found (recipient online)")
+
+		userData, err := w.userService.GetUserData(int64(c.clientID))
+		if err != nil {
+			return err
+		}
+
+		if userData.Nickname == "" {
+			userData.Nickname = userData.FirstName + " " + userData.LastName
+		}
+
+		recipientData, err := w.userService.GetUserData(int64(data.RecipientID))
+		if err != nil {
+			return err
+		}
+
+		if recipientData.Nickname == "" {
+			recipientData.Nickname = recipientData.FirstName + " " + recipientData.LastName
+		}
+
+		dataToSend, err := json.Marshal(
+			&MessagePayload{
+				MessageID:     int(messageID),
+				SenderID:      userData.UserID,
+				SenderName:    userData.Nickname,
+				SenderImage:   userData.AvatarImage,
+				RecipientID:   recipientData.UserID,
+				RecipientName: recipientData.Nickname,
+				//GroupID:       data.GroupID,
+				//GroupName:     data.GroupName,
+				Content:   messageData.Content,
+				Timestamp: time.Now(),
+			},
+		)
+
+		if err != nil {
+			return err
+		}
+
+		recipientClient.gate <- Payload{
+			Type: "message",
+			Data: dataToSend,
+		}
+
+		w.Logger.Printf("Sent message to recipient")
+
+	}
+
 	return nil
 }
 

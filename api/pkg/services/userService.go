@@ -9,35 +9,36 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strings"
+	"time"
 
 	uuid "github.com/satori/go.uuid"
 )
 
 type ProfileJSON struct {
-	UserID      int    `json:"id"`
-	FirstName   string `json:"firstName"`
-	LastName    string `json:"lastName"`
-	Email       string `json:"email"`
-	Birthday    string `json:"birthday"`
-	Nickname    string `json:"nickname"`
-	About       string `json:"about"`
-	AvatarImage string `json:"avatarImage"`
-	CreatedAt   string `json:"createdAt"`
-	IsPublic    bool   `json:"isPublic"`
-	IsFollowed  bool   `json:"isFollowed"`
+	UserID      int       `json:"id"`
+	FirstName   string    `json:"firstName"`
+	LastName    string    `json:"lastName"`
+	Email       string    `json:"email"`
+	Birthday    string    `json:"birthday"`
+	Nickname    string    `json:"nickname"`
+	About       string    `json:"about"`
+	AvatarImage string    `json:"avatarImage"`
+	CreatedAt   time.Time `json:"createdAt"`
+	IsPublic    bool      `json:"isPublic"`
+	IsFollowed  bool      `json:"isFollowed"`
 }
 
 type ProfileUpdateJSON struct {
-	UserID      int    `json:"id"`
-	FirstName   string `json:"firstName"`
-	LastName    string `json:"lastName"`
-	Email       string `json:"email"`
-	Birthday    string `json:"birthday"`
-	Nickname    string `json:"nickname"`
-	About       string `json:"about"`
-	AvatarImage string `json:"avatarImage"`
-	CreatedAt   string `json:"createdAt"`
-	IsPublic    bool   `json:"isPublic"`
+	UserID      int       `json:"id"`
+	FirstName   string    `json:"firstName"`
+	LastName    string    `json:"lastName"`
+	Email       string    `json:"email"`
+	Birthday    string    `json:"birthday"`
+	Nickname    string    `json:"nickname"`
+	About       string    `json:"about"`
+	AvatarImage string    `json:"avatarImage"`
+	CreatedAt   time.Time `json:"createdAt"`
+	IsPublic    bool      `json:"isPublic"`
 }
 
 type FollowerData struct {
@@ -143,7 +144,7 @@ func (s *UserService) GetUserData(userID int64) (*ProfileJSON, error) {
 		Nickname:    user.Nickname,
 		About:       user.About,
 		AvatarImage: user.ImagePath,
-		CreatedAt:   user.CreatedAt.Format("02/01/2006 15:04:05"),
+		CreatedAt:   user.CreatedAt,
 		IsPublic:    user.IsPublic,
 	}
 
@@ -377,11 +378,7 @@ func (s *UserService) GetUserFollowing(userID int64) ([]FollowerData, error) {
 func (s *UserService) IsFollowed(userID int64, followerID int64) bool {
 
 	_, err := s.FollowerRepo.GetByFollowerAndFollowing(userID, followerID)
-	if err != nil {
-		return false
-	}
-
-	return true
+	return err == nil
 }
 
 func (s *UserService) Unfollow(userID int64, followerID int64) error {

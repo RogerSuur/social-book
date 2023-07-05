@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS messages(
 	content TEXT NOT NULL,
 	image_path TEXT,
 	sent_at DATETIME NOT NULL,
-	read_at DATETIME NOT NULL,
+	read_at DATETIME,
 	FOREIGN KEY (sender_id) 
 		REFERENCES users (id)
 	FOREIGN KEY (recipient_id) 
