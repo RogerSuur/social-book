@@ -164,15 +164,15 @@ func (w *WebsocketServer) MessageHistoryHandler(p Payload, c *Client) error {
 	}
 
 	if data.ID == 0 && data.GroupID > 0 {
-		w.Logger.Printf("User %v wants to open message history with group %v", c.clientID, data.GroupID)
+		w.Logger.Printf("User %v requests message history with group %v starting from %v", c.clientID, data.GroupID, data.LastMessage)
 	} else if data.GroupID == 0 && data.ID > 0 {
-		w.Logger.Printf("User %v wants to open message history with user %v", c.clientID, data.ID)
+		w.Logger.Printf("User %v requests message history with user %v starting from %v", c.clientID, data.ID, data.LastMessage)
 	} else {
 		w.Logger.Printf("Invalid request payload")
 		return ErrorInvalidPayload
 	}
 
-	messages, err := w.chatService.GetMessageHistory(int64(c.clientID), int64(data.ID), int64(data.GroupID))
+	messages, err := w.chatService.GetMessageHistory(int64(c.clientID), int64(data.ID), int64(data.GroupID), int64(data.LastMessage))
 	if err != nil {
 		return err
 	}

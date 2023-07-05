@@ -11,7 +11,7 @@ import (
 type IChatService interface {
 	GetChatlist(userID int64) ([]ChatListUser, error)
 	CreateMessage(message *models.Message) (int64, error)
-	GetMessageHistory(userId int64, otherId int64, groupId int64) ([]*MessageJSON, error)
+	GetMessageHistory(userId int64, otherId int64, groupId int64, lastMessage int64) ([]*MessageJSON, error)
 }
 
 type ChatService struct {
@@ -172,7 +172,7 @@ func (s *ChatService) CreateMessage(message *models.Message) (int64, error) {
 	return lastID, nil
 }
 
-func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int64) ([]*MessageJSON, error) {
+func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int64, lastMessage int64) ([]*MessageJSON, error) {
 
 	// check if users exist
 	userData, err := s.UserRepo.GetById(userId)
@@ -201,7 +201,7 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 		}
 
 		// get messages
-		messages, err = s.ChatRepo.GetMessagesByUserIds(userId, otherId)
+		messages, err = s.ChatRepo.GetMessagesByUserIds(userId, otherId, lastMessage)
 		if err != nil {
 			return nil, err
 		}
@@ -216,7 +216,7 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 		}
 
 		// get messages
-		messages, err = s.ChatRepo.GetMessagesByGroupId(groupId)
+		messages, err = s.ChatRepo.GetMessagesByGroupId(groupId, lastMessage)
 		if err != nil {
 			return nil, err
 		}
