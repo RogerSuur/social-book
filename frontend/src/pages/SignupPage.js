@@ -64,11 +64,11 @@ const Signup = () => {
     <>
       {errMsg && <h3>{errMsg}</h3>}
       <form onSubmit={handleSubmit(onSubmit)}>
-      <h1 class="center">Sing up for FREE to start networking</h1>
-      <div class="input-container">
-      <label for="smooth-input" class="input-label">Email</label>
+      <h1 className="center">Sing up for FREE to start networking</h1>
+      <div className="input-container">
+      <label for="smooth-input" className="input-label">Email</label>
 
-      <input  class= "smooth-input"
+      <input  className= "smooth-input"
           placeholder="Enter your email address"
           {...register("email", {
             required: "Please enter your email address",
@@ -81,12 +81,12 @@ const Signup = () => {
           })}
         />
         </div>
-        {errors.email && <p>{errors.email.message}</p>}
+        {errors.email && <p className="error-message">{errors.email.message}</p>}
        
         <br />
-        <div class="input-container">
-      <label for="smooth-input" class="input-label1">Password</label>
-        <input  class= "smooth-input"
+        <div className="input-container">
+      <label for="smooth-input" className="input-label1">Password</label>
+        <input  className= "smooth-input"
           type="password"
           placeholder="Enter your password"
           {...register("password", {
@@ -103,12 +103,12 @@ const Signup = () => {
           })}
         />
         </div>
-        {errors.password && <p>{errors.password.message}</p>}
+        {errors.password && <p className="error-message">{errors.password.message}</p>}
         
         <br />
-        <div class="input-container">
-      <label for="smooth-input" class="input-label2">Confirm password</label>
-        <input  class= "smooth-input"
+        <div className="input-container">
+      <label for="smooth-input" className="input-label2">Confirm password</label>
+        <input  className= "smooth-input"
           type="password"
           placeholder="Confirm password"
           {...register("confirmPassword", {
@@ -119,12 +119,12 @@ const Signup = () => {
           })}
         />
           </div>
-        {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
+        {errors.confirmPassword && <p className="error-message">{errors.confirmPassword.message}</p>}
         
         <br />
-        <div class="input-container">
-      <label for="smooth-input" class="input-label1">First name</label>
-        <input class= "smooth-input"
+        <div className="input-container">
+      <label for="smooth-input" className="input-label1">First name</label>
+        <input className= "smooth-input"
         
         placeholder="Enter your first name"
         {...register("firstName", {
@@ -132,24 +132,24 @@ const Signup = () => {
         })}
       />
       </div>
-      {errors.firstName && <p>{errors.firstName.message}</p>}
+      {errors.firstName && <p className="error-message">{errors.firstName.message}</p>}
         
         <br />
-        <div class="input-container">
-      <label for="smooth-input" class="input-label1">Last name</label>
-        <input  class= "smooth-input"
+        <div className="input-container">
+      <label for="smooth-input" className="input-label1">Last name</label>
+        <input  className= "smooth-input"
           placeholder="Enter your last name"
           {...register("lastName", {
             required: "Please enter your last name",
           })}
         />
         </div>
-        {errors.lastName && <p>{errors.lastName.message}</p>}
+        {errors.lastName && <p className="error-message">{errors.lastName.message}</p>}
         
         <br />
-        <div class="input-container">
-      <label for="smooth-input" class="input-label3">Nickname (optional)</label>
-        <input class= "smooth-input"
+        <div className="input-container">
+      <label for="smooth-input" className="input-label3">Nickname (optional)</label>
+        <input className= "smooth-input"
           placeholder="Enter your nickname"
           {...register("nickname", {
             maxLength: {
@@ -165,18 +165,18 @@ const Signup = () => {
           })}
         />
         </div>
-        {errors.nickname && <p>{errors.nickname.message}</p>}
+        {errors.nickname && <p className="error-message">{errors.nickname.message}</p>}
         <br />
-        <div class="input-container">
-      <label for="smooth-input" class="input-label3">About you (optional)</label>
-         <textarea class= "smooth-input"
+        <div className="input-container">
+      <label for="smooth-input" className="input-label3">About you (optional)</label>
+         <textarea className= "smooth-input"
           placeholder="Write something about yourself"
           {...register("about")}
         />
          </div>
         <br />
 
-        <input class= "smooth-input"
+        <input className= "smooth-input"
           type="date"
           {...register("dateOfBirth", {
             required: "Please enter your birth date",
@@ -189,13 +189,13 @@ const Signup = () => {
                 ) || "You must be 13 years of age or older to sign up",
           })}
         />
-        {errors.dateOfBirth && <p>{errors.dateOfBirth.message}</p>}
+        {errors.dateOfBirth && <p className="error-message">{errors.dateOfBirth.message}</p>}
         <br />
-        <div class="center">
-        <button  class="big-button">Sign Up</button>
+        <div className="center">
+        <button  className="big-button">Sign Up</button>
         </div>
       </form>
-      <div class="center">
+      <div className="center">
         Already have an account? <Link to={`/login`}>Sign in</Link>
       </div>
     </>

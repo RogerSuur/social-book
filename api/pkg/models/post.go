@@ -11,7 +11,7 @@ import (
 
 type Post struct {
 	Id          int
-	UserId      int
+	UserId      int64
 	Content     string
 	ImagePath   string
 	CreatedAt   time.Time
@@ -31,8 +31,8 @@ type FeedPost struct {
 }
 
 type IPostRepository interface {
-	GetAllByUserId(id int, offset int) ([]*FeedPost, error)
-	GetAllFeedPosts(currentUserId int, offset int) ([]*FeedPost, error)
+	GetAllByUserId(id int64) ([]*Post, error)
+	GetAllFeedPosts(currentUserId int64, offset int) ([]*FeedPost, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
 	GetCommentCount(postId int) (int, error)
@@ -138,7 +138,7 @@ func (repo PostRepository) GetAllByUserId(id int, offset int) ([]*FeedPost, erro
 }
 
 // Return all posts to the current user by offset
-func (m PostRepository) GetAllFeedPosts(currentUserId int, offset int) ([]*FeedPost, error) {
+func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int) ([]*FeedPost, error) {
 
 	//Change value if needed for testing purposes
 	// currentUserId = 11
@@ -213,4 +213,33 @@ func (m PostRepository) GetCommentCount(postId int) (int, error) {
 	}
 
 	return commentCount, nil
+}
+
+func (repo PostRepository) InsertSeedPost(post *Post) (int64, error) {
+	query := `INSERT INTO posts (user_id, content, created_at, image_path, privacy_type_id)
+	VALUES(?, ?, ?, ?, ?)`
+
+	args := []interface{}{
+		post.UserId,
+		post.Content,
+		post.CreatedAt,
+		post.ImagePath,
+		post.PrivacyType,
+	}
+
+	result, err := repo.DB.Exec(query, args...)
+
+	if err != nil {
+		return 0, err
+	}
+
+	lastId, err := result.LastInsertId()
+
+	if err != nil {
+		return 0, err
+	}
+
+	repo.Logger.Printf("Inserted post by user %d (last insert ID: %d)", post.UserId, lastId)
+
+	return lastId, nil
 }

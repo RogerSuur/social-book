@@ -10,13 +10,141 @@ body {
 }
 
 nav {
+  background-color: #f1f1f1;
+  position: sticky;		  padding: 10px;
+  top: 0;		  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.content-as{
+  margin-top: auto;
+}
+
+.comment-section {
+  margin-top: 20px;
+  padding: 10px;
+  width: 80%;
   display: flex;
   position: sticky;
   top: 0;
+  z-index: 999;
   flex-direction: column;
-  background-color: rgb(252, 175, 74);
-  border-radius: 0 0 10px 10px;
+  align-items: center;
 }
+
+.post-button{
+  display: flex;
+  flex-direction: row;
+  width: 98%;
+  margin-top: 3px;
+  justify-content: center; /* Centers the content horizontally */
+  align-items: center; /* Centers the content vertically */
+  text-align: center; /* Centers the text inside the div */
+  font-family: Arial, sans-serif; /* Example font family, replace with your desired font */
+  font-size: 16px; /* Example font size, adjust as needed */
+  padding: 10px; /* Example padding, adjust as needed */
+  border-radius: 10px; /* Example border radius, adjust as needed */
+  box-shadow: 0 2px 4px rgba(194, 194, 194, 0.1); 
+}
+
+.area-text{
+  width: 50vw;
+  height: 10vh;
+  background-color: #dddddd;
+  border: none;
+  padding: 10px;
+  color: black;
+  font-size: 14px;
+  border-radius: 10px;
+}
+
+.area-text::placeholder{
+  color: black;
+  opacity: 1;
+}
+
+.own-message {
+  color: green;
+  right: 0;
+}
+
+.chat-sidebar {
+  position: fixed;
+  align-self: flex-start;
+  overflow-y: auto; 
+  min-width: 250px;
+  top: calc(100%+10px);
+  right: 0;
+  height: 90%;
+  background-color: #f2f2f2;
+  display: flex;
+  z-index: 999;
+  box-shadow: 0 0 8px black;
+}
+
+.chatbox {
+  position: fixed;
+  bottom:0;
+  transform: translate(-100%, 0);
+  width: 200px; 
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 9999; 
+  box-shadow: 0 0 8px black;
+}
+
+.notification-list {
+  position: fixed;
+  top: 80px;
+  left: 1vw;
+  width: 400px; 
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 9999; 
+}
+
+.chat-title {
+  border: 1px solid black;
+  padding: 10px;
+  font-weight: bold;
+}
+
+.message-history {
+  border: 1px solid black;
+  height: 200px; 
+  overflow-y: auto;
+}
+
+.message-box {
+  border: 1px solid black;
+  height: 50px; 
+}
+
+/* .chatbox {
+  position: fixed;
+  min-width: 10vw;
+  bottom: 0;
+  margin-right: 10vw;
+}
+
+.message-box {
+  min-height: 12vh;
+  border: 1px solid black;
+}
+
+.chat-title {
+  border: 1px solid black;
+} */
+
+.require-auth-container {
+  display:grid;
+  margin-right: 300px;
+  justify-content: space-between;
+}
+
+
 
 /* .nav-visible {
   display: flex;
@@ -35,18 +163,70 @@ nav {
   font-weight: bold;
   background-color: rgb(252, 175, 74);
 } */
+.post-area{
+  position: absolute;
+  top: 100px; /* Adjust this value to match the height of your navbar */
+  left: 0;
+  right: 0;
+  margin: 3em auto;
+  display: flex;
+  max-width: 60%;
+  list-style-type: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 0 8px black;
+  font-size: 0.9rem;
+}
 
-nav ul {
-  padding: 0;
+.group-sidebar{
+ 
+}
+
+.content-wrapper {
   display: flex;
   flex-direction: column;
-  list-style-type: none;
   align-items: center;
+  margin: 3em auto;
+  max-width: 80%;
 }
 
-nav li {
-  margin: 0.5em;
+.group-extra {
+  margin-top: 3em;
+  margin-right: auto;
+  margin-bottom: 3em;
+  display: flex;
+  max-width: 80%;
+  list-style-type: none;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0;
+  align-items: center;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 0 8px black;
+  font-size: 0.9rem;
+  flex-shrink: 1;
 }
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;		 
+  display: flex;		  
+  flex-direction: column;
+  list-style-type: none;		  
+  align-items: center;		
+}		
+
+nav li {
+  margin: 0.5em;		  display: inline-block;
+  margin-right: 10px;
+  cursor: pointer;
+  position: relative;
+}		
 
 .content-area {
   margin-top: 3em;
@@ -64,6 +244,7 @@ nav li {
   border-radius: 20px;
   box-shadow: 0 0 8px black;
   font-size: 0.9rem;
+  flex-shrink: 1;
 }
 
 .content-area * {
@@ -75,7 +256,46 @@ nav li {
   flex-direction: row;
   width: 100%;
   margin-top: 3px;
+  justify-content: flex-end; /* Aligns content to the right */
+  align-items: center;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 5px;
+  margin-right: 20px;
+  
 }
+.row2 {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-top: 3px;
+  justify-content: center; /* Centers the content horizontally */
+  align-items: center; /* Centers the content vertically */
+  text-align: center; /* Centers the text inside the div */
+  font-family: Arial, sans-serif; /* Example font family, replace with your desired font */
+  font-size: 16px; /* Example font size, adjust as needed */
+  padding: 10px; /* Example padding, adjust as needed */
+  border-radius: 5px; /* Example border radius, adjust as needed */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.row3 {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-top: 3px;
+  justify-content: flex-start; /* Aligns content to the left */
+  align-items: center;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 5px;
+ 
+  margin-left: 20px; 
+}		
 
 hr {
   width:100%;
@@ -108,8 +328,17 @@ hr {
 
 .text-link {
   font-weight: bold;
-  color: darkblue;
+  color: darkblue;		
   text-decoration: none;
+  color: #333;
+  padding: 5px;
+}		
+
+.error-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 5px; /* Adjust the height as needed */
 }
 
 .text-link:visited {
@@ -216,6 +445,7 @@ hr {
     display: flex;
     flex-direction: row;
     font-size: 1.25rem;
+    z-index: 9999;
   }
 
   nav ul {

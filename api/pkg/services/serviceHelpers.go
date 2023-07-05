@@ -6,26 +6,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Services contains all the controllers
-type Services struct {
-	UserService    IUserService
-	PostService    IPostService
-	CommentService ICommentService
-}
-
-// InitServices returns a new Controllers
-// func InitServices(repositories *models.Repositories) *Services {
-// 	return &Services{
-// 		UserService: InitUserService(
-// 			repositories.UserRepo,
-// 			repositories.SessionRepo,
-// 			repositories.FollowerRepo,
-// 		),
-// 		PostService:    InitPostService(repositories.PostRepo),
-// 		CommentService: InitCommentService(repositories.CommentRepo),
-// 	}
-// }
-
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(bytes), err

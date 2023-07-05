@@ -77,9 +77,9 @@ const Login = () => {
     <form onSubmit={handleSubmit}>
     <h1 >Sign in</h1>
     
-      <label class="log-in">Email or username</label>
+      <label className="log-in">Email or username</label>
       
-      <input  class= "login-input"
+      <input  className= "login-input"
         type="text"
         placeholder="Email or username"
         onChange={handleChange}
@@ -90,8 +90,8 @@ const Login = () => {
         
       />
       <br />
-       <label  class="log-in">Password</label>
-      <input  class= "login-input"
+       <label  className="log-in">Password</label>
+      <input  className= "login-input"
         type="password"
         placeholder="Password"
         onChange={handleChange}
@@ -101,8 +101,8 @@ const Login = () => {
        
       />
       
-      <div class="center1">
-      <button class = "log-button">
+      <div className="center1">
+      <button className = "log-button">
         Sign In
       </button>
       </div>
