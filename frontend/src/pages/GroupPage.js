@@ -35,7 +35,8 @@ const GroupPage = () => {
         alt={`${group.name}`}
       ></img>
       <h1>GroupPage</h1>
-      <p>{group.name}</p>
+      <h1>{group.title}</h1>
+      <p>{group.description}</p>
       <GroupSidebar />
     </>
   );
