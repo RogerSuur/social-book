@@ -12,12 +12,12 @@ const ProfileSidebar = ({ onSelect }) => {
   };
 
   const listSidebarItems = sidebarItems.map((item, index) => (
-    <li key={index} onClick={() => handleClick(item)}>
+    <li className="bigger" key={index} onClick={() => handleClick(item)}>
       {item}
     </li>
   ));
 
-  return <ul>{listSidebarItems}</ul>;
+  return <div className="profile-side">{listSidebarItems}</div>;
 };
 
 export default ProfileSidebar;

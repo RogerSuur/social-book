@@ -68,7 +68,7 @@ const ProfileEditor = (props) => {
   return (
     <>
       {user && (
-        <div className="content-area">
+        <div className="profile-area">
           <div className="row">
             <div className="column">
               <img
