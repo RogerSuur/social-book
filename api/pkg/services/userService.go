@@ -415,7 +415,7 @@ func (s *UserService) UpdateUserImage(userID int64, imageFile multipart.File, he
 	}
 
 	// save image
-	imagePath, err := utils.SaveImage(userID, imageFile, header)
+	imagePath, err := utils.SaveImage(userID, true, imageFile, header)
 	if err != nil {
 		s.Logger.Printf("Cannot save image: %s", err)
 		return err
