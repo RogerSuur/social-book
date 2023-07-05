@@ -27,7 +27,7 @@ func SaveImage(id int64, isUser bool, file multipart.File, fileHeader *multipart
 	if isUser {
 		imagePath = filepath.Join(imagePath, "users", fmt.Sprintf("%d", id))
 	} else {
-		imagePath = filepath.Join(imagePath, "posts", fmt.Sprintf("%d", id))
+		imagePath = filepath.Join(imagePath, "groups", fmt.Sprintf("%d", id))
 	}
 
 	// Create folder if not exists
