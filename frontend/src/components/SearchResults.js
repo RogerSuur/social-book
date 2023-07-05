@@ -1,5 +1,4 @@
 export const SearchResults = ({ searchResults }) => {
-  console.log(searchResults);
   return (
     <div className="results-list">
       {searchResults &&
