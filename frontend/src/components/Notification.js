@@ -5,24 +5,22 @@ import { Link } from "react-router-dom";
 const Notification = ({ notification, onClose }) => {
   const { sendJsonMessage } = useWebSocketConnection(WS_URL);
 
-  console.log(notification, "NOTIFICATION BASIC");
-
   const handleReject = () => {
     const msg = {
       type: "response",
-      data: { id: notification?.data?.notification_id, reaction: false },
+      data: { id: notification?.notification_id, reaction: false },
     };
     sendJsonMessage(msg);
-    onClose(notification?.data?.notification_id);
+    onClose(notification?.notification_id);
   };
 
   const handleAccept = () => {
     const msg = {
       type: "response",
-      data: { id: notification?.data?.notification_id, reaction: true },
+      data: { id: notification?.notification_id, reaction: true },
     };
     sendJsonMessage(msg);
-    onClose(notification?.data?.notification_id);
+    onClose(notification?.notification_id);
   };
 
   const acceptButton = (text = "Accept") => (
@@ -36,8 +34,8 @@ const Notification = ({ notification, onClose }) => {
   const followRequestNotification = () => {
     return (
       <>
-        <Link to={`/profile/${notification?.data?.sender_id}`}>
-          {notification?.data?.sender_name}
+        <Link to={`/profile/${notification?.sender_id}`}>
+          {notification?.sender_name}
         </Link>{" "}
         wants to follow you
         {acceptButton()}
@@ -49,12 +47,12 @@ const Notification = ({ notification, onClose }) => {
   const groupInviteNotification = () => {
     return (
       <>
-        <Link to={`/profile/${notification?.data?.sender_id}`}>
-          {notification?.data?.sender_name}
+        <Link to={`/profile/${notification?.sender_id}`}>
+          {notification?.sender_name}
         </Link>{" "}
         invites you to join the group{" "}
-        <Link to={`/groups/${notification?.data?.group_id}`}>
-          {notification?.data?.group_name}
+        <Link to={`/groups/${notification?.group_id}`}>
+          {notification?.group_name}
         </Link>
         {acceptButton()}
         {rejectButton()}
@@ -65,12 +63,12 @@ const Notification = ({ notification, onClose }) => {
   const groupJoinNotification = () => {
     return (
       <>
-        <Link to={`/profile/${notification?.data?.sender_id}`}>
-          {notification?.data?.sender_name}
+        <Link to={`/profile/${notification?.sender_id}`}>
+          {notification?.sender_name}
         </Link>{" "}
         wants to join your group{" "}
-        <Link to={`/groups/${notification?.data?.group_id}`}>
-          {notification?.data?.group_name}
+        <Link to={`/groups/${notification?.group_id}`}>
+          {notification?.group_name}
         </Link>
         {acceptButton()}
         {rejectButton()}
@@ -81,11 +79,11 @@ const Notification = ({ notification, onClose }) => {
   const eventNotification = () => {
     return (
       <>
-        <Link to={`/events/${notification?.data?.event_id}`}>
-          {notification?.data?.event_name}
+        <Link to={`/events/${notification?.event_id}`}>
+          {notification?.event_name}
         </Link>{" "}
         is going to take place at{" "}
-        {new Date(notification?.data?.event_datetime).toLocaleString("et-EE")}
+        {new Date(notification?.event_datetime).toLocaleString("et-EE")}
         {acceptButton("Going")}
         {rejectButton("Not going")}
       </>
@@ -93,7 +91,7 @@ const Notification = ({ notification, onClose }) => {
   };
 
   const notificationMessage = () => {
-    switch (notification?.data?.notification_type) {
+    switch (notification?.notification_type) {
       case "follow_request":
         return followRequestNotification();
       case "group_invite":

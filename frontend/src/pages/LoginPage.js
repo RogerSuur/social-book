@@ -22,6 +22,8 @@ const Login = () => {
   });
   const [errMsg, setErrMsg] = useState("");
 
+  console.log(from, "FROM LOGIN");
+
   const handleChange = (event) => {
     const { name, value } = event.target;
 

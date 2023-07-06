@@ -12,6 +12,7 @@ import (
 type IPostService interface {
 	CreatePost(post *models.Post) error
 	GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, error)
+	GetProfilePosts(userId int64, offset int) ([]*feedPostJSON, error)
 }
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
@@ -30,8 +31,8 @@ func InitPostService(logger *log.Logger, postRepo *models.PostRepository, allowe
 }
 
 type feedPostJSON struct {
-	Id           int       `json:"id"`
-	UserId       int       `json:"userId"`
+	Id           int64     `json:"id"`
+	UserId       int64     `json:"userId"`
 	UserName     string    `json:"userName"`
 	Content      string    `json:"content"`
 	ImagePath    string    `json:"imagePath"`
@@ -87,6 +88,32 @@ func (s *PostService) GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, e
 	for _, p := range posts {
 		// commentCount, err := s.PostRepository.GetCommentCount(p.Id)
 
+		feedPosts = append(feedPosts, &feedPostJSON{
+			p.Id,
+			p.UserId,
+			p.UserName,
+			p.Content,
+			p.ImagePath,
+			p.CommentCount,
+			p.CreatedAt,
+		})
+	}
+	// fmt.Println("feedPosts:", feedPosts)
+
+	return feedPosts, nil
+}
+
+func (s *PostService) GetProfilePosts(userId int64, offset int) ([]*feedPostJSON, error) {
+	// fmt.Println("userId", userId)
+	posts, err := s.PostRepository.GetAllByUserId(userId, offset)
+
+	if err != nil {
+		s.Logger.Printf("GetFeedPosts error: %s", err)
+	}
+
+	feedPosts := []*feedPostJSON{}
+
+	for _, p := range posts {
 		feedPosts = append(feedPosts, &feedPostJSON{
 			p.Id,
 			p.UserId,

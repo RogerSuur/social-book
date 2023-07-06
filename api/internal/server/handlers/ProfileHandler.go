@@ -158,7 +158,7 @@ func (app *Application) Following(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *Application) UpdateImage(rw http.ResponseWriter, r *http.Request) {
+func (app *Application) UpdateUserImage(rw http.ResponseWriter, r *http.Request) {
 
 	// Limit the size of the request body to 5MB
 	r.Body = http.MaxBytesReader(rw, r.Body, 20<<18)
