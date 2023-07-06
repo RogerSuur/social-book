@@ -31,11 +31,12 @@ type FeedPost struct {
 }
 
 type IPostRepository interface {
-	GetAllByUserId(id int64, offset int) ([]*FeedPost, error)
-	GetAllFeedPosts(currentUserId int64, offset int) ([]*FeedPost, error)
+	GetAllByUserId(id int64, offset int64) ([]*FeedPost, error)
+	GetAllFeedPosts(currentUserId int64, offset int64) ([]*FeedPost, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
-	GetCommentCount(postId int) (int, error)
+	GetCommentCount(postId int64) (int, error)
+	GetLastPostId() (int64, error)
 }
 
 type PostRepository struct {
@@ -91,7 +92,7 @@ func (repo PostRepository) GetById(id int64) (*Post, error) {
 	return post, err
 }
 
-func (repo PostRepository) GetAllByUserId(id int64, offset int) ([]*FeedPost, error) {
+func (repo PostRepository) GetAllByUserId(id int64, offset int64) ([]*FeedPost, error) {
 
 	stmt := `SELECT p.id, p.user_id, u.nickname, p.content, p.created_at, p.image_path, p.privacy_type_id, COUNT(DISTINCT c.id) FROM posts p
 	LEFT JOIN users u on
@@ -138,10 +139,11 @@ func (repo PostRepository) GetAllByUserId(id int64, offset int) ([]*FeedPost, er
 }
 
 // Return all posts to the current user by offset
-func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int) ([]*FeedPost, error) {
+func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int64) ([]*FeedPost, error) {
 
 	//Change value if needed for testing purposes
 	// currentUserId = 11
+	// because seeded posts have similar created_at, using p.id as temporary order by
 
 	stmt := `SELECT p.id, p.user_id, u.nickname, p.content, p.created_at, p.image_path, privacy_type_id, COUNT(DISTINCT c.id) FROM posts p 
 	LEFT JOIN users u on
@@ -152,22 +154,24 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int) ([]*Fee
 	p.id = app.post_id
 	LEFT JOIN comments c ON
 	p.id = c.post_id
-	WHERE privacy_type_id = 1 
-	OR privacy_type_id = 2 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 
-	OR privacy_type_id = 3 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND app.id IS NOT NULL AND app.user_id = ?
+	WHERE (privacy_type_id = 1 
 	OR p.user_id = ?
-	OR p.group_id IS NOT NULL
+	OR (privacy_type_id = 2 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1)
+	OR (privacy_type_id = 3 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND app.id IS NOT NULL AND app.user_id = ?)
+	OR p.group_id IN (SELECT group_id FROM user_groups WHERE user_id = ?))
+	AND p.id < ?
 	GROUP BY p.id
-	ORDER BY p.created_at DESC
-	LIMIT ? OFFSET ?`
+	ORDER BY p.id DESC
+	LIMIT ?`
 
 	args := []interface{}{
 		currentUserId,
 		currentUserId,
 		currentUserId,
 		currentUserId,
+		currentUserId,
+		offset,
 		FeedLimit,
-		(offset * FeedLimit),
 	}
 
 	rows, err := m.DB.Query(stmt, args...)
@@ -201,7 +205,7 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int) ([]*Fee
 	return posts, nil
 }
 
-func (m PostRepository) GetCommentCount(postId int) (int, error) {
+func (m PostRepository) GetCommentCount(postId int64) (int, error) {
 	query := `SELECT COUNT(*) FROM comments WHERE post_id = ?`
 	row := m.DB.QueryRow(query, postId)
 	var commentCount int
@@ -242,4 +246,18 @@ func (repo PostRepository) InsertSeedPost(post *Post) (int64, error) {
 	repo.Logger.Printf("Inserted post by user %d (last insert ID: %d)", post.UserId, lastId)
 
 	return lastId, nil
+}
+
+func (repo PostRepository) GetLastPostId() (int64, error) {
+	query := `SELECT id FROM posts ORDER BY id DESC LIMIT 1`
+	row := repo.DB.QueryRow(query)
+	var id int64
+
+	err := row.Scan(&id)
+
+	if err != nil {
+		return -1, err
+	}
+
+	return id, nil
 }

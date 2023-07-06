@@ -19,8 +19,9 @@ const Posts = ({ showCreatePost }) => {
     setPosts([]);
   };
 
-  const handlePageChange = () => {
-    setOffset((prevOffset) => prevOffset + 1);
+  const handlePageChange = (postId) => {
+    setOffset(postId);
+    console.log("handle page change with offset:", postId);
   };
 
   useEffect(() => {
@@ -47,20 +48,21 @@ const Posts = ({ showCreatePost }) => {
 
   return (
     <>
-      {/* <CreatePost onPostsUpdate={handlePostUpdate} /> */}
-      <GroupSidebar />
+      {showCreatePost && <GroupSidebar />}
+      <div className="content-as">
       {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
       {error ? (
         <div className="error">{error}</div>
       ) : (
-        <div className="content-as">
+        
           <FeedPosts
             posts={posts}
             hasMore={hasMore}
             onLoadMore={handlePageChange}
           />
-        </div>
+        
       )}
+      </div>
     </>
   );
 };

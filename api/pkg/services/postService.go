@@ -11,8 +11,8 @@ import (
 
 type IPostService interface {
 	CreatePost(post *models.Post) error
-	GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, error)
-	GetProfilePosts(userId int64, offset int) ([]*feedPostJSON, error)
+	GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON, error)
+	GetProfilePosts(userId int64, offset int64) ([]*feedPostJSON, error)
 }
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
@@ -75,8 +75,18 @@ func (s *PostService) CreatePost(post *models.Post) error {
 	return err
 }
 
-func (s *PostService) GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, error) {
+func (s *PostService) GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON, error) {
 	// fmt.Println("userId", userId)
+
+	if offset == 0 {
+		lastPostId, err := s.PostRepository.GetLastPostId()
+		if err != nil {
+			s.Logger.Printf("GetFeedPosts error: %s", err)
+			return nil, err
+		}
+		offset = lastPostId + 1
+	}
+
 	posts, err := s.PostRepository.GetAllFeedPosts(userId, offset)
 
 	if err != nil {
@@ -100,10 +110,12 @@ func (s *PostService) GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, e
 	}
 	// fmt.Println("feedPosts:", feedPosts)
 
+	s.Logger.Printf("Retrived feed posts: %d", len(feedPosts))
+
 	return feedPosts, nil
 }
 
-func (s *PostService) GetProfilePosts(userId int64, offset int) ([]*feedPostJSON, error) {
+func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJSON, error) {
 	// fmt.Println("userId", userId)
 	posts, err := s.PostRepository.GetAllByUserId(userId, offset)
 

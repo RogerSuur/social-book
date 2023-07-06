@@ -1,6 +1,10 @@
 package websocket
 
-import "encoding/json"
+import (
+	"SocialNetworkRestApi/api/pkg/services"
+	"encoding/json"
+	"time"
+)
 
 type Payload struct {
 	Type string          `json:"type"`
@@ -8,9 +12,10 @@ type Payload struct {
 }
 
 type RequestPayload struct {
-	ID       int  `json:"id"`
-	Reaction bool `json:"reaction"`
-	GroupID  int  `json:"group_id"`
+	ID          int  `json:"id"`
+	Reaction    bool `json:"reaction"`
+	GroupID     int  `json:"group_id"`
+	LastMessage int  `json:"last_message"`
 }
 
 type NotificationPayload struct {
@@ -25,13 +30,19 @@ type NotificationPayload struct {
 }
 
 type MessagePayload struct {
-	MessageID     int    `json:"message_id"`
-	SenderID      int    `json:"sender_id"`
-	SenderName    string `json:"sender_name"`
-	RecipientID   int    `json:"recipient_id"`
-	RecipientName string `json:"recipient_name"`
-	GroupID       int    `json:"group_id"`
-	GroupName     string `json:"group_name"`
-	MessageBody   string `json:"body"`
-	Timestamp     string `json:"timestamp"`
+	MessageID     int       `json:"message_id"`
+	SenderID      int       `json:"sender_id"`
+	SenderName    string    `json:"sender_name"`
+	SenderImage   string    `json:"avatar_image"`
+	RecipientID   int       `json:"recipient_id"`
+	RecipientName string    `json:"recipient_name"`
+	GroupID       int       `json:"group_id"`
+	GroupName     string    `json:"group_name"`
+	Content       string    `json:"body"`
+	Timestamp     time.Time `json:"timestamp"`
+}
+
+type ChatListPayload struct {
+	UserID   int                     `json:"user_id"`
+	Chatlist []services.ChatListUser `json:"chatlist"`
 }

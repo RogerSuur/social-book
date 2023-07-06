@@ -8,36 +8,39 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
+	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 )
 
 type ProfileJSON struct {
-	UserID      int    `json:"id"`
-	FirstName   string `json:"firstName"`
-	LastName    string `json:"lastName"`
-	Email       string `json:"email"`
-	Birthday    string `json:"birthday"`
-	Nickname    string `json:"nickname"`
-	About       string `json:"about"`
-	AvatarImage string `json:"avatarImage"`
-	CreatedAt   string `json:"createdAt"`
-	IsPublic    bool   `json:"isPublic"`
-	IsFollowed  bool   `json:"isFollowed"`
+	UserID      int       `json:"id"`
+	FirstName   string    `json:"firstName"`
+	LastName    string    `json:"lastName"`
+	Email       string    `json:"email"`
+	Birthday    string    `json:"birthday"`
+	Nickname    string    `json:"nickname"`
+	About       string    `json:"about"`
+	AvatarImage string    `json:"avatarImage"`
+	CreatedAt   time.Time `json:"createdAt"`
+	IsPublic    bool      `json:"isPublic"`
+	IsFollowed  bool      `json:"isFollowed"`
 }
 
 type ProfileUpdateJSON struct {
-	UserID      int    `json:"id"`
-	FirstName   string `json:"firstName"`
-	LastName    string `json:"lastName"`
-	Email       string `json:"email"`
-	Birthday    string `json:"birthday"`
-	Nickname    string `json:"nickname"`
-	About       string `json:"about"`
-	AvatarImage string `json:"avatarImage"`
-	CreatedAt   string `json:"createdAt"`
-	IsPublic    bool   `json:"isPublic"`
+	UserID      int       `json:"id"`
+	FirstName   string    `json:"firstName"`
+	LastName    string    `json:"lastName"`
+	Email       string    `json:"email"`
+	Birthday    string    `json:"birthday"`
+	Nickname    string    `json:"nickname"`
+	About       string    `json:"about"`
+	AvatarImage string    `json:"avatarImage"`
+	CreatedAt   time.Time `json:"createdAt"`
+	IsPublic    bool      `json:"isPublic"`
 }
 
 type FollowerData struct {
@@ -51,6 +54,7 @@ type FollowerData struct {
 
 type IUserService interface {
 	Authenticate(handler http.HandlerFunc) http.HandlerFunc
+	AuthenticateGroupUser(handler http.HandlerFunc) http.HandlerFunc
 	UpdateUserData(userID int64, updateData ProfileUpdateJSON) error
 	GetUserData(userID int64) (*ProfileJSON, error)
 	GetUserID(r *http.Request) (int64, error)
@@ -68,11 +72,12 @@ type IUserService interface {
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
 type UserService struct {
-	Logger           *log.Logger
-	UserRepo         models.IUserRepository
-	SessionRepo      models.ISessionRepository
-	FollowerRepo     models.IFollowerRepository
-	NotificationRepo models.INotificationRepository
+	Logger                *log.Logger
+	UserRepo              models.IUserRepository
+	SessionRepo           models.ISessionRepository
+	FollowerRepo          models.IFollowerRepository
+	NotificationRepo      models.INotificationRepository
+	GroupMemberRepository models.IGroupUserRepository
 }
 
 // InitUserService initializes the user controller.
@@ -82,13 +87,15 @@ func InitUserService(
 	sessionRepo *models.SessionRepository,
 	followerRepo *models.FollowerRepository,
 	notificationRepo *models.NotificationRepository,
+	groupMemberRepository *models.GroupUserRepository,
 ) *UserService {
 	return &UserService{
-		Logger:           logger,
-		UserRepo:         userRepo,
-		SessionRepo:      sessionRepo,
-		FollowerRepo:     followerRepo,
-		NotificationRepo: notificationRepo,
+		Logger:                logger,
+		UserRepo:              userRepo,
+		SessionRepo:           sessionRepo,
+		FollowerRepo:          followerRepo,
+		NotificationRepo:      notificationRepo,
+		GroupMemberRepository: groupMemberRepository,
 	}
 }
 
@@ -143,7 +150,7 @@ func (s *UserService) GetUserData(userID int64) (*ProfileJSON, error) {
 		Nickname:    user.Nickname,
 		About:       user.About,
 		AvatarImage: user.ImagePath,
-		CreatedAt:   user.CreatedAt.Format("02/01/2006 15:04:05"),
+		CreatedAt:   user.CreatedAt,
 		IsPublic:    user.IsPublic,
 	}
 
@@ -283,6 +290,55 @@ func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+func (s *UserService) AuthenticateGroupUser(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		cookie, err := r.Cookie("session")
+		if err != nil {
+			s.Logger.Printf("No cookie found: %s", err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		session, err := s.SessionRepo.GetByToken(cookie.Value)
+
+		if err != nil {
+			s.Logger.Printf("No session found: %s", err)
+			http.Error(w, "Invalid session", http.StatusUnauthorized)
+			return
+		}
+
+		vars := mux.Vars(r)
+
+		groupIdStr := vars["groupId"]
+		groupId, err := strconv.ParseInt(groupIdStr, 10, 64)
+
+		if groupId < 0 || err != nil {
+			s.Logger.Printf("DATA PARSE error: %v", err)
+			http.Error(w, "DATA PARSE error", http.StatusBadRequest)
+		}
+
+		isGroupMember, err := s.GroupMemberRepository.IsGroupMember(groupId, session.UserId)
+
+		if err != nil {
+			s.Logger.Printf("Failed fetching group member status: %s", err)
+			return
+		}
+
+		if !isGroupMember {
+			http.Error(w, "Not a member of this group", http.StatusUnauthorized)
+			return
+		}
+
+		// required for auth handler
+		if handler == nil {
+			return
+		}
+
+		handler.ServeHTTP(w, r)
+	}
+}
+
 func (s *UserService) SetCookie(w http.ResponseWriter, sessionToken string) {
 	cookie := http.Cookie{
 		Name:   "session",
@@ -377,11 +433,7 @@ func (s *UserService) GetUserFollowing(userID int64) ([]FollowerData, error) {
 func (s *UserService) IsFollowed(userID int64, followerID int64) bool {
 
 	_, err := s.FollowerRepo.GetByFollowerAndFollowing(userID, followerID)
-	if err != nil {
-		return false
-	}
-
-	return true
+	return err == nil
 }
 
 func (s *UserService) Unfollow(userID int64, followerID int64) error {
