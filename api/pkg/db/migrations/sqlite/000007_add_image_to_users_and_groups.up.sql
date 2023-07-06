@@ -1,5 +1,0 @@
-ALTER TABLE groups 
-ADD COLUMN image_base64 TEXT;
-
-ALTER TABLE users
-ADD COLUMN image_base64 TEXT;

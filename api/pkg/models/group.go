@@ -14,7 +14,6 @@ type Group struct {
 	Title       string
 	Description string
 	ImagePath   string
-	ImageBase64 string
 	CreatedAt   time.Time
 }
 
@@ -58,8 +57,8 @@ func NewGroupRepo(db *sql.DB) *GroupRepository {
 
 func (repo GroupRepository) Insert(group *Group) (int64, error) {
 
-	query := `INSERT INTO groups (creator_id, title, description, created_at, image_path, image_base64)
-	VALUES(?, ?, ?, ?, ?, ?)`
+	query := `INSERT INTO groups (creator_id, title, description, created_at, image_path)
+	VALUES(?, ?, ?, ?, ?)`
 
 	args := []interface{}{
 		group.CreatorId,
@@ -67,7 +66,6 @@ func (repo GroupRepository) Insert(group *Group) (int64, error) {
 		group.Description,
 		time.Now(),
 		group.ImagePath,
-		group.ImageBase64,
 	}
 
 	result, err := repo.DB.Exec(query, args...)
@@ -88,18 +86,18 @@ func (repo GroupRepository) Insert(group *Group) (int64, error) {
 }
 
 func (p GroupRepository) GetById(id int64) (*Group, error) {
-	query := `SELECT id, creator_id,  title, description, created_at, image_path, image_base64 FROM groups WHERE id = ?`
+	query := `SELECT id, creator_id,  title, description, created_at, image_path FROM groups WHERE id = ?`
 	row := p.DB.QueryRow(query, id)
 	group := &Group{}
 
-	err := row.Scan(&group.Id, &group.CreatorId, &group.Title, &group.Description, &group.CreatedAt, &group.ImagePath, &group.ImageBase64)
+	err := row.Scan(&group.Id, &group.CreatorId, &group.Title, &group.Description, &group.CreatedAt, &group.ImagePath)
 
 	return group, err
 }
 
 func (repo GroupRepository) GetAllByCreatorId(userId int64) ([]*Group, error) {
 
-	stmt := `SELECT id, creator_id,  title, description, created_at, image_path, image_base64 FROM groups
+	stmt := `SELECT id, creator_id,  title, description, created_at, image_path FROM groups
 	WHERE creator_id = ?
     ORDER BY title ASC`
 

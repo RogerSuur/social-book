@@ -6,7 +6,6 @@ type SeedGroup struct {
 	Description    string
 	Users          []string
 	ImagePath      string
-	ImageBase64    string
 	SeedEventsData []*SeedEvent
 }
 
