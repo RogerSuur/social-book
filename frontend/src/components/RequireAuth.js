@@ -19,9 +19,6 @@ const RequireAuth = () => {
 
   const from = location.state?.from?.pathname;
 
-  console.log(location, "LOCATION");
-  console.log(from, "FROM");
-
   // const updateUsers = (message) => {
   //   const { user_id, username, online, datetime } = message;
 
