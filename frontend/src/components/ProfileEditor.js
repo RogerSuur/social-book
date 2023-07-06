@@ -70,29 +70,28 @@ const ProfileEditor = (props) => {
      {user && (
   <div className="profile-area">
     <div className="top-part">
-    <div className="profile-row">
-      <div className="profile-column">
+    
+      
         <img
           className="profile-image"
           src={`images/${user.id}/${user.avatarImage}`}
           alt={`${user.firstName}`}
         />
-      </div>
-      <div className="profile-column">
-        <h1 className="profile-title">{user.firstName}'s profile</h1>
+      
+      <div className="umber">
+        <div className="profile-title-top">{user.firstName}'s profile</div>
+        </div>
         <div className="profile-summary">{/* Summary content goes here */}</div>
-      </div>
-    </div>
-    
+      
     <div className="profile-actions">
       <Modal open={modalOpen} onClose={handleModalClose}>
         <AvatarUpdater onUploadSuccess={handleModalClose} />
       </Modal>
       <button onClick={handleModalClick}>Upload New Image</button>
     </div>
-    <div className="profile-row">
-      <div className="profile-title">About Me</div>
-      <div className="profile-column">
+    <div className="profile-row-top">
+      <div className="profile-title-top">About Me</div>
+      <div className="profile-column-top">
         <textarea
           className="profile-textarea"
           placeholder="Write something about yourself"
