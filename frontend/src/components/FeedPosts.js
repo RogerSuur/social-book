@@ -20,7 +20,9 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
     observer.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
         toggleSpinner();
-        onLoadMore();
+        const postId = node.getAttribute("data-post-id"); // Get the post ID from the element attribute
+        console.log("Post ID:", postId);
+        onLoadMore(postId);
       }
     });
 
@@ -46,6 +48,7 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
         className="content-area"
         key={id}
         ref={isLastPost ? lastPostElementRef : null}
+        data-post-id={id}
       >
         <div>Post ID: {id}</div>
         <div className="row3">{userName}</div>
