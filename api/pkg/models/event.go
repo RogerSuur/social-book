@@ -19,8 +19,8 @@ type Event struct {
 }
 
 type IEventRepository interface {
-	GetAllByGroupId(groupId int) ([]*Event, error)
-	GetAllByUserId(userId int) ([]*Event, error)
+	GetAllByGroupId(groupId int64) ([]*Event, error)
+	GetAllByUserId(userId int64) ([]*Event, error)
 	Insert(event *Event) (int64, error)
 }
 
@@ -68,7 +68,7 @@ func (repo EventRepository) Insert(event *Event) (int64, error) {
 }
 
 // Get all group events
-func (repo EventRepository) GetAllByGroupId(id int) ([]*Event, error) {
+func (repo EventRepository) GetAllByGroupId(id int64) ([]*Event, error) {
 
 	query := `SELECT id, group_id, user_id, created_at, event_time, timespan, title, description FROM group_events WHERE group_id = ?`
 
@@ -95,7 +95,7 @@ func (repo EventRepository) GetAllByGroupId(id int) ([]*Event, error) {
 }
 
 // Get all events by user
-func (repo EventRepository) GetAllByUserId(id int) ([]*Event, error) {
+func (repo EventRepository) GetAllByUserId(id int64) ([]*Event, error) {
 	//TODO
 	//Get all events by attending user
 	query := `SELECT DISTINCT ge.id, group_id, ge.user_id, ge.created_at, ge.event_time, ge.timespan, ge.title, ge.description FROM group_events ge

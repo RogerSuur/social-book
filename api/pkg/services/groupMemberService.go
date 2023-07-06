@@ -6,7 +6,7 @@ import (
 )
 
 type IGroupMemberService interface {
-	GetGroupMembers(groupId int64, userId int64) ([]*models.GroupMember, error)
+	GetGroupMembers(groupId int64) ([]*models.GroupMember, error)
 }
 
 type GroupMemberService struct {
@@ -21,21 +21,9 @@ func InitGroupMemberService(logger *log.Logger, groupMemberRepo *models.GroupUse
 	}
 }
 
-func (s *GroupMemberService) GetGroupMembers(groupId int64, userId int64) ([]*models.GroupMember, error) {
-
-	isGroupMember, err := s.GroupMemberRepository.IsGroupMember(groupId, userId)
-
-	if err != nil {
-		s.Logger.Printf("Failed fetching group member status: %s", err)
-		return nil, err
-	}
-
-	if !isGroupMember {
-		return nil, nil
-	}
+func (s *GroupMemberService) GetGroupMembers(groupId int64) ([]*models.GroupMember, error) {
 
 	members, err := s.GroupMemberRepository.GetGroupMembersByGroupId(groupId)
-	s.Logger.Println(members)
 
 	if err != nil {
 		s.Logger.Printf("Failed fetching group members: %s", err)

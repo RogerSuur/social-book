@@ -105,15 +105,7 @@ func (app *Application) GroupMembers(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
 		}
 
-		userId, err := app.UserService.GetUserID(r)
-
-		if err != nil {
-			app.Logger.Printf("Cannot get user ID: %s", err)
-			http.Error(rw, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		groups, err := app.GroupMemberService.GetGroupMembers(groupId, userId)
+		groups, err := app.GroupMemberService.GetGroupMembers(groupId)
 
 		if err != nil {
 			app.Logger.Printf("Failed fetching groups: %v", err)
