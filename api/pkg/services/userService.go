@@ -27,19 +27,6 @@ type ProfileJSON struct {
 	IsFollowed  bool      `json:"isFollowed"`
 }
 
-type ProfileUpdateJSON struct {
-	UserID      int       `json:"id"`
-	FirstName   string    `json:"firstName"`
-	LastName    string    `json:"lastName"`
-	Email       string    `json:"email"`
-	Birthday    string    `json:"birthday"`
-	Nickname    string    `json:"nickname"`
-	About       string    `json:"about"`
-	AvatarImage string    `json:"avatarImage"`
-	CreatedAt   time.Time `json:"createdAt"`
-	IsPublic    bool      `json:"isPublic"`
-}
-
 type FollowerData struct {
 	UserID      int    `json:"id"`
 	FirstName   string `json:"firstName"`
@@ -51,7 +38,7 @@ type FollowerData struct {
 
 type IUserService interface {
 	Authenticate(handler http.HandlerFunc) http.HandlerFunc
-	UpdateUserData(userID int64, updateData ProfileUpdateJSON) error
+	UpdateUserData(userID int64, updateData ProfileJSON) error
 	GetUserData(userID int64) (*ProfileJSON, error)
 	GetUserID(r *http.Request) (int64, error)
 	SetCookie(w http.ResponseWriter, sessionToken string)
@@ -92,7 +79,7 @@ func InitUserService(
 	}
 }
 
-func (s *UserService) UpdateUserData(userID int64, updateData ProfileUpdateJSON) error {
+func (s *UserService) UpdateUserData(userID int64, updateData ProfileJSON) error {
 
 	user, err := s.UserRepo.GetById(userID)
 	if err != nil {
