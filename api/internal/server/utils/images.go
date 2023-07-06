@@ -6,7 +6,6 @@ import (
 	"log"
 	"mime/multipart"
 	"os"
-	"path/filepath"
 	"strings"
 
 	uuid "github.com/satori/go.uuid"
@@ -23,7 +22,7 @@ func SaveImage(id int64, isUser bool, file multipart.File, fileHeader *multipart
 	// Generate new file name
 	newFileName := fmt.Sprintf("%s.%s", uuid.NewV4().String(), fileExtension)
 
-	imagePath := filepath.Join("images", fmt.Sprintf("%d", id))
+	imagePath := "images"
 
 	// Create folder if not exists
 	err := os.MkdirAll(imagePath, os.ModePerm)
