@@ -8,8 +8,10 @@ import (
 )
 
 type INotificationService interface {
+	GetById(notificationId int64) (*models.Notification, error)
 	GetUserNotifications(userId int64) ([]*models.NotificationJSON, error)
 	CreateFollowRequest(followerId int64, followingId int64) (int64, bool, error)
+	HandleFollowRequest(notificationId int64, accepted bool) error
 }
 
 type NotificationService struct {
@@ -31,6 +33,19 @@ func InitNotificationService(
 		FollowerRepo:           followerRepo,
 		NotificationRepository: notificationRepo,
 	}
+}
+
+func (s *NotificationService) GetById(notificationId int64) (*models.Notification, error) {
+
+	notification, err := s.NotificationRepository.GetById(notificationId)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification: %s", err)
+		return nil, err
+	}
+
+	s.Logger.Printf("Notification returned: %d", notification.Id)
+
+	return notification, nil
 }
 
 func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.NotificationJSON, error) {
@@ -148,4 +163,52 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 	}
 
 	return lastID, following.IsPublic, nil
+}
+
+func (s *NotificationService) HandleFollowRequest(notificationId int64, accepted bool) error {
+
+	notification, err := s.NotificationRepository.GetById(notificationId)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification: %s", err)
+		return err
+	}
+
+	// check if follow request already handled
+	if notification.Reaction {
+		return errors.New("follow request already handled")
+	}
+
+	// check if follow request exists
+	follower, err := s.FollowerRepo.GetById(notification.EntityId)
+	if err != nil {
+		s.Logger.Printf("Cannot get follow request: %s", err)
+		return err
+	}
+
+	// check if follow request is accepted
+	if follower.Accepted {
+		return errors.New("follow request already accepted")
+	}
+
+	// update follow request
+	follower.Accepted = accepted
+	err = s.FollowerRepo.Update(follower)
+	if err != nil {
+		s.Logger.Printf("Cannot update follow request: %s", err)
+		return err
+	}
+
+	s.Logger.Printf("Follow request updated: %d", follower.Id)
+
+	// update notification
+	notification.Reaction = true
+	err = s.NotificationRepository.Update(notification)
+	if err != nil {
+		s.Logger.Printf("Cannot update notification: %s", err)
+		return err
+	}
+
+	s.Logger.Printf("Notification updated: %d", notification.Id)
+
+	return nil
 }

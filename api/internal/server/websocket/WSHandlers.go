@@ -12,6 +12,7 @@ type PayloadHandler func(payload Payload, client *Client) error
 var (
 	ErrPayloadTypeNotSupported = errors.New("this payload type is not supported")
 	ErrorInvalidPayload        = errors.New("invalid payload")
+	ErrorInvalidNotification   = errors.New("invalid notification")
 )
 
 const (
@@ -53,6 +54,33 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 		return err
 	}
 	w.Logger.Printf("User %v responded to notification %v with %v", c.clientID, data.ID, data.Reaction)
+
+	notification, err := w.notificationService.GetById(int64(data.ID))
+	if err != nil {
+		return err
+	}
+
+	if notification == nil {
+		w.Logger.Printf("Notification not found")
+		return ErrorInvalidNotification
+	}
+
+	if notification.ReceiverId != int64(c.clientID) {
+		w.Logger.Printf("Notification does not belong to user")
+		return ErrorInvalidNotification
+	}
+
+	// perhaps case switch here?
+	if notification.NotificationType == "follow_request" {
+		w.Logger.Printf("User %v accepted follow request %v", c.clientID, data.ID)
+		err = w.notificationService.HandleFollowRequest(int64(data.ID), data.Reaction)
+		if err != nil {
+			return err
+		}
+	}
+
+	// TODO: handle other notification types
+
 	return nil
 }
 
