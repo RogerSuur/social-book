@@ -36,7 +36,7 @@ func SeedUsers(repo *models.UserRepository) {
 			Nickname:  seedUser.Nickname,
 			About:     seedUser.About,
 			Birthday:  date,
-			ImagePath: "Ann.png",
+			ImagePath: seedUser.ImagePath,
 		}
 
 		id, err := repo.Insert(tempUser)

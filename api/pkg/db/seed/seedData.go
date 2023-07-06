@@ -6,13 +6,13 @@ import (
 )
 
 type SeedUser struct {
-	Id        int64
-	FirstName string
-	LastName  string
-	Email     string
-	Nickname  string
-	About     string
-	//ImagePath string
+	Id              int64
+	FirstName       string
+	LastName        string
+	Email           string
+	Nickname        string
+	About           string
+	ImagePath       string
 	IsPublic        bool
 	PostSet         []*SeedPost
 	FollowingEmails []string
@@ -45,6 +45,7 @@ var SeedUserData = []*SeedUser{
 		IsPublic:        true,
 		PostSet:         SeedPostsDataSetA,
 		FollowingEmails: []string{"c@c.com"},
+		ImagePath:       "UserA.jpg",
 	},
 	{
 		FirstName:       "Benjamin",
@@ -55,6 +56,7 @@ var SeedUserData = []*SeedUser{
 		IsPublic:        true,
 		PostSet:         SeedPostsDataSetB,
 		FollowingEmails: []string{"a@a.com", "f@f.com"},
+		ImagePath:       "UserB.jpg",
 	},
 	{
 		FirstName: "Carlos",
@@ -64,6 +66,7 @@ var SeedUserData = []*SeedUser{
 		About:     "Hi, my name is Carlos! I'm a software developer with a love for all things tech. I specialize in building mobile and web applications, and I'm always looking for new and innovative ways to solve complex problems through code. When I'm not coding, you can find me playing video games or tinkering with my latest DIY project.",
 		IsPublic:  false,
 		PostSet:   SeedPostsDataSetC,
+		ImagePath: "UserC.jpg",
 	},
 	{
 		FirstName: "Deanna",
@@ -72,6 +75,7 @@ var SeedUserData = []*SeedUser{
 		Nickname:  "DeeDee",
 		About:     "Hi there, I'm Deanna Davis. I'm a freelance writer and digital marketer with a passion for creating compelling content that connects with audiences. When I'm not working, you can usually find me hiking with my dog or experimenting with new vegan recipes in the kitchen.",
 		IsPublic:  true,
+		ImagePath: "UserD.jpg",
 	},
 	{
 		FirstName: "Ethan",
@@ -98,6 +102,7 @@ var SeedUserData = []*SeedUser{
 		About:           "Hey there! I'm Grace, and I'm all about spreading good vibes. Join me on my groovy journey filled with positivity, music, and inspiring moments.",
 		FollowingEmails: []string{"c@c.com", "f@f.com"},
 		IsPublic:        false,
+		ImagePath:       "UserG.jpg",
 	},
 	{
 		FirstName:       "Harper",
