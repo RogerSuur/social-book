@@ -76,7 +76,7 @@ func (app *Application) UpdateProfile(rw http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 
-	updateData := &services.ProfileUpdateJSON{}
+	updateData := &services.ProfileJSON{}
 	err = decoder.Decode(updateData)
 
 	if err != nil {
@@ -103,6 +103,9 @@ func (app *Application) UpdateProfile(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	app.Logger.Printf("User profile data updated")
+
 	rw.Write(jsonResp)
 }
 
