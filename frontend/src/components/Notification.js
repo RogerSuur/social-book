@@ -5,9 +5,6 @@ import { Link } from "react-router-dom";
 const Notification = ({ notification, onClose }) => {
   const { sendJsonMessage } = useWebSocketConnection(WS_URL);
 
-  console.log(notification, "NOTIFICATION BASIC");
-  console.log(notification?.notification_type, "NOTIFICATION TYPE");
-
   const handleReject = () => {
     const msg = {
       type: "response",
@@ -35,7 +32,6 @@ const Notification = ({ notification, onClose }) => {
   );
 
   const followRequestNotification = () => {
-    console.log("IN FOLLOW REQUEST");
     return (
       <>
         <Link to={`/profile/${notification?.sender_id}`}>
@@ -95,10 +91,8 @@ const Notification = ({ notification, onClose }) => {
   };
 
   const notificationMessage = () => {
-    console.log("FUNCTION");
     switch (notification?.notification_type) {
       case "follow_request":
-        console.log("FOLLOW IN NOT MESSAGE");
         return followRequestNotification();
       case "group_invite":
         return groupInviteNotification();
