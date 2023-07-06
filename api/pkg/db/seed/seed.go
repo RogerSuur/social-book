@@ -58,13 +58,14 @@ func SeedPosts(repos *models.Repositories) {
 			for _, seedPost := range seedUser.PostSet {
 				tempPost := &models.Post{
 					Content:     seedPost.Content,
-					UserId:      seedUser.Id,
+					UserId:      int64(seedUser.Id),
 					PrivacyType: seedPost.PrivacyType,
+					CreatedAt:   seedPost.CreatedAt,
 				}
 
-				postId, err := repos.PostRepo.Insert(tempPost)
+				postId, err := repos.PostRepo.InsertSeedPost(tempPost)
 				seedPost.Id = int(postId)
-				tempPost.Id = int(postId)
+				tempPost.Id = postId
 
 				//Insert post comments
 				for _, comments := range seedPost.CommentSet {
@@ -77,12 +78,12 @@ func SeedPosts(repos *models.Repositories) {
 					tempComment := &models.Comment{
 						Content: comments.Content,
 						UserId:  commentUser.Id,
-						PostId:  int(postId),
+						PostId:  postId,
 					}
 
 					id, err := repos.CommentRepo.Insert(tempComment)
 
-					tempComment.Id = int(id)
+					tempComment.Id = id
 
 					// logger.Printf("%+v\n", tempComment)
 
@@ -101,12 +102,12 @@ func SeedPosts(repos *models.Repositories) {
 					tempComment := &models.Comment{
 						Content: faker.Sentence(),
 						UserId:  loremUser.Id,
-						PostId:  int(postId),
+						PostId:  postId,
 					}
 
 					id, err := repos.CommentRepo.Insert(tempComment)
 
-					tempComment.Id = int(id)
+					tempComment.Id = id
 
 					// logger.Printf("%+v\n", tempComment)
 
@@ -140,7 +141,7 @@ func SeedFollowers(repos *models.Repositories) {
 
 				tempFollowing := &models.Follower{
 					FollowingId: followedUser.Id,
-					FollowerId:  seedUser.Id,
+					FollowerId:  int64(seedUser.Id),
 					Accepted:    true,
 				}
 
@@ -186,9 +187,9 @@ func SeedGroups(repos *models.Repositories) {
 			if err != nil {
 				logger.Printf("%+v\n", err)
 			}
-			tempGroupUser := &models.GroupUser{
+			tempGroupUser := &models.GroupMemberModel{
 				UserId:  groupUser.Id,
-				GroupId: int(id),
+				GroupId: id,
 			}
 
 			_, err = repos.GroupUserRepo.Insert(tempGroupUser)

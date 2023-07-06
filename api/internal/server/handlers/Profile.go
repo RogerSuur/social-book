@@ -12,33 +12,40 @@ import (
 func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	var userID int
+	var userID int64
+	var IsFollowed bool
 	var err error
+
+	RequestingUserID, err := app.UserService.GetUserID(r)
+	if err != nil {
+		app.Logger.Printf("Cannot get user ID: %s", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	if id == "" {
 		app.Logger.Printf("Fetching user ID from session for Profile handler")
-		userID, err = app.UserService.GetUserID(r)
-		if err != nil {
-			app.Logger.Printf("Cannot get user ID: %s", err)
-			http.Error(rw, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		userID = RequestingUserID
+		IsFollowed = false
 	} else {
 		app.Logger.Printf("Using user ID provided in the URL (user %v) for Profile handler", id)
-		userID, err = strconv.Atoi(id)
+		userID, err = strconv.ParseInt(id, 10, 64)
 		if err != nil {
 			app.Logger.Printf("Cannot parse user ID: %s", err)
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		IsFollowed = app.UserService.IsFollowed(RequestingUserID, userID)
 	}
 
-	userData, err := app.UserService.GetUserData(int64(userID))
+	userData, err := app.UserService.GetUserData(userID)
 	if err != nil {
 		app.Logger.Printf("Cannot get user data: %s", err)
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	userData.IsFollowed = IsFollowed
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)

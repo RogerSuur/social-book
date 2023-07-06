@@ -4,7 +4,6 @@ import (
 	"SocialNetworkRestApi/api/pkg/services"
 	"log"
 	"net/http"
-	"os"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -17,11 +16,13 @@ type IWebsocketServer interface {
 }
 
 type WebsocketServer struct {
-	Logger      *log.Logger
-	upgrader    websocket.Upgrader
-	clients     ClientList
-	handlers    map[string]PayloadHandler
-	userService services.IUserService
+	Logger              *log.Logger
+	upgrader            websocket.Upgrader
+	clients             ClientList
+	handlers            map[string]PayloadHandler
+	userService         services.IUserService
+	notificationService services.INotificationService
+	chatService         services.IChatService
 	sync.RWMutex
 }
 
@@ -51,17 +52,24 @@ func (w *WebsocketServer) WShandler(rw http.ResponseWriter, r *http.Request) {
 
 }
 
-func InitWebsocket(UserService *services.UserService) *WebsocketServer {
+func InitWebsocket(
+	logger *log.Logger,
+	userService *services.UserService,
+	notificationService *services.NotificationService,
+	chatService *services.ChatService,
+) *WebsocketServer {
 	w := &WebsocketServer{
-		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		Logger: logger,
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
 			CheckOrigin:     checkOrigin,
 		},
-		clients:     make(ClientList),
-		handlers:    make(map[string]PayloadHandler),
-		userService: UserService,
+		clients:             make(ClientList),
+		handlers:            make(map[string]PayloadHandler),
+		userService:         userService,
+		notificationService: notificationService,
+		chatService:         chatService,
 	}
 	w.setupHandlers()
 	return w
@@ -95,4 +103,15 @@ func (w *WebsocketServer) removeClient(client *Client) {
 		client.connection.Close()
 		delete(w.clients, client)
 	}
+}
+
+func (w *WebsocketServer) getClientByUserID(TargetID int64) *Client {
+	w.RLock()
+	defer w.RUnlock()
+	for client := range w.clients {
+		if client.clientID == TargetID {
+			return client
+		}
+	}
+	return nil
 }

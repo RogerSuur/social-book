@@ -8,7 +8,7 @@ import (
 )
 
 type User struct {
-	Id        int
+	Id        int64
 	FirstName string
 	LastName  string
 	Email     string
@@ -30,6 +30,12 @@ type SignupJSON struct {
 	Birthday        string `json:"dateOfBirth"`
 	Nickname        string `json:"nickname"`
 	About           string `json:"about"`
+}
+
+type SimpleUserJSON struct {
+	Id        int
+	Nickname  string `json:"nickname"`
+	ImagePath string
 }
 
 type IUserRepository interface {

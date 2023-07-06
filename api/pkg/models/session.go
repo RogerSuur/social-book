@@ -8,8 +8,8 @@ import (
 )
 
 type Session struct {
-	Id        int
-	UserId    int
+	Id        int64
+	UserId    int64
 	Token     string
 	CreatedAt time.Time
 }

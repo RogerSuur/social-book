@@ -1,34 +1,38 @@
 package services
 
 import (
+	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
 	"log"
+	"strconv"
 	"time"
 )
 
 type IPostService interface {
 	CreatePost(post *models.Post) error
-	GetFeedPosts(userId int, offset int) ([]*feedPostJSON, error)
-	GetProfilePosts(userId int, offset int) ([]*feedPostJSON, error)
+	GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, error)
+	GetProfilePosts(userId int64, offset int) ([]*feedPostJSON, error)
 }
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
 type PostService struct {
-	Logger         *log.Logger
-	PostRepository models.IPostRepository
+	Logger                *log.Logger
+	PostRepository        models.IPostRepository
+	AllowedPostRepository models.IAllowedPostRepository
 }
 
-func InitPostService(postRepo *models.PostRepository, logger *log.Logger) *PostService {
+func InitPostService(logger *log.Logger, postRepo *models.PostRepository, allowedPostRepo *models.AllowedPostRepository) *PostService {
 	return &PostService{
-		Logger:         logger,
-		PostRepository: postRepo,
+		Logger:                logger,
+		PostRepository:        postRepo,
+		AllowedPostRepository: allowedPostRepo,
 	}
 }
 
 type feedPostJSON struct {
-	Id           int       `json:"id"`
-	UserId       int       `json:"userId"`
+	Id           int64     `json:"id"`
+	UserId       int64     `json:"userId"`
 	UserName     string    `json:"userName"`
 	Content      string    `json:"content"`
 	ImagePath    string    `json:"imagePath"`
@@ -44,7 +48,25 @@ func (s *PostService) CreatePost(post *models.Post) error {
 		return err
 	}
 
-	_, err := s.PostRepository.Insert(post)
+	postId, err := s.PostRepository.Insert(post)
+
+	if post.PrivacyType == enums.SubPrivate {
+		for _, receiver := range post.Receivers {
+
+			receiverId, err := strconv.Atoi(receiver)
+
+			if err != nil {
+				s.Logger.Printf("CreatePost atoi parse error: %s", err)
+			}
+
+			allowedPost := models.AllowedPost{
+				UserId: receiverId,
+				PostId: int(postId),
+			}
+
+			s.AllowedPostRepository.Insert(&allowedPost)
+		}
+	}
 
 	if err != nil {
 		log.Printf("CreatePost error: %s", err)
@@ -53,7 +75,7 @@ func (s *PostService) CreatePost(post *models.Post) error {
 	return err
 }
 
-func (s *PostService) GetFeedPosts(userId int, offset int) ([]*feedPostJSON, error) {
+func (s *PostService) GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, error) {
 	// fmt.Println("userId", userId)
 	posts, err := s.PostRepository.GetAllFeedPosts(userId, offset)
 
@@ -81,7 +103,7 @@ func (s *PostService) GetFeedPosts(userId int, offset int) ([]*feedPostJSON, err
 	return feedPosts, nil
 }
 
-func (s *PostService) GetProfilePosts(userId int, offset int) ([]*feedPostJSON, error) {
+func (s *PostService) GetProfilePosts(userId int64, offset int) ([]*feedPostJSON, error) {
 	// fmt.Println("userId", userId)
 	posts, err := s.PostRepository.GetAllByUserId(userId, offset)
 
