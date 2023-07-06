@@ -131,24 +131,25 @@ func (repo NotificationRepository) Update(notification *Notification) error {
 }
 
 func (repo NotificationRepository) GetById(id int64) (*Notification, error) {
-	query := `SELECT n.id, nd.sender_id, nd.created_at, n.seen_at, n.reaction FROM notifications n
+	query := `SELECT n.id, n.receiver_id, nd.sender_id, nt.name, nd.created_at, nd.entity_id, n.seen_at, n.reaction FROM notifications n
 	JOIN notification_details nd ON n.notification_details_id = nd.id
+	JOIN notification_types nt ON nd.notification_type_id = nt.id
 	WHERE n.id = ?`
 
 	args := []interface{}{
 		id,
 	}
 
-	var notification Notification
+	notification := &Notification{}
 
-	err := repo.DB.QueryRow(query, args...).Scan(&notification.Id, &notification.SenderId, &notification.CreatedAt, &notification.SeenAt, &notification.Reaction)
+	err := repo.DB.QueryRow(query, args...).Scan(&notification.Id, &notification.ReceiverId, &notification.SenderId, &notification.NotificationType, &notification.CreatedAt, &notification.EntityId, &notification.SeenAt, &notification.Reaction)
 
 	if err != nil {
 		repo.Logger.Printf("Error getting notification: %s", err.Error())
 		return nil, err
 	}
 
-	return &notification, nil
+	return notification, nil
 }
 
 func (repo NotificationRepository) GetNotificationType(notificationType string) (int64, error) {

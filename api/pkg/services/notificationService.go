@@ -157,12 +157,12 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 		Reaction:         false,
 	}
 
-	_, err = s.NotificationRepository.Insert(&notification)
+	notificationId, err := s.NotificationRepository.Insert(&notification)
 	if err != nil {
 		return -1, false, err
 	}
 
-	return lastID, following.IsPublic, nil
+	return notificationId, following.IsPublic, nil
 }
 
 func (s *NotificationService) HandleFollowRequest(notificationId int64, accepted bool) error {

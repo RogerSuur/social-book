@@ -4,7 +4,6 @@ import (
 	"SocialNetworkRestApi/api/internal/server/utils"
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
-	"fmt"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -341,8 +340,6 @@ func (s *UserService) GetUserFollowers(userID int64) ([]FollowerData, error) {
 		}
 		followersData = append(followersData, follower)
 	}
-
-	fmt.Println("followersData", followersData)
 
 	return followersData, nil
 }

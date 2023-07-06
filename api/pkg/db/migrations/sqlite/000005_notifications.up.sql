@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS notification_details(
     sender_id INTEGER NOT NULL,
     notification_type_id INTEGER NOT NULL,
     entity_id INTEGER NOT NULL,
-	created_at CURRENT_TIMESTAMP DATETIME NOT NULL,
+	created_at DATETIME NOT NULL,
 	FOREIGN KEY (sender_id) 
 		REFERENCES users (id)
 	FOREIGN KEY (notification_type_id) 
