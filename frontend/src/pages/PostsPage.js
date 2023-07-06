@@ -19,8 +19,9 @@ const Posts = ({ showCreatePost }) => {
     setPosts([]);
   };
 
-  const handlePageChange = () => {
-    setOffset((prevOffset) => prevOffset + 1);
+  const handlePageChange = (postId) => {
+    setOffset(postId);
+    console.log("handle page change with offset:", postId);
   };
 
   useEffect(() => {
