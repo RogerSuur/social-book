@@ -77,7 +77,7 @@ func (repo MessageRepository) Update(message *Message) error {
 
 func (repo MessageRepository) GetMessagesByGroupId(groupId int64, lastMessage int64) ([]*Message, error) {
 	query := `SELECT id, sender_id, recipient_id, group_id, content, sent_at FROM messages m
-	WHERE group_id = ? AND id <= ?
+	WHERE group_id = ? AND id < ?
 	ORDER BY sent_at DESC LIMIT 10`
 
 	args := []interface{}{
@@ -113,7 +113,7 @@ func (repo MessageRepository) GetMessagesByGroupId(groupId int64, lastMessage in
 
 func (repo MessageRepository) GetMessagesByUserIds(userId int64, secondUserId int64, lastMessage int64) ([]*Message, error) {
 	query := `SELECT id, sender_id, recipient_id, group_id, content, sent_at FROM messages m
-	WHERE (sender_id = ? AND recipient_id = ? AND id <= ?) OR (sender_id = ? AND recipient_id = ? AND id <= ?) 
+	WHERE (sender_id = ? AND recipient_id = ? AND id < ?) OR (sender_id = ? AND recipient_id = ? AND id < ?) 
     ORDER BY sent_at DESC LIMIT 10`
 
 	args := []interface{}{

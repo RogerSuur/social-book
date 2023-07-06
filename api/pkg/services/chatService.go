@@ -207,7 +207,7 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 			if err != nil {
 				return nil, err
 			}
-			lastMessage = lastFullMessage.Id
+			lastMessage = lastFullMessage.Id + 1
 		}
 
 		messages, err = s.ChatRepo.GetMessagesByUserIds(userId, otherId, lastMessage)
@@ -231,8 +231,7 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 			if err != nil {
 				return nil, err
 			}
-			s.Logger.Printf("Last message: %v", lastFullMessage)
-			lastMessage = lastFullMessage.Id
+			lastMessage = lastFullMessage.Id + 1
 		}
 
 		messages, err = s.ChatRepo.GetMessagesByGroupId(groupId, lastMessage)
