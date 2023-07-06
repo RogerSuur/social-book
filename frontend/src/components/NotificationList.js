@@ -1,11 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
-import useWebSocketConnection from "../hooks/useWebSocketConnection";
+import React, { useEffect, useRef } from "react";
 import Notification from "../components/Notification";
-import { WS_URL } from "../utils/routes";
 
 const NotificationList = ({ notifications, setToggle, setNotifications }) => {
   const ref = useRef(null);
-  const { lastJsonMessage } = useWebSocketConnection(WS_URL);
 
   const handleNotificationClose = (id) => {
     setNotifications((prevNotifications) =>
@@ -15,7 +12,7 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
     );
   };
 
-  console.log(notifications, "NOTT");
+  console.log(notifications, "NOTS IN LIST");
 
   useEffect(() => {
     const handleClickOutside = (event) => {

@@ -43,10 +43,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
 
     setLoading(true);
 
-    const offset =
-      messageHistory.length > 0
-        ? messageHistory[messageHistory.length - 1].id
-        : 0;
+    const offset = messageHistory.length > 0 ? messageHistory[0].id : 0;
 
     sendJsonMessage({
       type: "request_message_history",

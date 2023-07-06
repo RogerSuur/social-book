@@ -17,7 +17,7 @@ const NotificationNavbarItem = () => {
   useEffect(() => {
     if (lastJsonMessage && lastJsonMessage.type === "notification") {
       setNotifications((prevNotifications) => {
-        return [lastJsonMessage, ...prevNotifications];
+        return [lastJsonMessage?.data, ...prevNotifications];
       });
     }
   }, [lastJsonMessage]);
