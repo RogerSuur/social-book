@@ -30,11 +30,11 @@ type FeedPost struct {
 }
 
 type IPostRepository interface {
-	GetAllByUserId(id int64) ([]*Post, error)
-	GetAllFeedPosts(currentUserId int64, offset int) ([]*FeedPost, error)
+	GetAllByUserId(id int64, offset int64) ([]*Post, error)
+	GetAllFeedPosts(currentUserId int64, offset int64) ([]*FeedPost, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
-	GetCommentCount(postId int) (int, error)
+	GetCommentCount(postId int64) (int, error)
 	GetLastPostId() (int64, error)
 }
 
@@ -91,7 +91,7 @@ func (repo PostRepository) GetById(id int64) (*Post, error) {
 	return post, err
 }
 
-func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
+func (repo PostRepository) GetAllByUserId(id int64, offset int64) ([]*Post, error) {
 
 	stmt := `SELECT id, user_id, content, created_at, image_path, privacy_type_id FROM posts p
 	WHERE user_id = ?
@@ -124,7 +124,7 @@ func (repo PostRepository) GetAllByUserId(id int64) ([]*Post, error) {
 }
 
 // Return all posts to the current user by offset
-func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int) ([]*FeedPost, error) {
+func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int64) ([]*FeedPost, error) {
 
 	//Change value if needed for testing purposes
 	// currentUserId = 11
@@ -190,7 +190,7 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int) ([]*Fee
 	return posts, nil
 }
 
-func (m PostRepository) GetCommentCount(postId int) (int, error) {
+func (m PostRepository) GetCommentCount(postId int64) (int, error) {
 	query := `SELECT COUNT(*) FROM comments WHERE post_id = ?`
 	row := m.DB.QueryRow(query, postId)
 	var commentCount int
