@@ -40,6 +40,7 @@ const NotificationNavbarItem = () => {
     loadNotifications();
   }, []);
 
+  console.log(notifications, "NOTLIST");
   // useEffect(() => {
   //   const exceptions = ["message", "chatlist", "message_history"];
 
