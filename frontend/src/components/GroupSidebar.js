@@ -8,6 +8,7 @@ import {
   ACCEPTED_EVENTS_URL,
 } from "../utils/routes";
 import { SearchResults } from "./SearchResults";
+import CreateGroup from "./CreateGroup";
 
 const GroupSidebar = () => {
   const [searchResults, setSearchResults] = useState([]);
@@ -23,6 +24,9 @@ const GroupSidebar = () => {
           <GenericGroupList url={USER_GROUPS_URL} />
         </li>
         <h1>My groups</h1>
+        <i class="add-circle">
+          <CreateGroup />
+        </i>
         <li>
           <GenericGroupList url={USER_CREATED_GROUPS_URL} />
         </li>
