@@ -173,6 +173,7 @@ func SeedGroups(repos *models.Repositories) {
 			Title:       group.Title,
 			Description: group.Description,
 			CreatorId:   user.Id,
+			ImagePath:   group.ImagePath,
 		}
 
 		id, err := repos.GroupRepo.Insert(tempGroup)
