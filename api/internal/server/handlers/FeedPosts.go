@@ -21,6 +21,8 @@ func (app *Application) FeedPosts(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
 		}
 
+		app.Logger.Printf("offset: %v", offsetInt)
+
 		userID, err := app.UserService.GetUserID(r)
 
 		if err != nil {

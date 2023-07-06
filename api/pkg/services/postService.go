@@ -76,6 +76,16 @@ func (s *PostService) CreatePost(post *models.Post) error {
 
 func (s *PostService) GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, error) {
 	// fmt.Println("userId", userId)
+
+	if offset == 0 {
+		lastPostId, err := s.PostRepository.GetLastPostId()
+		if err != nil {
+			s.Logger.Printf("GetFeedPosts error: %s", err)
+			return nil, err
+		}
+		offset = int(lastPostId + 1)
+	}
+
 	posts, err := s.PostRepository.GetAllFeedPosts(userId, offset)
 
 	if err != nil {
@@ -98,6 +108,8 @@ func (s *PostService) GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, e
 		})
 	}
 	// fmt.Println("feedPosts:", feedPosts)
+
+	s.Logger.Printf("Retrived feed posts: %d", len(feedPosts))
 
 	return feedPosts, nil
 }
