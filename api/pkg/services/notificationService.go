@@ -9,7 +9,7 @@ import (
 
 type INotificationService interface {
 	GetUserNotifications(userId int64) ([]*models.NotificationJSON, error)
-	CreateFollowRequest(followerId int64, followingId int64) (int64, error)
+	CreateFollowRequest(followerId int64, followingId int64) (int64, bool, error)
 }
 
 type NotificationService struct {
@@ -95,37 +95,39 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 	return NotificationJSON, nil
 }
 
-func (s *NotificationService) CreateFollowRequest(followerId int64, followingId int64) (int64, error) {
+func (s *NotificationService) CreateFollowRequest(followerId int64, followingId int64) (int64, bool, error) {
 
 	// check if follower and following exist
 	_, err := s.UserRepo.GetById(followerId)
 	if err != nil {
 		s.Logger.Printf("Follower not found: %s", err)
-		return -1, err
+		return -1, false, err
 	}
-	_, err = s.UserRepo.GetById(followingId)
+	following, err := s.UserRepo.GetById(followingId)
 	if err != nil {
 		s.Logger.Printf("Following not found: %s", err)
-		return -1, err
+		return -1, false, err
 	}
 
 	// check if follow request already exists
 	_, err = s.FollowerRepo.GetByFollowerAndFollowing(followerId, followingId)
 	if err == nil {
-		return -1, errors.New("follow request already exists")
+		return -1, false, errors.New("follow request already exists")
 	}
 
-	// create follow request
+	// check if following is private
 	follower := &models.Follower{
 		FollowerId:  followerId,
 		FollowingId: followingId,
-		Accepted:    false,
+		Accepted:    following.IsPublic,
 	}
+
+	// create follow reque
 
 	lastID, err := s.FollowerRepo.Insert(follower)
 	if err != nil {
 		s.Logger.Printf("Cannot insert follow request: %s", err)
-		return -1, err
+		return -1, false, err
 	}
 
 	s.Logger.Printf("Follow request created: %d", lastID)
@@ -142,8 +144,8 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 
 	_, err = s.NotificationRepository.Insert(&notification)
 	if err != nil {
-		return -1, err
+		return -1, false, err
 	}
 
-	return lastID, nil
+	return lastID, following.IsPublic, nil
 }

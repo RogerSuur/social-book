@@ -64,7 +64,7 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 	}
 	w.Logger.Printf("User %v wants to start following user %v", c.clientID, data.ID)
 
-	followRequestId, err := w.notificationService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
+	followRequestId, sendNewChatlist, err := w.notificationService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
 	if err != nil {
 		return err
 	}
@@ -105,6 +105,32 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 	}
 
 	w.Logger.Printf("Sent notification to recipient")
+
+	// send new chatlist to sender
+	if sendNewChatlist {
+		chatlist, err := w.chatService.GetChatlist(int64(c.clientID))
+		if err != nil {
+			return err
+		}
+
+		dataToSend, err := json.Marshal(
+			&ChatListPayload{
+				UserID:   int(c.clientID),
+				Chatlist: chatlist,
+			},
+		)
+
+		if err != nil {
+			return err
+		}
+
+		c.gate <- Payload{
+			Type: "chatlist",
+			Data: dataToSend,
+		}
+
+		w.Logger.Printf("Sent new chatlist to sender %v", c.clientID)
+	}
 
 	return nil
 }
