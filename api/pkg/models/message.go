@@ -20,8 +20,8 @@ type Message struct {
 
 type IMessageRepository interface {
 	Insert(event *Message) (int64, error)
-	GetMessagesByGroupId(groupId int64) ([]*Message, error)
-	GetMessagesByUserIds(userId int64, secondUserId int64) ([]*Message, error)
+	GetMessagesByGroupId(groupId int64, lastMessage int64) ([]*Message, error)
+	GetMessagesByUserIds(userId int64, secondUserId int64, lastMessage int64) ([]*Message, error)
 	GetChatUsers(id int64) ([]*User, error)
 	GetChatGroups(id int64) ([]*Group, error)
 	GetLastMessage(userId int64, otherId int64, isGroup bool) (*Message, error)
@@ -75,12 +75,17 @@ func (repo MessageRepository) Update(message *Message) error {
 	return nil
 }
 
-func (repo MessageRepository) GetMessagesByGroupId(groupId int64) ([]*Message, error) {
-	stmt := `SELECT id, sender_id, recipient_id, group_id, content, sent_at, read_at FROM messages m
-	WHERE group_id = ?
-    ORDER BY sent_at DESC`
+func (repo MessageRepository) GetMessagesByGroupId(groupId int64, lastMessage int64) ([]*Message, error) {
+	query := `SELECT id, sender_id, recipient_id, group_id, content, sent_at FROM messages m
+	WHERE group_id = ? AND id < ?
+	ORDER BY sent_at DESC LIMIT 10`
 
-	rows, err := repo.DB.Query(stmt, groupId)
+	args := []interface{}{
+		groupId,
+		lastMessage,
+	}
+
+	rows, err := repo.DB.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +97,7 @@ func (repo MessageRepository) GetMessagesByGroupId(groupId int64) ([]*Message, e
 	for rows.Next() {
 		message := &Message{}
 
-		err := rows.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.SentAt, &message.ReadAt)
+		err := rows.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.SentAt) //, &message.ReadAt)
 		if err != nil {
 			return nil, err
 		}
@@ -106,19 +111,21 @@ func (repo MessageRepository) GetMessagesByGroupId(groupId int64) ([]*Message, e
 	return messages, nil
 }
 
-func (repo MessageRepository) GetMessagesByUserIds(userId int64, secondUserId int64) ([]*Message, error) {
-	stmt := `SELECT id, sender_id, recipient_id, group_id, content, sent_at FROM messages m
-	WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) 
-    ORDER BY sent_at DESC`
+func (repo MessageRepository) GetMessagesByUserIds(userId int64, secondUserId int64, lastMessage int64) ([]*Message, error) {
+	query := `SELECT id, sender_id, recipient_id, group_id, content, sent_at FROM messages m
+	WHERE (sender_id = ? AND recipient_id = ? AND id < ?) OR (sender_id = ? AND recipient_id = ? AND id < ?) 
+    ORDER BY sent_at DESC LIMIT 10`
 
 	args := []interface{}{
 		userId,
 		secondUserId,
+		lastMessage,
 		secondUserId,
 		userId,
+		lastMessage,
 	}
 
-	rows, err := repo.DB.Query(stmt, args...)
+	rows, err := repo.DB.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}

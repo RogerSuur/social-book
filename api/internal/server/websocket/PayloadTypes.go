@@ -12,9 +12,10 @@ type Payload struct {
 }
 
 type RequestPayload struct {
-	ID       int  `json:"id"`
-	Reaction bool `json:"reaction"`
-	GroupID  int  `json:"group_id"`
+	ID          int  `json:"id"`
+	Reaction    bool `json:"reaction"`
+	GroupID     int  `json:"group_id"`
+	LastMessage int  `json:"last_message"`
 }
 
 type NotificationPayload struct {

@@ -2,6 +2,7 @@ package services
 
 import (
 	"SocialNetworkRestApi/api/pkg/models"
+	"errors"
 	"log"
 	"sort"
 	"time"
@@ -10,24 +11,27 @@ import (
 type IChatService interface {
 	GetChatlist(userID int64) ([]ChatListUser, error)
 	CreateMessage(message *models.Message) (int64, error)
-	GetMessageHistory(userId int64, otherId int64) ([]*MessageJSON, error)
+	GetMessageHistory(userId int64, otherId int64, groupId int64, lastMessage int64) ([]*MessageJSON, error)
 }
 
 type ChatService struct {
-	Logger   *log.Logger
-	UserRepo models.IUserRepository
-	ChatRepo models.IMessageRepository
+	Logger    *log.Logger
+	UserRepo  models.IUserRepository
+	ChatRepo  models.IMessageRepository
+	GroupRepo models.IGroupRepository
 }
 
 func InitChatService(
 	logger *log.Logger,
 	userRepo *models.UserRepository,
 	chatRepo *models.MessageRepository,
+	groupRepo *models.GroupRepository,
 ) *ChatService {
 	return &ChatService{
-		Logger:   logger,
-		UserRepo: userRepo,
-		ChatRepo: chatRepo,
+		Logger:    logger,
+		UserRepo:  userRepo,
+		ChatRepo:  chatRepo,
+		GroupRepo: groupRepo,
 	}
 }
 
@@ -138,10 +142,22 @@ func (s *ChatService) CreateMessage(message *models.Message) (int64, error) {
 		s.Logger.Printf("User with id %d does not exist", message.SenderId)
 		return -1, err
 	}
-	_, err = s.UserRepo.GetById(message.RecipientId)
-	if err != nil {
-		s.Logger.Printf("User with id %d does not exist", message.RecipientId)
-		return -1, err
+
+	if message.RecipientId != 0 {
+		_, err = s.UserRepo.GetById(message.RecipientId)
+		if err != nil {
+			s.Logger.Printf("User with id %d does not exist", message.RecipientId)
+			return -1, err
+		}
+	} else if message.GroupId != 0 {
+		_, err = s.GroupRepo.GetById(message.GroupId)
+		if err != nil {
+			s.Logger.Printf("Group with id %d does not exist", message.GroupId)
+			return -1, err
+		}
+	} else {
+		s.Logger.Printf("Neither recipient nor group id is specified")
+		return -1, errors.New("neither recipient nor group id is specified")
 	}
 
 	message.SentAt = time.Now()
@@ -156,7 +172,7 @@ func (s *ChatService) CreateMessage(message *models.Message) (int64, error) {
 	return lastID, nil
 }
 
-func (s *ChatService) GetMessageHistory(userId int64, otherId int64) ([]*MessageJSON, error) {
+func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int64, lastMessage int64) ([]*MessageJSON, error) {
 
 	// check if users exist
 	userData, err := s.UserRepo.GetById(userId)
@@ -164,16 +180,70 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64) ([]*Message
 		s.Logger.Printf("User with id %d does not exist", userId)
 		return nil, err
 	}
-	otherData, err := s.UserRepo.GetById(otherId)
-	if err != nil {
-		s.Logger.Printf("User with id %d does not exist", otherId)
-		return nil, err
+
+	if userData.Nickname == "" {
+		userData.Nickname = userData.FirstName + " " + userData.LastName
 	}
 
-	// get messages
-	messages, err := s.ChatRepo.GetMessagesByUserIds(userId, otherId)
-	if err != nil {
-		return nil, err
+	var messages []*models.Message
+	var otherData *models.User
+	var groupData *models.Group
+
+	if otherId != 0 {
+		otherData, err = s.UserRepo.GetById(otherId)
+		if err != nil {
+			s.Logger.Printf("User with id %d does not exist", otherId)
+			return nil, err
+		}
+
+		if otherData.Nickname == "" {
+			otherData.Nickname = otherData.FirstName + " " + otherData.LastName
+		}
+
+		// get messages
+
+		if lastMessage == 0 {
+			lastFullMessage, err := s.ChatRepo.GetLastMessage(userId, otherId, false)
+			if err != nil {
+				return nil, err
+			}
+			lastMessage = lastFullMessage.Id + 1
+		}
+
+		messages, err = s.ChatRepo.GetMessagesByUserIds(userId, otherId, lastMessage)
+		if err != nil {
+			return nil, err
+		}
+		groupData = &models.Group{
+			Title: "",
+		}
+	} else if groupId != 0 {
+		groupData, err = s.GroupRepo.GetById(groupId)
+		if err != nil {
+			s.Logger.Printf("Group with id %d does not exist", groupId)
+			return nil, err
+		}
+
+		// get messages
+
+		if lastMessage == 0 {
+			lastFullMessage, err := s.ChatRepo.GetLastMessage(userId, groupId, true)
+			if err != nil {
+				return nil, err
+			}
+			lastMessage = lastFullMessage.Id + 1
+		}
+
+		messages, err = s.ChatRepo.GetMessagesByGroupId(groupId, lastMessage)
+		if err != nil {
+			return nil, err
+		}
+		otherData = &models.User{
+			Nickname: "",
+		}
+	} else {
+		s.Logger.Printf("Neither recipient nor group id is specified")
+		return nil, errors.New("neither recipient nor group id is specified")
 	}
 
 	messagesJSON := []*MessageJSON{}
@@ -182,23 +252,16 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64) ([]*Message
 		return messagesJSON, nil
 	}
 
-	if userData.Nickname == "" {
-		userData.Nickname = userData.FirstName + " " + userData.LastName
-	}
-
-	if otherData.Nickname == "" {
-		otherData.Nickname = otherData.FirstName + " " + otherData.LastName
-	}
-
-	for _, message := range messages {
+	for i := len(messages) - 1; i >= 0; i-- {
+		message := messages[i]
 		messageJSON := &MessageJSON{
 			Id:            message.Id,
-			SenderId:      message.SenderId,
+			SenderId:      userId,
 			SenderName:    userData.Nickname,
-			RecipientId:   message.RecipientId,
+			RecipientId:   otherId,
 			RecipientName: otherData.Nickname,
-			GroupId:       0,
-			GroupName:     "",
+			GroupId:       groupId,
+			GroupName:     groupData.Title,
 			Content:       message.Content,
 			SentAt:        message.SentAt,
 			//ReadAt:        message.ReadAt,

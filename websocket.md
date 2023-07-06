@@ -103,6 +103,7 @@
     "data": {
         "id": 123, //0 if group chat
         "group_id": 123, // 0 if private chat
+        "last_message": 123 // 0 if from latest message
     }
 }
 ```

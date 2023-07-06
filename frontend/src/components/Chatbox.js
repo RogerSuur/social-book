@@ -1,11 +1,14 @@
 import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroller";
 
 const Chatbox = ({ toggleChat, chat, user }) => {
   const [messageHistory, setMessageHistory] = useState([]);
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({
     type: "message",
     data: {
@@ -33,21 +36,42 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     return image;
   };
 
-  const loadMessages = () => {
+  const loadMessages = useCallback(async () => {
+    if (loading) {
+      return;
+    }
+
+    setLoading(true);
+
+    const offset = messageHistory.length > 0 ? messageHistory[0].id : 0;
+
     sendJsonMessage({
       type: "request_message_history",
-      data: { id: chat.user_id, group_id: chat.group_id },
+      data: { id: chat.user_id, group_id: chat.group_id, last_message: offset },
     });
-  };
+  }, [loading, hasMoreMessages]);
 
-  useEffect(() => {
-    loadMessages();
-  }, []);
+  // const loadMessages = () => {
+  //   const offset =
+  //     messageHistory.length > 0
+  //       ? messageHistory[messageHistory.length - 1].id
+  //       : 0;
+
+  //   sendJsonMessage({
+  //     type: "request_message_history",
+  //     data: { id: chat.user_id, group_id: chat.group_id, last_message: offset },
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   loadMessages();
+  // }, []);
 
   useEffect(() => {
     switch (lastJsonMessage?.type) {
       case "message_history":
         console.log(lastJsonMessage, "MSG HISTORY");
+
         if (lastJsonMessage?.data.length > 0) {
           console.log("HRE");
           setMessageHistory((prevMessageHistory) => [
@@ -56,6 +80,11 @@ const Chatbox = ({ toggleChat, chat, user }) => {
           ]);
         }
 
+        if (lastJsonMessage?.data.length < 10) {
+          setHasMoreMessages(false);
+        }
+
+        setLoading(false);
         break;
       case "message":
         if (
@@ -141,6 +170,8 @@ const Chatbox = ({ toggleChat, chat, user }) => {
       <Link to={`/groups/${chat.group_id}`}>{chat.name}</Link>
     );
 
+  console.log(hasMoreMessages, "MSS");
+
   const chatbox = (
     <div className="chatbox">
       <div className="chat-title">
@@ -148,8 +179,18 @@ const Chatbox = ({ toggleChat, chat, user }) => {
         {imageHandler()}
         <button onClick={closeChat}>Close</button>
       </div>
-      <div className="message-history">{renderedMessages}</div>
-      <button onClick={() => console.log(messageHistory)}>Burron</button>
+      <div className="message-history">
+        <InfiniteScroll
+          pageStart={0}
+          isReverse={true}
+          loadMore={loadMessages}
+          hasMore={hasMoreMessages}
+          useWindow={false}
+        >
+          {renderedMessages}
+        </InfiniteScroll>
+      </div>
+      <button onClick={() => console.log(messageHistory)}>Button</button>
       <div className="message-box">
         <form onSubmit={handleSubmit}>
           <input

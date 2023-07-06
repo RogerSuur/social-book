@@ -40,6 +40,7 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 		logger,
 		repositories.UserRepo,
 		repositories.MessageRepo,
+		repositories.GroupRepo,
 	)
 
 	return &Application{
