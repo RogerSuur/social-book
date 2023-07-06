@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import ChatTest from "../components/ChatTest";
+import Chat from "./Chat";
 import { WS_URL } from "../utils/routes";
+import Login from "../pages/LoginPage";
 
 const AUTH_URL = "http://localhost:8000/auth";
 
@@ -15,6 +16,11 @@ const RequireAuth = () => {
   const [users, setUsers] = useState([]);
 
   const location = useLocation();
+
+  const from = location.state?.from?.pathname;
+
+  console.log(location, "LOCATION");
+  console.log(from, "FROM");
 
   // const updateUsers = (message) => {
   //   const { user_id, username, online, datetime } = message;
@@ -77,10 +83,13 @@ const RequireAuth = () => {
           setUsers,
         }}
       />
-      <ChatTest className="chat-sidebar" chatlist={users} />
+      <Chat className="chat-sidebar" chatlist={users} />
     </div>
   ) : (
-    <Navigate to="/login" state={{ from: location }} replace />
+    <>
+      {from && <Navigate to="/login" state={{ from: location }} replace />}
+      <Login />
+    </>
   );
 };
 
