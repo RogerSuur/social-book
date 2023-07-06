@@ -63,5 +63,3 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 
 }
 
-//Get handlers should return posts available to see for currently authenticated user
-//It should be possible to get posts with offset fom database
