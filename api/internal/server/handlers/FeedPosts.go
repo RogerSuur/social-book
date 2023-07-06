@@ -14,12 +14,14 @@ func (app *Application) FeedPosts(rw http.ResponseWriter, r *http.Request) {
 	case "GET":
 		vars := mux.Vars(r)
 		offset := vars["offset"]
-		offsetInt, err := strconv.Atoi(offset)
+		offsetInt, err := strconv.ParseInt(offset, 10, 64)
 
 		if offsetInt < 0 || err != nil {
 			app.Logger.Printf("DATA PARSE error: %v", err)
 			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
 		}
+
+		app.Logger.Printf("offset: %v", offsetInt)
 
 		userID, err := app.UserService.GetUserID(r)
 
