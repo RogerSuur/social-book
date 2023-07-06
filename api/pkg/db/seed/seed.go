@@ -201,6 +201,29 @@ func SeedGroups(repos *models.Repositories) {
 			}
 		}
 
+		//Add group events
+		for _, event := range group.SeedEventsData {
+			eventCreator, err := repos.UserRepo.GetByEmail(event.CreatorEmail)
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+
+			tempEvent := &models.Event{
+				GroupId:     id,
+				UserId:      eventCreator.Id,
+				CreatedAt:   event.CreatedAt,
+				EventTime:   event.EventTime,
+				TimeSpan:    event.TimeSpan,
+				Title:       event.Title,
+				Description: event.Description,
+			}
+			_, err = repos.EventRepo.InsertSeedEvent(tempEvent)
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+
+		}
+
 	}
 
 }

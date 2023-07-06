@@ -1,21 +1,23 @@
 package seed
 
 type SeedGroup struct {
-	CreatorEmail string
-	Title        string
-	Description  string
-	Users        []string
-	ImagePath    string
-	ImageBase64  string
+	CreatorEmail   string
+	Title          string
+	Description    string
+	Users          []string
+	ImagePath      string
+	ImageBase64    string
+	SeedEventsData []*SeedEvent
 }
 
 var SeedGroupsData = []*SeedGroup{
 	{
-		CreatorEmail: "b@b.com",
-		Title:        "Adventurers United",
-		Description:  "Adventurers United is a group dedicated to exploring uncharted territories, unraveling mysteries, and pushing the boundaries of human exploration. Comprising fearless individuals from different backgrounds, this group seeks to discover hidden wonders, encounter diverse cultures, and document their findings for the world to marvel at. From scaling towering peaks to delving into ancient ruins, Adventurers United is fueled by the passion for discovery and the thrill of venturing into the unknown.",
-		Users:        []string{"a@a.com", "b@b.com", "c@c.com", "d@d.com", "e@e.com"},
-		ImagePath:    "groupA.png",
+		CreatorEmail:   "b@b.com",
+		Title:          "Adventurers United",
+		Description:    "Adventurers United is a group dedicated to exploring uncharted territories, unraveling mysteries, and pushing the boundaries of human exploration. Comprising fearless individuals from different backgrounds, this group seeks to discover hidden wonders, encounter diverse cultures, and document their findings for the world to marvel at. From scaling towering peaks to delving into ancient ruins, Adventurers United is fueled by the passion for discovery and the thrill of venturing into the unknown.",
+		Users:          []string{"a@a.com", "b@b.com", "c@c.com", "d@d.com", "e@e.com"},
+		SeedEventsData: SeedEventsDataA,
+		ImagePath:      "groupA.png",
 	},
 	{
 		CreatorEmail: "a@a.com",
@@ -25,11 +27,12 @@ var SeedGroupsData = []*SeedGroup{
 		ImagePath:    "groupB.png",
 	},
 	{
-		CreatorEmail: "b@b.com",
-		Title:        "Creative Catalysts",
-		Description:  "Creative Catalysts is a gathering of visionary artists, innovators, and thinkers who believe in the transformative power of creativity. Embracing diverse forms of artistic expression, this group seeks to challenge conventions, provoke thought, and inspire change through their work. From visual arts and music to literature and performance, Creative Catalysts use their talents to ignite conversations, bridge gaps, and breathe life into new ideas. Their collective energy fuels a vibrant and dynamic creative community.",
-		Users:        []string{"a@a.com", "b@b.com", "c@c.com", "d@d.com"},
-		ImagePath:    "groupC.png",
+		CreatorEmail:   "b@b.com",
+		Title:          "Creative Catalysts",
+		Description:    "Creative Catalysts is a gathering of visionary artists, innovators, and thinkers who believe in the transformative power of creativity. Embracing diverse forms of artistic expression, this group seeks to challenge conventions, provoke thought, and inspire change through their work. From visual arts and music to literature and performance, Creative Catalysts use their talents to ignite conversations, bridge gaps, and breathe life into new ideas. Their collective energy fuels a vibrant and dynamic creative community.",
+		Users:          []string{"a@a.com", "b@b.com", "c@c.com", "d@d.com"},
+		SeedEventsData: SeedEventsDataC,
+		ImagePath:      "groupC.png",
 	},
 	{
 		CreatorEmail: "c@c.com",
