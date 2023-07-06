@@ -13,7 +13,7 @@ func (app *Application) ProfilePosts(rw http.ResponseWriter, r *http.Request) {
 	case "GET":
 		vars := mux.Vars(r)
 		offset := vars["offset"]
-		offsetInt, err := strconv.Atoi(offset)
+		offsetInt, err := strconv.ParseInt(offset, 10, 64)
 
 		if offsetInt < 0 || err != nil {
 			app.Logger.Printf("DATA PARSE error: %v", err)

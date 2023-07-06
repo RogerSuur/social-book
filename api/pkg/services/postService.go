@@ -11,8 +11,8 @@ import (
 
 type IPostService interface {
 	CreatePost(post *models.Post) error
-	GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, error)
-	GetProfilePosts(userId int64, offset int) ([]*feedPostJSON, error)
+	GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON, error)
+	GetProfilePosts(userId int64, offset int64) ([]*feedPostJSON, error)
 }
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
