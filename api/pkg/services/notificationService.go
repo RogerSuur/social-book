@@ -8,8 +8,10 @@ import (
 )
 
 type INotificationService interface {
+	GetById(notificationId int64) (*models.Notification, error)
 	GetUserNotifications(userId int64) ([]*models.NotificationJSON, error)
-	CreateFollowRequest(followerId int64, followingId int64) (int64, error)
+	CreateFollowRequest(followerId int64, followingId int64) (int64, bool, error)
+	HandleFollowRequest(notificationId int64, accepted bool) error
 }
 
 type NotificationService struct {
@@ -31,6 +33,19 @@ func InitNotificationService(
 		FollowerRepo:           followerRepo,
 		NotificationRepository: notificationRepo,
 	}
+}
+
+func (s *NotificationService) GetById(notificationId int64) (*models.Notification, error) {
+
+	notification, err := s.NotificationRepository.GetById(notificationId)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification: %s", err)
+		return nil, err
+	}
+
+	s.Logger.Printf("Notification returned: %d", notification.Id)
+
+	return notification, nil
 }
 
 func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.NotificationJSON, error) {
@@ -95,37 +110,39 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 	return NotificationJSON, nil
 }
 
-func (s *NotificationService) CreateFollowRequest(followerId int64, followingId int64) (int64, error) {
+func (s *NotificationService) CreateFollowRequest(followerId int64, followingId int64) (int64, bool, error) {
 
 	// check if follower and following exist
 	_, err := s.UserRepo.GetById(followerId)
 	if err != nil {
 		s.Logger.Printf("Follower not found: %s", err)
-		return -1, err
+		return -1, false, err
 	}
-	_, err = s.UserRepo.GetById(followingId)
+	following, err := s.UserRepo.GetById(followingId)
 	if err != nil {
 		s.Logger.Printf("Following not found: %s", err)
-		return -1, err
+		return -1, false, err
 	}
 
 	// check if follow request already exists
 	_, err = s.FollowerRepo.GetByFollowerAndFollowing(followerId, followingId)
 	if err == nil {
-		return -1, errors.New("follow request already exists")
+		return -1, false, errors.New("follow request already exists")
 	}
 
-	// create follow request
+	// check if following is private
 	follower := &models.Follower{
 		FollowerId:  followerId,
 		FollowingId: followingId,
-		Accepted:    false,
+		Accepted:    following.IsPublic,
 	}
+
+	// create follow reque
 
 	lastID, err := s.FollowerRepo.Insert(follower)
 	if err != nil {
 		s.Logger.Printf("Cannot insert follow request: %s", err)
-		return -1, err
+		return -1, false, err
 	}
 
 	s.Logger.Printf("Follow request created: %d", lastID)
@@ -142,8 +159,56 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 
 	_, err = s.NotificationRepository.Insert(&notification)
 	if err != nil {
-		return -1, err
+		return -1, false, err
 	}
 
-	return lastID, nil
+	return lastID, following.IsPublic, nil
+}
+
+func (s *NotificationService) HandleFollowRequest(notificationId int64, accepted bool) error {
+
+	notification, err := s.NotificationRepository.GetById(notificationId)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification: %s", err)
+		return err
+	}
+
+	// check if follow request already handled
+	if notification.Reaction {
+		return errors.New("follow request already handled")
+	}
+
+	// check if follow request exists
+	follower, err := s.FollowerRepo.GetById(notification.EntityId)
+	if err != nil {
+		s.Logger.Printf("Cannot get follow request: %s", err)
+		return err
+	}
+
+	// check if follow request is accepted
+	if follower.Accepted {
+		return errors.New("follow request already accepted")
+	}
+
+	// update follow request
+	follower.Accepted = accepted
+	err = s.FollowerRepo.Update(follower)
+	if err != nil {
+		s.Logger.Printf("Cannot update follow request: %s", err)
+		return err
+	}
+
+	s.Logger.Printf("Follow request updated: %d", follower.Id)
+
+	// update notification
+	notification.Reaction = true
+	err = s.NotificationRepository.Update(notification)
+	if err != nil {
+		s.Logger.Printf("Cannot update notification: %s", err)
+		return err
+	}
+
+	s.Logger.Printf("Notification updated: %d", notification.Id)
+
+	return nil
 }

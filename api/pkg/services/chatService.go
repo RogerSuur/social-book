@@ -231,6 +231,7 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 			if err != nil {
 				return nil, err
 			}
+			s.Logger.Printf("Last message: %v", lastFullMessage)
 			lastMessage = lastFullMessage.Id
 		}
 
@@ -252,7 +253,8 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 		return messagesJSON, nil
 	}
 
-	for _, message := range messages {
+	for i := len(messages) - 1; i >= 0; i-- {
+		message := messages[i]
 		messageJSON := &MessageJSON{
 			Id:            message.Id,
 			SenderId:      userId,
