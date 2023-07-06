@@ -143,13 +143,14 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int) ([]*Fee
 	OR p.user_id = ?
 	OR (privacy_type_id = 2 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1)
 	OR (privacy_type_id = 3 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND app.id IS NOT NULL AND app.user_id = ?)
-	OR p.group_id IS NOT NULL)
+	OR p.group_id IN (SELECT group_id FROM user_groups WHERE user_id = ?))
 	AND p.id < ?
 	GROUP BY p.id
 	ORDER BY p.id DESC
 	LIMIT ?`
 
 	args := []interface{}{
+		currentUserId,
 		currentUserId,
 		currentUserId,
 		currentUserId,
