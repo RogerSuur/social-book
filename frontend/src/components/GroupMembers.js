@@ -9,6 +9,7 @@ const GroupMembers = ({ groupId }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
+    console.log("groupMembers", `/groupmembers/${groupId}`);
     const loadMembers = async () => {
       try {
         const response = await makeRequest(`/groupmembers/${groupId}`);
