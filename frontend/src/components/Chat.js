@@ -83,7 +83,7 @@ const Chat = ({}) => {
   }, [lastJsonMessage]);
 
   const renderedChats = chatlist.map((chat, index) => (
-    <div key={index + 1}>
+    <div key={index}>
       <li>
         <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
       </li>
