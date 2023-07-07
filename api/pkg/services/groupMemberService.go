@@ -7,6 +7,7 @@ import (
 
 type IGroupMemberService interface {
 	GetGroupMembers(groupId int64) ([]*models.GroupMember, error)
+	IsGroupMember(groupId int64, userId int64) (bool, error)
 }
 
 type GroupMemberService struct {
@@ -31,4 +32,14 @@ func (s *GroupMemberService) GetGroupMembers(groupId int64) ([]*models.GroupMemb
 	}
 
 	return members, nil
+}
+
+func (s *GroupMemberService) IsGroupMember(groupId int64, userId int64) (bool, error) {
+	isgroupMember, err := s.GroupMemberRepository.IsGroupMember(groupId, userId)
+
+	if err != nil {
+		s.Logger.Printf("Cannot validate user: %s", err)
+	}
+
+	return isgroupMember, err
 }

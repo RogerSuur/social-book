@@ -105,6 +105,27 @@ func (app *Application) GroupMembers(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
 		}
 
+		userId, err := app.UserService.GetUserID(r)
+
+		if err != nil {
+			app.Logger.Printf("Cannot get user ID: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		isGroupMember, err := app.GroupMemberService.IsGroupMember(groupId, userId)
+
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if !isGroupMember {
+			app.Logger.Printf("User %d is not a member of this group", userId)
+			http.Error(rw, "Not a member of this group", http.StatusForbidden)
+			return
+		}
+
 		groups, err := app.GroupMemberService.GetGroupMembers(groupId)
 
 		if err != nil {
