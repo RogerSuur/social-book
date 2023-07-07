@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"SocialNetworkRestApi/api/pkg/models"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -137,6 +138,43 @@ func (app *Application) GroupMembers(rw http.ResponseWriter, r *http.Request) {
 
 	default:
 		http.Error(rw, "method is not supported", http.StatusNotFound)
+		return
+	}
+
+}
+
+func (app *Application) CreateGroup(rw http.ResponseWriter, r *http.Request) {
+
+	switch r.Method {
+	case "POST":
+		//Create a post method here
+		decoder := json.NewDecoder(r.Body)
+		decoder.DisallowUnknownFields()
+
+		JSONdata := &models.CreateGroupFormData{}
+		err := decoder.Decode(&JSONdata)
+
+		if err != nil {
+			app.Logger.Printf("JSON error: %v", err)
+			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
+
+		userId, err := app.UserService.GetUserID(r)
+
+		if err != nil {
+			app.Logger.Printf("Failed fetching user: %v", err)
+			http.Error(rw, "Get user error", http.StatusBadRequest)
+		}
+
+		_, err = app.GroupService.CreateGroup(JSONdata, userId)
+
+		if err != nil {
+			http.Error(rw, "err", http.StatusBadRequest)
+			return
+		}
+
+	default:
+		http.Error(rw, "err", http.StatusBadRequest)
 		return
 	}
 
