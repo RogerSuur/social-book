@@ -18,6 +18,15 @@ type Event struct {
 	Description string
 }
 
+type CreateGroupEventFormData struct {
+	GroupId     int64         `json:"groupId"`
+	UserId      int64         `json:"userId"`
+	EventTime   time.Time     `json:"eventTime"`
+	TimeSpan    time.Duration `json:"timeSpan"`
+	Title       string        `json:"title"`
+	Description string        `json:"description"`
+}
+
 type IEventRepository interface {
 	GetAllByGroupId(groupId int64) ([]*Event, error)
 	GetAllByUserId(userId int64) ([]*Event, error)

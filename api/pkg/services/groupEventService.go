@@ -7,6 +7,7 @@ import (
 
 type IGroupEventService interface {
 	GetGroupEvents(groupId int64) ([]*models.Event, error)
+	CreateGroupEvent(formData *models.CreateGroupEventFormData, userId int64) (int64, error)
 }
 
 type GroupEventService struct {
@@ -33,4 +34,23 @@ func (s *GroupEventService) GetGroupEvents(groupId int64) ([]*models.Event, erro
 	}
 
 	return events, nil
+}
+
+func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFormData, userId int64) (int64, error) {
+	event := &models.Event{
+		GroupId:     formData.GroupId,
+		UserId:      userId,
+		EventTime:   formData.EventTime,
+		TimeSpan:    formData.TimeSpan,
+		Title:       formData.Title,
+		Description: formData.Description,
+	}
+
+	result, err := s.EventRepository.Insert(event)
+
+	if err != nil {
+		s.Logger.Printf("Failed inserting event: %s", err)
+	}
+
+	return result, err
 }
