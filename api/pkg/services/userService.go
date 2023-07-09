@@ -7,9 +7,11 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -38,7 +40,8 @@ type FollowerData struct {
 
 type IUserService interface {
 	Authenticate(handler http.HandlerFunc) http.HandlerFunc
-	UpdateUserData(userID int64, updateData ProfileJSON) error
+	AuthenticateGroupUser(handler http.HandlerFunc) http.HandlerFunc
+	UpdateUserData(userID int64, updateData ProfileUpdateJSON) error
 	GetUserData(userID int64) (*ProfileJSON, error)
 	GetUserID(r *http.Request) (int64, error)
 	SetCookie(w http.ResponseWriter, sessionToken string)
@@ -55,11 +58,12 @@ type IUserService interface {
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
 type UserService struct {
-	Logger           *log.Logger
-	UserRepo         models.IUserRepository
-	SessionRepo      models.ISessionRepository
-	FollowerRepo     models.IFollowerRepository
-	NotificationRepo models.INotificationRepository
+	Logger                *log.Logger
+	UserRepo              models.IUserRepository
+	SessionRepo           models.ISessionRepository
+	FollowerRepo          models.IFollowerRepository
+	NotificationRepo      models.INotificationRepository
+	GroupMemberRepository models.IGroupUserRepository
 }
 
 // InitUserService initializes the user controller.
@@ -69,13 +73,15 @@ func InitUserService(
 	sessionRepo *models.SessionRepository,
 	followerRepo *models.FollowerRepository,
 	notificationRepo *models.NotificationRepository,
+	groupMemberRepository *models.GroupUserRepository,
 ) *UserService {
 	return &UserService{
-		Logger:           logger,
-		UserRepo:         userRepo,
-		SessionRepo:      sessionRepo,
-		FollowerRepo:     followerRepo,
-		NotificationRepo: notificationRepo,
+		Logger:                logger,
+		UserRepo:              userRepo,
+		SessionRepo:           sessionRepo,
+		FollowerRepo:          followerRepo,
+		NotificationRepo:      notificationRepo,
+		GroupMemberRepository: groupMemberRepository,
 	}
 }
 
@@ -258,6 +264,55 @@ func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 		if err != nil {
 			s.Logger.Printf("No session found: %s", err)
 			http.Error(w, "Invalid session", http.StatusUnauthorized)
+			return
+		}
+
+		// required for auth handler
+		if handler == nil {
+			return
+		}
+
+		handler.ServeHTTP(w, r)
+	}
+}
+
+func (s *UserService) AuthenticateGroupUser(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		cookie, err := r.Cookie("session")
+		if err != nil {
+			s.Logger.Printf("No cookie found: %s", err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		session, err := s.SessionRepo.GetByToken(cookie.Value)
+
+		if err != nil {
+			s.Logger.Printf("No session found: %s", err)
+			http.Error(w, "Invalid session", http.StatusUnauthorized)
+			return
+		}
+
+		vars := mux.Vars(r)
+
+		groupIdStr := vars["groupId"]
+		groupId, err := strconv.ParseInt(groupIdStr, 10, 64)
+
+		if groupId < 0 || err != nil {
+			s.Logger.Printf("DATA PARSE error: %v", err)
+			http.Error(w, "DATA PARSE error", http.StatusBadRequest)
+		}
+
+		isGroupMember, err := s.GroupMemberRepository.IsGroupMember(groupId, session.UserId)
+
+		if err != nil {
+			s.Logger.Printf("Failed fetching group member status: %s", err)
+			return
+		}
+
+		if !isGroupMember {
+			http.Error(w, "Not a member of this group", http.StatusUnauthorized)
 			return
 		}
 

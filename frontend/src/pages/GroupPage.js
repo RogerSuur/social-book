@@ -10,12 +10,14 @@ const GroupPage = () => {
   const { groupId } = useParams();
 
   useEffect(() => {
+    console.log("group page request", GROUP_PAGE_URL, groupId);
     const loadGroup = async () => {
       await axios
         .get(GROUP_PAGE_URL + groupId, {
           withCredentials: true,
         })
         .then((response) => {
+          console.log("response.data:", response.data);
           setGroup(response.data);
         });
     };

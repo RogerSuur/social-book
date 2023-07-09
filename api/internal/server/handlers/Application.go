@@ -17,6 +17,7 @@ type Application struct {
 	ChatService         services.IChatService
 	GroupService        services.IGroupService
 	GroupMemberService  services.IGroupMemberService
+	GroupEventService   services.IGroupEventService
 }
 
 func InitApp(repositories *models.Repositories, logger *log.Logger) *Application {
@@ -27,6 +28,7 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 		repositories.SessionRepo,
 		repositories.FollowerRepo,
 		repositories.NotificationRepo,
+		repositories.GroupUserRepo,
 	)
 
 	notificationServices := services.InitNotificationService(
@@ -58,5 +60,6 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 		ChatService:         chatServices,
 		GroupService:        services.InitGroupService(logger, repositories.GroupRepo),
 		GroupMemberService:  services.InitGroupMemberService(logger, repositories.GroupUserRepo),
+		GroupEventService:   services.InitGroupEventService(logger, repositories.GroupEventAttendance, repositories.EventRepo),
 	}
 }

@@ -35,12 +35,12 @@ func SeedUsers(repo *models.UserRepository) {
 			Password:  pwd,
 			Nickname:  seedUser.Nickname,
 			About:     seedUser.About,
-			ImagePath: faker.Word(),
 			Birthday:  date,
+			ImagePath: seedUser.ImagePath,
 		}
 
 		id, err := repo.Insert(tempUser)
-		seedUser.Id = int(id)
+		seedUser.Id = id
 
 		if err != nil {
 			logger.Println(err)
@@ -58,7 +58,7 @@ func SeedPosts(repos *models.Repositories) {
 			for _, seedPost := range seedUser.PostSet {
 				tempPost := &models.Post{
 					Content:     seedPost.Content,
-					UserId:      int64(seedUser.Id),
+					UserId:      seedUser.Id,
 					PrivacyType: seedPost.PrivacyType,
 					CreatedAt:   seedPost.CreatedAt,
 				}
@@ -76,12 +76,13 @@ func SeedPosts(repos *models.Repositories) {
 					}
 
 					tempComment := &models.Comment{
-						Content: comments.Content,
-						UserId:  commentUser.Id,
-						PostId:  postId,
+						Content:   comments.Content,
+						UserId:    commentUser.Id,
+						PostId:    postId,
+						CreatedAt: seedPost.CreatedAt.Add(comments.PostOffSet),
 					}
 
-					id, err := repos.CommentRepo.Insert(tempComment)
+					id, err := repos.CommentRepo.InsertSeedComment(tempComment)
 
 					tempComment.Id = id
 
@@ -141,7 +142,7 @@ func SeedFollowers(repos *models.Repositories) {
 
 				tempFollowing := &models.Follower{
 					FollowingId: followedUser.Id,
-					FollowerId:  int64(seedUser.Id),
+					FollowerId:  seedUser.Id,
 					Accepted:    true,
 				}
 
@@ -173,6 +174,7 @@ func SeedGroups(repos *models.Repositories) {
 			Title:       group.Title,
 			Description: group.Description,
 			CreatorId:   user.Id,
+			ImagePath:   group.ImagePath,
 		}
 
 		id, err := repos.GroupRepo.Insert(tempGroup)
@@ -196,6 +198,29 @@ func SeedGroups(repos *models.Repositories) {
 			if err != nil {
 				logger.Printf("%+v\n", err)
 			}
+		}
+
+		//Add group events
+		for _, event := range group.SeedEventsData {
+			eventCreator, err := repos.UserRepo.GetByEmail(event.CreatorEmail)
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+
+			tempEvent := &models.Event{
+				GroupId:     id,
+				UserId:      eventCreator.Id,
+				CreatedAt:   event.CreatedAt,
+				EventTime:   event.EventTime,
+				TimeSpan:    event.TimeSpan,
+				Title:       event.Title,
+				Description: event.Description,
+			}
+			_, err = repos.EventRepo.InsertSeedEvent(tempEvent)
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+
 		}
 
 	}
