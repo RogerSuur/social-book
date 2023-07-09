@@ -42,7 +42,7 @@ type IUserService interface {
 	Authenticate(handler http.HandlerFunc) http.HandlerFunc
 	AuthenticateGroupUser(handler http.HandlerFunc) http.HandlerFunc
 	UpdateUserData(userID int64, updateData ProfileJSON) error
-	GetUserData(userID int64) (*ProfileJSON, error)
+	GetUserData(requestingUserId int64, profileId int64) (*ProfileJSON, error)
 	GetUserID(r *http.Request) (int64, error)
 	SetCookie(w http.ResponseWriter, sessionToken string)
 	ClearCookie(w http.ResponseWriter)
@@ -122,22 +122,41 @@ func (s *UserService) UpdateUserData(userID int64, updateData ProfileJSON) error
 	return s.UserRepo.Update(user)
 }
 
-func (s *UserService) GetUserData(userID int64) (*ProfileJSON, error) {
-	user, err := s.UserRepo.GetById(userID)
+func (s *UserService) GetUserData(requestingUserId int64, profileId int64) (*ProfileJSON, error) {
+
+	user, err := s.UserRepo.GetById(profileId)
 	if err != nil {
 		return nil, err
 	}
-	userJSON := &ProfileJSON{
-		UserID:      int(userID),
-		FirstName:   user.FirstName,
-		LastName:    user.LastName,
-		Email:       user.Email,
-		Birthday:    user.Birthday.Format("02/01/2006"),
-		Nickname:    user.Nickname,
-		About:       user.About,
-		AvatarImage: user.ImagePath,
-		CreatedAt:   user.CreatedAt,
-		IsPublic:    user.IsPublic,
+
+	userJSON := &ProfileJSON{}
+
+	IsFollowed := s.IsFollowed(requestingUserId, profileId)
+
+	if !user.IsPublic && !IsFollowed && requestingUserId != profileId {
+		userJSON = &ProfileJSON{
+			UserID:      int(profileId),
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			Nickname:    user.Nickname,
+			AvatarImage: user.ImagePath,
+			IsPublic:    user.IsPublic,
+			IsFollowed:  IsFollowed,
+		}
+	} else {
+		userJSON = &ProfileJSON{
+			UserID:      int(profileId),
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			Email:       user.Email,
+			Birthday:    user.Birthday.Format("02/01/2006"),
+			Nickname:    user.Nickname,
+			About:       user.About,
+			AvatarImage: user.ImagePath,
+			CreatedAt:   user.CreatedAt,
+			IsPublic:    user.IsPublic,
+			IsFollowed:  IsFollowed,
+		}
 	}
 
 	return userJSON, nil

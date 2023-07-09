@@ -12,11 +12,9 @@ import (
 func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	var userID int64
-	var IsFollowed bool
-	var err error
+	var profileId int64
 
-	RequestingUserID, err := app.UserService.GetUserID(r)
+	requestingUserId, err := app.UserService.GetUserID(r)
 	if err != nil {
 		app.Logger.Printf("Cannot get user ID: %s", err)
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
@@ -24,33 +22,29 @@ func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	if id == "" {
-		app.Logger.Printf("Fetching user ID from session for Profile handler")
-		userID = RequestingUserID
-		IsFollowed = false
+		// self
+		profileId = requestingUserId
 	} else {
-		app.Logger.Printf("Using user ID provided in the URL (user %v) for Profile handler", id)
-		userID, err = strconv.ParseInt(id, 10, 64)
+		app.Logger.Printf("Decoding user ID provided in the URL (user %v) for Profile handler", id)
+		profileId, err = strconv.ParseInt(id, 10, 64)
 		if err != nil {
 			app.Logger.Printf("Cannot parse user ID: %s", err)
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		IsFollowed = app.UserService.IsFollowed(RequestingUserID, userID)
 	}
 
-	userData, err := app.UserService.GetUserData(userID)
+	profileData, err := app.UserService.GetUserData(requestingUserId, profileId)
 	if err != nil {
 		app.Logger.Printf("Cannot get user data: %s", err)
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	userData.IsFollowed = IsFollowed
-
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
 	resp := make(map[string]interface{})
-	resp["user"] = userData
+	resp["user"] = profileData
 	resp["message"] = "User profile data retrieved"
 	resp["status"] = "success"
 	jsonResp, err := json.Marshal(resp)
