@@ -86,7 +86,9 @@ nav {
   color: green;
   right: 0;
 }
-
+.pepe{
+  list-style-type: none;
+}
 .chat-sidebar {
   
   box-shadow: 5px 5px 5px rgb(184, 184, 184);
@@ -391,7 +393,7 @@ margin-bottom: 5px;
   width: 150px;
   height: 150px;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: 20%;
 }
 .umber{
   display: inline-flex;
