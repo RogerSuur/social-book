@@ -100,7 +100,7 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 	w.Logger.Printf("Created follow request with id %v", followRequestId)
 
 	// broadcast to recipient
-	userData, err := w.userService.GetUserData(int64(c.clientID))
+	userData, err := w.userService.GetUserData(int64(c.clientID), int64(c.clientID))
 	if err != nil {
 		return err
 	}
@@ -288,7 +288,7 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 	} else {
 		w.Logger.Printf("Recipient client found (recipient online)")
 
-		userData, err := w.userService.GetUserData(int64(c.clientID))
+		userData, err := w.userService.GetUserData(int64(c.clientID), int64(c.clientID))
 		if err != nil {
 			return err
 		}
@@ -297,7 +297,7 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 			userData.Nickname = userData.FirstName + " " + userData.LastName
 		}
 
-		recipientData, err := w.userService.GetUserData(int64(data.RecipientID))
+		recipientData, err := w.userService.GetUserData(int64(data.RecipientID), int64(c.clientID))
 		if err != nil {
 			return err
 		}

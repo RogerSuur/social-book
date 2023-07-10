@@ -33,6 +33,7 @@ type ICommentRepository interface {
 	GetById(id int64) (*Comment, error)
 	Insert(comment *Comment) (int64, error)
 	Update(comment *Comment) error
+	InsertSeedComment(comment *Comment) (int64, error)
 }
 
 type CommentRepository struct {
@@ -157,4 +158,33 @@ func (repo CommentRepository) GetAllByUserId(userId int) ([]*Comment, error) {
 	}
 
 	return comments, nil
+}
+
+func (repo CommentRepository) InsertSeedComment(comment *Comment) (int64, error) {
+	query := `INSERT INTO comments (post_id, user_id, content, image_path, created_at)
+	VALUES(?, ?, ?, ?, ?)`
+
+	args := []interface{}{
+		comment.PostId,
+		comment.UserId,
+		comment.Content,
+		comment.ImagePath,
+		comment.CreatedAt,
+	}
+
+	result, err := repo.DB.Exec(query, args...)
+
+	if err != nil {
+		return 0, err
+	}
+
+	lastId, err := result.LastInsertId()
+
+	if err != nil {
+		return 0, err
+	}
+
+	repo.Logger.Printf("Inserted comment by user %d for post %d (last insert ID: %d)", comment.UserId, comment.PostId, lastId)
+
+	return lastId, nil
 }

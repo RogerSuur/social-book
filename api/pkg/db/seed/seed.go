@@ -76,12 +76,13 @@ func SeedPosts(repos *models.Repositories) {
 					}
 
 					tempComment := &models.Comment{
-						Content: comments.Content,
-						UserId:  commentUser.Id,
-						PostId:  postId,
+						Content:   comments.Content,
+						UserId:    commentUser.Id,
+						PostId:    postId,
+						CreatedAt: seedPost.CreatedAt.Add(comments.PostOffSet),
 					}
 
-					id, err := repos.CommentRepo.Insert(tempComment)
+					id, err := repos.CommentRepo.InsertSeedComment(tempComment)
 
 					tempComment.Id = id
 

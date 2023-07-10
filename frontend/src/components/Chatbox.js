@@ -16,6 +16,8 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     },
   });
 
+  console.log(user, "USER");
+
   const defaultImage = () =>
     chat.user_id ? "defaultuser.jpg" : "defaultgroup.png";
 
@@ -50,22 +52,6 @@ const Chatbox = ({ toggleChat, chat, user }) => {
       data: { id: chat.user_id, group_id: chat.group_id, last_message: offset },
     });
   }, [loading, hasMoreMessages]);
-
-  // const loadMessages = () => {
-  //   const offset =
-  //     messageHistory.length > 0
-  //       ? messageHistory[messageHistory.length - 1].id
-  //       : 0;
-
-  //   sendJsonMessage({
-  //     type: "request_message_history",
-  //     data: { id: chat.user_id, group_id: chat.group_id, last_message: offset },
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   loadMessages();
-  // }, []);
 
   useEffect(() => {
     switch (lastJsonMessage?.type) {

@@ -10,8 +10,7 @@ const ProfileInfo = () => {
   const { id } = useParams();
   const [errMsg, setErrMsg] = useState("");
   const { socketUrl } = useOutletContext();
-  const { sendJsonMessage, lastJsonMessage } =
-    useWebSocketConnection(socketUrl);
+  const { sendJsonMessage } = useWebSocketConnection(socketUrl);
 
   useEffect(() => {
     const loadUser = async () => {
