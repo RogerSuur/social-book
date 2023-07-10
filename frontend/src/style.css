@@ -220,6 +220,25 @@ nav {
   border-top: 1px solid #dddddd;
 }
 
+.group-page{
+  box-shadow: 5px 5px 5px rgb(184, 184, 184);
+  background-color: #ffffff;
+  margin-top: 40px;
+  margin-right: 50px;
+  margin-left: 30px;
+  padding: 10px;
+  outline: none;
+  border-radius: 20px;
+  max-height: 600px;
+  overflow: auto;
+  box-shadow: 0 0 8px black;
+  min-width: 300px;
+  display: flex;
+  justify-items: center;
+  flex-direction: column;
+  align-items: center;
+}
+
 .group-extra {
   box-shadow: 5px 5px 5px rgb(184, 184, 184);
   background-color: #ffffff;
@@ -299,6 +318,33 @@ nav {
 
 }
 
+.hov{
+ margin-top: 20px;
+}
+
+.hov:hover{
+  background-color: #ececec;
+  cursor: pointer;
+ 
+  border-radius: 20px;
+
+}
+
+.follower-pic{
+  height: 10vh;
+  width: 10vh;
+  
+}
+
+.follower{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-items: center;
+}
+
+
 .bigger{
   padding: 10px;
   font-size: large;
@@ -308,7 +354,7 @@ nav {
 }
 .bigger:hover {
   background-color: #f1f1f1;
-  
+  cursor: pointer;
 }
 
 .top-part{
@@ -346,6 +392,11 @@ margin: 5px;
 
 .popup-content{
   overflow: auto;
+  height: 80vh;
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  width: 20%;
 }
 
 .profile-column-top {

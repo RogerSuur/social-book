@@ -33,6 +33,7 @@ const GroupPage = () => {
 
   return (
     <>
+     { <GroupSidebar />}
       {error ? (
         <div className="error">{error}</div>
       ) : (
@@ -41,8 +42,9 @@ const GroupPage = () => {
           <h1>{group.title}</h1>
           <p>{group.description}</p>
           <GroupMembers groupId={groupId} />
-          <GroupSidebar />
+      
         </div>
+        
       )}
     </>
   );
