@@ -50,7 +50,7 @@
     "data": {
         "messages" : [{
             "id": 1, //message id
-            "sender_id": 123, // 0 if group
+            "sender_id": 123, // not 0 if group (message still has sender)
             "sender_name": "username", // either a  username (if exists) or firstname and lastname
             "recipient_id": 1, // 0 if group
             "recipient_name": 1, // either a username (if   exists) or firstname and lastname && empty if     group
