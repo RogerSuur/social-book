@@ -3,6 +3,7 @@ import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroller";
+import ImageHandler from "../utils/imageHandler";
 
 const Chatbox = ({ toggleChat, chat, user }) => {
   const [messageHistory, setMessageHistory] = useState([]);
@@ -21,22 +22,8 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   const defaultImage = () =>
     chat.user_id ? "defaultuser.jpg" : "defaultgroup.png";
 
-  const imageHandler = () => {
-    const source = chat?.avatarImage
-      ? `images/${chat.id}/${chat.avatarImage}`
-      : defaultImage();
-
-    const image = (
-      <img
-        style={{
-          width: "20px",
-          height: "20px",
-        }}
-        src={source}
-      ></img>
-    );
-    return image;
-  };
+  const image = () =>
+    ImageHandler(chat?.avatarImage, defaultImage(), "chatbox-img");
 
   const loadMessages = useCallback(async () => {
     if (loading) {
@@ -162,7 +149,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     <div className="chatbox">
       <div className="chat-title">
         {chatName}
-        {imageHandler()}
+        {image()}
         <button onClick={closeChat}>Close</button>
       </div>
       <div className="message-history">

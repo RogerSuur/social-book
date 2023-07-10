@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import Modal from "./Modal.js";
 import AvatarUpdater from "./AvatarUpdater.js";
+import ImageHandler from "../utils/imageHandler.js";
 
 const PROFILE_URL = "http://localhost:8000/profile";
 const PROFILE_UPDATE_URL = "http://localhost:8000/profile/update";
@@ -23,14 +24,8 @@ const ProfileEditor = (props) => {
     criteriaMode: "all",
   });
 
-  const imageHandler = () => {
-    const source = user?.avatarImage
-      ? `images/${user.avatarImage}`
-      : "defaultuser.jpg";
-
-    const image = <img className="profile-image" src={source}></img>;
-    return image;
-  };
+  const image = () =>
+    ImageHandler(user?.avatarImage, "defaultuser.jpg", "profile-image");
 
   useEffect(() => {
     const loadUser = async () => {
@@ -82,7 +77,7 @@ const ProfileEditor = (props) => {
         <div className="profile-area">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="top-part">
-              {imageHandler()}
+              {image()}
 
               <div className="umber">
                 <div className="profile-title-top">

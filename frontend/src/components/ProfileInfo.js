@@ -4,6 +4,7 @@ import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import { useOutletContext } from "react-router-dom";
 import { PROFILE_URL } from "../utils/routes";
+import ImageHandler from "../utils/imageHandler.js";
 
 const ProfileInfo = () => {
   const [user, setUser] = useState({});
@@ -41,22 +42,15 @@ const ProfileInfo = () => {
     });
   };
 
-  const imageHandler = () => {
-    const source = user?.avatarImage
-      ? `${process.env.PUBLIC_URL}/images/${user.avatarImage}`
-      : `${process.env.PUBLIC_URL}/defaultuser.jpg`;
-
-    const image = <img className="profile-image" src={source} />;
-    console.log(source);
-    return image;
-  };
+  const image = () =>
+    ImageHandler(user?.avatarImage, "defaultuser.jpg", "profile-image");
 
   return (
     <>
       {user && (
         <div className="profile-area">
           <div className="row">
-            <div>{imageHandler()}</div>
+            <div>{image()}</div>
             <h1 className="column-title">{user.firstName}'s profile</h1>
           </div>
 

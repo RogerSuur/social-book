@@ -1,3 +1,5 @@
+import ImageHandler from "../utils/imageHandler";
+
 const SingleChatlistItem = ({ chat, toggleChat }) => {
   const id = chat?.user_id > 0 ? [chat.user_id, 0] : [0, chat.group_id];
 
@@ -8,26 +10,12 @@ const SingleChatlistItem = ({ chat, toggleChat }) => {
   const defaultImage = () =>
     id[0] > 0 ? "defaultuser.jpg" : "defaultgroup.png";
 
-  const imageHandler = () => {
-    const source = chat?.avatarImage
-      ? `${process.env.PUBLIC_URL}/images/${chat.avatarImage}`
-      : `${process.env.PUBLIC_URL}/${defaultImage()}`;
-
-    const image = (
-      <img
-        style={{
-          width: "20px",
-          height: "20px",
-        }}
-        src={source}
-      ></img>
-    );
-    return image;
-  };
+  const image = () =>
+    ImageHandler(chat?.avatarImage, defaultImage(), "chatbox-img");
 
   const listItem = (
     <p>
-      {imageHandler()}
+      {image()}
       {chat.name}
     </p>
   );
