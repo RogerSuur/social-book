@@ -38,7 +38,6 @@ type FollowerData struct {
 
 type IUserService interface {
 	Authenticate(handler http.HandlerFunc) http.HandlerFunc
-	AuthenticateGroupUser(handler http.HandlerFunc) http.HandlerFunc
 	UpdateUserData(userID int64, updateData ProfileJSON) error
 	GetUserData(requestingUserId int64, profileId int64) (*ProfileJSON, error)
 	GetUserID(r *http.Request) (int64, error)
