@@ -16,7 +16,6 @@ const GroupMembers = ({ groupId }) => {
         if (response !== null) {
           setGroupMembers(response);
         }
-        console.log(response);
       } catch (error) {
         setError(error);
         console.log(error.response?.status);
