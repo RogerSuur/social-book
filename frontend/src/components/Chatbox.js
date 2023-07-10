@@ -148,8 +148,8 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   const chatbox = (
     <div className="chatbox">
       <div className="chat-title">
-        {chatName}
         {image()}
+        {chatName}
         <button onClick={closeChat}>Close</button>
       </div>
       <div className="message-history">

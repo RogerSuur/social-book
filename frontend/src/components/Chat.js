@@ -99,7 +99,7 @@ const Chat = ({}) => {
     <>
       <MessageNotification />
       <div className="chat-sidebar">
-        <ul>{renderedChats}</ul>
+        <ul className="pepe">{renderedChats}</ul>
       </div>
     </>
   );
