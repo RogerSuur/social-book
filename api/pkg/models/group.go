@@ -37,7 +37,7 @@ type SearchResult struct {
 
 type CreateGroupFormData struct {
 	Title       string `json:"title"`
-	Description string `json:"content"`
+	Description string `json:"description"`
 	ImagePath   string `json:"imagePath"`
 }
 
