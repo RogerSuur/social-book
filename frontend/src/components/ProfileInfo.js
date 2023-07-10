@@ -4,6 +4,7 @@ import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import { useOutletContext } from "react-router-dom";
 import { PROFILE_URL } from "../utils/routes";
+import ImageHandler from "../utils/imageHandler.js";
 
 const ProfileInfo = () => {
   const [user, setUser] = useState({});
@@ -41,24 +42,15 @@ const ProfileInfo = () => {
     });
   };
 
+  const image = () =>
+    ImageHandler(user?.avatarImage, "defaultuser.jpg", "profile-image");
+
   return (
     <>
       {user && (
         <div className="profile-area">
           <div className="row">
-            <div className="column">
-              <img
-                style={{
-                  width: "20vw",
-                  height: "20vw",
-                  objectFit: "cover",
-                  objectPosition: "0% 100%",
-                }}
-                src={`../images/${user.avatarImage}`}
-                alt={`${user.firstName}`}
-              ></img>
-            </div>
-
+            <div>{image()}</div>
             <h1 className="column-title">{user.firstName}'s profile</h1>
           </div>
 
@@ -76,7 +68,13 @@ const ProfileInfo = () => {
           </div>
           <div className="row">
             <div className="column-title">Birthday</div>
-            <div className="column">{user.birthday}</div>
+            <div className="column">
+              {new Date(user.birthday).toLocaleDateString("en-UK", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </div>
           </div>
           <div className="row">
             <div className="column-title">Nickname</div>
@@ -87,8 +85,14 @@ const ProfileInfo = () => {
             <div className="column">{user.about}</div>
           </div>
           <div className="row">
-            <div className="column-title">User Joined at</div>
-            <div className="column">{user.createdAt}</div>
+            <div className="column-title">User Joined</div>
+            <div className="column">
+              {new Date(user.createdAt).toLocaleDateString("en-UK", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </div>
           </div>
           <div className="row">
             <div className="column-title">User Profile is public</div>

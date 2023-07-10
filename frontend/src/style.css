@@ -107,6 +107,11 @@ nav {
 
 /* Add media query for smaller screens */
 
+.chatbox-img {
+  width: 20px;
+  height: 20px;
+}
+
 .chatbox {
   position: fixed;
   bottom:0;

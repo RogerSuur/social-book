@@ -264,7 +264,7 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 	}
 
 	messageData := &models.Message{
-		SenderId:    int64(c.clientID),
+		SenderId:    c.clientID,
 		RecipientId: int64(data.RecipientID),
 		GroupId:     int64(data.GroupID),
 		Content:     data.Content,
@@ -288,7 +288,7 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 	} else {
 		w.Logger.Printf("Recipient client found (recipient online)")
 
-		userData, err := w.userService.GetUserData(int64(c.clientID), int64(c.clientID))
+		userData, err := w.userService.GetUserData(c.clientID, c.clientID)
 		if err != nil {
 			return err
 		}
@@ -297,7 +297,7 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 			userData.Nickname = userData.FirstName + " " + userData.LastName
 		}
 
-		recipientData, err := w.userService.GetUserData(int64(data.RecipientID), int64(c.clientID))
+		recipientData, err := w.userService.GetUserData(c.clientID, int64(data.RecipientID))
 		if err != nil {
 			return err
 		}
@@ -309,7 +309,7 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 		dataToSend, err := json.Marshal(
 			&MessagePayload{
 				MessageID:     int(messageID),
-				SenderID:      userData.UserID,
+				SenderID:      int(c.clientID),
 				SenderName:    userData.Nickname,
 				SenderImage:   userData.AvatarImage,
 				RecipientID:   recipientData.UserID,

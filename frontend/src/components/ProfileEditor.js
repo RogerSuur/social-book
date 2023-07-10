@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import Modal from "./Modal.js";
 import AvatarUpdater from "./AvatarUpdater.js";
+import ImageHandler from "../utils/imageHandler.js";
 
 const PROFILE_URL = "http://localhost:8000/profile";
 const PROFILE_UPDATE_URL = "http://localhost:8000/profile/update";
@@ -23,6 +24,9 @@ const ProfileEditor = (props) => {
     criteriaMode: "all",
   });
 
+  const image = () =>
+    ImageHandler(user?.avatarImage, "defaultuser.jpg", "profile-image");
+
   useEffect(() => {
     const loadUser = async () => {
       await axios
@@ -37,8 +41,9 @@ const ProfileEditor = (props) => {
     loadUser();
   }, [modalOpen]);
 
+  console.log(user, "USER");
+
   const onSubmit = async (data) => {
-    console.log(data, "DATA");
     try {
       const response = await axios.post(
         PROFILE_UPDATE_URL,
@@ -73,11 +78,7 @@ const ProfileEditor = (props) => {
         <div className="profile-area">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="top-part">
-              <img
-                className="profile-image"
-                src={`${process.env.PUBLIC_URL}/images/${user.avatarImage}`}
-                alt={`${user.firstName}`}
-              />
+              {image()}
 
               <div className="umber">
                 <div className="profile-title-top">
@@ -121,7 +122,13 @@ const ProfileEditor = (props) => {
               </div>
               <div className="profile-row">
                 <div className="profile-title">Birthday</div>
-                <div className="profile-column">{user.birthday}</div>
+                <div className="profile-column">
+                  {new Date(user.birthday).toLocaleDateString("en-UK", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </div>
               </div>
               <div className="profile-row">
                 <div className="profile-title">Nickname</div>
@@ -147,8 +154,14 @@ const ProfileEditor = (props) => {
                 </div>
               </div>
               <div className="profile-row">
-                <div className="profile-title">User Joined at</div>
-                <div className="profile-column">{user.createdAt}</div>
+                <div className="profile-title">User Joined</div>
+                <div className="profile-column">
+                  {new Date(user.createdAt).toLocaleDateString("en-UK", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </div>
               </div>
               <div className="profile-row">
                 <div className="profile-title">User Profile is public</div>

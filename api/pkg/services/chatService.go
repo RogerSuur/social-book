@@ -255,17 +255,24 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 	for i := len(messages) - 1; i >= 0; i-- {
 		message := messages[i]
 		messageJSON := &MessageJSON{
-			Id:            message.Id,
-			SenderId:      userId,
-			SenderName:    userData.Nickname,
-			RecipientId:   otherId,
-			RecipientName: otherData.Nickname,
-			GroupId:       groupId,
-			GroupName:     groupData.Title,
-			Content:       message.Content,
-			SentAt:        message.SentAt,
+			Id:          message.Id,
+			SenderId:    message.SenderId,
+			RecipientId: message.RecipientId,
+			GroupId:     groupId,
+			GroupName:   groupData.Title,
+			Content:     message.Content,
+			SentAt:      message.SentAt,
 			//ReadAt:        message.ReadAt,
 		}
+
+		if message.SenderId == userId {
+			messageJSON.SenderName = userData.Nickname
+			messageJSON.RecipientName = otherData.Nickname
+		} else {
+			messageJSON.SenderName = otherData.Nickname
+			messageJSON.RecipientName = userData.Nickname
+		}
+
 		messagesJSON = append(messagesJSON, messageJSON)
 	}
 
