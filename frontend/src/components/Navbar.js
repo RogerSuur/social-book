@@ -1,7 +1,8 @@
 import { Outlet, Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import NotificationNavbarItem from "../components/NotificationNavbarItem";
-import logoutIcon from "../images/logout.png";
+
+
 
 const Navbar = () => {
   const { auth } = useAuth();
@@ -37,7 +38,7 @@ const Navbar = () => {
           </li>
           <li>
             <Link className="text-link" id="logout" to="/logout">
-              <img className="text-link" src={logoutIcon} alt="Logout" />
+              <img className="text-link" src={`${process.env.PUBLIC_URL}/logout.png`} alt="Logout" />
             </Link>
           </li>
         </ul>
