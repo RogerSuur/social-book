@@ -10,8 +10,8 @@ const SingleChatlistItem = ({ chat, toggleChat }) => {
 
   const imageHandler = () => {
     const source = chat?.avatarImage
-      ? `images/${chat.id}/${chat.avatarImage}`
-      : defaultImage();
+      ? `${process.env.PUBLIC_URL}/images/${chat.id}/${chat.avatarImage}`
+      : `${process.env.PUBLIC_URL}/images/${defaultImage()}`;
 
     const image = (
       <img

@@ -5,6 +5,7 @@ import axios from "axios";
 
 const CreateGroup = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
   const [groupCreateForm, setGroupCreateForm] = useState({
     title: "",
     description: "",
@@ -28,17 +29,33 @@ const CreateGroup = () => {
     }));
   };
 
-  const handleImageUpload = (imageFile) => {
-    setGroupCreateForm((prevState) => ({
-      ...prevState,
-      image: imageFile,
-    }));
-  };
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     // Send the groupCreateForm data to the backend handler
     console.log(groupCreateForm);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/creategroup",
+        JSON.stringify(groupCreateForm),
+        { withCredentials: true },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      setErrMsg(response.data?.message);
+
+      // props.onPostsUpdate();
+      //ACtion for creating new group
+    } catch (err) {
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg("Internal Server Error");
+      }
+    }
+
     closeModal();
   };
 
@@ -80,7 +97,6 @@ const CreateGroup = () => {
               onChange={handleImageUpload}
             />
           </label> */}
-          <AvatarUpdater onUploadSuccess={handleImageUpload} />
 
           <button type="submit">Create</button>
         </form>

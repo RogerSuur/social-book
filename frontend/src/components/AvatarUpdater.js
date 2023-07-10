@@ -26,6 +26,7 @@ const AvatarUpdater = ({ onUploadSuccess }) => {
         if (!err?.response) {
           setErrMsg("No Server Response");
         } else if (err.response?.status > 200) {
+          //handle image size errors
           setErrMsg("Internal Server Error");
         }
       }
@@ -39,7 +40,7 @@ const AvatarUpdater = ({ onUploadSuccess }) => {
         image={
           selectedImage
             ? selectedImage
-            : "https://hopatcongpolice.org/wp-content/uploads/2019/03/default-person.png"
+            : `${process.env.PUBLIC_URL}/images/defaultuser.jpg`
         }
         width={250}
         height={250}

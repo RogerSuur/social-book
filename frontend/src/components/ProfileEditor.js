@@ -75,7 +75,7 @@ const ProfileEditor = (props) => {
             <div className="top-part">
               <img
                 className="profile-image"
-                src={`../images/${user.avatarImage}`}
+                src={`${process.env.PUBLIC_URL}/images/${user.avatarImage}`}
                 alt={`${user.firstName}`}
               />
 

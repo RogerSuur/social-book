@@ -33,7 +33,7 @@ const GroupPage = () => {
           objectFit: "cover",
           objectPosition: "0% 100%",
         }}
-        src={`../images/${group.imagePath}`}
+        src={`${process.env.PUBLIC_URL}/images/${group.imagePath}`}
         alt={`groupId: ${groupId}`}
       ></img>
       <h1>{group.title}</h1>

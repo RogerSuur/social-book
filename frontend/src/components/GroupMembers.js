@@ -9,7 +9,6 @@ const GroupMembers = ({ groupId }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    console.log("groupMembers", `/groupmembers/${groupId}`);
     const loadMembers = async () => {
       try {
         const response = await makeRequest(`/groupmembers/${groupId}`);
@@ -36,8 +35,8 @@ const GroupMembers = ({ groupId }) => {
         className="profile-image"
         src={
           member.imagePath
-            ? `../images/${member.imagePath}`
-            : "https://hopatcongpolice.org/wp-content/uploads/2019/03/default-person.png"
+            ? `${process.env.PUBLIC_URL}/images/${member.imagePath}`
+            : `${process.env.PUBLIC_URL}/images/defaultuser.jpg`
         }
         alt={`${member.userName}`}
       />
