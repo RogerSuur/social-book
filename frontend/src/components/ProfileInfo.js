@@ -44,7 +44,7 @@ const ProfileInfo = () => {
   const imageHandler = () => {
     const source = user?.avatarImage
       ? `${process.env.PUBLIC_URL}/images/${user.avatarImage}`
-      : `${process.env.PUBLIC_URL}/images/${user.avatarImage}/defaultuser.jpg`;
+      : `${process.env.PUBLIC_URL}/defaultuser.jpg`;
 
     const image = <img className="profile-image" src={source} />;
     console.log(source);
