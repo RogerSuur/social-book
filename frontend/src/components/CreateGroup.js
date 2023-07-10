@@ -1,13 +1,13 @@
-import { useState } from "react";
 import Modal from "./Modal";
 import AvatarUpdater from "./AvatarUpdater.js";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const CreateGroup = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [groupCreateForm, setGroupCreateForm] = useState({
-    Title: "",
-    Description: "",
-    inviteUsers: false,
+    title: "",
+    description: "",
     image: null,
   });
 
@@ -21,17 +21,10 @@ const CreateGroup = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+    console.log("name", name, "value", value);
     setGroupCreateForm((prevState) => ({
       ...prevState,
       [name]: value,
-    }));
-  };
-
-  const handleInviteUsersChange = (event) => {
-    const { checked } = event.target;
-    setGroupCreateForm((prevState) => ({
-      ...prevState,
-      inviteUsers: checked,
     }));
   };
 
@@ -61,8 +54,9 @@ const CreateGroup = () => {
             <input
               type="text"
               name="title"
-              value={groupCreateForm.Title}
+              value={groupCreateForm.title}
               onChange={handleChange}
+              required
             />
           </label>
           <br />
@@ -70,20 +64,13 @@ const CreateGroup = () => {
             Description:
             <textarea
               name="description"
-              value={groupCreateForm.Description}
+              value={groupCreateForm.description}
               onChange={handleChange}
+              required
             ></textarea>
           </label>
           <br />
-          <label>
-            Invite Users:
-            <input
-              type="checkbox"
-              name="inviteUsers"
-              checked={groupCreateForm.inviteUsers}
-              onChange={handleInviteUsersChange}
-            />
-          </label>
+
           <br />
           {/* <label>
             Image:
@@ -95,7 +82,7 @@ const CreateGroup = () => {
             />
           </label> */}
           <AvatarUpdater onUploadSuccess={closeModal} />
-          <br />
+
           <button type="submit">Create</button>
         </form>
       </Modal>
