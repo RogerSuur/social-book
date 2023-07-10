@@ -219,7 +219,6 @@ nav {
 }
 
 .group-extra {
-
   box-shadow: 5px 5px 5px rgb(184, 184, 184);
   background-color: #ffffff;
   margin-top: 40px;
@@ -233,6 +232,18 @@ nav {
   box-shadow: 0 0 8px black;
   min-width: 300px;
 }
+
+.group-image {
+  width: "20vw";
+  height: "20vw";
+  object-fit: "cover";
+  object-position: "0% 100%";
+}
+
+.iconoir-add-circle {
+  font-size: 20px;
+}
+
 .search-it {
   display: block;
   margin: 0 auto;

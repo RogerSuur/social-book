@@ -2,6 +2,8 @@ import Modal from "./Modal";
 import AvatarUpdater from "./AvatarUpdater.js";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import GenericGroupList from "./GenericGroupList";
+import { USER_CREATED_GROUPS_URL } from "../utils/routes";
 
 const CreateGroup = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -9,7 +11,6 @@ const CreateGroup = () => {
   const [groupCreateForm, setGroupCreateForm] = useState({
     title: "",
     description: "",
-    image: null,
   });
 
   const openModal = () => {
@@ -22,7 +23,6 @@ const CreateGroup = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    console.log("name", name, "value", value);
     setGroupCreateForm((prevState) => ({
       ...prevState,
       [name]: value,
@@ -32,8 +32,6 @@ const CreateGroup = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     // Send the groupCreateForm data to the backend handler
-    console.log(groupCreateForm);
-
     try {
       const response = await axios.post(
         "http://localhost:8000/creategroup",
@@ -43,9 +41,7 @@ const CreateGroup = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-
       setErrMsg(response.data?.message);
-
       // props.onPostsUpdate();
       //ACtion for creating new group
     } catch (err) {
@@ -61,8 +57,7 @@ const CreateGroup = () => {
 
   return (
     <>
-      <p>Here you can create a group</p>
-      <button onClick={openModal}>Create New group</button>
+      <i className="iconoir-add-circle" onClick={openModal} />
       <Modal open={modalOpen} onClose={closeModal}>
         <form onSubmit={handleSubmit}>
           <label>

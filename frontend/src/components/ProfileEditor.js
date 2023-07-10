@@ -35,13 +35,10 @@ const ProfileEditor = (props) => {
         })
         .then((response) => {
           setUser(response.data.user);
-          console.log(response.data.user);
         });
     };
     loadUser();
   }, [modalOpen]);
-
-  console.log(user, "USER");
 
   const onSubmit = async (data) => {
     try {
@@ -53,8 +50,6 @@ const ProfileEditor = (props) => {
           headers: { "Content-Type": "application/json" },
         }
       );
-
-      console.log("RESPONSE:", JSON.stringify(response));
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");

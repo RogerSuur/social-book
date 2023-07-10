@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { makeRequest } from "../services/makeRequest";
 import Modal from "./Modal";
 import { Link } from "react-router-dom";
+import ImageHandler from "../utils/imageHandler";
 
 const GroupMembers = ({ groupId }) => {
   const [groupMembers, setGroupMembers] = useState([]);
@@ -14,10 +15,11 @@ const GroupMembers = ({ groupId }) => {
         const response = await makeRequest(`/groupmembers/${groupId}`);
         if (response !== null) {
           setGroupMembers(response);
-          console.log(response);
         }
+        console.log(response);
       } catch (error) {
-        setError(error.message);
+        setError(error);
+        console.log(error.response?.status);
       }
     };
     loadMembers();
@@ -29,17 +31,7 @@ const GroupMembers = ({ groupId }) => {
       <Link to={`/profile/${member.userId}`}>
         <p>{member.userName}</p>
       </Link>
-      {/* <p>Username: {member.userName}</p> */}
-      <p>Image Path: {member.imagePath}</p>
-      <img
-        className="profile-image"
-        src={
-          member.imagePath
-            ? `${process.env.PUBLIC_URL}/images/${member.imagePath}`
-            : `${process.env.PUBLIC_URL}/images/defaultuser.jpg`
-        }
-        alt={`${member.userName}`}
-      />
+      {ImageHandler(member.imagePath, "defaultuser.jpg", "profile-image")}
     </div>
   ));
 
@@ -54,19 +46,16 @@ const GroupMembers = ({ groupId }) => {
   return (
     <>
       {groupMembers.length > 0 ? (
-        <>
-          <button onClick={openModal}>
-            <p>{groupMembers.length} members</p>
+        <button onClick={openModal}>
+          <p>{groupMembers.length} members</p>
 
-            <Modal open={modalOpen} onClose={closeModal}>
-              {groupMembersMap}
-            </Modal>
-          </button>
-        </>
+          <Modal open={modalOpen} onClose={closeModal}>
+            {groupMembersMap}
+          </Modal>
+        </button>
       ) : (
         <p>Apply to become a member of this group</p>
       )}
-      ;
     </>
   );
 };
