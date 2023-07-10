@@ -2,8 +2,13 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 
 const Modal = ({ text, children, open, onClose }) => (
-  <Popup open={open} onClose={onClose} modal>
-    <span> {children}</span>
+  <Popup
+    style={{ height: "300px", overflow: "initial" }}
+    open={open}
+    onClose={onClose}
+    modal
+  >
+    <span style={{ overflow: "auto" }}> {children}</span>
   </Popup>
 );
 

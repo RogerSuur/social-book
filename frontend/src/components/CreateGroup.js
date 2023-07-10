@@ -28,11 +28,10 @@ const CreateGroup = () => {
     }));
   };
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
+  const handleImageUpload = (imageFile) => {
     setGroupCreateForm((prevState) => ({
       ...prevState,
-      image: file,
+      image: imageFile,
     }));
   };
 
@@ -81,7 +80,7 @@ const CreateGroup = () => {
               onChange={handleImageUpload}
             />
           </label> */}
-          <AvatarUpdater onUploadSuccess={closeModal} />
+          <AvatarUpdater onUploadSuccess={handleImageUpload} />
 
           <button type="submit">Create</button>
         </form>

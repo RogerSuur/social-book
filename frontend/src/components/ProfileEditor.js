@@ -31,6 +31,7 @@ const ProfileEditor = (props) => {
         })
         .then((response) => {
           setUser(response.data.user);
+          console.log(response.data.user);
         });
     };
     loadUser();
@@ -74,7 +75,7 @@ const ProfileEditor = (props) => {
             <div className="top-part">
               <img
                 className="profile-image"
-                src={`images/${user.id}/${user.avatarImage}`}
+                src={`../images/${user.avatarImage}`}
                 alt={`${user.firstName}`}
               />
 

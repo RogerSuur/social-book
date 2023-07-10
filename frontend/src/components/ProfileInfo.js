@@ -54,7 +54,7 @@ const ProfileInfo = () => {
                   objectFit: "cover",
                   objectPosition: "0% 100%",
                 }}
-                src={`images/${user.id}/${user.avatarImage}`}
+                src={`../images/${user.avatarImage}`}
                 alt={`${user.firstName}`}
               ></img>
             </div>

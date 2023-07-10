@@ -15,6 +15,7 @@ const GroupMembers = ({ groupId }) => {
         const response = await makeRequest(`/groupmembers/${groupId}`);
         if (response !== null) {
           setGroupMembers(response);
+          console.log(response);
         }
       } catch (error) {
         setError(error.message);
@@ -31,6 +32,15 @@ const GroupMembers = ({ groupId }) => {
       </Link>
       {/* <p>Username: {member.userName}</p> */}
       <p>Image Path: {member.imagePath}</p>
+      <img
+        className="profile-image"
+        src={
+          member.imagePath
+            ? `../images/${member.imagePath}`
+            : "https://hopatcongpolice.org/wp-content/uploads/2019/03/default-person.png"
+        }
+        alt={`${member.userName}`}
+      />
     </div>
   ));
 

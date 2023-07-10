@@ -20,7 +20,7 @@ const AvatarUpdater = ({ onUploadSuccess }) => {
       try {
         // Send the image data to the server using Axios
         await axios.post(IMAGE_UPLOAD_URL, formData, { withCredentials: true });
-        onUploadSuccess();
+        onUploadSuccess(blob);
         console.log("Image uploaded successfully!");
       } catch (err) {
         if (!err?.response) {
@@ -50,7 +50,7 @@ const AvatarUpdater = ({ onUploadSuccess }) => {
       <button onClick={handleClick}>Save image</button>
       {errMsg && <h3>{errMsg}</h3>}
       <FileUploader
-        onFileSelectSuccess={(file) => setSelectedImage(file)}
+        onFileSelectSuccess={(file) => onUploadSuccess(file)}
         onFileSelectError={({ error }) => setErrMsg(error)}
       />
     </>

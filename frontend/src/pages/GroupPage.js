@@ -33,7 +33,7 @@ const GroupPage = () => {
           objectFit: "cover",
           objectPosition: "0% 100%",
         }}
-        src={`images/${group.avatarImage}`}
+        src={`../images/${group.imagePath}`}
         alt={`groupId: ${groupId}`}
       ></img>
       <h1>{group.title}</h1>
