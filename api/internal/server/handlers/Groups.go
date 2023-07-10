@@ -179,3 +179,60 @@ func (app *Application) CreateGroup(rw http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func (app *Application) GroupPosts(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		vars := mux.Vars(r)
+		offset := vars["offset"]
+		offsetInt, err := strconv.ParseInt(offset, 10, 64)
+
+		if offsetInt < 0 || err != nil {
+			app.Logger.Printf("DATA PARSE error: %v", err)
+			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
+		}
+
+		groupIdStr := vars["groupId"]
+
+		groupId, err := strconv.ParseInt(groupIdStr, 10, 64)
+
+		if groupId < 0 || err != nil {
+			app.Logger.Printf("DATA PARSE error: %v", err)
+			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
+		}
+
+		userId, err := app.UserService.GetUserID(r)
+
+		if err != nil {
+			app.Logger.Printf("Cannot get user ID: %s", err)
+			http.Error(rw, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		isGroupMember, err := app.GroupMemberService.IsGroupMember(groupId, userId)
+
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if !isGroupMember {
+			app.Logger.Printf("User %d is not a member of this group", userId)
+			http.Error(rw, "Not a member of this group", http.StatusForbidden)
+			return
+		}
+
+		feed, err := app.PostService.GetGroupPosts(groupId, offsetInt)
+
+		if err != nil {
+			app.Logger.Printf("Failed fetching posts: %v", err)
+			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
+
+		json.NewEncoder(rw).Encode(&feed)
+
+	default:
+		http.Error(rw, "method is not supported", http.StatusNotFound)
+		return
+	}
+}
