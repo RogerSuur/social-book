@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroller";
 import ImageHandler from "../utils/imageHandler";
+import EmojiPicker from "emoji-picker-react";
 
 const Chatbox = ({ toggleChat, chat, user }) => {
   const [messageHistory, setMessageHistory] = useState([]);
@@ -145,8 +146,18 @@ const Chatbox = ({ toggleChat, chat, user }) => {
 
   console.log(hasMoreMessages, "MSS");
 
+  const emojiToChat = (event) => {
+    console.log(event);
+  };
+
   const chatbox = (
     <div className="chatbox">
+      <EmojiPicker
+        height="40vh"
+        width="20vw"
+        onEmojiClick={(e) => emojiToChat(e)}
+      />
+
       <div className="chat-title">
         {image()}
         {chatName}

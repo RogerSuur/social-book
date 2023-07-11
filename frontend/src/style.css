@@ -2,6 +2,13 @@
   box-sizing: border-box; 
 }
 
+.EmojiPickerReact{
+  --epr-emoji-size: 1vw;
+  --epr-search-input-height: 20px;
+  --epr-category-navigation-button-size: 10px;
+  --epr-preview-height: 20px;
+}
+
 body {
   min-width: 320px;
   margin: 0;
