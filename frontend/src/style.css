@@ -107,6 +107,12 @@ nav {
   max-width: 300px;
 }
 
+.exit-but{
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
 /* Add media query for smaller screens */
 
 .chatbox-img {
@@ -143,6 +149,9 @@ nav {
   border: 1px solid black;
   padding: 10px;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .message-history {
@@ -412,6 +421,8 @@ margin: 5px;
   width: 20%;
   padding-top: 5%;
 }
+
+
 
 .profile-column-top {
   

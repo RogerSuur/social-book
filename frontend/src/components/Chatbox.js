@@ -150,7 +150,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
       <div className="chat-title">
         {image()}
         {chatName}
-        <button onClick={closeChat}>Close</button>
+        <img className="exit-but" src={`${process.env.PUBLIC_URL}/Vectorexit.png`} onClick={closeChat}/>
       </div>
       <div className="message-history">
         <InfiniteScroll
