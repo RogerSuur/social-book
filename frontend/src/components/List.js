@@ -3,17 +3,20 @@ import axios from "axios";
 
 const List = ({ url, mapFunction }) => {
   const [listData, setListData] = useState([]);
+  // console.log(url);
   useEffect(() => {
     const fetchData = async () => {
       await axios
         .get(url, {
           withCredentials: true,
         })
-        .then((response) => setListData(response.data));
+        .then((response) => {
+          setListData(response.data);
+        });
     };
     fetchData();
   }, [url]);
-  const renderedList = listData.map(mapFunction);
+  const renderedList = listData?.map(mapFunction);
   return <div>{renderedList}</div>;
 };
 

@@ -26,11 +26,10 @@ const GroupMembers = ({ groupId }) => {
 
   const groupMembersMap = groupMembers.map((member, index) => (
     <div key={index}>
-      <p>User ID: {member.userId}</p>
-      <Link to={`/profile/${member.userId}`}>
-        <p>{member.userName}</p>
+      <Link to={`/profile/${member.Id}`}>
+        {ImageHandler(member.ImagePath, "defaultuser.jpg", "profile-image")}
+        <p>{member.Nickname}</p>
       </Link>
-      {ImageHandler(member.imagePath, "defaultuser.jpg", "profile-image")}
     </div>
   ));
 
