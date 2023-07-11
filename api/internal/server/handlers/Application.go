@@ -28,7 +28,6 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 		repositories.SessionRepo,
 		repositories.FollowerRepo,
 		repositories.NotificationRepo,
-		repositories.GroupUserRepo,
 	)
 
 	notificationServices := services.InitNotificationService(
@@ -52,16 +51,16 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 			userServices,
 			notificationServices,
 			chatServices,
-			services.InitGroupService(logger, repositories.GroupRepo),
-			services.InitGroupMemberService(logger, repositories.GroupUserRepo),
+			services.InitGroupService(logger, repositories.GroupRepo, repositories.GroupMemberRepo),
+			services.InitGroupMemberService(logger, repositories.GroupMemberRepo),
 		),
 		UserService:         userServices,
 		NotificationService: notificationServices,
 		PostService:         services.InitPostService(logger, repositories.PostRepo, repositories.AllowedPostRepo),
 		CommentService:      services.InitCommentService(logger, repositories.CommentRepo),
 		ChatService:         chatServices,
-		GroupService:        services.InitGroupService(logger, repositories.GroupRepo),
-		GroupMemberService:  services.InitGroupMemberService(logger, repositories.GroupUserRepo),
+		GroupService:        services.InitGroupService(logger, repositories.GroupRepo, repositories.GroupMemberRepo),
+		GroupMemberService:  services.InitGroupMemberService(logger, repositories.GroupMemberRepo),
 		GroupEventService:   services.InitGroupEventService(logger, repositories.GroupEventAttendance, repositories.EventRepo),
 	}
 }

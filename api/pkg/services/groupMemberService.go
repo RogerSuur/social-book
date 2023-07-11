@@ -12,10 +12,10 @@ type IGroupMemberService interface {
 
 type GroupMemberService struct {
 	Logger                *log.Logger
-	GroupMemberRepository models.IGroupUserRepository
+	GroupMemberRepository models.IGroupMemberRepository
 }
 
-func InitGroupMemberService(logger *log.Logger, groupMemberRepo *models.GroupUserRepository) *GroupMemberService {
+func InitGroupMemberService(logger *log.Logger, groupMemberRepo *models.GroupMemberRepository) *GroupMemberService {
 	return &GroupMemberService{
 		Logger:                logger,
 		GroupMemberRepository: groupMemberRepo,

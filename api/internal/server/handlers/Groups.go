@@ -166,12 +166,15 @@ func (app *Application) CreateGroup(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "Get user error", http.StatusBadRequest)
 		}
 
-		_, err = app.GroupService.CreateGroup(JSONdata, userId)
+		result, err := app.GroupService.CreateGroup(JSONdata, userId)
 
 		if err != nil {
 			http.Error(rw, "err", http.StatusBadRequest)
 			return
 		}
+
+		app.Logger.Printf("Group with id %d created successfully", result)
+		rw.WriteHeader(http.StatusCreated)
 
 	default:
 		http.Error(rw, "err", http.StatusBadRequest)

@@ -7,38 +7,38 @@ import (
 	"time"
 )
 
-type GroupMemberModel struct {
+type GroupMember struct {
 	UserId   int64
 	GroupId  int64
 	JoinedAt time.Time
 }
 
-type IGroupUserRepository interface {
-	Insert(groupMember *GroupMemberModel) (int64, error)
+type IGroupMemberRepository interface {
+	Insert(groupMember *GroupMember) (int64, error)
 	GetGroupMembersByGroupId(groupId int64) ([]*User, error)
 	IsGroupMember(group_id int64, userId int64) (bool, error)
 }
 
-type GroupUserRepository struct {
+type GroupMemberRepository struct {
 	Logger *log.Logger
 	DB     *sql.DB
 }
 
-func NewGroupUserRepo(db *sql.DB) *GroupUserRepository {
-	return &GroupUserRepository{
+func NewGroupMemberRepo(db *sql.DB) *GroupMemberRepository {
+	return &GroupMemberRepository{
 		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
 		DB:     db,
 	}
 }
 
-func (repo GroupUserRepository) Insert(groupMember *GroupMemberModel) (int64, error) {
+func (repo GroupMemberRepository) Insert(groupMember *GroupMember) (int64, error) {
 	query := `INSERT INTO user_groups (user_id, group_id, joined_at)
 	VALUES(?, ?, ?)`
 
 	args := []interface{}{
 		groupMember.UserId,
 		groupMember.GroupId,
-		time.Now(),
+		groupMember.JoinedAt,
 	}
 
 	result, err := repo.DB.Exec(query, args...)
@@ -58,7 +58,7 @@ func (repo GroupUserRepository) Insert(groupMember *GroupMemberModel) (int64, er
 	return lastId, nil
 }
 
-func (repo GroupUserRepository) GetGroupMembersByGroupId(groupId int64) ([]*User, error) {
+func (repo GroupMemberRepository) GetGroupMembersByGroupId(groupId int64) ([]*User, error) {
 	query := `SELECT ug.user_id, u.forname, u.surname, u.nickname, u.image_path FROM user_groups ug
 	LEFT JOIN users u ON
 	u.id = ug.user_id
@@ -92,7 +92,7 @@ func (repo GroupUserRepository) GetGroupMembersByGroupId(groupId int64) ([]*User
 	return groupMembers, nil
 }
 
-func (repo GroupUserRepository) IsGroupMember(groupId int64, userId int64) (bool, error) {
+func (repo GroupMemberRepository) IsGroupMember(groupId int64, userId int64) (bool, error) {
 	query := `SELECT COUNT(id) FROM user_groups
 	WHERE user_id = ? AND group_id = ?
 	GROUP BY group_id`
