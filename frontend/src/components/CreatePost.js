@@ -49,7 +49,6 @@ const CreatePost = (props) => {
         const response = await axios.get("http://localhost:8000/followers", {
           withCredentials: true,
         });
-        console.log(response);
         setFollowers(response.data);
       } catch (err) {
         console.error(err);

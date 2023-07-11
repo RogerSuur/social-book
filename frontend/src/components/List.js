@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const List = ({ url, mapFunction }) => {
+const List = ({ url, mapFunction, loadNewGroups }) => {
   const [listData, setListData] = useState([]);
-  // console.log(url);
   useEffect(() => {
     const fetchData = async () => {
       await axios
@@ -15,7 +14,7 @@ const List = ({ url, mapFunction }) => {
         });
     };
     fetchData();
-  }, [url]);
+  }, [url, loadNewGroups]);
   const renderedList = listData?.map(mapFunction);
   return <div>{renderedList}</div>;
 };

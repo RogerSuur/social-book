@@ -1,11 +1,8 @@
 import Modal from "./Modal";
-import AvatarUpdater from "./AvatarUpdater.js";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import GenericGroupList from "./GenericGroupList";
-import { USER_CREATED_GROUPS_URL } from "../utils/routes";
 
-const CreateGroup = () => {
+const CreateGroup = ({ onGroupCreated }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [groupCreateForm, setGroupCreateForm] = useState({
@@ -44,6 +41,7 @@ const CreateGroup = () => {
       setErrMsg(response.data?.message);
       // props.onPostsUpdate();
       //ACtion for creating new group
+      onGroupCreated();
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -81,17 +79,6 @@ const CreateGroup = () => {
             ></textarea>
           </label>
           <br />
-
-          <br />
-          {/* <label>
-            Image:
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
-          </label> */}
 
           <button type="submit">Create</button>
         </form>
