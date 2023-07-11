@@ -261,6 +261,17 @@ nav {
   object-position: "0% 100%";
 }
 
+/* .modal{
+    top: '35%';
+    left: '50%';
+    right: 'auto';
+    bottom: 'auto';
+    background-color: green;
+    margin-right: '-50%';
+    width: '60%';
+    transform: 'translate(-40%, -10%)'
+} */
+
 .iconoir-add-circle {
   font-size: 20px;
 }
@@ -390,14 +401,14 @@ margin: 5px;
   margin-bottom: 10px;
 }
 
-.popup-content{
+/* .popup-content{
   overflow: auto;
   height: 80vh;
   flex-wrap: wrap;
   display: flex;
   justify-content: center;
   width: 20%;
-}
+} */
 
 .profile-column-top {
   

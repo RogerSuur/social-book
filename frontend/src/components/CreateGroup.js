@@ -55,34 +55,36 @@ const CreateGroup = ({ onGroupCreated }) => {
 
   return (
     <>
-      <i className="iconoir-add-circle" onClick={openModal} />
-      <Modal open={modalOpen} onClose={closeModal}>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Title:
-            <input
-              type="text"
-              name="title"
-              value={groupCreateForm.title}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <br />
-          <label>
-            Description:
-            <textarea
-              name="description"
-              value={groupCreateForm.description}
-              onChange={handleChange}
-              required
-            ></textarea>
-          </label>
-          <br />
+      <div className="newModal">
+        <i className="iconoir-add-circle" onClick={openModal} />
+        <Modal open={modalOpen} onClose={closeModal}>
+          <form onSubmit={handleSubmit}>
+            <label>
+              Title:
+              <input
+                type="text"
+                name="title"
+                value={groupCreateForm.title}
+                onChange={handleChange}
+                required
+              />
+            </label>
+            <br />
+            <label>
+              Description:
+              <textarea
+                name="description"
+                value={groupCreateForm.description}
+                onChange={handleChange}
+                required
+              ></textarea>
+            </label>
+            <br />
 
-          <button type="submit">Create</button>
-        </form>
-      </Modal>
+            <button type="submit">Create</button>
+          </form>
+        </Modal>
+      </div>
       {/* <button onClick={openModal}>Upload New Image</button> */}
     </>
   );

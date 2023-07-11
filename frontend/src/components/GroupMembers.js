@@ -9,6 +9,8 @@ const GroupMembers = ({ groupId }) => {
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  console.log(groupId);
+
   useEffect(() => {
     const loadMembers = async () => {
       try {
@@ -22,7 +24,7 @@ const GroupMembers = ({ groupId }) => {
       }
     };
     loadMembers();
-  }, []);
+  }, [groupId]);
 
   const groupMembersMap = groupMembers.map((member, index) => (
     <div key={index}>
@@ -47,7 +49,7 @@ const GroupMembers = ({ groupId }) => {
         <button onClick={openModal}>
           <p>{groupMembers.length} members</p>
 
-          <Modal open={modalOpen} onClose={closeModal}>
+          <Modal className="modal" open={modalOpen} onClose={closeModal}>
             {groupMembersMap}
           </Modal>
         </button>
