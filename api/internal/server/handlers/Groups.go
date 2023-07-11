@@ -127,14 +127,14 @@ func (app *Application) GroupMembers(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		groups, err := app.GroupMemberService.GetGroupMembers(groupId)
+		members, err := app.GroupMemberService.GetGroupMembers(groupId)
 
 		if err != nil {
 			app.Logger.Printf("Failed fetching groups: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
 		}
 
-		json.NewEncoder(rw).Encode(&groups)
+		json.NewEncoder(rw).Encode(&members)
 
 	default:
 		http.Error(rw, "method is not supported", http.StatusNotFound)
