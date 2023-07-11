@@ -19,11 +19,10 @@ const Chatbox = ({ toggleChat, chat, user }) => {
 
   console.log(user, "USER");
 
-  const defaultImage = () =>
-    chat.user_id ? "defaultuser.jpg" : "defaultgroup.png";
-
   const image = () =>
-    ImageHandler(chat?.avatarImage, defaultImage(), "chatbox-img");
+    chat?.user_id > 0
+      ? ImageHandler(chat?.avatar_image, "defaultuser.jpg", "chatbox-img")
+      : ImageHandler("", "defaultgroup.png", "chatbox-img");
 
   const loadMessages = useCallback(async () => {
     if (loading) {
@@ -108,7 +107,8 @@ const Chatbox = ({ toggleChat, chat, user }) => {
         default:
           return (
             <p key={index} className="message">
-              {msg.body} {getTime(msg.timestamp)}
+              {msg.group_id > 0 && msg.sender_name} {msg.body}{" "}
+              {getTime(msg.timestamp)}
             </p>
           );
       }

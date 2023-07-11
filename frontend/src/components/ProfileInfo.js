@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import { useOutletContext } from "react-router-dom";
 import { PROFILE_URL } from "../utils/routes";
 import ImageHandler from "../utils/imageHandler.js";
 
 const ProfileInfo = () => {
   const [user, setUser] = useState({});
   const { id } = useParams();
-  const [errMsg, setErrMsg] = useState("");
   const { socketUrl } = useOutletContext();
   const { sendJsonMessage } = useWebSocketConnection(socketUrl);
 
@@ -63,27 +61,31 @@ const ProfileInfo = () => {
             <div className="column">{user.lastName}</div>
           </div>
           <div className="row">
-            <div className="column-title">Email</div>
-            <div className="column">{user.email}</div>
-          </div>
-          <div className="row">
-            <div className="column-title">Birthday</div>
-            <div className="column">
-              {new Date(user.birthday).toLocaleDateString("en-UK", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </div>
-          </div>
-          <div className="row">
             <div className="column-title">Nickname</div>
             <div className="column">{user.nickname}</div>
           </div>
-          <div className="row">
-            <div className="column-title">About Me</div>
-            <div className="column">{user.about}</div>
-          </div>
+          {(user?.isPublic || user?.isFollowed) && (
+            <>
+              <div className="row">
+                <div className="column-title">Email</div>
+                <div className="column">{user.email}</div>
+              </div>
+              <div className="row">
+                <div className="column-title">Birthday</div>
+                <div className="column">
+                  {new Date(user.birthday).toLocaleDateString("en-UK", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </div>
+              </div>
+              <div className="row">
+                <div className="column-title">About Me</div>
+                <div className="column">{user.about}</div>
+              </div>
+            </>
+          )}
           <div className="row">
             <div className="column-title">User Joined</div>
             <div className="column">
@@ -95,8 +97,8 @@ const ProfileInfo = () => {
             </div>
           </div>
           <div className="row">
-            <div className="column-title">User Profile is public</div>
-            <div className="column">{user.isPublic ? "Yes" : "No"}</div>
+            <div className="column-title">Profile Type</div>
+            <div className="column">{user.isPublic ? "Public" : "Private"}</div>
           </div>
           <button disabled={user.isFollowed} onClick={handleFollow}>
             Follow
