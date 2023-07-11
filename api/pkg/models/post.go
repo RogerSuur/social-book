@@ -32,6 +32,7 @@ type FeedPost struct {
 
 type IPostRepository interface {
 	GetAllByUserId(id int64, offset int64) ([]*FeedPost, error)
+	GetAllByGroupId(id int64, offset int64) ([]*FeedPost, error)
 	GetAllFeedPosts(currentUserId int64, offset int64) ([]*FeedPost, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
@@ -99,15 +100,61 @@ func (repo PostRepository) GetAllByUserId(id int64, offset int64) ([]*FeedPost, 
 	p.user_id = u.id
 	LEFT JOIN comments c ON
 	p.id = c.post_id
-	WHERE p.user_id = ?
+	WHERE p.user_id = ? AND p.id < ?
 	GROUP BY p.id
-    ORDER BY p.created_at DESC
-	LIMIT ? OFFSET ?`
+    ORDER BY p.id DESC
+	LIMIT ?`
 
 	args := []interface{}{
 		id,
+		offset,
 		FeedLimit,
-		(offset * FeedLimit),
+	}
+
+	rows, err := repo.DB.Query(stmt, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	posts := []*FeedPost{}
+
+	for rows.Next() {
+		post := &FeedPost{}
+
+		err := rows.Scan(&post.Id, &post.UserId, &post.UserName, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.CommentCount)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(post)
+
+		posts = append(posts, post)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}
+
+func (repo PostRepository) GetAllByGroupId(groupId int64, offset int64) ([]*FeedPost, error) {
+
+	stmt := `SELECT p.id, p.user_id, u.nickname, p.content, p.created_at, p.image_path, p.privacy_type_id, COUNT(DISTINCT c.id) FROM posts p
+	LEFT JOIN users u on
+	p.user_id = u.id
+	LEFT JOIN comments c ON
+	p.id = c.post_id
+	WHERE p.group_id = ? AND p.id < ?
+	GROUP BY p.id
+	ORDER BY p.id DESC
+	LIMIT ?`
+
+	args := []interface{}{
+		groupId,
+		offset,
+		FeedLimit,
 	}
 
 	rows, err := repo.DB.Query(stmt, args...)

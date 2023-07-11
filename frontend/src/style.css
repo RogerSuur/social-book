@@ -86,7 +86,9 @@ nav {
   color: green;
   right: 0;
 }
-
+.pepe{
+  list-style-type: none;
+}
 .chat-sidebar {
   
   box-shadow: 5px 5px 5px rgb(184, 184, 184);
@@ -218,8 +220,26 @@ nav {
   border-top: 1px solid #dddddd;
 }
 
-.group-extra {
+.group-page{
+  box-shadow: 5px 5px 5px rgb(184, 184, 184);
+  background-color: #ffffff;
+  margin-top: 40px;
+  margin-right: 50px;
+  margin-left: 30px;
+  padding: 10px;
+  outline: none;
+  border-radius: 20px;
+  max-height: 600px;
+  overflow: auto;
+  box-shadow: 0 0 8px black;
+  min-width: 300px;
+  display: flex;
+  justify-items: center;
+  flex-direction: column;
+  align-items: center;
+}
 
+.group-extra {
   box-shadow: 5px 5px 5px rgb(184, 184, 184);
   background-color: #ffffff;
   margin-top: 40px;
@@ -233,6 +253,18 @@ nav {
   box-shadow: 0 0 8px black;
   min-width: 300px;
 }
+
+.group-image {
+  width: "20vw";
+  height: "20vw";
+  object-fit: "cover";
+  object-position: "0% 100%";
+}
+
+.iconoir-add-circle {
+  font-size: 20px;
+}
+
 .search-it {
   display: block;
   margin: 0 auto;
@@ -286,6 +318,33 @@ nav {
 
 }
 
+.hov{
+ margin-top: 20px;
+}
+
+.hov:hover{
+  background-color: #ececec;
+  cursor: pointer;
+ 
+  border-radius: 20px;
+
+}
+
+.follower-pic{
+  height: 10vh;
+  width: 10vh;
+  
+}
+
+.follower{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-items: center;
+}
+
+
 .bigger{
   padding: 10px;
   font-size: large;
@@ -295,7 +354,7 @@ nav {
 }
 .bigger:hover {
   background-color: #f1f1f1;
-  
+  cursor: pointer;
 }
 
 .top-part{
@@ -329,6 +388,15 @@ margin: 5px;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+}
+
+.popup-content{
+  overflow: auto;
+  height: 80vh;
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  width: 20%;
 }
 
 .profile-column-top {
@@ -391,7 +459,7 @@ margin-bottom: 5px;
   width: 150px;
   height: 150px;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: 20%;
 }
 .umber{
   display: inline-flex;
@@ -408,7 +476,6 @@ align-items: center;
 .profile-actions button {
   display: flex;
   width: 110px;
-  
   flex-direction: column;
   justify-content: center;
   flex-shrink: 0;

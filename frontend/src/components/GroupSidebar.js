@@ -15,23 +15,20 @@ const GroupSidebar = () => {
 
   const sidebarItems = (
     <>
-      
       <SearchBar setSearchResults={setSearchResults} />
       <SearchResults searchResults={searchResults} />
       <ul className="group-sidebar">
         <h1>Groups</h1>
-        <li>
+        <li className="pepe">
           <GenericGroupList url={USER_GROUPS_URL} />
         </li>
         <h1>My groups</h1>
-        <i class="add-circle">
-          <CreateGroup />
-        </i>
-        <li>
+        <CreateGroup />
+        <li className="pepe">
           <GenericGroupList url={USER_CREATED_GROUPS_URL} />
         </li>
         <h1>Events</h1>
-        <li>
+        <li className="pepe">
           <GenericEventList url={ACCEPTED_EVENTS_URL} />
         </li>
       </ul>

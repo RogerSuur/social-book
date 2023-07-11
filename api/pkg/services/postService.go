@@ -13,6 +13,7 @@ type IPostService interface {
 	CreatePost(post *models.Post) error
 	GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON, error)
 	GetProfilePosts(userId int64, offset int64) ([]*feedPostJSON, error)
+	GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSON, error)
 }
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
@@ -137,6 +138,31 @@ func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJS
 		})
 	}
 	// fmt.Println("feedPosts:", feedPosts)
+
+	return feedPosts, nil
+}
+
+func (s *PostService) GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSON, error) {
+
+	posts, err := s.PostRepository.GetAllByGroupId(groupId, offset)
+
+	if err != nil {
+		s.Logger.Printf("GetFeedPosts error: %s", err)
+	}
+
+	feedPosts := []*feedPostJSON{}
+
+	for _, p := range posts {
+		feedPosts = append(feedPosts, &feedPostJSON{
+			p.Id,
+			p.UserId,
+			p.UserName,
+			p.Content,
+			p.ImagePath,
+			p.CommentCount,
+			p.CreatedAt,
+		})
+	}
 
 	return feedPosts, nil
 }

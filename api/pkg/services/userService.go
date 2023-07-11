@@ -7,11 +7,9 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
-	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -40,9 +38,9 @@ type FollowerData struct {
 
 type IUserService interface {
 	Authenticate(handler http.HandlerFunc) http.HandlerFunc
-	AuthenticateGroupUser(handler http.HandlerFunc) http.HandlerFunc
 	UpdateUserData(userID int64, updateData ProfileJSON) error
 	GetUserData(requestingUserId int64, profileId int64) (*ProfileJSON, error)
+	GetUserByID(userID int64) (*models.User, error)
 	GetUserID(r *http.Request) (int64, error)
 	SetCookie(w http.ResponseWriter, sessionToken string)
 	ClearCookie(w http.ResponseWriter)
@@ -295,55 +293,6 @@ func (s *UserService) Authenticate(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (s *UserService) AuthenticateGroupUser(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		cookie, err := r.Cookie("session")
-		if err != nil {
-			s.Logger.Printf("No cookie found: %s", err)
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		session, err := s.SessionRepo.GetByToken(cookie.Value)
-
-		if err != nil {
-			s.Logger.Printf("No session found: %s", err)
-			http.Error(w, "Invalid session", http.StatusUnauthorized)
-			return
-		}
-
-		vars := mux.Vars(r)
-
-		groupIdStr := vars["groupId"]
-		groupId, err := strconv.ParseInt(groupIdStr, 10, 64)
-
-		if groupId < 0 || err != nil {
-			s.Logger.Printf("DATA PARSE error: %v", err)
-			http.Error(w, "DATA PARSE error", http.StatusBadRequest)
-		}
-
-		isGroupMember, err := s.GroupMemberRepository.IsGroupMember(groupId, session.UserId)
-
-		if err != nil {
-			s.Logger.Printf("Failed fetching group member status: %s", err)
-			return
-		}
-
-		if !isGroupMember {
-			http.Error(w, "Not a member of this group", http.StatusUnauthorized)
-			return
-		}
-
-		// required for auth handler
-		if handler == nil {
-			return
-		}
-
-		handler.ServeHTTP(w, r)
-	}
-}
-
 func (s *UserService) SetCookie(w http.ResponseWriter, sessionToken string) {
 	cookie := http.Cookie{
 		Name:   "session",
@@ -360,6 +309,10 @@ func (s *UserService) ClearCookie(w http.ResponseWriter) {
 		MaxAge: -1,
 	}
 	http.SetCookie(w, &cookie)
+}
+
+func (s *UserService) GetUserByID(id int64) (*models.User, error) {
+	return s.UserRepo.GetById(id)
 }
 
 func (s *UserService) GetUserID(r *http.Request) (int64, error) {

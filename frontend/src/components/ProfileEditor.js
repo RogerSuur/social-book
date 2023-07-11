@@ -40,8 +40,6 @@ const ProfileEditor = (props) => {
     loadUser();
   }, [modalOpen]);
 
-  console.log(user, "USER");
-
   const onSubmit = async (data) => {
     try {
       const response = await axios.post(
@@ -52,8 +50,6 @@ const ProfileEditor = (props) => {
           headers: { "Content-Type": "application/json" },
         }
       );
-
-      console.log("RESPONSE:", JSON.stringify(response));
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
