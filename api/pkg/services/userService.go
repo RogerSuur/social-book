@@ -40,6 +40,7 @@ type IUserService interface {
 	Authenticate(handler http.HandlerFunc) http.HandlerFunc
 	UpdateUserData(userID int64, updateData ProfileJSON) error
 	GetUserData(requestingUserId int64, profileId int64) (*ProfileJSON, error)
+	GetUserByID(userID int64) (*models.User, error)
 	GetUserID(r *http.Request) (int64, error)
 	SetCookie(w http.ResponseWriter, sessionToken string)
 	ClearCookie(w http.ResponseWriter)
@@ -308,6 +309,10 @@ func (s *UserService) ClearCookie(w http.ResponseWriter) {
 		MaxAge: -1,
 	}
 	http.SetCookie(w, &cookie)
+}
+
+func (s *UserService) GetUserByID(id int64) (*models.User, error) {
+	return s.UserRepo.GetById(id)
 }
 
 func (s *UserService) GetUserID(r *http.Request) (int64, error) {

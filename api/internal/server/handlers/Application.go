@@ -52,6 +52,8 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 			userServices,
 			notificationServices,
 			chatServices,
+			services.InitGroupService(logger, repositories.GroupRepo),
+			services.InitGroupMemberService(logger, repositories.GroupUserRepo),
 		),
 		UserService:         userServices,
 		NotificationService: notificationServices,

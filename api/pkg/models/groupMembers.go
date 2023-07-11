@@ -13,15 +13,9 @@ type GroupMemberModel struct {
 	JoinedAt time.Time
 }
 
-type GroupMember struct {
-	UserId    int64  `json:"userId"`
-	UserName  string `json:"userName"`
-	ImagePath string `json:"imagePath"`
-}
-
 type IGroupUserRepository interface {
 	Insert(groupMember *GroupMemberModel) (int64, error)
-	GetGroupMembersByGroupId(groupId int64) ([]*GroupMember, error)
+	GetGroupMembersByGroupId(groupId int64) ([]*User, error)
 	IsGroupMember(group_id int64, userId int64) (bool, error)
 }
 
@@ -64,8 +58,8 @@ func (repo GroupUserRepository) Insert(groupMember *GroupMemberModel) (int64, er
 	return lastId, nil
 }
 
-func (repo GroupUserRepository) GetGroupMembersByGroupId(groupId int64) ([]*GroupMember, error) {
-	query := `SELECT ug.user_id, u.nickname, u.image_path FROM user_groups ug
+func (repo GroupUserRepository) GetGroupMembersByGroupId(groupId int64) ([]*User, error) {
+	query := `SELECT ug.user_id, u.forname, u.surname, u.nickname, u.image_path FROM user_groups ug
 	LEFT JOIN users u ON
 	u.id = ug.user_id
 	WHERE group_id = ?`
@@ -79,12 +73,12 @@ func (repo GroupUserRepository) GetGroupMembersByGroupId(groupId int64) ([]*Grou
 
 	defer rows.Close()
 
-	groupMembers := []*GroupMember{}
+	groupMembers := []*User{}
 
 	for rows.Next() {
-		groupMember := &GroupMember{}
+		groupMember := &User{}
 
-		err := rows.Scan(&groupMember.UserId, &groupMember.UserName, &groupMember.ImagePath)
+		err := rows.Scan(&groupMember.Id, &groupMember.FirstName, &groupMember.LastName, &groupMember.Nickname, &groupMember.ImagePath)
 		if err != nil {
 			return nil, err
 		}
