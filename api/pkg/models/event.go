@@ -131,9 +131,9 @@ func (repo EventRepository) GetAllByUserId(id int64) ([]*Event, error) {
 	//TODO
 	//Get all events by attending user
 	query := `SELECT DISTINCT ge.id, group_id, ge.user_id, ge.created_at, ge.event_time, ge.timespan, ge.title, ge.description FROM group_events ge
-	INNER JOIN group_event_atenndance gea
-	ON gea.group_id = ge.group_id
-	WHERE gea.user_id = ? AND WHERE (gea.attending = true OR gea.attending IS NULL)`
+	INNER JOIN group_event_attendance gea
+	ON gea.event_id = ge.id
+	WHERE gea.user_id = ? AND (gea.is_attending = true OR gea.is_attending IS NULL)`
 
 	rows, err := repo.DB.Query(query, id)
 
@@ -152,7 +152,7 @@ func (repo EventRepository) GetAllByUserId(id int64) ([]*Event, error) {
 		}
 	}
 
-	repo.Logger.Printf("Found %d events for group %d", len(events), id)
+	repo.Logger.Printf("Found %d events for user %d", len(events), id)
 
 	return events, err
 }

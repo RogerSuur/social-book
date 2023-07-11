@@ -40,6 +40,7 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/groupmembers/{groupId}", app.UserService.Authenticate(app.GroupMembers)).Methods("GET")
 	r.HandleFunc("/groupfeed/{groupId}/{offset}", app.UserService.Authenticate(app.GroupPosts)).Methods("GET")
 	//Events
+	r.HandleFunc("/userevents", app.UserService.Authenticate(app.UserEvents)).Methods("GET")
 	r.HandleFunc("/groupevents/{groupId}", app.UserService.Authenticate(app.GroupEvents)).Methods("GET")
 	//Search
 	r.HandleFunc("/search/{searchcriteria}", app.UserService.Authenticate(app.Search)).Methods("GET")
