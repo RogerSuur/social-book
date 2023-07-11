@@ -151,7 +151,7 @@ func (app *Application) CreateGroup(rw http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
 		decoder.DisallowUnknownFields()
 
-		JSONdata := &models.CreateGroupFormData{}
+		JSONdata := &models.GroupJSON{}
 		err := decoder.Decode(&JSONdata)
 
 		if err != nil {

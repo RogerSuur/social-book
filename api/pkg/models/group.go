@@ -35,12 +35,6 @@ type SearchResult struct {
 	ImagePath string `json:"imagePath"`
 }
 
-type CreateGroupFormData struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	ImagePath   string `json:"imagePath"`
-}
-
 type IGroupRepository interface {
 	GetAllByCreatorId(userId int64) ([]*Group, error)
 	GetAllByMemberId(userId int64) ([]*Group, error)

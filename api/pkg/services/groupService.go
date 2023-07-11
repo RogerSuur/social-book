@@ -10,7 +10,7 @@ type IGroupService interface {
 	GetUserCreatedGroups(userId int64) ([]*models.UserGroup, error)
 	GetGroupById(groupId int64) (models.GroupJSON, error)
 	SearchGroupsAndUsers(searchString string) ([]*models.SearchResult, error)
-	CreateGroup(groupFormData *models.CreateGroupFormData, userId int64) (int64, error)
+	CreateGroup(groupFormData *models.GroupJSON, userId int64) (int64, error)
 }
 
 type GroupService struct {
@@ -92,7 +92,7 @@ func (s *GroupService) SearchGroupsAndUsers(searchString string) ([]*models.Sear
 	return result, err
 }
 
-func (s *GroupService) CreateGroup(groupFormData *models.CreateGroupFormData, userId int64) (int64, error) {
+func (s *GroupService) CreateGroup(groupFormData *models.GroupJSON, userId int64) (int64, error) {
 	group := &models.Group{
 		CreatorId:   userId,
 		ImagePath:   groupFormData.ImagePath,
