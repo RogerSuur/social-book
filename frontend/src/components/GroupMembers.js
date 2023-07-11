@@ -9,8 +9,6 @@ const GroupMembers = ({ groupId }) => {
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  console.log(groupId);
-
   useEffect(() => {
     const loadMembers = async () => {
       try {
