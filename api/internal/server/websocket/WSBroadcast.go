@@ -71,11 +71,9 @@ func (w *WebsocketServer) BroadcastFollowRequest(c *Client, followRequestId int6
 
 func (w *WebsocketServer) BroadcastSingleMessage(c *Client, message *models.Message) error {
 
-	recipientClients := []*Client{
-		w.getClientByUserID(message.RecipientId),
-	}
+	recipientClient := w.getClientByUserID(message.RecipientId)
 
-	if len(recipientClients) == 0 {
+	if recipientClient == nil {
 		w.Logger.Printf("Recipient client not found (recipient offline)")
 	} else {
 		w.Logger.Printf("Recipient client found (recipient online)")
@@ -117,7 +115,7 @@ func (w *WebsocketServer) BroadcastSingleMessage(c *Client, message *models.Mess
 			return err
 		}
 
-		recipientClients[0].gate <- Payload{
+		recipientClient.gate <- Payload{
 			Type: "message",
 			Data: dataToSend,
 		}
@@ -165,6 +163,11 @@ func (w *WebsocketServer) BroadcastGroupMessage(c *Client, message *models.Messa
 		}
 
 		for _, recipientClient := range recipientClients {
+
+			if recipientClient.clientID == c.clientID {
+				// skip the sender
+				continue
+			}
 
 			// pick the recipient user from the list of group members
 			var recipientUser *models.User
