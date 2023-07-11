@@ -4,42 +4,46 @@ import { GROUP_PAGE_URL } from "../utils/routes";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import GroupMembers from "../components/GroupMembers";
+import ImageHandler from "../utils/imageHandler";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
   const { groupId } = useParams();
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("group page request", GROUP_PAGE_URL, groupId);
     const loadGroup = async () => {
-      await axios
-        .get(GROUP_PAGE_URL + groupId, {
-          withCredentials: true,
-        })
-        .then((response) => {
-          console.log("response.data:", response.data);
-          setGroup(response.data);
-        });
+      try {
+        await axios
+          .get(GROUP_PAGE_URL + groupId, {
+            withCredentials: true,
+          })
+          .then((response) => {
+            setGroup(response.data);
+          });
+      } catch (err) {
+        setError(err.message);
+      }
     };
     loadGroup();
   }, [groupId]);
 
+  const image = () =>
+    ImageHandler(group.imagePath, "defaultgroup.png", "group-image");
+
   return (
     <>
-      <img
-        style={{
-          width: "20vw",
-          height: "20vw",
-          objectFit: "cover",
-          objectPosition: "0% 100%",
-        }}
-        src={`images/${group.avatarImage}`}
-        alt={`groupId: ${groupId}`}
-      ></img>
-      <h1>{group.title}</h1>
-      <p>{group.description}</p>
-      <GroupMembers groupId={groupId} />
-      <GroupSidebar />
+      {<GroupSidebar />}
+      {error ? (
+        <div className="error">{error}</div>
+      ) : (
+        <div className="group-page">
+          {image()}
+          <h1>{group.title}</h1>
+          <p>{group.description}</p>
+          <GroupMembers groupId={groupId} />
+        </div>
+      )}
     </>
   );
 };

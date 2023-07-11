@@ -5,7 +5,7 @@ import CreatePost from "../components/CreatePost";
 import { makeRequest } from "../services/makeRequest";
 import GroupSidebar from "../components/GroupSidebar";
 
-const Posts = ({ showCreatePost }) => {
+const Posts = ({ showCreatePost, url }) => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -21,14 +21,13 @@ const Posts = ({ showCreatePost }) => {
 
   const handlePageChange = (postId) => {
     setOffset(postId);
-    console.log("handle page change with offset:", postId);
   };
 
   useEffect(() => {
     const abortController = new AbortController();
     const loadPosts = async () => {
       try {
-        const response = await makeRequest(`feedposts/${offset}`, {
+        const response = await makeRequest(`${url}/${offset}`, {
           signal: abortController.signal,
         });
         setPosts((prevPosts) => {
@@ -50,18 +49,16 @@ const Posts = ({ showCreatePost }) => {
     <>
       {showCreatePost && <GroupSidebar />}
       <div className="content-as">
-      {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
-      {error ? (
-        <div className="error">{error}</div>
-      ) : (
-        
+        {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
+        {error ? (
+          <div className="error">{error}</div>
+        ) : (
           <FeedPosts
             posts={posts}
             hasMore={hasMore}
             onLoadMore={handlePageChange}
           />
-        
-      )}
+        )}
       </div>
     </>
   );

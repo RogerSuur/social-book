@@ -5,6 +5,8 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
   const ref = useRef(null);
 
   const handleNotificationClose = (id) => {
+    console.log(notifications, "NOTIFICATIONS");
+    console.log(id, "ID");
     setNotifications((prevNotifications) =>
       prevNotifications.filter(
         (notification) => notification?.data?.notification_id !== id

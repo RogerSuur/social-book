@@ -3,6 +3,7 @@ package services
 import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"log"
+	"time"
 )
 
 type IGroupService interface {
@@ -10,18 +11,24 @@ type IGroupService interface {
 	GetUserCreatedGroups(userId int64) ([]*models.UserGroup, error)
 	GetGroupById(groupId int64) (models.GroupJSON, error)
 	SearchGroupsAndUsers(searchString string) ([]*models.SearchResult, error)
-	CreateGroup(groupFormData *models.CreateGroupFormData, userId int64) (int64, error)
+	CreateGroup(groupFormData *models.GroupJSON, userId int64) (int64, error)
 }
 
 type GroupService struct {
 	Logger          *log.Logger
 	GroupRepository models.IGroupRepository
+	GroupMemberRepo models.IGroupMemberRepository
 }
 
-func InitGroupService(logger *log.Logger, groupRepo *models.GroupRepository) *GroupService {
+func InitGroupService(
+	logger *log.Logger,
+	groupRepo *models.GroupRepository,
+	groupMemberRepo *models.GroupMemberRepository,
+) *GroupService {
 	return &GroupService{
 		Logger:          logger,
 		GroupRepository: groupRepo,
+		GroupMemberRepo: groupMemberRepo,
 	}
 }
 
@@ -92,7 +99,7 @@ func (s *GroupService) SearchGroupsAndUsers(searchString string) ([]*models.Sear
 	return result, err
 }
 
-func (s *GroupService) CreateGroup(groupFormData *models.CreateGroupFormData, userId int64) (int64, error) {
+func (s *GroupService) CreateGroup(groupFormData *models.GroupJSON, userId int64) (int64, error) {
 	group := &models.Group{
 		CreatorId:   userId,
 		ImagePath:   groupFormData.ImagePath,
@@ -104,6 +111,20 @@ func (s *GroupService) CreateGroup(groupFormData *models.CreateGroupFormData, us
 
 	if err != nil {
 		s.Logger.Printf("Failed inserting group: %s", err)
+		return -1, err
+	}
+
+	creator := &models.GroupMember{
+		UserId:   userId,
+		GroupId:  result,
+		JoinedAt: time.Now(),
+	}
+
+	_, err = s.GroupMemberRepo.Insert(creator)
+
+	if err != nil {
+		s.Logger.Printf("Failed inserting group member: %s", err)
+		return -1, err
 	}
 
 	return result, err

@@ -83,8 +83,8 @@ const Chat = ({}) => {
   }, [lastJsonMessage]);
 
   const renderedChats = chatlist.map((chat, index) => (
-    <div key={index + 1}>
-      <li>
+    <div className="hov" key={index}>
+      <li >
         <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
       </li>
       {checkChat([chat?.user_id, chat?.group_id], openChat) && (
@@ -99,7 +99,7 @@ const Chat = ({}) => {
     <>
       <MessageNotification />
       <div className="chat-sidebar">
-        <ul>{renderedChats}</ul>
+        <ul className="pepe">{renderedChats}</ul>
       </div>
     </>
   );

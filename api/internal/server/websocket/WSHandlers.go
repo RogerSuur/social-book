@@ -100,64 +100,10 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 	w.Logger.Printf("Created follow request with id %v", followRequestId)
 
 	// broadcast to recipient
-	userData, err := w.userService.GetUserData(int64(c.clientID))
+
+	err = w.BroadcastFollowRequest(c, followRequestId, sendNewChatlist, int64(data.ID))
 	if err != nil {
 		return err
-	}
-
-	recipientClient := w.getClientByUserID(int64(data.ID))
-
-	if recipientClient == nil {
-		w.Logger.Printf("Recipient client not found (recipient offline)")
-		return nil
-	}
-
-	w.Logger.Printf("Recipient client found (recipient online)")
-
-	dataToSend, err := json.Marshal(
-		&NotificationPayload{
-			NotificationType: "follow_request",
-			NotificationID:   int(followRequestId),
-			SenderID:         int(c.clientID),
-			SenderName:       userData.FirstName + " " + userData.LastName,
-		},
-	)
-
-	if err != nil {
-		return err
-	}
-
-	recipientClient.gate <- Payload{
-		Type: "notification",
-		Data: dataToSend,
-	}
-
-	w.Logger.Printf("Sent notification to recipient")
-
-	// send new chatlist to sender
-	if sendNewChatlist {
-		chatlist, err := w.chatService.GetChatlist(int64(c.clientID))
-		if err != nil {
-			return err
-		}
-
-		dataToSend, err := json.Marshal(
-			&ChatListPayload{
-				UserID:   int(c.clientID),
-				Chatlist: chatlist,
-			},
-		)
-
-		if err != nil {
-			return err
-		}
-
-		c.gate <- Payload{
-			Type: "chatlist",
-			Data: dataToSend,
-		}
-
-		w.Logger.Printf("Sent new chatlist to sender %v", c.clientID)
 	}
 
 	return nil
@@ -254,20 +200,41 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 		return err
 	}
 
+	var messageData *models.Message
+
 	if data.GroupID == 0 && data.RecipientID > 0 {
+
 		w.Logger.Printf("User %v sent message to user %v", c.clientID, data.RecipientID)
+		defer func() {
+			err = w.BroadcastSingleMessage(c, messageData)
+			if err != nil {
+				w.Logger.Printf("Error broadcasting message: %v", err)
+			}
+		}()
+
 	} else if data.RecipientID == 0 && data.GroupID > 0 {
+
 		w.Logger.Printf("User %v sent message to group %v", c.clientID, data.GroupID)
+		defer func() {
+			err = w.BroadcastGroupMessage(c, messageData)
+			if err != nil {
+				w.Logger.Printf("Error broadcasting message: %v", err)
+			}
+		}()
+
 	} else {
+
 		w.Logger.Printf("Invalid request payload")
 		return ErrorInvalidPayload
+
 	}
 
-	messageData := &models.Message{
-		SenderId:    int64(c.clientID),
+	messageData = &models.Message{
+		SenderId:    c.clientID,
 		RecipientId: int64(data.RecipientID),
 		GroupId:     int64(data.GroupID),
 		Content:     data.Content,
+		SentAt:      time.Now(),
 	}
 
 	messageID, err := w.chatService.CreateMessage(messageData)
@@ -276,63 +243,6 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 	}
 
 	w.Logger.Printf("Message successfully created with id %v", messageID)
-
-	// broadcast to recipient
-
-	// todo: check if recipient is group
-
-	recipientClient := w.getClientByUserID(int64(data.RecipientID))
-
-	if recipientClient == nil {
-		w.Logger.Printf("Recipient client not found (recipient offline)")
-	} else {
-		w.Logger.Printf("Recipient client found (recipient online)")
-
-		userData, err := w.userService.GetUserData(int64(c.clientID))
-		if err != nil {
-			return err
-		}
-
-		if userData.Nickname == "" {
-			userData.Nickname = userData.FirstName + " " + userData.LastName
-		}
-
-		recipientData, err := w.userService.GetUserData(int64(data.RecipientID))
-		if err != nil {
-			return err
-		}
-
-		if recipientData.Nickname == "" {
-			recipientData.Nickname = recipientData.FirstName + " " + recipientData.LastName
-		}
-
-		dataToSend, err := json.Marshal(
-			&MessagePayload{
-				MessageID:     int(messageID),
-				SenderID:      userData.UserID,
-				SenderName:    userData.Nickname,
-				SenderImage:   userData.AvatarImage,
-				RecipientID:   recipientData.UserID,
-				RecipientName: recipientData.Nickname,
-				//GroupID:       data.GroupID,
-				//GroupName:     data.GroupName,
-				Content:   messageData.Content,
-				Timestamp: time.Now(),
-			},
-		)
-
-		if err != nil {
-			return err
-		}
-
-		recipientClient.gate <- Payload{
-			Type: "message",
-			Data: dataToSend,
-		}
-
-		w.Logger.Printf("Sent message to recipient")
-
-	}
 
 	return nil
 }

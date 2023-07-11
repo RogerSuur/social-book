@@ -4,7 +4,6 @@ import (
 	"SocialNetworkRestApi/api/internal/server/utils"
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
-	"fmt"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -28,19 +27,6 @@ type ProfileJSON struct {
 	IsFollowed  bool      `json:"isFollowed"`
 }
 
-type ProfileUpdateJSON struct {
-	UserID      int       `json:"id"`
-	FirstName   string    `json:"firstName"`
-	LastName    string    `json:"lastName"`
-	Email       string    `json:"email"`
-	Birthday    string    `json:"birthday"`
-	Nickname    string    `json:"nickname"`
-	About       string    `json:"about"`
-	AvatarImage string    `json:"avatarImage"`
-	CreatedAt   time.Time `json:"createdAt"`
-	IsPublic    bool      `json:"isPublic"`
-}
-
 type FollowerData struct {
 	UserID      int    `json:"id"`
 	FirstName   string `json:"firstName"`
@@ -52,8 +38,9 @@ type FollowerData struct {
 
 type IUserService interface {
 	Authenticate(handler http.HandlerFunc) http.HandlerFunc
-	UpdateUserData(userID int64, updateData ProfileUpdateJSON) error
-	GetUserData(userID int64) (*ProfileJSON, error)
+	UpdateUserData(userID int64, updateData ProfileJSON) error
+	GetUserData(requestingUserId int64, profileId int64) (*ProfileJSON, error)
+	GetUserByID(userID int64) (*models.User, error)
 	GetUserID(r *http.Request) (int64, error)
 	SetCookie(w http.ResponseWriter, sessionToken string)
 	ClearCookie(w http.ResponseWriter)
@@ -69,12 +56,11 @@ type IUserService interface {
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
 type UserService struct {
-	Logger                *log.Logger
-	UserRepo              models.IUserRepository
-	SessionRepo           models.ISessionRepository
-	FollowerRepo          models.IFollowerRepository
-	NotificationRepo      models.INotificationRepository
-	GroupMemberRepository models.IGroupUserRepository
+	Logger           *log.Logger
+	UserRepo         models.IUserRepository
+	SessionRepo      models.ISessionRepository
+	FollowerRepo     models.IFollowerRepository
+	NotificationRepo models.INotificationRepository
 }
 
 // InitUserService initializes the user controller.
@@ -84,19 +70,17 @@ func InitUserService(
 	sessionRepo *models.SessionRepository,
 	followerRepo *models.FollowerRepository,
 	notificationRepo *models.NotificationRepository,
-	groupMemberRepository *models.GroupUserRepository,
 ) *UserService {
 	return &UserService{
-		Logger:                logger,
-		UserRepo:              userRepo,
-		SessionRepo:           sessionRepo,
-		FollowerRepo:          followerRepo,
-		NotificationRepo:      notificationRepo,
-		GroupMemberRepository: groupMemberRepository,
+		Logger:           logger,
+		UserRepo:         userRepo,
+		SessionRepo:      sessionRepo,
+		FollowerRepo:     followerRepo,
+		NotificationRepo: notificationRepo,
 	}
 }
 
-func (s *UserService) UpdateUserData(userID int64, updateData ProfileUpdateJSON) error {
+func (s *UserService) UpdateUserData(userID int64, updateData ProfileJSON) error {
 
 	user, err := s.UserRepo.GetById(userID)
 	if err != nil {
@@ -133,22 +117,41 @@ func (s *UserService) UpdateUserData(userID int64, updateData ProfileUpdateJSON)
 	return s.UserRepo.Update(user)
 }
 
-func (s *UserService) GetUserData(userID int64) (*ProfileJSON, error) {
-	user, err := s.UserRepo.GetById(userID)
+func (s *UserService) GetUserData(requestingUserId int64, profileId int64) (*ProfileJSON, error) {
+
+	user, err := s.UserRepo.GetById(profileId)
 	if err != nil {
 		return nil, err
 	}
-	userJSON := &ProfileJSON{
-		UserID:      int(userID),
-		FirstName:   user.FirstName,
-		LastName:    user.LastName,
-		Email:       user.Email,
-		Birthday:    user.Birthday.Format("02/01/2006"),
-		Nickname:    user.Nickname,
-		About:       user.About,
-		AvatarImage: user.ImagePath,
-		CreatedAt:   user.CreatedAt,
-		IsPublic:    user.IsPublic,
+
+	userJSON := &ProfileJSON{}
+
+	IsFollowed := s.IsFollowed(requestingUserId, profileId)
+
+	if !user.IsPublic && !IsFollowed && requestingUserId != profileId {
+		userJSON = &ProfileJSON{
+			UserID:      int(profileId),
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			Nickname:    user.Nickname,
+			AvatarImage: user.ImagePath,
+			IsPublic:    user.IsPublic,
+			IsFollowed:  IsFollowed,
+		}
+	} else {
+		userJSON = &ProfileJSON{
+			UserID:      int(profileId),
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			Email:       user.Email,
+			Birthday:    user.Birthday.Format("02/01/2006"),
+			Nickname:    user.Nickname,
+			About:       user.About,
+			AvatarImage: user.ImagePath,
+			CreatedAt:   user.CreatedAt,
+			IsPublic:    user.IsPublic,
+			IsFollowed:  IsFollowed,
+		}
 	}
 
 	return userJSON, nil
@@ -305,6 +308,10 @@ func (s *UserService) ClearCookie(w http.ResponseWriter) {
 	http.SetCookie(w, &cookie)
 }
 
+func (s *UserService) GetUserByID(id int64) (*models.User, error) {
+	return s.UserRepo.GetById(id)
+}
+
 func (s *UserService) GetUserID(r *http.Request) (int64, error) {
 
 	cookie, err := r.Cookie("session")
@@ -344,8 +351,6 @@ func (s *UserService) GetUserFollowers(userID int64) ([]FollowerData, error) {
 		}
 		followersData = append(followersData, follower)
 	}
-
-	fmt.Println("followersData", followersData)
 
 	return followersData, nil
 }

@@ -76,12 +76,13 @@ func SeedPosts(repos *models.Repositories) {
 					}
 
 					tempComment := &models.Comment{
-						Content: comments.Content,
-						UserId:  commentUser.Id,
-						PostId:  postId,
+						Content:   comments.Content,
+						UserId:    commentUser.Id,
+						PostId:    postId,
+						CreatedAt: seedPost.CreatedAt.Add(comments.PostOffSet),
 					}
 
-					id, err := repos.CommentRepo.Insert(tempComment)
+					id, err := repos.CommentRepo.InsertSeedComment(tempComment)
 
 					tempComment.Id = id
 
@@ -188,12 +189,12 @@ func SeedGroups(repos *models.Repositories) {
 			if err != nil {
 				logger.Printf("%+v\n", err)
 			}
-			tempGroupUser := &models.GroupMemberModel{
+			tempGroupUser := &models.GroupMember{
 				UserId:  groupUser.Id,
 				GroupId: id,
 			}
 
-			_, err = repos.GroupUserRepo.Insert(tempGroupUser)
+			_, err = repos.GroupMemberRepo.Insert(tempGroupUser)
 			if err != nil {
 				logger.Printf("%+v\n", err)
 			}

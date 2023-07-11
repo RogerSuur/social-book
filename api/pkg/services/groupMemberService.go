@@ -6,23 +6,23 @@ import (
 )
 
 type IGroupMemberService interface {
-	GetGroupMembers(groupId int64) ([]*models.GroupMember, error)
+	GetGroupMembers(groupId int64) ([]*models.User, error)
 	IsGroupMember(groupId int64, userId int64) (bool, error)
 }
 
 type GroupMemberService struct {
 	Logger                *log.Logger
-	GroupMemberRepository models.IGroupUserRepository
+	GroupMemberRepository models.IGroupMemberRepository
 }
 
-func InitGroupMemberService(logger *log.Logger, groupMemberRepo *models.GroupUserRepository) *GroupMemberService {
+func InitGroupMemberService(logger *log.Logger, groupMemberRepo *models.GroupMemberRepository) *GroupMemberService {
 	return &GroupMemberService{
 		Logger:                logger,
 		GroupMemberRepository: groupMemberRepo,
 	}
 }
 
-func (s *GroupMemberService) GetGroupMembers(groupId int64) ([]*models.GroupMember, error) {
+func (s *GroupMemberService) GetGroupMembers(groupId int64) ([]*models.User, error) {
 
 	members, err := s.GroupMemberRepository.GetGroupMembersByGroupId(groupId)
 

@@ -30,8 +30,9 @@ type SeedPost struct {
 }
 
 type SeedComment struct {
-	UserEmail string
-	Content   string
+	UserEmail  string
+	Content    string
+	PostOffSet time.Duration
 	// ImagePath string
 }
 
@@ -337,31 +338,38 @@ var SeedPostsDataSetC = []*SeedPost{
 // 6 rows of ChatGPT generated comments for user A
 var SeedCommentDataSetA1 = []*SeedComment{
 	{
-		UserEmail: "b@b.com",
-		Content:   " Congrats on getting certified, that's awesome! Can't wait to attend one of your classes and learn from the best.",
+		UserEmail:  "b@b.com",
+		Content:    " Congrats on getting certified, that's awesome! Can't wait to attend one of your classes and learn from the best.",
+		PostOffSet: time.Minute,
 	},
 	{
-		UserEmail: "a@a.com",
-		Content:   "@Benjamin, Thank you!",
+		UserEmail:  "a@a.com",
+		Content:    "@Benjamin, Thank you!",
+		PostOffSet: time.Minute * 30,
 	},
 	{
-		UserEmail: "c@c.com",
-		Content:   "I'm a big fan of yoga too! It's such a great way to unwind and de-stress after a long day at work. Congrats on becoming a teacher!",
+		UserEmail:  "c@c.com",
+		Content:    "I'm a big fan of yoga too! It's such a great way to unwind and de-stress after a long day at work. Congrats on becoming a teacher!",
+		PostOffSet: time.Minute * 45,
 	},
 	{
-		UserEmail: "a@a.com",
-		Content:   "@Carlos, yoga has been a lifesaver for me in terms of managing my stress and anxiety, and I'm sure you'll find it helpful too.",
+		UserEmail:  "a@a.com",
+		Content:    "@Carlos, yoga has been a lifesaver for me in terms of managing my stress and anxiety, and I'm sure you'll find it helpful too.",
+		PostOffSet: time.Hour,
 	},
 	{
-		UserEmail: "d@d.com",
-		Content:   "I've been wanting to try yoga for ages, but never found the right teacher. Looking forward to attending one of your classes and finally giving it a go!",
+		UserEmail:  "d@d.com",
+		Content:    "I've been wanting to try yoga for ages, but never found the right teacher. Looking forward to attending one of your classes and finally giving it a go!",
+		PostOffSet: time.Hour * 2,
 	},
 	{
-		UserEmail: "a@a.com",
-		Content:   "@Deanna, I was in the same boat as you before I found the right teacher - trust me, it's worth the wait! Looking forward to seeing you all at the studio soon.",
+		UserEmail:  "a@a.com",
+		Content:    "@Deanna, I was in the same boat as you before I found the right teacher - trust me, it's worth the wait! Looking forward to seeing you all at the studio soon.",
+		PostOffSet: time.Hour * 3,
 	},
 	{
-		UserEmail: "e@e.com",
-		Content:   "Yoga is a game-changer! I've been practicing for years and it's helped me maintain both my physical and mental health. Excited to see you share your knowledge and passion with others.",
+		UserEmail:  "e@e.com",
+		Content:    "Yoga is a game-changer! I've been practicing for years and it's helped me maintain both my physical and mental health. Excited to see you share your knowledge and passion with others.",
+		PostOffSet: time.Minute * 200,
 	},
 }
