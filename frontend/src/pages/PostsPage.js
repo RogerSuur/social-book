@@ -5,7 +5,7 @@ import CreatePost from "../components/CreatePost";
 import { makeRequest } from "../services/makeRequest";
 import GroupSidebar from "../components/GroupSidebar";
 
-const Posts = ({ showCreatePost, url }) => {
+const Posts = ({ showGroupSidebar, showCreatePost, url }) => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -47,7 +47,7 @@ const Posts = ({ showCreatePost, url }) => {
 
   return (
     <>
-      {showCreatePost && <GroupSidebar />}
+      {showGroupSidebar && <GroupSidebar />}
       <div className="content-as">
         {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
         {error ? (

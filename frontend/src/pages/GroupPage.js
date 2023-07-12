@@ -124,7 +124,11 @@ const GroupPage = () => {
             )}
           </div>
           <GroupMembers groupId={groupId} />
-          <Posts showCreatePost={true} url={`/groupfeed/${groupId}`} />
+          <Posts
+            showGroupSidebar={false}
+            showCreatePost={true}
+            url={`/groupfeed/${groupId}`}
+          />
         </div>
       )}
     </>
