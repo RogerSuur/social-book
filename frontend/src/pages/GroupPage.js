@@ -12,6 +12,7 @@ const GroupPage = () => {
   const [error, setError] = useState(null);
   const [followers, setFollowers] = useState([]);
   const [formData, setFormData] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
 
   const [open, setOpen] = useState(false);
 
@@ -69,8 +70,34 @@ const GroupPage = () => {
     });
   };
 
+  const followersMap = followers.map((follower, index) => (
+    <div key={index}>
+      <label htmlFor={`receiver_${follower.id}`}>
+        <input
+          type="checkbox"
+          name="newMembers"
+          onChange={handleChange}
+          value={follower.id}
+        />
+        {follower.firstName} {follower.lastName}
+      </label>
+    </div>
+  ));
+
   const image = () =>
     ImageHandler(group.imagePath, "defaultgroup.png", "group-image");
+
+  const handleSubmit = async () => {
+    try {
+      await axios.post("http://localhost:8000/addFollowers", formData, {
+        withCredentials: true,
+      });
+      setFormData([]);
+    } catch (err) {
+      console.error(err);
+    }
+    setOpen(false);
+  };
 
   return (
     <>
@@ -85,21 +112,15 @@ const GroupPage = () => {
 
           <div>
             <button onClick={handleOpen}>Add members</button>
-            {open
-              ? followers.map((follower) => (
-                  <div key={follower.id}>
-                    <label htmlFor={`receiver_${follower.id}`}>
-                      <input
-                        type="checkbox"
-                        name="newMembers"
-                        onChange={handleChange}
-                        value={follower.id}
-                      />
-                      {follower.firstName} {follower.lastName}
-                    </label>
-                  </div>
-                ))
-              : null}
+            {open && (
+              <>
+                {followersMap}
+                <button onClick={handleSubmit} disabled={submitting}>
+                  Submit
+                  {/* {submitting ? "Submitting..." : "Submit"} */}
+                </button>
+              </>
+            )}
           </div>
           <GroupMembers groupId={groupId} />
         </div>

@@ -19,6 +19,8 @@ const Posts = ({ showCreatePost, url }) => {
     setPosts([]);
   };
 
+  console.log("request url:", url);
+
   const handlePageChange = (postId) => {
     setOffset(postId);
   };
