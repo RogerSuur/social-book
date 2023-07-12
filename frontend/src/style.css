@@ -90,23 +90,19 @@ nav {
   list-style-type: none;
 }
 .chat-sidebar {
-  
-  box-shadow: 5px 5px 5px rgb(184, 184, 184);
-  background-color: #ffffff;
-  margin-top: 40px;
-  margin-left: 50px;
-  margin-right: 30px;
-  padding: 10px;
-  outline: none;
-  border-radius: 20px;
-  max-height: 600px;
+  position: sticky;
+  top: 15vh;
+  margin-right: 2vw;
+  float: right;
+  width: 20vw;
+  max-height: 78vh;
   overflow: auto;
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 20px;
   box-shadow: 0 0 8px black;
-  
-  min-width: 300px;
-  max-width: 300px;
+  margin-top: 5vh;
 }
-
 .exit-but{
   position: absolute;
   top: 0px;
@@ -233,8 +229,9 @@ nav {
   box-shadow: 5px 5px 5px rgb(184, 184, 184);
   background-color: #ffffff;
   margin-top: 40px;
-  margin-right: 50px;
+  margin-right: 30px;
   margin-left: 30px;
+  width: 50vw;
   padding: 10px;
   outline: none;
   border-radius: 20px;
@@ -249,18 +246,18 @@ nav {
 }
 
 .group-extra {
-  box-shadow: 5px 5px 5px rgb(184, 184, 184);
-  background-color: #ffffff;
-  margin-top: 40px;
-  margin-right: 50px;
-  margin-left: 30px;
-  padding: 10px;
-  outline: none;
-  border-radius: 20px;
-  max-height: 600px;
+  position: sticky;
+  margin-left: 2vw;
+  top: 15vh;
+  float: left;
+  width: 20vw;
+  max-height: 78vh;
   overflow: auto;
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 20px;
   box-shadow: 0 0 8px black;
-  min-width: 300px;
+  margin-top: 5vh;
 }
 
 .group-image {
@@ -310,11 +307,11 @@ nav {
 }
 .profile-content{
   background-color: #ffffff;
-  margin-top: 30px;
+  
 }
 .profile-area{
-  margin-top: 10px;
-  padding: 10px;
+  margin-top: 2vh;
+  padding: 5px;
   border-radius: 20px;
   box-shadow: 0 0 8px black;
 }
@@ -322,20 +319,18 @@ nav {
 
 .profile-side {
  
-  box-shadow: 5px 5px 5px rgb(184, 184, 184);
-  background-color: #ffffff;
-  margin-right: 50px;
-  margin-left: 30px;
-  padding: 10px;
-  outline: none;
-  margin-left: 10px;
-  border-radius: 20px;
-  max-height: 600px;
+  position: sticky;
+  margin-left: 2vw;
+  top: 15vh;
+  float: left;
+  width: 20vw;
+  max-height: 78vh;
   overflow: auto;
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 20px;
   box-shadow: 0 0 8px black;
-  min-width:250px;
-  margin-top: 40px;
-
+  margin-top: 5vh;
 }
 
 .hov{
