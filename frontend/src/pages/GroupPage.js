@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import GroupMembers from "../components/GroupMembers";
 import ImageHandler from "../utils/imageHandler";
 import Posts from "../pages/PostsPage.js";
+import Select from "react-select";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -53,42 +54,21 @@ const GroupPage = () => {
     fetchFollowers();
   }, []);
 
-  const handleChange = (event) => {
-    const { value, checked } = event.target;
-
-    setFormData((prevFormData) => {
-      const newFormData = [...prevFormData];
-
-      if (!checked) {
-        const index = newFormData.indexOf(value);
-        if (index !== -1) {
-          newFormData.splice(index, 1);
-        }
-      } else {
-        newFormData.push(value);
-      }
-      return newFormData;
-    });
+  const handleSelectChange = (selectedOptions) => {
+    const selectedValues = selectedOptions.map((option) => option.value);
+    setFormData(selectedValues);
   };
 
-  const followersMap = followers.map((follower, index) => (
-    <div key={index}>
-      <label htmlFor={`receiver_${follower.id}`}>
-        <input
-          type="checkbox"
-          name="newMembers"
-          onChange={handleChange}
-          value={follower.id}
-        />
-        {follower.firstName} {follower.lastName}
-      </label>
-    </div>
-  ));
+  const followersOptions = followers.map((follower) => ({
+    value: follower.id,
+    label: `${follower.firstName} ${follower.lastName}`,
+  }));
 
   const image = () =>
     ImageHandler(group.imagePath, "defaultgroup.png", "group-image");
 
   const handleSubmit = async () => {
+    console.log(formData);
     try {
       await axios.post("http://localhost:8000/addFollowers", formData, {
         withCredentials: true,
@@ -115,10 +95,13 @@ const GroupPage = () => {
             <button onClick={handleOpen}>Add members</button>
             {open && (
               <>
-                {followersMap}
+                <Select
+                  options={followersOptions}
+                  isMulti
+                  onChange={handleSelectChange}
+                />
                 <button onClick={handleSubmit} disabled={submitting}>
                   Submit
-                  {/* {submitting ? "Submitting..." : "Submit"} */}
                 </button>
               </>
             )}
