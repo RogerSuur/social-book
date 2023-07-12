@@ -107,6 +107,12 @@ nav {
   max-width: 300px;
 }
 
+.exit-but{
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
 /* Add media query for smaller screens */
 
 .chatbox-img {
@@ -143,6 +149,9 @@ nav {
   border: 1px solid black;
   padding: 10px;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .message-history {
@@ -394,6 +403,7 @@ margin: 5px;
   margin-bottom: 10px;
 
 }
+
 .profile-row-top2 {
   flex-direction: column;
   justify-content: space-between;
@@ -401,14 +411,29 @@ margin: 5px;
   margin-bottom: 10px;
 }
 
-/* .popup-content{
+.form-style{
+  overflow: auto;
+  flex-wrap: wrap;
+  display: flex;
+  
+}
+
+.popup-group{
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-content{
   overflow: auto;
   height: 80vh;
   flex-wrap: wrap;
   display: flex;
   justify-content: center;
   width: 20%;
-} */
+  padding-top: 5%;
+}
+
+
 
 .profile-column-top {
   
@@ -430,6 +455,27 @@ flex-direction: column;
 justify-content: center;
 flex-shrink: 0;
 resize: none;
+}
+
+.group-button{
+  display: flex;
+  width: 5vw;
+  flex-direction: column;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #5f5f5f;
+  font-family: Open Sans;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.group-textarea{
+  width: 18vw;
+  height: 10vh;
+  resize: none;
+  padding: 10px;
 }
 
 .profile-title {
