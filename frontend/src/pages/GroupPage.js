@@ -5,6 +5,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import GroupMembers from "../components/GroupMembers";
 import ImageHandler from "../utils/imageHandler";
+import Posts from "../pages/PostsPage.js";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -123,6 +124,7 @@ const GroupPage = () => {
             )}
           </div>
           <GroupMembers groupId={groupId} />
+          <Posts showCreatePost={true} url={`/groupfeed/${groupId}`} />
         </div>
       )}
     </>
