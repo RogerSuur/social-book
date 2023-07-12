@@ -7,6 +7,8 @@ import GroupMembers from "../components/GroupMembers";
 import ImageHandler from "../utils/imageHandler";
 import Posts from "../pages/PostsPage.js";
 import Select from "react-select";
+import Modal from "../components/Modal";
+import AvatarUpdater from "../components/AvatarUpdater";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -15,11 +17,20 @@ const GroupPage = () => {
   const [followers, setFollowers] = useState([]);
   const [formData, setFormData] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
     setOpen(!open);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleModalClick = () => {
+    setModalOpen(true);
   };
 
   useEffect(() => {
@@ -107,6 +118,15 @@ const GroupPage = () => {
             )}
           </div>
           <GroupMembers groupId={groupId} />
+          <div className="profile-actions">
+            <Modal open={modalOpen} onClose={handleModalClose}>
+              <AvatarUpdater
+                url={"http://localhost:8000/profile/update/avatar"}
+                onUploadSuccess={handleModalClose}
+              />
+            </Modal>
+            <button onClick={handleModalClick}>Upload New Image</button>
+          </div>
           <Posts
             showGroupSidebar={false}
             showCreatePost={true}

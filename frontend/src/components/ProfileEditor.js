@@ -86,7 +86,10 @@ const ProfileEditor = (props) => {
 
               <div className="profile-actions">
                 <Modal open={modalOpen} onClose={handleModalClose}>
-                  <AvatarUpdater onUploadSuccess={handleModalClose} />
+                  <AvatarUpdater
+                    url={"http://localhost:8000/profile/update/avatar"}
+                    onUploadSuccess={handleModalClose}
+                  />
                 </Modal>
                 <button onClick={handleModalClick}>Upload New Image</button>
               </div>
