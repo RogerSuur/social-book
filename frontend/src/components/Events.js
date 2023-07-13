@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { GROUP_EVENTS_URL } from "../utils/routes";
+import CreateEvent from "./CreateEvent";
 
 const Events = ({ groupId }) => {
   const [eventsData, setEventsData] = useState([]);
+
+  const [loadNewEvents, setloadNewEvents] = useState(0);
+
+  const handleEventUpdate = () => {
+    setloadNewEvents((prevCount) => prevCount + 1);
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -19,7 +26,7 @@ const Events = ({ groupId }) => {
       }
     };
     fetchEvents();
-  }, [groupId]);
+  }, [groupId, loadNewEvents]);
 
   const eventsDataMap = eventsData.map((event, index) => (
     <div key={index}>
@@ -37,6 +44,8 @@ const Events = ({ groupId }) => {
     <>
       <p>Here comes the events of the group</p>
       {eventsDataMap}
+      <p>Here comes creating an event</p>
+      <CreateEvent onEventCreated={handleEventUpdate} />
     </>
   );
 };
