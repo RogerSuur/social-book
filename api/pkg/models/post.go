@@ -57,7 +57,7 @@ const FeedLimit = 10
 
 func (repo PostRepository) Insert(post *Post) (int64, error) {
 	query := `INSERT INTO posts (user_id, content, created_at, image_path, privacy_type_id, group_id)
-	VALUES(?, ?, ?, ?, ?)`
+	VALUES(?, ?, ?, ?, ?, ?)`
 
 	args := []interface{}{
 		post.UserId,
