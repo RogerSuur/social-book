@@ -2,7 +2,7 @@ import Modal from "./Modal";
 import { useState } from "react";
 import axios from "axios";
 
-const CreateEvent = ({ onEventCreated }) => {
+const CreateEvent = ({ onEventCreated, groupId }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [createEventForm, setcreateEventForm] = useState({
@@ -10,6 +10,7 @@ const CreateEvent = ({ onEventCreated }) => {
     description: "",
     startTime: "",
     endTime: "",
+    group_id: groupId,
   });
 
   const openModal = () => {
@@ -33,7 +34,7 @@ const CreateEvent = ({ onEventCreated }) => {
     // Send the createEventForm data to the backend handler
     try {
       const response = await axios.post(
-        "http://localhost:8000/createevent",
+        "http://localhost:8000/creategroupevent",
         JSON.stringify(createEventForm),
         { withCredentials: true },
         {
