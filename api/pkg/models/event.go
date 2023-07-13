@@ -124,7 +124,7 @@ func (repo EventRepository) GetAllByGroupId(id int64) ([]*Event, error) {
 	for rows.Next() {
 		event := &Event{}
 
-		err := rows.Scan(&event.Id, &event.GroupId, &event.UserId, &event.CreatedAt, &event.EventTime, &event.TimeSpan, &event.TimeSpan, &event.Title, &event.Description)
+		err := rows.Scan(&event.Id, &event.GroupId, &event.UserId, &event.CreatedAt, &event.EventTime, &event.TimeSpan, &event.Title, &event.Description)
 		if err != nil {
 			return nil, err
 		}

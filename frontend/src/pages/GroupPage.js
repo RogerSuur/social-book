@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import GroupSidebar from "../components/GroupSidebar";
-import { GROUP_PAGE_URL } from "../utils/routes";
+import { GROUP_PAGE_URL, ADD_GROUP_MEMBERS_URL } from "../utils/routes";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import GroupMembers from "../components/GroupMembers";
@@ -9,6 +9,7 @@ import Posts from "../pages/PostsPage.js";
 import Select from "react-select";
 import Modal from "../components/Modal";
 import AvatarUpdater from "../components/AvatarUpdater";
+import Events from "../components/Events";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -49,7 +50,7 @@ const GroupPage = () => {
       }
     };
     loadGroup();
-  }, [groupId]);
+  }, [groupId, modalOpen]);
 
   useEffect(() => {
     const fetchFollowers = async () => {
@@ -79,11 +80,15 @@ const GroupPage = () => {
     ImageHandler(group.imagePath, "defaultgroup.png", "group-image");
 
   const handleSubmit = async () => {
-    console.log(formData);
     try {
-      await axios.post("http://localhost:8000/addFollowers", formData, {
-        withCredentials: true,
-      });
+      console.log(formData);
+      await axios.post(
+        ADD_GROUP_MEMBERS_URL,
+        JSON.stringify({ groupId: Number(groupId), userIds: formData }),
+        {
+          withCredentials: true,
+        }
+      );
       setFormData([]);
     } catch (err) {
       console.error(err);
@@ -121,7 +126,7 @@ const GroupPage = () => {
           <div className="profile-actions">
             <Modal open={modalOpen} onClose={handleModalClose}>
               <AvatarUpdater
-                url={"http://localhost:8000/profile/update/avatar"}
+                url={`http://localhost:8000/groups/${groupId}/avatar`}
                 onUploadSuccess={handleModalClose}
               />
             </Modal>
@@ -132,6 +137,7 @@ const GroupPage = () => {
             showCreatePost={true}
             url={`/groupfeed/${groupId}`}
           />
+          <Events groupId={groupId} />
         </div>
       )}
     </>

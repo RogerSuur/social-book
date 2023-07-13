@@ -239,3 +239,109 @@ func (app *Application) GroupPosts(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (app *Application) AddMembers(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		decoder := json.NewDecoder(r.Body)
+		decoder.DisallowUnknownFields()
+
+		JSONdata := &models.GroupMemberJSON{}
+		err := decoder.Decode(&JSONdata)
+
+		if err != nil {
+			app.Logger.Printf("JSON error: %v", err)
+			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
+
+		userId, err := app.UserService.GetUserID(r)
+
+		if err != nil {
+			app.Logger.Printf("Failed fetching user: %v", err)
+			http.Error(rw, "Get user error", http.StatusBadRequest)
+		}
+
+		result, err := app.GroupMemberService.AddMembers(userId, *JSONdata)
+
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		app.Logger.Printf("Members added successfully")
+		app.Logger.Printf("Members added: %v", result)
+
+		json.NewEncoder(rw).Encode(&result)
+
+	default:
+		http.Error(rw, "method is not supported", http.StatusNotFound)
+		return
+	}
+
+}
+
+func (app *Application) UpdateGroupImage(rw http.ResponseWriter, r *http.Request) {
+
+	switch r.Method {
+	case "POST":
+
+		// Limit the size of the request body to 5MB
+		r.Body = http.MaxBytesReader(rw, r.Body, 20<<18)
+
+		vars := mux.Vars(r)
+		groupId := vars["groupId"]
+		groupIdInt, err := strconv.ParseInt(groupId, 10, 64)
+		if err != nil {
+			app.Logger.Printf("Cannot parse group ID: %s", err)
+			http.Error(rw, "Cannot parse group ID", http.StatusBadRequest)
+			return
+		}
+
+		userID, err := app.UserService.GetUserID(r)
+		if err != nil {
+			app.Logger.Printf("Cannot get user ID: %s", err)
+			http.Error(rw, "Cannot get user ID", http.StatusUnauthorized)
+			return
+		}
+
+		err = r.ParseMultipartForm(20 << 18)
+		if err != nil {
+			app.Logger.Printf("Cannot parse multipart form: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		file, header, err := r.FormFile("image")
+		if err != nil {
+			app.Logger.Printf("Cannot get image file: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer file.Close()
+
+		err = app.GroupService.UpdateGroupImage(userID, groupIdInt, file, header)
+		if err != nil {
+			app.Logger.Printf("Cannot update user image: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		rw.Header().Set("Content-Type", "application/json")
+		rw.WriteHeader(http.StatusOK)
+		resp := make(map[string]interface{})
+		resp["message"] = "User image updated"
+		resp["status"] = "success"
+		jsonResp, err := json.Marshal(resp)
+		if err != nil {
+			app.Logger.Printf("Cannot marshal JSON: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		rw.Write(jsonResp)
+
+	default:
+		http.Error(rw, "method is not supported", http.StatusNotFound)
+		return
+	}
+
+}
