@@ -49,7 +49,7 @@ const GroupPage = () => {
       }
     };
     loadGroup();
-  }, [groupId]);
+  }, [groupId, modalOpen]);
 
   useEffect(() => {
     const fetchFollowers = async () => {
@@ -79,11 +79,15 @@ const GroupPage = () => {
     ImageHandler(group.imagePath, "defaultgroup.png", "group-image");
 
   const handleSubmit = async () => {
-    console.log(formData);
     try {
-      await axios.post("http://localhost:8000/addmembers/", formData, {
-        withCredentials: true,
-      });
+      console.log(formData);
+      await axios.post(
+        "http://localhost:8000/addmembers",
+        JSON.stringify({ groupId: Number(groupId), userIds: formData }),
+        {
+          withCredentials: true,
+        }
+      );
       setFormData([]);
     } catch (err) {
       console.error(err);
@@ -121,7 +125,7 @@ const GroupPage = () => {
           <div className="profile-actions">
             <Modal open={modalOpen} onClose={handleModalClose}>
               <AvatarUpdater
-                url={"http://localhost:8000/profile/update/avatar"}
+                url={`http://localhost:8000/groups/${groupId}/avatar`}
                 onUploadSuccess={handleModalClose}
               />
             </Modal>

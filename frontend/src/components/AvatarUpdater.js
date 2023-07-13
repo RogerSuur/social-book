@@ -3,9 +3,9 @@ import { useState, useRef } from "react";
 import FileUploader from "./FileUploader";
 import axios from "axios";
 
-// const IMAGE_UPLOAD_URL = "http://localhost:8000/profile/update/avatar";
+const IMAGE_UPLOAD_URL = "http://localhost:8000/profile/update/avatar";
 
-const AvatarUpdater = ({ onUploadSuccess, url }) => {
+const AvatarUpdater = ({ url, onUploadSuccess }) => {
   const editorRef = useRef();
   const [selectedImage, setSelectedImage] = useState(null);
   const [errMsg, setErrMsg] = useState("");
@@ -20,7 +20,7 @@ const AvatarUpdater = ({ onUploadSuccess, url }) => {
       try {
         // Send the image data to the server using Axios
         await axios.post(url, formData, { withCredentials: true });
-        onUploadSuccess(blob);
+        onUploadSuccess();
         console.log("Image uploaded successfully!");
       } catch (err) {
         if (!err?.response) {
@@ -40,7 +40,7 @@ const AvatarUpdater = ({ onUploadSuccess, url }) => {
         image={
           selectedImage
             ? selectedImage
-            : `${process.env.PUBLIC_URL}/images/defaultuser.jpg`
+            : `${process.env.PUBLIC_URL}/defaultuser.jpg`
         }
         width={250}
         height={250}
@@ -51,7 +51,7 @@ const AvatarUpdater = ({ onUploadSuccess, url }) => {
       <button onClick={handleClick}>Save image</button>
       {errMsg && <h3>{errMsg}</h3>}
       <FileUploader
-        onFileSelectSuccess={(file) => onUploadSuccess(file)}
+        onFileSelectSuccess={(file) => setSelectedImage(file)}
         onFileSelectError={({ error }) => setErrMsg(error)}
       />
     </>
