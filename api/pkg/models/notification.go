@@ -19,15 +19,15 @@ type Notification struct {
 }
 
 type NotificationJSON struct {
-	NotificationType string `json:"notification_type"`
-	NotificationId   int64  `json:"id"`
-	SenderId         int64  `json:"sender_id"`
-	SenderName       string `json:"sender_name"`
-	GroupId          int64  `json:"group_id"`
-	GroupName        string `json:"group_name"`
-	EventId          int64  `json:"event_id"`
-	EventName        string `json:"event_name"`
-	EventDate        string `json:"event_datetime"`
+	NotificationType string    `json:"notification_type"`
+	NotificationId   int64     `json:"id"`
+	SenderId         int64     `json:"sender_id"`
+	SenderName       string    `json:"sender_name"`
+	GroupId          int64     `json:"group_id"`
+	GroupName        string    `json:"group_name"`
+	EventId          int64     `json:"event_id"`
+	EventName        string    `json:"event_name"`
+	EventDate        time.Time `json:"event_datetime"`
 }
 
 type INotificationRepository interface {

@@ -44,6 +44,16 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 		repositories.GroupRepo,
 	)
 
+	groupEventServices := services.InitGroupEventService(
+		logger,
+		repositories.GroupEventAttendance,
+		repositories.EventRepo,
+		repositories.GroupRepo,
+		repositories.GroupMemberRepo,
+		repositories.UserRepo,
+		repositories.NotificationRepo,
+	)
+
 	return &Application{
 		Logger: logger,
 		WS: websocket.InitWebsocket(
@@ -61,6 +71,6 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 		ChatService:         chatServices,
 		GroupService:        services.InitGroupService(logger, repositories.GroupRepo, repositories.GroupMemberRepo),
 		GroupMemberService:  services.InitGroupMemberService(logger, repositories.GroupMemberRepo),
-		GroupEventService:   services.InitGroupEventService(logger, repositories.GroupEventAttendance, repositories.EventRepo, repositories.GroupRepo, repositories.UserRepo),
+		GroupEventService:   groupEventServices,
 	}
 }

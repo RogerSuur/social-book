@@ -71,11 +71,9 @@ func (w *WebsocketServer) BroadcastFollowRequest(c *Client, followRequestId int6
 
 func (w *WebsocketServer) BroadcastSingleMessage(c *Client, message *models.Message) error {
 
-	recipientClients := []*Client{
-		w.getClientByUserID(message.RecipientId),
-	}
+	recipientClient := w.getClientByUserID(message.RecipientId)
 
-	if len(recipientClients) == 0 {
+	if recipientClient == nil {
 		w.Logger.Printf("Recipient client not found (recipient offline)")
 	} else {
 		w.Logger.Printf("Recipient client found (recipient online)")
@@ -117,7 +115,7 @@ func (w *WebsocketServer) BroadcastSingleMessage(c *Client, message *models.Mess
 			return err
 		}
 
-		recipientClients[0].gate <- Payload{
+		recipientClient.gate <- Payload{
 			Type: "message",
 			Data: dataToSend,
 		}
@@ -205,6 +203,45 @@ func (w *WebsocketServer) BroadcastGroupMessage(c *Client, message *models.Messa
 		}
 
 		w.Logger.Printf("Sent message to recipient")
+
+	}
+
+	return nil
+}
+
+func (w *WebsocketServer) BroadcastEventInvite(notification *models.NotificationJSON, client int64) error {
+
+	recipientClient := w.getClientByUserID(client)
+
+	if recipientClient == nil {
+		w.Logger.Printf("Recipient client not found (recipient offline)")
+	} else {
+		w.Logger.Printf("Recipient client found (recipient online)")
+
+		dataToSend, err := json.Marshal(
+			&NotificationPayload{
+				NotificationType: notification.NotificationType,
+				NotificationID:   int(notification.NotificationId),
+				SenderID:         int(notification.SenderId),
+				SenderName:       notification.SenderName,
+				GroupID:          int(notification.GroupId),
+				GroupName:        notification.GroupName,
+				EventID:          int(notification.EventId),
+				EventName:        notification.EventName,
+				EventDate:        notification.EventDate,
+			},
+		)
+
+		if err != nil {
+			return err
+		}
+
+		recipientClient.gate <- Payload{
+			Type: "notification",
+			Data: dataToSend,
+		}
+
+		w.Logger.Printf("Sent event notification to recipient")
 
 	}
 
