@@ -81,7 +81,7 @@ const GroupPage = () => {
   const handleSubmit = async () => {
     console.log(formData);
     try {
-      await axios.post("http://localhost:8000/addFollowers", formData, {
+      await axios.post("http://localhost:8000/addmembers/", formData, {
         withCredentials: true,
       });
       setFormData([]);
