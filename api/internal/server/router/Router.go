@@ -32,6 +32,7 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/insertcomment", app.UserService.Authenticate(app.Comment)).Methods("POST")
 	r.HandleFunc("/post", app.UserService.Authenticate(app.Post)).Methods("POST")
 	r.HandleFunc("/profileposts/{offset}", app.UserService.Authenticate(app.ProfilePosts)).Methods("GET")
+	r.HandleFunc("/groups/{groupId}/post", app.UserService.Authenticate(app.GroupPost)).Methods("POST")
 	//Groups
 	r.HandleFunc("/creategroup", app.UserService.Authenticate(app.CreateGroup)).Methods("POST")
 	r.HandleFunc("/usergroups", app.UserService.Authenticate(app.UserGroups)).Methods("GET")
