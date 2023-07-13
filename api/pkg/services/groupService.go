@@ -151,10 +151,7 @@ func (s *GroupService) UpdateGroupImage(userId int64, groupId int64, imageFile m
 		return err
 	}
 
-	for _, group := range groups {
-		if group.Id == groupId {
-			break
-		}
+	if !isCreator(groupId, groups) {
 		return errors.New("user is not creator of group")
 	}
 
@@ -178,4 +175,13 @@ func (s *GroupService) UpdateGroupImage(userId int64, groupId int64, imageFile m
 	}
 
 	return nil
+}
+
+func isCreator(groupId int64, groups []*models.Group) bool {
+	for _, group := range groups {
+		if group.Id == groupId {
+			return true
+		}
+	}
+	return false
 }
