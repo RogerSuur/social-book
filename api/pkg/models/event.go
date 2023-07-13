@@ -121,6 +121,7 @@ func (repo EventRepository) GetAllByGroupId(id int64) ([]*Event, error) {
 
 	events := []*Event{}
 
+	defer rows.Close()
 	for rows.Next() {
 		event := &Event{}
 
@@ -128,6 +129,8 @@ func (repo EventRepository) GetAllByGroupId(id int64) ([]*Event, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		events = append(events, event)
 	}
 
 	repo.Logger.Printf("Found %d events for group %d", len(events), id)
@@ -152,6 +155,7 @@ func (repo EventRepository) GetAllByUserId(id int64) ([]*Event, error) {
 
 	events := []*Event{}
 
+	defer rows.Close()
 	for rows.Next() {
 		event := &Event{}
 
@@ -159,6 +163,8 @@ func (repo EventRepository) GetAllByUserId(id int64) ([]*Event, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		events = append(events, event)
 	}
 
 	repo.Logger.Printf("Found %d events for user %d", len(events), id)
