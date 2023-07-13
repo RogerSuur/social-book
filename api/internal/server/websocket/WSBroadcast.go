@@ -209,40 +209,43 @@ func (w *WebsocketServer) BroadcastGroupMessage(c *Client, message *models.Messa
 	return nil
 }
 
-func (w *WebsocketServer) BroadcastEventInvite(notification *models.NotificationJSON, client int64) error {
+func (w *WebsocketServer) BroadcastGroupEventInvites(notifications []*models.NotificationJSON) error {
 
-	recipientClient := w.getClientByUserID(client)
+	for _, notification := range notifications {
 
-	if recipientClient == nil {
-		w.Logger.Printf("Recipient client not found (recipient offline)")
-	} else {
-		w.Logger.Printf("Recipient client found (recipient online)")
+		recipientClient := w.getClientByUserID(notification.ReceiverId)
 
-		dataToSend, err := json.Marshal(
-			&NotificationPayload{
-				NotificationType: notification.NotificationType,
-				NotificationID:   int(notification.NotificationId),
-				SenderID:         int(notification.SenderId),
-				SenderName:       notification.SenderName,
-				GroupID:          int(notification.GroupId),
-				GroupName:        notification.GroupName,
-				EventID:          int(notification.EventId),
-				EventName:        notification.EventName,
-				EventDate:        notification.EventDate,
-			},
-		)
+		if recipientClient == nil {
+			w.Logger.Printf("Recipient client not found (recipient offline)")
+		} else {
+			w.Logger.Printf("Recipient client found (recipient online)")
 
-		if err != nil {
-			return err
+			dataToSend, err := json.Marshal(
+				&NotificationPayload{
+					NotificationType: notification.NotificationType,
+					NotificationID:   int(notification.NotificationId),
+					SenderID:         int(notification.SenderId),
+					SenderName:       notification.SenderName,
+					GroupID:          int(notification.GroupId),
+					GroupName:        notification.GroupName,
+					EventID:          int(notification.EventId),
+					EventName:        notification.EventName,
+					EventDate:        notification.EventDate,
+				},
+			)
+
+			if err != nil {
+				return err
+			}
+
+			recipientClient.gate <- Payload{
+				Type: "notification",
+				Data: dataToSend,
+			}
+
+			w.Logger.Printf("Sent event notification to recipient")
+
 		}
-
-		recipientClient.gate <- Payload{
-			Type: "notification",
-			Data: dataToSend,
-		}
-
-		w.Logger.Printf("Sent event notification to recipient")
-
 	}
 
 	return nil

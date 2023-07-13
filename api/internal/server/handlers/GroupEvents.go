@@ -61,7 +61,14 @@ func (app *Application) CreateGroupEvent(rw http.ResponseWriter, r *http.Request
 			http.Error(rw, "Get user error", http.StatusBadRequest)
 		}
 
-		_, err = app.GroupEventService.CreateGroupEvent(JSONdata, userId)
+		notifications, err := app.GroupEventService.CreateGroupEvent(JSONdata, userId)
+
+		if err != nil {
+			http.Error(rw, "err", http.StatusBadRequest)
+			return
+		}
+
+		err = app.WS.BroadcastGroupEventInvites(notifications)
 
 		if err != nil {
 			http.Error(rw, "err", http.StatusBadRequest)
