@@ -41,6 +41,7 @@ type IGroupRepository interface {
 	GetById(id int64) (*Group, error)
 	Insert(group *Group) (int64, error)
 	SearchGroupsAndUsersByString(searchString string) ([]*SearchResult, error)
+	UpdateImagePath(groupId int64, imagePath string) error
 }
 
 type GroupRepository struct {
@@ -199,4 +200,17 @@ func (repo GroupRepository) SearchGroupsAndUsersByString(searchString string) ([
 	}
 
 	return groups, nil
+}
+
+func (repo GroupRepository) UpdateImagePath(groupId int64, imagePath string) error {
+
+	stmt := `UPDATE groups SET image_path = ? WHERE id = ?`
+
+	_, err := repo.DB.Exec(stmt, imagePath, groupId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
