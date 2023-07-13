@@ -17,7 +17,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     },
   });
 
-  console.log(user, "USER");
+  // console.log(user, "USER");
 
   const defaultImage = () =>
     chat.user_id ? "defaultuser.jpg" : "defaultgroup.png";
@@ -43,10 +43,10 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   useEffect(() => {
     switch (lastJsonMessage?.type) {
       case "message_history":
-        console.log(lastJsonMessage, "MSG HISTORY");
+        // console.log(lastJsonMessage, "MSG HISTORY");
 
         if (lastJsonMessage?.data.length > 0) {
-          console.log("HRE");
+          // console.log("HRE");
           setMessageHistory((prevMessageHistory) => [
             ...lastJsonMessage?.data,
             ...prevMessageHistory,
@@ -143,14 +143,18 @@ const Chatbox = ({ toggleChat, chat, user }) => {
       <Link to={`/groups/${chat.group_id}`}>{chat.name}</Link>
     );
 
-  console.log(hasMoreMessages, "MSS");
+  // console.log(hasMoreMessages, "MSS");
 
   const chatbox = (
     <div className="chatbox">
       <div className="chat-title">
         {image()}
         {chatName}
-        <img className="exit-but" src={`${process.env.PUBLIC_URL}/Vectorexit.png`} onClick={closeChat}/>
+        <img
+          className="exit-but"
+          src={`${process.env.PUBLIC_URL}/Vectorexit.png`}
+          onClick={closeChat}
+        />
       </div>
       <div className="message-history">
         <InfiniteScroll
