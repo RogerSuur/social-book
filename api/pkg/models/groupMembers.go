@@ -13,6 +13,11 @@ type GroupMember struct {
 	JoinedAt time.Time
 }
 
+type GroupMemberJSON struct {
+	GroupId int64   `json:"groupId"`
+	UserIds []int64 `json:"userIds"`
+}
+
 type IGroupMemberRepository interface {
 	Insert(groupMember *GroupMember) (int64, error)
 	GetGroupMembersByGroupId(groupId int64) ([]*User, error)

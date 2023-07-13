@@ -38,6 +38,7 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/mygroups", app.UserService.Authenticate(app.MyGroups)).Methods("GET")
 	r.HandleFunc("/groups/{groupId}", app.UserService.Authenticate(app.Group)).Methods("GET")
 	r.HandleFunc("/groupmembers/{groupId}", app.UserService.Authenticate(app.GroupMembers)).Methods("GET")
+	r.HandleFunc("/addmembers/", app.UserService.Authenticate(app.AddMembers)).Methods("POST")
 	r.HandleFunc("/groupfeed/{groupId}/{offset}", app.UserService.Authenticate(app.GroupPosts)).Methods("GET")
 	//Events
 	r.HandleFunc("/userevents", app.UserService.Authenticate(app.UserEvents)).Methods("GET")
