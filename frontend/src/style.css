@@ -202,21 +202,15 @@ nav {
   background-color: rgb(252, 175, 74);
 } */
 .post-area{
-  margin-top: 5px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 3em;
-  list-style-type: none;
-  flex-direction: column;
-  justify-content: center;
+  position: sticky;
+  top: 15vh;
+  max-height: 78vh;
+  overflow: auto;
+  background-color: #ffffff;
   padding: 10px;
-  align-items: center;
-  background-color: white;
   border-radius: 20px;
   box-shadow: 0 0 8px black;
-  font-size: 0.9rem;
-  flex-shrink: 1;
-  max-height: 200px;
+  z-index: 9999;
 }
 
 .post-container {
@@ -310,7 +304,7 @@ nav {
   
 }
 .profile-area{
-  margin-top: 2vh;
+  margin-top: 5vh;
   padding: 5px;
   border-radius: 20px;
   box-shadow: 0 0 8px black;
