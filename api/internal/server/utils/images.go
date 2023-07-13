@@ -12,10 +12,10 @@ import (
 )
 
 type IImageService interface {
-	SaveImage(id int64, isUser bool, file multipart.File, fileHeader multipart.FileHeader) (string, error)
+	SaveImage(file multipart.File, fileHeader multipart.FileHeader) (string, error)
 }
 
-func SaveImage(id int64, isUser bool, file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
+func SaveImage(file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
 	// Get the file extension
 	fileExtension := strings.Split(fileHeader.Filename, ".")[1]
 
