@@ -2,6 +2,7 @@ package services
 
 import (
 	"SocialNetworkRestApi/api/pkg/models"
+	"fmt"
 	"log"
 	"time"
 )
@@ -58,7 +59,7 @@ func InitGroupEventService(
 func (s *GroupEventService) GetGroupEvents(groupId int64) ([]*models.Event, error) {
 
 	events, err := s.EventRepository.GetAllByGroupId(groupId)
-
+	fmt.Println("getGroupEvents", events)
 	if err != nil {
 		s.Logger.Printf("Failed fetching group members: %s", err)
 		return nil, err
