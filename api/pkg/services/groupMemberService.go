@@ -49,7 +49,7 @@ func (s *GroupMemberService) IsGroupMember(groupId int64, userId int64) (bool, e
 
 func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMemberJSON) (*models.GroupMemberJSON, error) {
 
-	isGroupMember, err := s.IsGroupMember(members.GroupId, userId)
+	isGroupMember, err := s.IsGroupMember(int64(members.GroupId), userId)
 
 	if err != nil {
 		s.Logger.Printf("Cannot validate user: %s", err)
@@ -61,11 +61,11 @@ func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMember
 		return nil, errors.New("not a member of this group")
 	}
 
-	addedMembers := make([]int64, 0)
+	addedMembers := make([]int, 0)
 
 	for _, userIdToAdd := range members.UserIds {
 
-		isGroupMember, err := s.IsGroupMember(members.GroupId, userIdToAdd)
+		isGroupMember, err := s.IsGroupMember(int64(members.GroupId), int64(userIdToAdd))
 
 		if err != nil {
 			s.Logger.Printf("Cannot validate user: %s", err)
@@ -78,8 +78,8 @@ func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMember
 		}
 
 		groupMember := &models.GroupMember{
-			UserId:   userIdToAdd,
-			GroupId:  members.GroupId,
+			UserId:   int64(userIdToAdd),
+			GroupId:  int64(members.GroupId),
 			JoinedAt: time.Now(),
 		}
 

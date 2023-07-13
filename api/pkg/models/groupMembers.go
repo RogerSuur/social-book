@@ -14,8 +14,8 @@ type GroupMember struct {
 }
 
 type GroupMemberJSON struct {
-	GroupId int64   `json:"groupId"`
-	UserIds []int64 `json:"userIds"`
+	GroupId int   `json:"groupId"`
+	UserIds []int `json:"userIds"`
 }
 
 type IGroupMemberRepository interface {
