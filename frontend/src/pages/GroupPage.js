@@ -132,6 +132,7 @@ const GroupPage = () => {
             <button onClick={handleModalClick}>Upload New Image</button>
           </div>
           <Posts
+            forGroupPage={true}
             showGroupSidebar={false}
             showCreatePost={true}
             url={`/groupfeed/${groupId}`}
