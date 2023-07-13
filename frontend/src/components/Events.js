@@ -26,9 +26,9 @@ const Events = ({ groupId }) => {
       {console.log(event)}
       {/* LOO SIIA LINK EVENTI LEHELE */}
       {/* <Link to={`/profile/${member.Id}`}> */}
-      <h1>{event.title}</h1>
-      <p>{event.description}</p>
-      <p>{event.event_time}</p>
+      <h1>{event.Title}</h1>
+      <p>{event.Description}</p>
+      <p>{event.EventTime}</p>
       {/* </Link> */}
     </div>
   ));
