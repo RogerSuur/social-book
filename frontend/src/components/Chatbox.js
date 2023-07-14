@@ -190,7 +190,9 @@ const Chatbox = ({ toggleChat, chat, user }) => {
             autoFocus
             required
           />
-          <button>Send</button>
+          <button>
+          <img className="send-icon" src={`${process.env.PUBLIC_URL}/send-icon.png`}/>
+          </button>
         </form>
       </div>
     </div>

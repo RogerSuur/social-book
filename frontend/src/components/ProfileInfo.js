@@ -46,7 +46,7 @@ const ProfileInfo = () => {
   return (
     <>
       {user && (
-        <div className="profile-area">
+        <div className="profile-area1">
           <div className="row">
             <div>{image()}</div>
             <h1 className="column-title">{user.firstName}'s profile</h1>
