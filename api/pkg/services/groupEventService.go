@@ -2,6 +2,7 @@ package services
 
 import (
 	"SocialNetworkRestApi/api/pkg/models"
+	"fmt"
 	"log"
 	"time"
 )
@@ -21,7 +22,7 @@ type EventJSON struct {
 
 type IGroupEventService interface {
 	GetGroupEvents(groupId int64) ([]*models.Event, error)
-	CreateGroupEvent(formData *models.CreateGroupEventFormData, userId int64) (int64, error)
+	CreateGroupEvent(formData *models.CreateGroupEventFormData, userId int64) ([]*models.NotificationJSON, error)
 	GetUserEvents(userId int64) ([]*EventJSON, error)
 }
 
@@ -30,7 +31,9 @@ type GroupEventService struct {
 	GroupEventAttendanceRepository models.IGroupEventAttendanceRepository
 	EventRepository                models.IEventRepository
 	GroupRepository                models.IGroupRepository
+	GroupMemberRepository          models.IGroupMemberRepository
 	UserRepository                 models.IUserRepository
+	NotificationRepository         models.INotificationRepository
 }
 
 func InitGroupEventService(
@@ -38,21 +41,25 @@ func InitGroupEventService(
 	groupEventAttendanceRepo *models.GroupEventAttendanceRepository,
 	groupEventRepo *models.EventRepository,
 	groupRepo *models.GroupRepository,
+	GroupMemberRepository *models.GroupMemberRepository,
 	userRepo *models.UserRepository,
+	notificationRepo *models.NotificationRepository,
 ) *GroupEventService {
 	return &GroupEventService{
 		Logger:                         logger,
 		GroupEventAttendanceRepository: groupEventAttendanceRepo,
 		EventRepository:                groupEventRepo,
 		GroupRepository:                groupRepo,
+		GroupMemberRepository:          GroupMemberRepository,
 		UserRepository:                 userRepo,
+		NotificationRepository:         notificationRepo,
 	}
 }
 
 func (s *GroupEventService) GetGroupEvents(groupId int64) ([]*models.Event, error) {
 
 	events, err := s.EventRepository.GetAllByGroupId(groupId)
-
+	fmt.Println("getGroupEvents", events)
 	if err != nil {
 		s.Logger.Printf("Failed fetching group members: %s", err)
 		return nil, err
@@ -61,7 +68,8 @@ func (s *GroupEventService) GetGroupEvents(groupId int64) ([]*models.Event, erro
 	return events, nil
 }
 
-func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFormData, userId int64) (int64, error) {
+func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFormData, userId int64) ([]*models.NotificationJSON, error) {
+
 	event := &models.Event{
 		GroupId:     formData.GroupId,
 		UserId:      userId,
@@ -77,7 +85,72 @@ func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFo
 		s.Logger.Printf("Failed inserting event: %s", err)
 	}
 
-	return result, err
+	// Send notification to all group members
+
+	groupMembers, err := s.GroupMemberRepository.GetGroupMembersByGroupId(formData.GroupId)
+
+	if err != nil {
+		s.Logger.Printf("Failed fetching group members: %s", err)
+		return nil, err
+	}
+
+	userData, err := s.UserRepository.GetById(userId)
+	if err != nil {
+		s.Logger.Printf("Failed fetching user data: %s", err)
+		return nil, err
+	}
+
+	if userData.Nickname == "" {
+		userData.Nickname = userData.FirstName + " " + userData.LastName
+	}
+
+	groupData, err := s.GroupRepository.GetById(formData.GroupId)
+	if err != nil {
+		s.Logger.Printf("Failed fetching group data: %s", err)
+		return nil, err
+	}
+
+	notificationsToBroadcast := []*models.NotificationJSON{}
+
+	for _, member := range groupMembers {
+		notification := &models.Notification{
+			ReceiverId:       member.Id,
+			SenderId:         userId,
+			EntityId:         result,
+			NotificationType: "group_events",
+			CreatedAt:        time.Now(),
+		}
+
+		// should be added to group event attendance as false?
+
+		notificationId, err := s.NotificationRepository.Insert(notification)
+
+		if err != nil {
+			s.Logger.Printf("Failed inserting notification: %s", err)
+		}
+
+		// broadcast notification to all users
+
+		notificationJSON := &models.NotificationJSON{
+			ReceiverId:       member.Id,
+			NotificationType: "event_invite",
+			NotificationId:   notificationId,
+			SenderId:         userId,
+			SenderName:       userData.Nickname,
+			GroupId:          formData.GroupId,
+			GroupName:        groupData.Title,
+			EventId:          result,
+			EventName:        formData.Title,
+			EventDate:        formData.EventTime,
+		}
+
+		s.Logger.Printf("Broadcasting notification: %v", notificationJSON)
+
+		notificationsToBroadcast = append(notificationsToBroadcast, notificationJSON)
+
+	}
+
+	return notificationsToBroadcast, err
 }
 
 func (s *GroupEventService) GetUserEvents(userId int64) ([]*EventJSON, error) {

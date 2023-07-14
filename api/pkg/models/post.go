@@ -3,7 +3,6 @@ package models
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -129,7 +128,6 @@ func (repo PostRepository) GetAllByUserId(id int64, offset int64) ([]*FeedPost, 
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println(post)
 
 		posts = append(posts, post)
 	}
@@ -175,7 +173,6 @@ func (repo PostRepository) GetAllByGroupId(groupId int64, offset int64) ([]*Feed
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println(post)
 
 		posts = append(posts, post)
 	}

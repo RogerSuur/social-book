@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import GroupSidebar from "../components/GroupSidebar";
-import { GROUP_PAGE_URL } from "../utils/routes";
+import { GROUP_PAGE_URL, ADD_GROUP_MEMBERS_URL } from "../utils/routes";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import GroupMembers from "../components/GroupMembers";
@@ -9,6 +9,7 @@ import Posts from "../pages/PostsPage.js";
 import Select from "react-select";
 import Modal from "../components/Modal";
 import AvatarUpdater from "../components/AvatarUpdater";
+import Events from "../components/Events";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -82,7 +83,7 @@ const GroupPage = () => {
     try {
       console.log(formData);
       await axios.post(
-        "http://localhost:8000/addmembers",
+        ADD_GROUP_MEMBERS_URL,
         JSON.stringify({ groupId: Number(groupId), userIds: formData }),
         {
           withCredentials: true,
@@ -137,6 +138,7 @@ const GroupPage = () => {
             showCreatePost={true}
             url={`/groupfeed/${groupId}`}
           />
+          <Events groupId={groupId} />
         </div>
       )}
     </>

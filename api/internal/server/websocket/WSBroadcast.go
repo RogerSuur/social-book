@@ -214,6 +214,48 @@ func (w *WebsocketServer) BroadcastGroupMessage(c *Client, message *models.Messa
 	return nil
 }
 
+func (w *WebsocketServer) BroadcastGroupEventInvites(notifications []*models.NotificationJSON) error {
+
+	for _, notification := range notifications {
+
+		recipientClient := w.getClientByUserID(notification.ReceiverId)
+
+		if recipientClient == nil {
+			w.Logger.Printf("Recipient client not found (recipient offline)")
+		} else {
+			w.Logger.Printf("Recipient client found (recipient online)")
+
+			dataToSend, err := json.Marshal(
+				&NotificationPayload{
+					NotificationType: notification.NotificationType,
+					NotificationID:   int(notification.NotificationId),
+					SenderID:         int(notification.SenderId),
+					SenderName:       notification.SenderName,
+					GroupID:          int(notification.GroupId),
+					GroupName:        notification.GroupName,
+					EventID:          int(notification.EventId),
+					EventName:        notification.EventName,
+					EventDate:        notification.EventDate,
+				},
+			)
+
+			if err != nil {
+				return err
+			}
+
+			recipientClient.gate <- Payload{
+				Type: "notification",
+				Data: dataToSend,
+			}
+
+			w.Logger.Printf("Sent event notification to recipient")
+
+		}
+	}
+
+	return nil
+}
+
 func (w *WebsocketServer) BroadcastGroupJoinRequest(c *Client, groupReqId int64, groupId int64) error {
 	userData, err := w.userService.GetUserByID(c.clientID)
 	if err != nil {
