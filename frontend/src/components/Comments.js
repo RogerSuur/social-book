@@ -73,9 +73,9 @@ const Comments = ({ postId, commentCount, showCreateComment }) => {
           {commentCountUpdate > 0 && (
             <div className="row">
               <div className="column">
-                {comments.map((comment) => (
-                  <>
-                    <div key={comment.comment_id}>{comment.content}</div>
+                {comments.map((comment, index) => (
+                  <div key={index}>
+                    <div key={comment.id}>{comment.content}</div>
                     <div className="row">
                       <div className="column">
                         <p>
@@ -90,7 +90,7 @@ const Comments = ({ postId, commentCount, showCreateComment }) => {
                     </div>
 
                     <hr />
-                  </>
+                  </div>
                 ))}
               </div>
             </div>

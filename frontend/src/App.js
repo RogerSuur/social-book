@@ -29,7 +29,14 @@ function App() {
               <Route path="profile/:id" element={<ProfileInfo />} />
               <Route
                 path="posts"
-                element={<PostsPage showCreatePost={true} url={"/feedposts"} />}
+                element={
+                  <PostsPage
+                    forGroupPage={false}
+                    showGroupSidebar={true}
+                    showCreatePost={true}
+                    url={"/feedposts"}
+                  />
+                }
               />
               <Route path="posts/:id" element={<Post />} />
               <Route path="categories/:id" element={<Category />} />

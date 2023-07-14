@@ -56,12 +56,11 @@ type IUserService interface {
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
 type UserService struct {
-	Logger                *log.Logger
-	UserRepo              models.IUserRepository
-	SessionRepo           models.ISessionRepository
-	FollowerRepo          models.IFollowerRepository
-	NotificationRepo      models.INotificationRepository
-	GroupMemberRepository models.IGroupUserRepository
+	Logger           *log.Logger
+	UserRepo         models.IUserRepository
+	SessionRepo      models.ISessionRepository
+	FollowerRepo     models.IFollowerRepository
+	NotificationRepo models.INotificationRepository
 }
 
 // InitUserService initializes the user controller.
@@ -71,15 +70,13 @@ func InitUserService(
 	sessionRepo *models.SessionRepository,
 	followerRepo *models.FollowerRepository,
 	notificationRepo *models.NotificationRepository,
-	groupMemberRepository *models.GroupUserRepository,
 ) *UserService {
 	return &UserService{
-		Logger:                logger,
-		UserRepo:              userRepo,
-		SessionRepo:           sessionRepo,
-		FollowerRepo:          followerRepo,
-		NotificationRepo:      notificationRepo,
-		GroupMemberRepository: groupMemberRepository,
+		Logger:           logger,
+		UserRepo:         userRepo,
+		SessionRepo:      sessionRepo,
+		FollowerRepo:     followerRepo,
+		NotificationRepo: notificationRepo,
 	}
 }
 
@@ -423,7 +420,7 @@ func (s *UserService) UpdateUserImage(userID int64, imageFile multipart.File, he
 	}
 
 	// save image
-	imagePath, err := utils.SaveImage(userID, true, imageFile, header)
+	imagePath, err := utils.SaveImage(imageFile, header)
 	if err != nil {
 		s.Logger.Printf("Cannot save image: %s", err)
 		return err

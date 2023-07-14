@@ -5,7 +5,7 @@ import axios from "axios";
 
 const IMAGE_UPLOAD_URL = "http://localhost:8000/profile/update/avatar";
 
-const AvatarUpdater = ({ onUploadSuccess }) => {
+const AvatarUpdater = ({ url, onUploadSuccess }) => {
   const editorRef = useRef();
   const [selectedImage, setSelectedImage] = useState(null);
   const [errMsg, setErrMsg] = useState("");
@@ -19,7 +19,7 @@ const AvatarUpdater = ({ onUploadSuccess }) => {
       formData.append("image", blob, "avatar.png");
       try {
         // Send the image data to the server using Axios
-        await axios.post(IMAGE_UPLOAD_URL, formData, { withCredentials: true });
+        await axios.post(url, formData, { withCredentials: true });
         onUploadSuccess();
         console.log("Image uploaded successfully!");
       } catch (err) {
@@ -40,7 +40,7 @@ const AvatarUpdater = ({ onUploadSuccess }) => {
         image={
           selectedImage
             ? selectedImage
-            : `${process.env.PUBLIC_URL}/images/defaultuser.jpg`
+            : `${process.env.PUBLIC_URL}/defaultuser.jpg`
         }
         width={250}
         height={250}

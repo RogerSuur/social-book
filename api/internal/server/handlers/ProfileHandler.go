@@ -170,14 +170,14 @@ func (app *Application) UpdateUserImage(rw http.ResponseWriter, r *http.Request)
 	err = r.ParseMultipartForm(20 << 18)
 	if err != nil {
 		app.Logger.Printf("Cannot parse multipart form: %s", err)
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		http.Error(rw, err.Error(), http.StatusRequestEntityTooLarge)
 		return
 	}
 
 	file, header, err := r.FormFile("image")
 	if err != nil {
 		app.Logger.Printf("Cannot get image file: %s", err)
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		http.Error(rw, err.Error(), http.StatusUnsupportedMediaType)
 		return
 	}
 	defer file.Close()

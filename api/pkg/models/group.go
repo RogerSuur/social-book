@@ -35,18 +35,13 @@ type SearchResult struct {
 	ImagePath string `json:"imagePath"`
 }
 
-type CreateGroupFormData struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	ImagePath   string `json:"imagePath"`
-}
-
 type IGroupRepository interface {
 	GetAllByCreatorId(userId int64) ([]*Group, error)
 	GetAllByMemberId(userId int64) ([]*Group, error)
 	GetById(id int64) (*Group, error)
 	Insert(group *Group) (int64, error)
 	SearchGroupsAndUsersByString(searchString string) ([]*SearchResult, error)
+	UpdateImagePath(groupId int64, imagePath string) error
 }
 
 type GroupRepository struct {
@@ -205,4 +200,17 @@ func (repo GroupRepository) SearchGroupsAndUsersByString(searchString string) ([
 	}
 
 	return groups, nil
+}
+
+func (repo GroupRepository) UpdateImagePath(groupId int64, imagePath string) error {
+
+	stmt := `UPDATE groups SET image_path = ? WHERE id = ?`
+
+	_, err := repo.DB.Exec(stmt, imagePath, groupId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

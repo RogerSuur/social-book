@@ -12,6 +12,11 @@ import CreateGroup from "./CreateGroup";
 
 const GroupSidebar = () => {
   const [searchResults, setSearchResults] = useState([]);
+  const [loadNewGroups, setLoadNewGroups] = useState(0);
+
+  const handleGroupUpdate = () => {
+    setLoadNewGroups((prevCount) => prevCount + 1);
+  };
 
   const sidebarItems = (
     <>
@@ -23,9 +28,12 @@ const GroupSidebar = () => {
           <GenericGroupList url={USER_GROUPS_URL} />
         </li>
         <h1>My groups</h1>
-        <CreateGroup />
+        <CreateGroup onGroupCreated={handleGroupUpdate} />
         <li className="pepe">
-          <GenericGroupList url={USER_CREATED_GROUPS_URL} />
+          <GenericGroupList
+            url={USER_CREATED_GROUPS_URL}
+            loadNewGroups={loadNewGroups}
+          />
         </li>
         <h1>Events</h1>
         <li className="pepe">

@@ -1,11 +1,8 @@
 import Modal from "./Modal";
-import AvatarUpdater from "./AvatarUpdater.js";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import GenericGroupList from "./GenericGroupList";
-import { USER_CREATED_GROUPS_URL } from "../utils/routes";
 
-const CreateGroup = () => {
+const CreateGroup = ({ onGroupCreated }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [groupCreateForm, setGroupCreateForm] = useState({
@@ -44,6 +41,7 @@ const CreateGroup = () => {
       setErrMsg(response.data?.message);
       // props.onPostsUpdate();
       //ACtion for creating new group
+      onGroupCreated();
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -57,45 +55,36 @@ const CreateGroup = () => {
 
   return (
     <>
-      <i className="iconoir-add-circle" onClick={openModal} />
-      <Modal open={modalOpen} onClose={closeModal}>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Title:
-            <input
-              type="text"
-              name="title"
-              value={groupCreateForm.title}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <br />
-          <label>
-            Description:
-            <textarea
-              name="description"
-              value={groupCreateForm.description}
-              onChange={handleChange}
-              required
-            ></textarea>
-          </label>
-          <br />
+      <div className="newModal">
+        <i className="iconoir-add-circle" onClick={openModal} />
+        <Modal open={modalOpen} onClose={closeModal}>
+          <form onSubmit={handleSubmit}>
+            <label>
+              Title:
+              <input
+                type="text"
+                name="title"
+                value={groupCreateForm.title}
+                onChange={handleChange}
+                required
+              />
+            </label>
+            <br />
+            <label>
+              Description:
+              <textarea
+                name="description"
+                value={groupCreateForm.description}
+                onChange={handleChange}
+                required
+              ></textarea>
+            </label>
+            <br />
 
-          <br />
-          {/* <label>
-            Image:
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
-          </label> */}
-
-          <button type="submit">Create</button>
-        </form>
-      </Modal>
+            <button type="submit">Create</button>
+          </form>
+        </Modal>
+      </div>
       {/* <button onClick={openModal}>Upload New Image</button> */}
     </>
   );

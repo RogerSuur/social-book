@@ -4,8 +4,6 @@ import (
 	"database/sql"
 )
 
-
-
 // Repositories contains all the repo structs
 type Repositories struct {
 	UserRepo             *UserRepository
@@ -17,7 +15,7 @@ type Repositories struct {
 	EventRepo            *EventRepository
 	MessageRepo          *MessageRepository
 	NotificationRepo     *NotificationRepository
-	GroupUserRepo        *GroupUserRepository
+	GroupMemberRepo      *GroupMemberRepository
 	AllowedPostRepo      *AllowedPostRepository
 	GroupEventAttendance *GroupEventAttendanceRepository
 }
@@ -33,7 +31,7 @@ func InitRepositories(db *sql.DB) *Repositories {
 	eventRepo := NewEventRepo(db)
 	messageRepo := NewMessageRepo(db)
 	notificationRepo := NewNotificationRepo(db)
-	groupUserRepo := NewGroupUserRepo(db)
+	groupMemberRepo := NewGroupMemberRepo(db)
 	allowedPostRepo := NewAllowedPostRepo(db)
 	groupEventAttendance := NewGroupEventAttendanceRepo(db)
 
@@ -47,7 +45,7 @@ func InitRepositories(db *sql.DB) *Repositories {
 		EventRepo:            eventRepo,
 		MessageRepo:          messageRepo,
 		NotificationRepo:     notificationRepo,
-		GroupUserRepo:        groupUserRepo,
+		GroupMemberRepo:      groupMemberRepo,
 		AllowedPostRepo:      allowedPostRepo,
 		GroupEventAttendance: groupEventAttendance,
 	}

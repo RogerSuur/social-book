@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Select from "react-select";
 
 const CreatePost = (props) => {
   const initialFormData = {
@@ -16,31 +17,12 @@ const CreatePost = (props) => {
   const [errMsg, setErrMsg] = useState("");
 
   const handleChange = (event) => {
-    const { name, value, type, checked } = event.target;
+    const { name, value, type } = event.target;
 
-    setFormData((prevFormData) => {
-      const newFormData = {
-        ...prevFormData,
-        [name]: type === "radio" ? parseInt(value) : value,
-      };
-
-      if (newFormData.privacyType !== 3) {
-        newFormData.selectedReceivers = [];
-      } else if (type === "checkbox") {
-        const selectedReceiver = [...prevFormData.selectedReceivers];
-        if (checked) {
-          selectedReceiver.push(value);
-        } else {
-          const index = selectedReceiver.indexOf(value);
-          if (index !== -1) {
-            selectedReceiver.splice(index, 1);
-          }
-        }
-        newFormData.selectedReceivers = selectedReceiver;
-      }
-
-      return newFormData;
-    });
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: type === "radio" ? parseInt(value) : value,
+    }));
   };
 
   useEffect(() => {
@@ -49,7 +31,6 @@ const CreatePost = (props) => {
         const response = await axios.get("http://localhost:8000/followers", {
           withCredentials: true,
         });
-        console.log(response);
         setFollowers(response.data);
       } catch (err) {
         console.error(err);
@@ -64,6 +45,7 @@ const CreatePost = (props) => {
     event.preventDefault();
 
     try {
+      console.log("formData", formData);
       const response = await axios.post(
         "http://localhost:8000/post",
         JSON.stringify(formData),
@@ -86,6 +68,21 @@ const CreatePost = (props) => {
 
     setFormData(initialFormData);
   };
+
+  const handleSelectChange = (selectedOptions) => {
+    const selectedValues = selectedOptions.map((option) =>
+      option.value.toString()
+    );
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      selectedReceivers: selectedValues,
+    }));
+  };
+
+  const followersOptions = followers.map((follower) => ({
+    value: follower.id,
+    label: `${follower.firstName} ${follower.lastName}`,
+  }));
 
   return (
     <>
@@ -133,19 +130,11 @@ const CreatePost = (props) => {
           {formData.privacyType === 3 && (
             <>
               <legend>Choose receiver(s)</legend>
-              {followers.map((follower) => (
-                <div key={follower.id}>
-                  <label htmlFor={`receiver_${follower.id}`}>
-                    <input
-                      type="checkbox"
-                      name="selectedReceivers"
-                      onChange={handleChange}
-                      value={follower.id}
-                    />
-                    {follower.firstName} {follower.lastName}
-                  </label>
-                </div>
-              ))}
+              <Select
+                options={followersOptions}
+                isMulti
+                onChange={handleSelectChange}
+              />
             </>
           )}
           <button className="post-button">Post</button>

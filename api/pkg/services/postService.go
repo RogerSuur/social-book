@@ -11,6 +11,7 @@ import (
 
 type IPostService interface {
 	CreatePost(post *models.Post) error
+	CreateGroupPost(post *models.Post) error
 	GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON, error)
 	GetProfilePosts(userId int64, offset int64) ([]*feedPostJSON, error)
 	GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSON, error)
@@ -76,6 +77,25 @@ func (s *PostService) CreatePost(post *models.Post) error {
 	return err
 }
 
+func (s *PostService) CreateGroupPost(post *models.Post) error {
+
+	if len(post.Content) == 0 {
+		err := errors.New("content too short")
+		log.Printf("Create Group Post error: %s", err)
+		return err
+	}
+
+	postId, err := s.PostRepository.Insert(post)
+
+	if err != nil {
+		log.Printf("Create Group Post error: %s", err)
+	}
+
+	s.Logger.Printf("Group post inserted: %d", postId)
+
+	return err
+}
+
 func (s *PostService) GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON, error) {
 	// fmt.Println("userId", userId)
 
@@ -118,6 +138,16 @@ func (s *PostService) GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON,
 
 func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJSON, error) {
 	// fmt.Println("userId", userId)
+
+	if offset == 0 {
+		lastPostId, err := s.PostRepository.GetLastPostId()
+		if err != nil {
+			s.Logger.Printf("GetFeedPosts error: %s", err)
+			return nil, err
+		}
+		offset = lastPostId + 1
+	}
+
 	posts, err := s.PostRepository.GetAllByUserId(userId, offset)
 
 	if err != nil {
@@ -143,6 +173,15 @@ func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJS
 }
 
 func (s *PostService) GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSON, error) {
+
+	if offset == 0 {
+		lastPostId, err := s.PostRepository.GetLastPostId()
+		if err != nil {
+			s.Logger.Printf("GetFeedPosts error: %s", err)
+			return nil, err
+		}
+		offset = lastPostId + 1
+	}
 
 	posts, err := s.PostRepository.GetAllByGroupId(groupId, offset)
 
