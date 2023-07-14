@@ -83,6 +83,6 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 			repositories.UserRepo,
 		),
 		GroupMemberService: services.InitGroupMemberService(logger, repositories.GroupMemberRepo),
-		GroupEventService:  services.InitGroupEventService(logger, repositories.GroupEventAttendance, repositories.EventRepo, repositories.GroupRepo, repositories.UserRepo),
+		GroupEventService:  groupEventServices,
 	}
 }
