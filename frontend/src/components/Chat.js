@@ -84,7 +84,7 @@ const Chat = ({}) => {
 
   const renderedChats = chatlist.map((chat, index) => (
     <div className="hov" key={index}>
-      <li >
+      <li>
         <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
       </li>
       {checkChat([chat?.user_id, chat?.group_id], openChat) && (

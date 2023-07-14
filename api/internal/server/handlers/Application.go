@@ -35,6 +35,8 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 		repositories.UserRepo,
 		repositories.FollowerRepo,
 		repositories.NotificationRepo,
+		repositories.GroupRepo,
+		repositories.GroupMemberRepo,
 	)
 
 	chatServices := services.InitChatService(
@@ -61,7 +63,12 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 			userServices,
 			notificationServices,
 			chatServices,
-			services.InitGroupService(logger, repositories.GroupRepo, repositories.GroupMemberRepo),
+			services.InitGroupService(
+				logger,
+				repositories.GroupRepo,
+				repositories.GroupMemberRepo,
+				repositories.UserRepo,
+			),
 			services.InitGroupMemberService(logger, repositories.GroupMemberRepo),
 		),
 		UserService:         userServices,
@@ -69,8 +76,13 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 		PostService:         services.InitPostService(logger, repositories.PostRepo, repositories.AllowedPostRepo),
 		CommentService:      services.InitCommentService(logger, repositories.CommentRepo),
 		ChatService:         chatServices,
-		GroupService:        services.InitGroupService(logger, repositories.GroupRepo, repositories.GroupMemberRepo),
-		GroupMemberService:  services.InitGroupMemberService(logger, repositories.GroupMemberRepo),
-		GroupEventService:   groupEventServices,
+		GroupService: services.InitGroupService(
+			logger,
+			repositories.GroupRepo,
+			repositories.GroupMemberRepo,
+			repositories.UserRepo,
+		),
+		GroupMemberService: services.InitGroupMemberService(logger, repositories.GroupMemberRepo),
+		GroupEventService:  services.InitGroupEventService(logger, repositories.GroupEventAttendance, repositories.EventRepo, repositories.GroupRepo, repositories.UserRepo),
 	}
 }

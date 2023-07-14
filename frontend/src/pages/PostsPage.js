@@ -4,8 +4,9 @@ import FeedPosts from "../components/FeedPosts";
 import CreatePost from "../components/CreatePost";
 import { makeRequest } from "../services/makeRequest";
 import GroupSidebar from "../components/GroupSidebar";
+import CreateGroupPosts from "../components/CreateGroupPosts";
 
-const Posts = ({ showGroupSidebar, showCreatePost, url }) => {
+const Posts = ({ forGroupPage, showGroupSidebar, showCreatePost, url }) => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -49,7 +50,14 @@ const Posts = ({ showGroupSidebar, showCreatePost, url }) => {
     <>
       {showGroupSidebar && <GroupSidebar />}
       <div className="content-as">
-        {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
+        {showCreatePost && !forGroupPage && (
+          <CreatePost onPostsUpdate={handlePostUpdate} />
+        )}
+
+        {showCreatePost && forGroupPage && (
+          <CreateGroupPosts onPostsUpdate={handlePostUpdate} />
+        )}
+
         {error ? (
           <div className="error">{error}</div>
         ) : (

@@ -17,23 +17,27 @@ type IGroupService interface {
 	SearchGroupsAndUsers(searchString string) ([]*models.SearchResult, error)
 	CreateGroup(groupFormData *models.GroupJSON, userId int64) (int64, error)
 	UpdateGroupImage(userId int64, groupId int64, imageFile multipart.File, header *multipart.FileHeader) error
+	GetGroupCreator(groupId int64) (*models.User, error)
 }
 
 type GroupService struct {
 	Logger          *log.Logger
 	GroupRepository models.IGroupRepository
 	GroupMemberRepo models.IGroupMemberRepository
+	UserRepository  models.IUserRepository
 }
 
 func InitGroupService(
 	logger *log.Logger,
 	groupRepo *models.GroupRepository,
 	groupMemberRepo *models.GroupMemberRepository,
+	userRepo *models.UserRepository,
 ) *GroupService {
 	return &GroupService{
 		Logger:          logger,
 		GroupRepository: groupRepo,
 		GroupMemberRepo: groupMemberRepo,
+		UserRepository:  userRepo,
 	}
 }
 
@@ -145,13 +149,13 @@ func (s *GroupService) UpdateGroupImage(userId int64, groupId int64, imageFile m
 	}
 
 	// check if user is creator of group
-	groups, err := s.GroupRepository.GetAllByCreatorId(userId)
+	creatorUser, err := s.GetGroupCreator(groupId)
 	if err != nil {
-		s.Logger.Printf("User groups not found: %s", err)
+		s.Logger.Printf("Error with checking group ownership: %s", err)
 		return err
 	}
 
-	if !isCreator(groupId, groups) {
+	if userId != creatorUser.Id {
 		return errors.New("user is not creator of group")
 	}
 
@@ -177,11 +181,18 @@ func (s *GroupService) UpdateGroupImage(userId int64, groupId int64, imageFile m
 	return nil
 }
 
-func isCreator(groupId int64, groups []*models.Group) bool {
-	for _, group := range groups {
-		if group.Id == groupId {
-			return true
-		}
+func (s *GroupService) GetGroupCreator(groupId int64) (*models.User, error) {
+	group, err := s.GroupRepository.GetById(groupId)
+	if err != nil {
+		s.Logger.Printf("Group not found: %s", err)
+		return nil, err
 	}
-	return false
+
+	userData, err := s.UserRepository.GetById(group.CreatorId)
+	if err != nil {
+		s.Logger.Printf("User not found: %s", err)
+		return nil, err
+	}
+
+	return userData, nil
 }

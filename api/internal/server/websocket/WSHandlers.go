@@ -254,5 +254,21 @@ func (w *WebsocketServer) GroupRequestHandler(p Payload, c *Client) error {
 		return err
 	}
 	w.Logger.Printf("User %v wants to join group %v", c.clientID, data.GroupID)
+
+	groupRequestId, err := w.notificationService.CreateGroupRequest(int64(c.clientID), int64(data.GroupID))
+
+	if err != nil {
+		return err
+	}
+
+	w.Logger.Printf("Created group request with id %v", groupRequestId)
+
+	// broadcast to group owner
+
+	err = w.BroadcastGroupJoinRequest(c, groupRequestId, int64(data.GroupID))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

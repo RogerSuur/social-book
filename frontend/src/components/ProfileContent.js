@@ -29,6 +29,7 @@ const ProfileContent = ({ selected }) => {
       {displayedContent}
       {selected === "your-posts" && (
         <Posts
+          forGroupPage={false}
           showGroupSidebar={false}
           showCreatePost={false}
           url={"/profileposts"}

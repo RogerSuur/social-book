@@ -16,6 +16,7 @@ type Post struct {
 	CreatedAt   time.Time
 	PrivacyType enums.PrivacyType
 	Receivers   []string
+	GroupId     int64
 }
 
 type FeedPost struct {
@@ -54,8 +55,8 @@ func NewPostRepo(db *sql.DB) *PostRepository {
 const FeedLimit = 10
 
 func (repo PostRepository) Insert(post *Post) (int64, error) {
-	query := `INSERT INTO posts (user_id, content, created_at, image_path, privacy_type_id)
-	VALUES(?, ?, ?, ?, ?)`
+	query := `INSERT INTO posts (user_id, content, created_at, image_path, privacy_type_id, group_id)
+	VALUES(?, ?, ?, ?, ?, ?)`
 
 	args := []interface{}{
 		post.UserId,
@@ -63,6 +64,7 @@ func (repo PostRepository) Insert(post *Post) (int64, error) {
 		time.Now(),
 		post.ImagePath,
 		post.PrivacyType,
+		post.GroupId,
 	}
 
 	result, err := repo.DB.Exec(query, args...)

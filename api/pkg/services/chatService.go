@@ -173,32 +173,17 @@ func (s *ChatService) CreateMessage(message *models.Message) (int64, error) {
 func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int64, lastMessage int64) ([]*MessageJSON, error) {
 
 	// check if users exist
-	userData, err := s.UserRepo.GetById(userId)
-	if err != nil {
-		s.Logger.Printf("User with id %d does not exist", userId)
-		return nil, err
-	}
-
-	if userData.Nickname == "" {
-		userData.Nickname = userData.FirstName + " " + userData.LastName
-	}
 
 	var messages []*models.Message
-	var otherData *models.User
-	var groupData *models.Group
+	groupData := &models.Group{
+		Title: "",
+	}
+	recipientData := &models.User{
+		Nickname: "",
+	}
+	var err error
 
 	if otherId != 0 {
-		otherData, err = s.UserRepo.GetById(otherId)
-		if err != nil {
-			s.Logger.Printf("User with id %d does not exist", otherId)
-			return nil, err
-		}
-
-		if otherData.Nickname == "" {
-			otherData.Nickname = otherData.FirstName + " " + otherData.LastName
-		}
-
-		// get messages
 
 		if lastMessage == 0 {
 			lastFullMessage, err := s.ChatRepo.GetLastMessage(userId, otherId, false)
@@ -212,17 +197,8 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 		if err != nil {
 			return nil, err
 		}
-		groupData = &models.Group{
-			Title: "",
-		}
-	} else if groupId != 0 {
-		groupData, err = s.GroupRepo.GetById(groupId)
-		if err != nil {
-			s.Logger.Printf("Group with id %d does not exist", groupId)
-			return nil, err
-		}
 
-		// get messages
+	} else if groupId != 0 {
 
 		if lastMessage == 0 {
 			lastFullMessage, err := s.ChatRepo.GetLastMessage(userId, groupId, true)
@@ -236,9 +212,7 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 		if err != nil {
 			return nil, err
 		}
-		otherData = &models.User{
-			Nickname: "",
-		}
+
 	} else {
 		s.Logger.Printf("Neither recipient nor group id is specified")
 		return nil, errors.New("neither recipient nor group id is specified")
@@ -252,24 +226,56 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 
 	for i := len(messages) - 1; i >= 0; i-- {
 		message := messages[i]
+
+		senderData, err := s.UserRepo.GetById(message.SenderId)
+		if err != nil {
+			s.Logger.Printf("User with id %d does not exist", userId)
+			return nil, err
+		}
+
+		if senderData.Nickname == "" {
+			senderData.Nickname = senderData.FirstName + " " + senderData.LastName
+		}
+
+		if otherId != 0 {
+			recipientData, err := s.UserRepo.GetById(message.RecipientId)
+			if err != nil {
+				s.Logger.Printf("User with id %d does not exist", otherId)
+				return nil, err
+			}
+
+			if recipientData.Nickname == "" {
+				recipientData.Nickname = recipientData.FirstName + " " + recipientData.LastName
+			}
+		}
+
+		if groupId != 0 {
+			groupData, err = s.GroupRepo.GetById(groupId)
+			if err != nil {
+				s.Logger.Printf("Group with id %d does not exist", groupId)
+				return nil, err
+			}
+		}
+
 		messageJSON := &MessageJSON{
-			Id:          message.Id,
-			SenderId:    message.SenderId,
-			RecipientId: message.RecipientId,
-			GroupId:     groupId,
-			GroupName:   groupData.Title,
-			Content:     message.Content,
-			SentAt:      message.SentAt,
+			Id:            message.Id,
+			SenderId:      message.SenderId,
+			SenderName:    senderData.Nickname,
+			RecipientId:   message.RecipientId,
+			RecipientName: recipientData.Nickname,
+			GroupId:       groupId,
+			GroupName:     groupData.Title,
+			Content:       message.Content,
+			SentAt:        message.SentAt,
 			//ReadAt:        message.ReadAt,
 		}
 
-		if message.SenderId == userId {
-			messageJSON.SenderName = userData.Nickname
-			messageJSON.RecipientName = otherData.Nickname
-		} else {
-			messageJSON.SenderName = otherData.Nickname
-			messageJSON.RecipientName = userData.Nickname
-		}
+		/*
+			if message.SenderId != userId && groupId == 0 {
+				messageJSON.SenderName = otherData.Nickname
+				messageJSON.RecipientName = userData.Nickname
+			}
+		*/
 
 		messagesJSON = append(messagesJSON, messageJSON)
 	}
