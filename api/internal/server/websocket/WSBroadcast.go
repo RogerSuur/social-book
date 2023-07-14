@@ -6,7 +6,7 @@ import (
 )
 
 func (w *WebsocketServer) BroadcastFollowRequest(c *Client, followRequestId int64, sendNewChatlist bool, otherId int64) error {
-	userData, err := w.userService.GetUserData(int64(c.clientID), int64(c.clientID))
+	userData, err := w.userService.GetUserByID(int64(c.clientID))
 	if err != nil {
 		return err
 	}
@@ -208,6 +208,60 @@ func (w *WebsocketServer) BroadcastGroupMessage(c *Client, message *models.Messa
 		}
 
 		w.Logger.Printf("Sent message to recipient")
+
+	}
+
+	return nil
+}
+
+func (w *WebsocketServer) BroadcastGroupJoinRequest(c *Client, groupReqId int64, groupId int64) error {
+	userData, err := w.userService.GetUserByID(c.clientID)
+	if err != nil {
+		return err
+	}
+
+	if userData.Nickname == "" {
+		userData.Nickname = userData.FirstName + " " + userData.LastName
+	}
+
+	creatorUser, err := w.groupService.GetGroupCreator(groupId)
+	if err != nil {
+		return err
+	}
+
+	creatorClient := w.getClientByUserID(creatorUser.Id)
+
+	if creatorClient == nil {
+		w.Logger.Printf("Group creator client not found (creator offline)")
+	} else {
+		w.Logger.Printf("Group creator client found (creator online)")
+
+		groupData, err := w.groupService.GetGroupById(groupId)
+		if err != nil {
+			return err
+		}
+
+		dataToSend, err := json.Marshal(
+			&NotificationPayload{
+				NotificationType: "group_request",
+				NotificationID:   int(groupReqId),
+				SenderID:         int(c.clientID),
+				SenderName:       userData.Nickname,
+				GroupID:          int(groupId),
+				GroupName:        groupData.Title,
+			},
+		)
+
+		if err != nil {
+			return err
+		}
+
+		creatorClient.gate <- Payload{
+			Type: "notification",
+			Data: dataToSend,
+		}
+
+		w.Logger.Printf("Sent group join request to creator")
 
 	}
 

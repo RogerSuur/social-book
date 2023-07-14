@@ -12,6 +12,7 @@ type INotificationService interface {
 	GetUserNotifications(userId int64) ([]*models.NotificationJSON, error)
 	CreateFollowRequest(followerId int64, followingId int64) (int64, bool, error)
 	HandleFollowRequest(notificationId int64, accepted bool) error
+	CreateGroupRequest(senderId int64, groupId int64) (int64, error)
 }
 
 type NotificationService struct {
@@ -19,6 +20,8 @@ type NotificationService struct {
 	UserRepo               models.IUserRepository
 	FollowerRepo           models.IFollowerRepository
 	NotificationRepository models.INotificationRepository
+	GroupRepo              models.IGroupRepository
+	GroupMemberRepo        models.IGroupMemberRepository
 }
 
 func InitNotificationService(
@@ -26,12 +29,16 @@ func InitNotificationService(
 	userRepo *models.UserRepository,
 	followerRepo *models.FollowerRepository,
 	notificationRepo *models.NotificationRepository,
+	groupRepo *models.GroupRepository,
+	groupMemberRepo *models.GroupMemberRepository,
 ) *NotificationService {
 	return &NotificationService{
 		Logger:                 logger,
 		UserRepo:               userRepo,
 		FollowerRepo:           followerRepo,
 		NotificationRepository: notificationRepo,
+		GroupRepo:              groupRepo,
+		GroupMemberRepo:        groupMemberRepo,
 	}
 }
 
@@ -211,4 +218,60 @@ func (s *NotificationService) HandleFollowRequest(notificationId int64, accepted
 	s.Logger.Printf("Notification updated: %d", notification.Id)
 
 	return nil
+}
+
+func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) (int64, error) {
+
+	// check if sender and group exist
+	_, err := s.UserRepo.GetById(senderId)
+	if err != nil {
+		s.Logger.Printf("Sender not found: %s", err)
+		return -1, err
+	}
+	_, err = s.GroupRepo.GetById(groupId)
+	if err != nil {
+		s.Logger.Printf("Group not found: %s", err)
+		return -1, err
+	}
+
+	// check if user is already member of group
+	isMember, err := s.GroupMemberRepo.IsGroupMember(senderId, groupId)
+	if err == nil {
+		return -1, errors.New("error in checking if user is already member of group")
+	}
+	if isMember {
+		return -1, errors.New("user is already member of group")
+	}
+
+	// add member to group with joined at Zero
+	groupMember := &models.GroupMember{
+		UserId:   senderId,
+		GroupId:  groupId,
+		JoinedAt: time.Time{},
+	}
+
+	lastID, err := s.GroupMemberRepo.Insert(groupMember)
+	if err != nil {
+		s.Logger.Printf("Cannot insert group request: %s", err)
+		return -1, err
+	}
+
+	s.Logger.Printf("Member added: %d", lastID)
+
+	// create notification
+	notification := models.Notification{
+		ReceiverId:       groupId,
+		NotificationType: "group_request",
+		SenderId:         senderId,
+		EntityId:         lastID,
+		CreatedAt:        time.Now(),
+		Reaction:         false,
+	}
+
+	notificationId, err := s.NotificationRepository.Insert(&notification)
+	if err != nil {
+		return -1, err
+	}
+
+	return notificationId, nil
 }
