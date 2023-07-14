@@ -82,7 +82,7 @@ const Signup = () => {
             })}
           />
         </div>
-        {errors.email && <p>{errors.email.message}</p>}
+        {errors.email && <p className="error-message">{errors.email.message}</p>}
 
         <br />
         <div className="input-container">
@@ -107,7 +107,7 @@ const Signup = () => {
             })}
           />
         </div>
-        {errors.password && <p>{errors.password.message}</p>}
+        {errors.password && <p className="error-message">{errors.password.message}</p>}
 
         <br />
         <div className="input-container">
@@ -126,7 +126,7 @@ const Signup = () => {
             })}
           />
         </div>
-        {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
+        {errors.confirmPassword && <p className="error-message">{errors.confirmPassword.message}</p>}
 
         <br />
         <div className="input-container">
@@ -141,7 +141,7 @@ const Signup = () => {
             })}
           />
         </div>
-        {errors.firstName && <p>{errors.firstName.message}</p>}
+        {errors.firstName && <p className="error-message">{errors.firstName.message}</p>}
 
         <br />
         <div className="input-container">
@@ -156,7 +156,7 @@ const Signup = () => {
             })}
           />
         </div>
-        {errors.lastName && <p>{errors.lastName.message}</p>}
+        {errors.lastName && <p className="error-message">{errors.lastName.message}</p>}
 
         <br />
         <div className="input-container">
