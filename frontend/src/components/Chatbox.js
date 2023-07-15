@@ -1,15 +1,15 @@
 import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroller";
 import ImageHandler from "../utils/imageHandler";
-import EmojiPicker from "emoji-picker-react";
 
 const Chatbox = ({ toggleChat, chat, user }) => {
   const [messageHistory, setMessageHistory] = useState([]);
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [scrollToBottomNeeded, setScrollToBottomNeeded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({
     type: "message",
@@ -18,7 +18,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     },
   });
 
-  // console.log(user, "USER");
+  const messageboxRef = useRef(null);
 
   const image = () =>
     chat?.user_id > 0
@@ -46,7 +46,6 @@ const Chatbox = ({ toggleChat, chat, user }) => {
         // console.log(lastJsonMessage, "MSG HISTORY");
 
         if (lastJsonMessage?.data.length > 0) {
-          // console.log("HRE");
           setMessageHistory((prevMessageHistory) => [
             ...lastJsonMessage?.data,
             ...prevMessageHistory,
@@ -71,11 +70,14 @@ const Chatbox = ({ toggleChat, chat, user }) => {
             lastJsonMessage?.data,
           ]);
         }
+        break;
+      default:
+        break;
     }
   }, [lastJsonMessage]);
 
   const closeChat = () => {
-    toggleChat(0);
+    toggleChat(null);
   };
 
   const handleChange = (event) => {
@@ -120,13 +122,14 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     event.preventDefault();
     let msg = {
       ...message,
-      data: { ...message.data, sender_id: user, recipient_id: 0, group_id: 0 },
+      data: {
+        ...message.data,
+        sender_id: user,
+        recipient_id: chat?.user_id,
+        group_id: chat?.group_id,
+      },
     };
-    if (chat?.group_id > 0) {
-      msg.data.group_id = chat.group_id;
-    } else {
-      msg.data.recipient_id = chat.user_id;
-    }
+
     sendJsonMessage(msg);
 
     setMessageHistory((prevMessageHistory) => [
@@ -135,7 +138,15 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     ]);
 
     setMessage({ ...message, data: { body: "" } });
+    setScrollToBottomNeeded(true);
   };
+
+  useEffect(() => {
+    if (scrollToBottomNeeded) {
+      scrollToBottom();
+      setScrollToBottomNeeded(false);
+    }
+  }, [scrollToBottomNeeded]);
 
   const chatName =
     chat?.user_id > 0 ? (
@@ -144,20 +155,21 @@ const Chatbox = ({ toggleChat, chat, user }) => {
       <Link to={`/groups/${chat.group_id}`}>{chat.name}</Link>
     );
 
-  // console.log(hasMoreMessages, "MSS");
+  // const handleEmojiClick = (emojiData) => {
+  //   const { emoji } = emojiData;
 
-  const emojiToChat = (event) => {
-    console.log(event);
+  //   setMessage((prevMessage) => ({
+  //     ...prevMessage,
+  //     data: { ...prevMessage.data, body: prevMessage.data.body + emoji },
+  //   }));
+  // };
+
+  const scrollToBottom = () => {
+    messageboxRef.current.scrollTop = messageboxRef.current.scrollHeight;
   };
 
   const chatbox = (
     <div className="chatbox">
-      <EmojiPicker
-        height="40vh"
-        width="20vw"
-        onEmojiClick={(e) => emojiToChat(e)}
-      />
-
       <div className="chat-title">
         {image()}
         {chatName}
@@ -167,7 +179,7 @@ const Chatbox = ({ toggleChat, chat, user }) => {
           onClick={closeChat}
         />
       </div>
-      <div className="message-history">
+      <div className="message-history" ref={messageboxRef}>
         <InfiniteScroll
           pageStart={0}
           isReverse={true}
@@ -178,7 +190,6 @@ const Chatbox = ({ toggleChat, chat, user }) => {
           {renderedMessages}
         </InfiniteScroll>
       </div>
-      <button onClick={() => console.log(messageHistory)}>Button</button>
       <div className="message-box">
         <form onSubmit={handleSubmit}>
           <input
