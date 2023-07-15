@@ -137,7 +137,7 @@ func (w *WebsocketServer) BroadcastGroupMessage(c *Client, message *models.Messa
 	recipientClients := []*Client{}
 
 	for _, member := range recipientUsers {
-		getGlient := w.getClientByUserID(member.Id)
+		getGlient := w.getClientByUserID(int64(member.Id))
 		if getGlient != nil {
 			recipientClients = append(recipientClients, getGlient)
 		}
@@ -172,8 +172,11 @@ func (w *WebsocketServer) BroadcastGroupMessage(c *Client, message *models.Messa
 			// pick the recipient user from the list of group members
 			var recipientUser *models.User
 			for _, user := range recipientUsers {
-				if user.Id == recipientClient.clientID {
-					recipientUser = user
+				if int64(user.Id) == recipientClient.clientID {
+					recipientUser = &models.User{
+						Id:       int64(user.Id),
+						Nickname: user.Nickname,
+					}
 					break
 				}
 			}

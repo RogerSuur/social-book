@@ -8,7 +8,7 @@ import (
 )
 
 type IGroupMemberService interface {
-	GetGroupMembers(groupId int64) ([]*models.User, error)
+	GetGroupMembers(groupId int64) ([]*models.SimpleUserJSON, error)
 	IsGroupMember(groupId int64, userId int64) (bool, error)
 	AddMembers(userId int64, members models.GroupMemberJSON) (*models.GroupMemberJSON, error)
 }
@@ -25,7 +25,7 @@ func InitGroupMemberService(logger *log.Logger, groupMemberRepo *models.GroupMem
 	}
 }
 
-func (s *GroupMemberService) GetGroupMembers(groupId int64) ([]*models.User, error) {
+func (s *GroupMemberService) GetGroupMembers(groupId int64) ([]*models.SimpleUserJSON, error) {
 
 	members, err := s.GroupMemberRepository.GetGroupMembersByGroupId(groupId)
 
@@ -34,7 +34,28 @@ func (s *GroupMemberService) GetGroupMembers(groupId int64) ([]*models.User, err
 		return nil, err
 	}
 
-	return members, nil
+	simpleMembers := []*models.SimpleUserJSON{}
+
+	for _, member := range members {
+
+		if member == nil {
+			continue
+		}
+
+		if member.Nickname == "" {
+			member.Nickname = member.FirstName + " " + member.LastName
+		}
+
+		simpleMember := &models.SimpleUserJSON{
+			Id:        int(member.Id),
+			Nickname:  member.Nickname,
+			ImagePath: member.ImagePath,
+		}
+
+		simpleMembers = append(simpleMembers, simpleMember)
+	}
+
+	return simpleMembers, nil
 }
 
 func (s *GroupMemberService) IsGroupMember(groupId int64, userId int64) (bool, error) {
