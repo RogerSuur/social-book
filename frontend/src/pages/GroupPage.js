@@ -13,7 +13,7 @@ import Events from "../components/Events";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
-  const { groupId } = useParams();
+  const { id } = useParams();
   const [error, setError] = useState(null);
   const [followers, setFollowers] = useState([]);
   const [formData, setFormData] = useState([]);
@@ -39,7 +39,7 @@ const GroupPage = () => {
     const loadGroup = async () => {
       try {
         await axios
-          .get(GROUP_PAGE_URL + groupId, {
+          .get(GROUP_PAGE_URL + id, {
             withCredentials: true,
           })
           .then((response) => {
@@ -50,7 +50,7 @@ const GroupPage = () => {
       }
     };
     loadGroup();
-  }, [groupId, modalOpen]);
+  }, [id, modalOpen]);
 
   useEffect(() => {
     const fetchFollowers = async () => {
@@ -84,7 +84,7 @@ const GroupPage = () => {
       console.log(formData);
       await axios.post(
         ADD_GROUP_MEMBERS_URL,
-        JSON.stringify({ groupId: Number(groupId), userIds: formData }),
+        JSON.stringify({ groupId: id, userIds: formData }),
         {
           withCredentials: true,
         }
@@ -122,11 +122,11 @@ const GroupPage = () => {
               </>
             )}
           </div>
-          <GroupMembers groupId={groupId} />
+          <GroupMembers groupId={id} />
           <div className="profile-actions">
             <Modal open={modalOpen} onClose={handleModalClose}>
               <AvatarUpdater
-                url={`http://localhost:8000/groups/${groupId}/avatar`}
+                url={`http://localhost:8000/groups/${id}/avatar`}
                 onUploadSuccess={handleModalClose}
               />
             </Modal>
@@ -136,9 +136,9 @@ const GroupPage = () => {
             forGroupPage={true}
             showGroupSidebar={false}
             showCreatePost={true}
-            url={`/groupfeed/${groupId}`}
+            url={`/groupfeed/${id}`}
           />
-          <Events groupId={groupId} />
+          <Events groupId={id} />
         </div>
       )}
     </>
