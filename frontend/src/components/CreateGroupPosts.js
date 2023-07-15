@@ -55,7 +55,7 @@ const CreateGroupPost = ({ forGroupPage, onPostsUpdate }) => {
 
   return (
     <>
-      <div className="post-area">
+      <div className="group-post-area">
         {errMsg && <h2>{errMsg}</h2>}
         <form onSubmit={handleSubmit}>
           <textarea

@@ -96,6 +96,16 @@ nav {
 .pepe{
   list-style-type: none;
 }
+
+.chat-unread-count{
+  display: inline-block;
+  background-color: #a3a3a3;
+  color: #ffffff; 
+  font-size: 12px; 
+  padding: 4px 8px; 
+  border-radius: 50%;
+}
+
 .chat-sidebar {
   position: sticky;
   top: 15vh;
@@ -221,7 +231,18 @@ nav {
   padding: 10px;
   border-radius: 20px;
   box-shadow: 0 0 8px black;
-  z-index: 9999;
+  z-index: 2;
+}
+.group-post-area{
+  top: 15vh;
+  max-height: 78vh;
+  width: 32vw;
+  overflow: auto;
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 20px;
+  box-shadow: 0 0 8px black;
+  z-index: 2;
 }
 
 .post-container {
