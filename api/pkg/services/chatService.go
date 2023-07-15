@@ -281,9 +281,16 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 	}
 
 	// mark messages as read
-	err = s.ChatRepo.MarkMessagesAsRead(userId, otherId, false)
-	if err != nil {
-		return nil, err
+	if otherId != 0 {
+		err = s.ChatRepo.MarkMessagesAsRead(userId, otherId, false)
+		if err != nil {
+			return nil, err
+		}
+	} else if groupId != 0 {
+		err = s.ChatRepo.MarkMessagesAsRead(userId, groupId, true)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return messagesJSON, nil
