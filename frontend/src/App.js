@@ -27,6 +27,7 @@ function App() {
             <Route element={<RequireAuth />}>
               <Route path="profile" element={<Profile />} />
               <Route path="profile/:id" element={<ProfileInfo />} />
+              <Route path="groups/:id" element={<GroupPage />} />
               <Route
                 path="posts"
                 element={
