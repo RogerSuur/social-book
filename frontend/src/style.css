@@ -7,6 +7,7 @@
   --epr-search-input-height: 20px;
   --epr-category-navigation-button-size: 10px;
   --epr-preview-height: 20px;
+  --epr-emoji-size: 20px;
 }
 
 body {
@@ -126,7 +127,7 @@ nav {
 .chatbox {
   position: fixed;
   bottom:0;
-  transform: translate(-100%, 0);
+  right: 23vw;
   width: 200px; 
   background-color: #fff;
   border-radius: 4px;
@@ -435,12 +436,15 @@ margin: 5px;
   padding-top: 5%;
 }
 
+<<<<<<< Updated upstream
 
 
 .profile-column-top {
   
   
 }
+=======
+>>>>>>> Stashed changes
 .profile-title-top{
   display: flex;
 width: 97px;

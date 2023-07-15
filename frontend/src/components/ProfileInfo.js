@@ -84,18 +84,19 @@ const ProfileInfo = () => {
                 <div className="column-title">About Me</div>
                 <div className="column">{user.about}</div>
               </div>
+              <div className="row">
+                <div className="column-title">User Joined</div>
+                <div className="column">
+                  {new Date(user.createdAt).toLocaleDateString("en-UK", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </div>
+              </div>
             </>
           )}
-          <div className="row">
-            <div className="column-title">User Joined</div>
-            <div className="column">
-              {new Date(user.createdAt).toLocaleDateString("en-UK", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </div>
-          </div>
+
           <div className="row">
             <div className="column-title">Profile Type</div>
             <div className="column">{user.isPublic ? "Public" : "Private"}</div>
