@@ -70,6 +70,7 @@ func (app *Application) Group(rw http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
 		groupIdStr := vars["groupId"]
+		app.Logger.Printf("Decoding group ID provided in the URL (group %v) for Group handler", groupIdStr)
 		groupId, err := strconv.ParseInt(groupIdStr, 10, 64)
 
 		if groupId < 0 || err != nil {
