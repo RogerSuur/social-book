@@ -294,17 +294,32 @@ nav {
   object-fit: "cover";
   object-position: "0% 100%";
 }
+.link a{
+  text-decoration: none;
+  color: inherit;
+}
 
-/* .modal{
+.modal{
     top: '35%';
     left: '50%';
     right: 'auto';
     bottom: 'auto';
-    background-color: green;
+    background-color: rgb(255, 2, 2);
     margin-right: '-50%';
     width: '60%';
-    transform: 'translate(-40%, -10%)'
-} */
+    
+}
+
+.results-list{
+  max-height: 50vh;
+  overflow: auto;
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 1vh;
+}
+
 
 .iconoir-add-circle {
   font-size: 20px;

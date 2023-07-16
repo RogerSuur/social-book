@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const GenericGroupList = ({ url, loadNewGroups }) => {
   const mapGenericGroupList = (group, index) => (
-    <li key={index}>
+    <li className="link" key={index}>
       <Link to={`/groups/${group.groupId}`}>{group.groupName}</Link>
     </li>
   );
