@@ -158,7 +158,8 @@ func (app *Application) Following(rw http.ResponseWriter, r *http.Request) {
 func (app *Application) UpdateUserImage(rw http.ResponseWriter, r *http.Request) {
 
 	// Limit the size of the request body to 5MB
-	r.Body = http.MaxBytesReader(rw, r.Body, 20<<18)
+	app.Logger.Printf("Request body size: %d", r.ContentLength)
+	r.Body = http.MaxBytesReader(rw, r.Body, 20<<18+512)
 
 	userID, err := app.UserService.GetUserID(r)
 	if err != nil {
