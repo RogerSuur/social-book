@@ -11,7 +11,6 @@ const List = ({ url, mapFunction, loadNewGroups }) => {
         })
         .then((response) => {
           setListData(response.data);
-          console.log(url, response.data);
         });
     };
     fetchData();

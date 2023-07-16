@@ -20,7 +20,6 @@ const Events = ({ groupId }) => {
           withCredentials: true,
         });
         setEventsData(response.data);
-        console.log(response.data);
       } catch (err) {
         console.error(err);
       }
@@ -30,7 +29,6 @@ const Events = ({ groupId }) => {
 
   const eventsDataMap = eventsData.map((event, index) => (
     <div key={index}>
-      {console.log(event)}
       {/* LOO SIIA LINK EVENTI LEHELE */}
       {/* <Link to={`/profile/${member.Id}`}> */}
       <h1>{event.Title}</h1>
@@ -45,7 +43,7 @@ const Events = ({ groupId }) => {
       <p>Here comes the events of the group</p>
       {eventsDataMap}
       <p>Here comes creating an event</p>
-      <CreateEvent onEventCreated={handleEventUpdate} />
+      <CreateEvent onEventCreated={handleEventUpdate} id={groupId} />
     </>
   );
 };

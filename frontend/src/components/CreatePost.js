@@ -45,7 +45,6 @@ const CreatePost = (props) => {
     event.preventDefault();
 
     try {
-      console.log("formData", formData);
       const response = await axios.post(
         "http://localhost:8000/post",
         JSON.stringify(formData),

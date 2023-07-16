@@ -18,7 +18,6 @@ const GroupMembers = ({ groupId }) => {
         }
       } catch (error) {
         setError(error);
-        console.log(error.response?.status);
       }
     };
     loadMembers();

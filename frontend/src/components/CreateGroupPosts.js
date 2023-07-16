@@ -2,13 +2,12 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Select from "react-select";
 
-const CreateGroupPost = ({ forGroupPage, onPostsUpdate }) => {
+const CreateGroupPost = ({ groupId, onPostsUpdate }) => {
   const initialFormData = {
     content: "",
     imagePath: "",
     privacyType: 0,
     selectedReceivers: [],
-    GroupId: 3,
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -29,9 +28,8 @@ const CreateGroupPost = ({ forGroupPage, onPostsUpdate }) => {
     event.preventDefault();
 
     try {
-      console.log("formData", formData);
       const response = await axios.post(
-        "http://localhost:8000/post",
+        `http://localhost:8000/groups/${groupId}/post`,
         JSON.stringify(formData),
         { withCredentials: true },
         {
