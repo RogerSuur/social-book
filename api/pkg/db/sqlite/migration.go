@@ -12,6 +12,8 @@
 // api/pkg/db/migrations/sqlite/000005_notifications.up.sql
 // api/pkg/db/migrations/sqlite/000006_alter_posts_followers_groups.down.sql
 // api/pkg/db/migrations/sqlite/000006_alter_posts_followers_groups.up.sql
+// api/pkg/db/migrations/sqlite/000007_update_events.down.sql
+// api/pkg/db/migrations/sqlite/000007_update_events.up.sql
 // DO NOT EDIT!
 
 package database
@@ -274,7 +276,7 @@ func _000005_notificationsUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000005_notifications.up.sql", size: 1002, mode: os.FileMode(420), modTime: time.Unix(1688555718, 0)}
+	info := bindataFileInfo{name: "000005_notifications.up.sql", size: 984, mode: os.FileMode(420), modTime: time.Unix(1689502320, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -315,6 +317,46 @@ func _000006_alter_posts_followers_groupsUpSql() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "000006_alter_posts_followers_groups.up.sql", size: 201, mode: os.FileMode(420), modTime: time.Unix(1688555718, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __000007_update_eventsDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\xf4\x09\x71\x0d\x52\x08\x71\x74\xf2\x71\x55\x48\x2f\xca\x2f\x2d\x88\x4f\x2d\x4b\xcd\x2b\x29\x56\xe0\x72\x74\x71\x51\x70\xf6\xf7\x09\xf5\xf5\x53\x28\xc9\xcc\x4d\x2d\x2e\x48\xcc\x53\xf0\xf4\x0b\x71\x75\x77\x0d\xb2\xe6\xe2\xc2\xad\xcf\x25\xc8\x3f\x00\xa6\x51\x01\x2c\x18\x9f\x9a\x97\x12\x0f\x32\xc3\x1a\x10\x00\x00\xff\xff\xa2\x86\xb2\x2e\x6e\x00\x00\x00")
+
+func _000007_update_eventsDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__000007_update_eventsDownSql,
+		"000007_update_events.down.sql",
+	)
+}
+
+func _000007_update_eventsDownSql() (*asset, error) {
+	bytes, err := _000007_update_eventsDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "000007_update_events.down.sql", size: 110, mode: os.FileMode(420), modTime: time.Unix(1689514740, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __000007_update_eventsUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\xf4\x09\x71\x0d\x52\x08\x71\x74\xf2\x71\x55\x48\x2f\xca\x2f\x2d\x88\x4f\x2d\x4b\xcd\x2b\x29\x56\x70\x09\xf2\x0f\x50\x70\xf6\xf7\x09\xf5\xf5\x53\x28\xc9\xcc\x4d\x2d\x2e\x48\xcc\xb3\xe6\xe2\xc2\xa9\x9e\xcb\xd1\xc5\x05\xa6\x1e\x2c\x14\x9f\x9a\x97\x12\x0f\xd2\xa9\xe0\xe2\x18\xe2\x1a\xe2\xe9\xeb\xaa\xe0\xe7\x1f\xa2\xe0\x17\xea\xe3\x63\x0d\x08\x00\x00\xff\xff\xdb\xa1\x51\x24\x76\x00\x00\x00")
+
+func _000007_update_eventsUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__000007_update_eventsUpSql,
+		"000007_update_events.up.sql",
+	)
+}
+
+func _000007_update_eventsUpSql() (*asset, error) {
+	bytes, err := _000007_update_eventsUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "000007_update_events.up.sql", size: 118, mode: os.FileMode(420), modTime: time.Unix(1689514834, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -383,6 +425,8 @@ var _bindata = map[string]func() (*asset, error){
 	"000005_notifications.up.sql": _000005_notificationsUpSql,
 	"000006_alter_posts_followers_groups.down.sql": _000006_alter_posts_followers_groupsDownSql,
 	"000006_alter_posts_followers_groups.up.sql": _000006_alter_posts_followers_groupsUpSql,
+	"000007_update_events.down.sql": _000007_update_eventsDownSql,
+	"000007_update_events.up.sql": _000007_update_eventsUpSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -437,6 +481,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"000005_notifications.up.sql": &bintree{_000005_notificationsUpSql, map[string]*bintree{}},
 	"000006_alter_posts_followers_groups.down.sql": &bintree{_000006_alter_posts_followers_groupsDownSql, map[string]*bintree{}},
 	"000006_alter_posts_followers_groups.up.sql": &bintree{_000006_alter_posts_followers_groupsUpSql, map[string]*bintree{}},
+	"000007_update_events.down.sql": &bintree{_000007_update_eventsDownSql, map[string]*bintree{}},
+	"000007_update_events.up.sql": &bintree{_000007_update_eventsUpSql, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory
