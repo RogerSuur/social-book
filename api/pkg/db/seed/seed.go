@@ -1,6 +1,7 @@
 package seed
 
 import (
+	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
 	"SocialNetworkRestApi/api/pkg/services"
 	"log"
@@ -221,6 +222,28 @@ func SeedGroups(repos *models.Repositories) {
 				logger.Printf("%+v\n", err)
 			}
 
+		}
+
+		//Add group posts
+		for _, post := range group.SeedGroupPostsData {
+			eventCreator, err := repos.UserRepo.GetByEmail(post.CreatorEmail)
+
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+
+			tempPost := &models.Post{
+				GroupId:     id,
+				UserId:      eventCreator.Id,
+				Content:     post.Content,
+				CreatedAt:   post.CreatedAt,
+				PrivacyType: enums.PrivacyType(enums.None),
+			}
+
+			_, err = repos.PostRepo.InsertSeedPost(tempPost)
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
 		}
 
 	}
