@@ -14,9 +14,11 @@ export const SearchResults = ({ searchResults }) => {
     </div>
   ));
 
+  const hasResults = searchResultsMap.length > 0;
+
   return (
-    <div className="results-list">
-      <ul>{searchResultsMap}</ul>
+    <div className={hasResults ? "results-list" : ""}>
+      {hasResults && <ul className="link">{searchResultsMap}</ul>}
     </div>
   );
 };

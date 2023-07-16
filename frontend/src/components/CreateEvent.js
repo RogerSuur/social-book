@@ -56,7 +56,7 @@ const CreateEvent = ({ onEventCreated, groupId }) => {
 
   return (
     <>
-      <div className="newModal">
+      <div className="newModal"> 
         <i className="iconoir-add-circle" onClick={openModal} />
         <Modal open={modalOpen} onClose={closeModal}>
           {errMsg && <p className="error">{errMsg}</p>}
