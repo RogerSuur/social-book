@@ -87,13 +87,9 @@ func (c *Client) pongHandler(pongMsg string) error {
 
 func (c *Client) write() {
 	ticker := time.NewTicker(pingInterval)
-	
-	// test if this is needed
-	// c.manager.Lock()
-	// defer c.manager.Unlock()
 
 	defer func() {
-		c.manager.Logger.Println("Closing connection")
+		c.manager.Logger.Printf("Closing connection for client %v", c.clientID)
 		ticker.Stop()
 		c.manager.removeClient(c)
 	}()

@@ -156,7 +156,7 @@ func (repo FollowerRepository) GetFollowersById(followerId int64) ([]*Follower, 
 }
 
 func (repo FollowerRepository) GetByFollowerAndFollowing(followerID int64, followingID int64) (*Follower, error) {
-	query := `SELECT id, following_id, follower_id, accepted FROM followers WHERE following_id = ? AND follower_id = ?`
+	query := `SELECT id, following_id, follower_id, accepted FROM followers WHERE following_id = ? AND follower_id = ? AND accepted = true`
 	row := repo.DB.QueryRow(query, followingID, followerID)
 	follower := &Follower{}
 
