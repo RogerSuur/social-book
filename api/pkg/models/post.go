@@ -266,8 +266,8 @@ func (m PostRepository) GetCommentCount(postId int64) (int, error) {
 }
 
 func (repo PostRepository) InsertSeedPost(post *Post) (int64, error) {
-	query := `INSERT INTO posts (user_id, content, created_at, image_path, privacy_type_id)
-	VALUES(?, ?, ?, ?, ?)`
+	query := `INSERT INTO posts (user_id, content, created_at, image_path, privacy_type_id, group_id)
+	VALUES(?, ?, ?, ?, ?, ?)`
 
 	args := []interface{}{
 		post.UserId,
@@ -275,6 +275,7 @@ func (repo PostRepository) InsertSeedPost(post *Post) (int64, error) {
 		post.CreatedAt,
 		post.ImagePath,
 		post.PrivacyType,
+		post.GroupId,
 	}
 
 	result, err := repo.DB.Exec(query, args...)
