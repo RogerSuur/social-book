@@ -8,10 +8,10 @@ import (
 )
 
 type EventJSON struct {
-	Id           int       `json:"id"`
-	GroupId      int       `json:"group_id"`
+	Id           int64     `json:"id"`
+	GroupId      int64     `json:"group_id"`
 	GroupName    string    `json:"group_name"`
-	UserId       int       `json:"creator_id"`
+	UserId       int64     `json:"creator_id"`
 	NickName     string    `json:"creator_name"`
 	CreatedAt    time.Time `json:"created_at"`
 	EventTime    time.Time `json:"event_time"`
@@ -195,10 +195,10 @@ func (s *GroupEventService) GetUserEvents(userId int64) ([]*EventJSON, error) {
 		}
 
 		eventJSON = append(eventJSON, &EventJSON{
-			Id:           int(event.Id),
-			GroupId:      int(event.GroupId),
+			Id:           event.Id,
+			GroupId:      event.GroupId,
 			GroupName:    groupName.Title,
-			UserId:       int(event.UserId),
+			UserId:       event.UserId,
 			NickName:     userData.Nickname,
 			CreatedAt:    event.CreatedAt,
 			EventTime:    event.EventTime,
