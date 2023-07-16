@@ -9,7 +9,7 @@ import (
 )
 
 type IChatService interface {
-	GetChatlist(userID int64) ([]ChatListUser, error)
+	GetChatlist(userID int64) ([]UserChatList, []GroupChatList, error)
 	CreateMessage(message *models.Message) (int64, error)
 	GetMessageHistory(userId int64, otherId int64, groupId int64, lastMessage int64) ([]*MessageJSON, error)
 }
@@ -35,13 +35,19 @@ func InitChatService(
 	}
 }
 
-type ChatListUser struct {
+type UserChatList struct {
 	UserID      int       `json:"user_id"`
-	GroupID     int       `json:"group_id"`
 	Name        string    `json:"name"`
 	Timestamp   time.Time `json:"timestamp"`
 	AvatarImage string    `json:"avatar_image"`
 	UnreadCount int       `json:"unread_count"`
+}
+
+type GroupChatList struct {
+	GroupID     int       `json:"group_id"`
+	Name        string    `json:"name"`
+	Timestamp   time.Time `json:"timestamp"`
+	AvatarImage string    `json:"avatar_image"`
 }
 
 type MessageJSON struct {
@@ -57,14 +63,14 @@ type MessageJSON struct {
 	//ReadAt        time.Time `json:"read_at"`
 }
 
-func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
+func (s *ChatService) GetChatlist(userID int64) ([]UserChatList, []GroupChatList, error) {
 
 	userList, err := s.ChatRepo.GetChatUsers(userID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	chatlistData := []ChatListUser{}
+	userChatListData := []UserChatList{}
 
 	for _, user := range userList {
 		if user.Nickname == "" {
@@ -73,65 +79,63 @@ func (s *ChatService) GetChatlist(userID int64) ([]ChatListUser, error) {
 
 		lastMessage, err := s.ChatRepo.GetLastMessage(userID, int64(user.Id), false)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		if lastMessage.SentAt == (time.Time{}) {
 			lastMessage.SentAt = user.CreatedAt
 		}
 
-		unreadCount, err := s.ChatRepo.GetUnreadCount(userID, int64(user.Id), false)
+		unreadCount, err := s.ChatRepo.GetUnreadCount(userID, int64(user.Id))
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
-		chatData := ChatListUser{
+		chatData := UserChatList{
 			UserID:      int(user.Id),
-			GroupID:     0,
 			Name:        user.Nickname,
 			Timestamp:   lastMessage.SentAt,
 			AvatarImage: user.ImagePath,
 			UnreadCount: int(unreadCount),
 		}
-		chatlistData = append(chatlistData, chatData)
+		userChatListData = append(userChatListData, chatData)
 	}
+
+	GroupChatListData := []GroupChatList{}
 
 	groupList, err := s.ChatRepo.GetChatGroups(userID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	for _, group := range groupList {
 		lastMessage, err := s.ChatRepo.GetLastMessage(userID, int64(group.Id), true)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		if lastMessage.SentAt == (time.Time{}) {
 			lastMessage.SentAt = group.CreatedAt
 		}
 
-		unreadCount, err := s.ChatRepo.GetUnreadCount(userID, int64(group.Id), true)
-		if err != nil {
-			return nil, err
-		}
-
-		chatData := ChatListUser{
-			UserID:      0,
+		chatData := GroupChatList{
 			GroupID:     int(group.Id),
 			Name:        group.Title,
 			Timestamp:   lastMessage.SentAt,
 			AvatarImage: group.ImagePath,
-			UnreadCount: int(unreadCount),
 		}
-		chatlistData = append(chatlistData, chatData)
+		GroupChatListData = append(GroupChatListData, chatData)
 	}
 
 	// sort the chatlistData array by ChatListUser.Timestamp field in descending order
 
-	sort.Slice(chatlistData, func(i, j int) bool {
-		return chatlistData[i].Timestamp.After(chatlistData[j].Timestamp)
+	sort.Slice(userChatListData, func(i, j int) bool {
+		return userChatListData[i].Timestamp.After(userChatListData[j].Timestamp)
 	})
 
-	return chatlistData, nil
+	sort.Slice(GroupChatListData, func(i, j int) bool {
+		return GroupChatListData[i].Timestamp.After(GroupChatListData[j].Timestamp)
+	})
+
+	return userChatListData, GroupChatListData, nil
 }
 
 func (s *ChatService) CreateMessage(message *models.Message) (int64, error) {
@@ -282,12 +286,7 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 
 	// mark messages as read
 	if otherId != 0 {
-		err = s.ChatRepo.MarkMessagesAsRead(userId, otherId, false)
-		if err != nil {
-			return nil, err
-		}
-	} else if groupId != 0 {
-		err = s.ChatRepo.MarkMessagesAsRead(userId, groupId, true)
+		err = s.ChatRepo.MarkMessagesAsRead(userId, otherId)
 		if err != nil {
 			return nil, err
 		}

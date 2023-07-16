@@ -1,9 +1,9 @@
-import React, { useRef } from "react";
+import React from "react";
 
 const FileUploader = ({ onFileSelectSuccess, onFileSelectError }) => {
   const handleFileInput = (event) => {
     const file = event.target.files[0];
-    if (file.size > 1048576)
+    if (file.size > 5242880)
       onFileSelectError({ error: "File size cannot exceed 5MB" });
     else onFileSelectSuccess(file);
   };

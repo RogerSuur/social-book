@@ -129,16 +129,18 @@ func (w *WebsocketServer) UnfollowHandler(p Payload, c *Client) error {
 func (w *WebsocketServer) RequestChatlistHandler(p Payload, c *Client) error {
 	w.Logger.Printf("User %v has requested chatlist", c.clientID)
 
-	chatlist, err := w.chatService.GetChatlist(int64(c.clientID))
+	userChatList, groupChatList, err := w.chatService.GetChatlist(int64(c.clientID))
 	if err != nil {
 		return err
 	}
-	w.Logger.Printf("Chatlist successfully retrieved (%v chats)", len(chatlist))
+
+	w.Logger.Printf("Chatlist successfully retrieved (%v user chats, %v group chats)", len(userChatList), len(groupChatList))
 
 	dataToSend, err := json.Marshal(
 		&ChatListPayload{
-			UserID:   int(c.clientID),
-			Chatlist: chatlist,
+			UserID:        int(c.clientID),
+			UserChatlist:  userChatList,
+			GroupChatlist: groupChatList,
 		},
 	)
 
