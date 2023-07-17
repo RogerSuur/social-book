@@ -58,9 +58,9 @@ const CreateGroup = ({ onGroupCreated }) => {
       <div className="newModal">
         <i className="iconoir-add-circle" onClick={openModal} />
         <Modal open={modalOpen} onClose={closeModal}>
-          <form onSubmit={handleSubmit}>
-            <label>
-              Title:
+          <form className="pop-form" onSubmit={handleSubmit}>
+            Title:
+            <label className="input-big">
               <input
                 type="text"
                 name="title"
@@ -70,9 +70,10 @@ const CreateGroup = ({ onGroupCreated }) => {
               />
             </label>
             <br />
+            Description:
             <label>
-              Description:
               <textarea
+                className="text-big"
                 name="description"
                 value={groupCreateForm.description}
                 onChange={handleChange}
@@ -81,7 +82,7 @@ const CreateGroup = ({ onGroupCreated }) => {
             </label>
             <br />
 
-            <button type="submit">Create</button>
+            <button className="create-but" type="submit">Create</button>
           </form>
         </Modal>
       </div>

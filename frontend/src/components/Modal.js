@@ -4,13 +4,15 @@ import "../style.css";
 const Modal = ({ text, children, open, onClose }) => (
   <Popup
     contentStyle={{
-      display: "flex",
-      flexWrap: "wrap",
-      justifyContent: "center",
-      overflow: "auto",
-      backgroundColor: "white",
-      width: "20%",
-      transform: "translate(-40%, -10%)",
+      
+  justifyContent: "center",
+  alignItems: "center",
+  backgroundColor: "lightgray",
+  marginTop: "15vh",
+  overflow: "auto",
+  maxHeight: "60vh",
+  borderRadius: "10px",
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     }}
     open={open}
     onClose={onClose}
