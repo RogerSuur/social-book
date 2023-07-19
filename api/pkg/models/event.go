@@ -8,23 +8,23 @@ import (
 )
 
 type Event struct {
-	Id          int64
-	GroupId     int64
-	UserId      int64
-	CreatedAt   time.Time
-	EventTime   time.Time
-	TimeSpan    time.Duration
-	Title       string
-	Description string
+	Id           int64
+	GroupId      int64
+	UserId       int64
+	CreatedAt    time.Time
+	EventTime    time.Time
+	EventEndTime time.Time
+	Title        string
+	Description  string
 }
 
 type CreateGroupEventFormData struct {
-	GroupId     int64         `json:"groupId"`
-	UserId      int64         `json:"userId"`
-	EventTime   time.Time     `json:"eventTime"`
-	TimeSpan    time.Duration `json:"timeSpan"`
-	Title       string        `json:"title"`
-	Description string        `json:"description"`
+	GroupId      int64  `json:"groupId"`
+	UserId       int64  `json:"userId"`
+	EventTime    string `json:"startTime"`
+	EventEndTime string `json:"endTime"`
+	Title        string `json:"title"`
+	Description  string `json:"description"`
 }
 
 type IEventRepository interface {
@@ -47,7 +47,7 @@ func NewEventRepo(db *sql.DB) *EventRepository {
 }
 
 func (repo EventRepository) Insert(event *Event) (int64, error) {
-	query := `INSERT INTO group_events (group_id, user_id, created_at, event_time, timespan, title, description)
+	query := `INSERT INTO group_events (group_id, user_id, created_at, event_time, event_end_time, title, description)
 	VALUES(?, ?, ?, ?, ?, ?, ?)`
 
 	args := []interface{}{
@@ -55,7 +55,7 @@ func (repo EventRepository) Insert(event *Event) (int64, error) {
 		event.UserId,
 		time.Now(),
 		event.EventTime,
-		event.TimeSpan,
+		event.EventEndTime,
 		event.Title,
 		event.Description,
 	}
@@ -78,7 +78,7 @@ func (repo EventRepository) Insert(event *Event) (int64, error) {
 }
 
 func (repo EventRepository) InsertSeedEvent(event *Event) (int64, error) {
-	query := `INSERT INTO group_events (group_id, user_id, created_at, event_time, timespan, title, description)
+	query := `INSERT INTO group_events (group_id, user_id, created_at, event_time, event_end_time, title, description)
 	VALUES(?, ?, ?, ?, ?, ?, ?)`
 
 	args := []interface{}{
@@ -86,7 +86,7 @@ func (repo EventRepository) InsertSeedEvent(event *Event) (int64, error) {
 		event.UserId,
 		event.CreatedAt,
 		event.EventTime,
-		event.TimeSpan,
+		event.EventEndTime,
 		event.Title,
 		event.Description,
 	}
@@ -111,7 +111,7 @@ func (repo EventRepository) InsertSeedEvent(event *Event) (int64, error) {
 // Get all group events
 func (repo EventRepository) GetAllByGroupId(id int64) ([]*Event, error) {
 
-	query := `SELECT id, group_id, user_id, created_at, event_time, timespan, title, description FROM group_events WHERE group_id = ?`
+	query := `SELECT id, group_id, user_id, created_at, event_time, event_end_time, title, description FROM group_events WHERE group_id = ?`
 
 	rows, err := repo.DB.Query(query, id)
 
@@ -125,7 +125,7 @@ func (repo EventRepository) GetAllByGroupId(id int64) ([]*Event, error) {
 	for rows.Next() {
 		event := &Event{}
 
-		err := rows.Scan(&event.Id, &event.GroupId, &event.UserId, &event.CreatedAt, &event.EventTime, &event.TimeSpan, &event.Title, &event.Description)
+		err := rows.Scan(&event.Id, &event.GroupId, &event.UserId, &event.CreatedAt, &event.EventTime, &event.EventEndTime, &event.Title, &event.Description)
 		if err != nil {
 			return nil, err
 		}
@@ -142,7 +142,7 @@ func (repo EventRepository) GetAllByGroupId(id int64) ([]*Event, error) {
 func (repo EventRepository) GetAllByUserId(id int64) ([]*Event, error) {
 	//TODO
 	//Get all events by attending user
-	query := `SELECT DISTINCT ge.id, group_id, ge.user_id, ge.created_at, ge.event_time, ge.timespan, ge.title, ge.description FROM group_events ge
+	query := `SELECT DISTINCT ge.id, group_id, ge.user_id, ge.created_at, ge.event_time, ge.event_end_time, ge.title, ge.description FROM group_events ge
 	INNER JOIN group_event_attendance gea
 	ON gea.event_id = ge.id
 	WHERE gea.user_id = ? AND (gea.is_attending = true OR gea.is_attending IS NULL)`
@@ -159,7 +159,7 @@ func (repo EventRepository) GetAllByUserId(id int64) ([]*Event, error) {
 	for rows.Next() {
 		event := &Event{}
 
-		err := rows.Scan(&event.Id, &event.GroupId, &event.UserId, &event.CreatedAt, &event.EventTime, &event.TimeSpan, &event.TimeSpan, &event.Title, &event.Description)
+		err := rows.Scan(&event.Id, &event.GroupId, &event.UserId, &event.CreatedAt, &event.EventTime, &event.EventEndTime, &event.Title, &event.Description)
 		if err != nil {
 			return nil, err
 		}
