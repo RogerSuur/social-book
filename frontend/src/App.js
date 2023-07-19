@@ -32,7 +32,7 @@ function App() {
                 path="posts"
                 element={
                   <PostsPage
-                    forGroupPage={false}
+                    groupId={false}
                     showGroupSidebar={true}
                     showCreatePost={true}
                     url={"/feedposts"}

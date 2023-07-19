@@ -42,15 +42,16 @@ func (w *WebsocketServer) BroadcastFollowRequest(c *Client, followRequestId int6
 
 	// send new chatlist to sender
 	if sendNewChatlist {
-		chatlist, err := w.chatService.GetChatlist(int64(c.clientID))
+		userChatList, groupChatList, err := w.chatService.GetChatlist(int64(c.clientID))
 		if err != nil {
 			return err
 		}
 
 		dataToSend, err := json.Marshal(
 			&ChatListPayload{
-				UserID:   int(c.clientID),
-				Chatlist: chatlist,
+				UserID:        int(c.clientID),
+				UserChatlist:  userChatList,
+				GroupChatlist: groupChatList,
 			},
 		)
 

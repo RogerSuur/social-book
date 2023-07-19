@@ -25,8 +25,8 @@ type IMessageRepository interface {
 	GetChatUsers(id int64) ([]*User, error)
 	GetChatGroups(id int64) ([]*Group, error)
 	GetLastMessage(userId int64, otherId int64, isGroup bool) (*Message, error)
-	GetUnreadCount(userId int64, otherId int64, isGroup bool) (int64, error)
-	MarkMessagesAsRead(userId int64, otherId int64, isGroup bool) error
+	GetUnreadCount(userId int64, otherId int64) (int64, error)
+	MarkMessagesAsRead(userId int64, otherId int64) error
 }
 
 type MessageRepository struct {
@@ -259,21 +259,14 @@ func (repo MessageRepository) GetLastMessage(userId int64, otherId int64, isGrou
 	return message, nil
 }
 
-func (repo MessageRepository) GetUnreadCount(userId int64, otherId int64, isGroup bool) (int64, error) {
+func (repo MessageRepository) GetUnreadCount(userId int64, otherId int64) (int64, error) {
 	var query string
 	var args []interface{}
 
-	if isGroup {
-		query = `SELECT COUNT(*) FROM messages WHERE group_id = ? AND read_at IS NULL`
-		args = []interface{}{
-			otherId,
-		}
-	} else {
-		query = `SELECT COUNT(*) FROM messages WHERE (sender_id = ? AND recipient_id = ?) AND read_at IS NULL`
-		args = []interface{}{
-			otherId,
-			userId,
-		}
+	query = `SELECT COUNT(*) FROM messages WHERE (sender_id = ? AND recipient_id = ?) AND read_at IS NULL`
+	args = []interface{}{
+		otherId,
+		userId,
 	}
 
 	row := repo.DB.QueryRow(query, args...)
@@ -289,25 +282,16 @@ func (repo MessageRepository) GetUnreadCount(userId int64, otherId int64, isGrou
 	return count, nil
 }
 
-func (repo MessageRepository) MarkMessagesAsRead(userId int64, otherId int64, isGroup bool) error {
+func (repo MessageRepository) MarkMessagesAsRead(userId int64, otherId int64) error {
 	var query string
 	var args []interface{}
 	var now = time.Now()
 
-	if isGroup {
-		query = `UPDATE messages SET read_at = ? WHERE group_id = ? AND recipient_id = ?`
-		args = []interface{}{
-			now,
-			otherId,
-			userId,
-		}
-	} else {
-		query = `UPDATE messages SET read_at = ? WHERE sender_id = ? AND recipient_id = ?`
-		args = []interface{}{
-			now,
-			otherId,
-			userId,
-		}
+	query = `UPDATE messages SET read_at = ? WHERE sender_id = ? AND recipient_id = ?`
+	args = []interface{}{
+		now,
+		otherId,
+		userId,
 	}
 
 	_, err := repo.DB.Exec(query, args...)

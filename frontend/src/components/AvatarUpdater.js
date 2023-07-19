@@ -14,11 +14,9 @@ const AvatarUpdater = ({ url, onUploadSuccess }) => {
     const canvas = editorRef.current.getImage();
 
     canvas.toBlob(async (blob) => {
-      // Create a FormData object and append the blob as a file
       const formData = new FormData();
       formData.append("image", blob, "avatar.png");
       try {
-        // Send the image data to the server using Axios
         await axios.post(url, formData, { withCredentials: true });
         onUploadSuccess();
         console.log("Image uploaded successfully!");
@@ -51,7 +49,10 @@ const AvatarUpdater = ({ url, onUploadSuccess }) => {
       <button onClick={handleClick}>Save image</button>
       {errMsg && <h3>{errMsg}</h3>}
       <FileUploader
-        onFileSelectSuccess={(file) => setSelectedImage(file)}
+        onFileSelectSuccess={(file) => {
+          setSelectedImage(file);
+          setErrMsg("");
+        }}
         onFileSelectError={({ error }) => setErrMsg(error)}
       />
     </>

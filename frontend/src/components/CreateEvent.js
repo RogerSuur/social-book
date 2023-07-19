@@ -60,9 +60,9 @@ const CreateEvent = ({ onEventCreated, id }) => {
         <i className="iconoir-add-circle" onClick={openModal} />
         <Modal open={modalOpen} onClose={closeModal}>
           {errMsg && <p className="error">{errMsg}</p>}
-          <form onSubmit={handleSubmit}>
-            <label>
-              Title:
+          <form className="pop-form" onSubmit={handleSubmit}>
+            Title:
+            <label className="input-big">
               <input
                 type="text"
                 name="title"
@@ -72,9 +72,10 @@ const CreateEvent = ({ onEventCreated, id }) => {
               />
             </label>
             <br />
+            Description:
             <label>
-              Description:
               <textarea
+              className="text-big"
                 name="description"
                 value={createEventForm.description}
                 onChange={handleChange}
@@ -82,9 +83,8 @@ const CreateEvent = ({ onEventCreated, id }) => {
               ></textarea>
             </label>
             <br />
-
-            <label>
               Start Time:
+            <label>
               <input
                 type="datetime-local"
                 name="startTime"
@@ -94,8 +94,8 @@ const CreateEvent = ({ onEventCreated, id }) => {
               />
             </label>
             <br />
+            End Time:
             <label>
-              End Time:
               <input
                 type="datetime-local"
                 name="endTime"
@@ -105,7 +105,7 @@ const CreateEvent = ({ onEventCreated, id }) => {
               />
             </label>
             <br />
-            <button type="submit">Create</button>
+            <button className="create-but" type="submit">Create</button>
           </form>
         </Modal>
       </div>

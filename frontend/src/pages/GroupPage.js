@@ -81,7 +81,6 @@ const GroupPage = () => {
 
   const handleSubmit = async () => {
     try {
-      console.log(formData);
       await axios.post(
         ADD_GROUP_MEMBERS_URL,
         JSON.stringify({ groupId: id, userIds: formData }),
@@ -133,7 +132,7 @@ const GroupPage = () => {
             <button onClick={handleModalClick}>Upload New Image</button>
           </div>
           <Posts
-            forGroupPage={true}
+            groupId={id}
             showGroupSidebar={false}
             showCreatePost={true}
             url={`/groupfeed/${id}`}

@@ -9,6 +9,8 @@ const GroupMembers = ({ groupId }) => {
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  console.log(groupMembers, "MEMBERS");
+
   useEffect(() => {
     const loadMembers = async () => {
       try {
@@ -18,7 +20,6 @@ const GroupMembers = ({ groupId }) => {
         }
       } catch (error) {
         setError(error);
-        console.log(error.response?.status);
       }
     };
     loadMembers();
@@ -26,9 +27,9 @@ const GroupMembers = ({ groupId }) => {
 
   const groupMembersMap = groupMembers.map((member, index) => (
     <div key={index}>
-      <Link to={`/profile/${member.Id}`}>
-        {ImageHandler(member.ImagePath, "defaultuser.jpg", "profile-image")}
-        <p>{member.Nickname}</p>
+      <Link to={`/profile/${member.id}`}>
+        {ImageHandler(member.imagePath, "defaultuser.jpg", "profile-image")}
+        <p>{member.nickname}</p>
       </Link>
     </div>
   ));

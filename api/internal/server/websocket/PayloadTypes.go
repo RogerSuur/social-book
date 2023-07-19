@@ -44,6 +44,7 @@ type MessagePayload struct {
 }
 
 type ChatListPayload struct {
-	UserID   int                     `json:"user_id"`
-	Chatlist []services.ChatListUser `json:"chatlist"`
+	UserID        int                      `json:"user_id"`
+	UserChatlist  []services.UserChatList  `json:"user_chatlist"`
+	GroupChatlist []services.GroupChatList `json:"group_chatlist"`
 }

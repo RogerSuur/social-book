@@ -7,7 +7,8 @@ import { WS_URL } from "../utils/routes";
 
 const Chat = () => {
   const [openChat, setOpenChat] = useState(null);
-  const [chatlist, setChatlist] = useState([]);
+  const [userChatlist, setUserChatlist] = useState([]);
+  const [groupChatlist, setGroupChatlist] = useState([]);
   const [user, setUser] = useState(0);
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
 
@@ -37,11 +38,45 @@ const Chat = () => {
       return value === checker[index];
     });
 
+  const updateChatlist = (chatlist, chatToFind) => {
+    const userChat = chatlist?.[0].find((chat) =>
+      checkChat([chat?.user_id, chat?.group_id], chatToFind)
+    );
+
+    if (!userChat) {
+      const {
+        sender_id,
+        sender_name,
+        group_id,
+        group_name,
+        timestamp,
+        avatar_image,
+      } = lastJsonMessage?.data;
+
+      const newChat = {
+        user_id: group_id ? 0 : sender_id,
+        group_id,
+        timestamp,
+        avatar_image,
+        name: group_name ? group_name : sender_name,
+      };
+
+      chatlist?.[1]((prevChatlist) => [newChat, ...prevChatlist]);
+    } else {
+      const filteredChatlist = chatlist?.[0]?.filter(
+        (chat) => !checkChat([chat?.user_id, chat?.group_id], chatToFind)
+      );
+      chatlist?.[1]([userChat, ...filteredChatlist]);
+    }
+  };
+
   useEffect(() => {
     switch (lastJsonMessage?.type) {
       case "chatlist":
-        setChatlist([...lastJsonMessage?.data?.chatlist]);
+        console.log(lastJsonMessage?.data);
         setUser(lastJsonMessage?.data?.user_id);
+        setUserChatlist([...lastJsonMessage?.data?.user_chatlist]);
+        setGroupChatlist([...lastJsonMessage?.data?.group_chatlist]);
         break;
       case "message":
         const chatToFind = [
@@ -51,35 +86,13 @@ const Chat = () => {
           lastJsonMessage?.data?.group_id,
         ];
 
-        const userChat = chatlist.find((chat) =>
-          checkChat([chat?.user_id, chat?.group_id], chatToFind)
-        );
+        const chatlist =
+          chatToFind?.[0] > 0
+            ? [groupChatlist, setGroupChatlist]
+            : [userChatlist, setUserChatlist];
 
-        if (!userChat) {
-          const {
-            sender_id,
-            sender_name,
-            group_id,
-            group_name,
-            timestamp,
-            avatar_image,
-          } = lastJsonMessage?.data;
+        updateChatlist(chatlist, chatToFind);
 
-          const newChat = {
-            user_id: group_id ? 0 : sender_id,
-            group_id,
-            timestamp,
-            avatar_image,
-            name: group_name ? group_name : sender_name,
-          };
-
-          setChatlist((prevChatlist) => [newChat, ...prevChatlist]);
-        } else {
-          const filteredChatlist = chatlist.filter(
-            (chat) => !checkChat([chat?.user_id, chat?.group_id], chatToFind)
-          );
-          setChatlist([userChat, ...filteredChatlist]);
-        }
         break;
       default:
         break;
@@ -90,25 +103,25 @@ const Chat = () => {
     <Chatbox toggleChat={toggleChat} chat={openChat} user={user} />
   );
 
-  const renderedChats = chatlist.map((chat, index) => (
-    <div className="hov" key={index}>
-      <li>
-        <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
-      </li>
-      {/* {checkChat([chat?.user_id, chat?.group_id], openChat) && (
-        <>
-          <Chatbox toggleChat={toggleChat} chat={chat} user={user} />
-        </>
-      )} */}
-    </div>
-  ));
+  const renderedChats = (chatlist) =>
+    chatlist.map((chat, index) => (
+      <div className="hov" key={index}>
+        <li>
+          <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
+        </li>
+      </div>
+    ));
 
   return (
     <>
       <MessageNotification />
       <div className="chat-sidebar">
-        <ul className="pepe">{renderedChats}</ul>
+        <p>Private Chats</p>
+        <ul className="pepe">{renderedChats(userChatlist)}</ul>
+        <p>Group Chats</p>
+        <ul className="pepe">{renderedChats(groupChatlist)}</ul>
       </div>
+
       {openChat && openedChatbox}
     </>
   );

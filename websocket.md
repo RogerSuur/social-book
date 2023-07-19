@@ -28,14 +28,21 @@
     "type": "chatlist",
     "data": {
         "userid": 1, //own id
-        "chatlist" : [
+        "user_chatlist" : [
             {
-                "user_id": 123, // 0 if group
-                "group_id": 123, // 0 if user
-                "name": "username" || "firstname lastname" || "group name", // username (if exists) or combined full name or group name if group
-                "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any, might use it to sort chats by last message
-                "avatar_image": "link", // empty if no image or group
+                "user_id": 123,
+                "name": "username" || "firstname lastname", // username (if exists) or combined full name
+                "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any
+                "avatar_image": "link",
                 "unread_count": 123, // number of unread messages
+            }
+        ],
+        "group_chatlist" : [
+            {
+                "group_id": 123,
+                "name": "group name",
+                "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any
+                "avatar_image": "link",
             }
         ]
     }
