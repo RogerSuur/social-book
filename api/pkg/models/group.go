@@ -87,7 +87,7 @@ func (repo GroupRepository) Insert(group *Group) (int64, error) {
 }
 
 func (p GroupRepository) GetById(id int64) (*Group, error) {
-	query := `SELECT id, creator_id,  title, description, created_at, image_path FROM groups WHERE id = ?`
+	query := `SELECT id, creator_id, title, description, created_at, image_path FROM groups WHERE id = ?`
 	row := p.DB.QueryRow(query, id)
 	group := &Group{}
 

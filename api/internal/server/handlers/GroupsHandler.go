@@ -286,6 +286,7 @@ func (app *Application) UpdateGroupImage(rw http.ResponseWriter, r *http.Request
 	switch r.Method {
 	case "POST":
 
+		app.Logger.Println("Request size: ", r.ContentLength)
 		// Limit the size of the request body to 5MB
 		r.Body = http.MaxBytesReader(rw, r.Body, 20<<18)
 
