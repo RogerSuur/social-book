@@ -80,9 +80,9 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 		return nil
 	}
 
-	if notification.NotificationType == "group_request" {
-		w.Logger.Printf("User %v accepted group request %v", c.clientID, data.ID)
-		err = w.notificationService.HandleGroupRequest(int64(data.ID), data.Reaction)
+	if notification.NotificationType == "group_invite" {
+		w.Logger.Printf("User %v accepted group invite %v", c.clientID, data.ID)
+		err = w.notificationService.HandleGroupInvite(int64(data.ID), data.Reaction)
 		if err != nil {
 			return err
 		}
