@@ -77,9 +77,20 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 		if err != nil {
 			return err
 		}
+		return nil
+	}
+
+	if notification.NotificationType == "group_request" {
+		w.Logger.Printf("User %v accepted group request %v", c.clientID, data.ID)
+		err = w.notificationService.HandleGroupRequest(int64(data.ID), data.Reaction)
+		if err != nil {
+			return err
+		}
+		return nil
 	}
 
 	// TODO: handle other notification types
+	w.Logger.Printf("Notification type %v not handled (TODO)", notification.NotificationType)
 
 	return nil
 }
