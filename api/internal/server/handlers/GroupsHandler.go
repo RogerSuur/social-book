@@ -85,6 +85,25 @@ func (app *Application) Group(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "Fetch error", http.StatusBadRequest)
 		}
 
+		userId, err := app.UserService.GetUserID(r)
+
+		if err != nil {
+			app.Logger.Printf("Failed fetching user: %v", err)
+			http.Error(rw, "Get user error", http.StatusBadRequest)
+		}
+
+		isMember, err := app.GroupMemberService.IsGroupMember(groupId, userId)
+
+		if err != nil {
+			app.Logger.Printf("Failed checking group membership: %v", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		group.IsMember = isMember
+
+		//app.Logger.Printf("Group data fetched successfully: %v", group)
+
 		json.NewEncoder(rw).Encode(&group)
 
 	default:
