@@ -34,13 +34,19 @@ const Chat = () => {
   };
 
   const checkChat = (open, checker) =>
-    open.every((value, index) => {
-      return value === checker[index];
-    });
+    open.every((value, index) => value === checker[index]);
 
-  const updateChatlist = (chatlist, chatToFind) => {
-    const userChat = chatlist?.[0].find((chat) =>
-      checkChat([chat?.user_id, chat?.group_id], chatToFind)
+  const updateChatlist = (chatToFind) => {
+    const chatlist = chatToFind?.[0] > 0 ? userChatlist : groupChatlist;
+
+    const userChat = chatlist?.find((chat) =>
+      checkChat(
+        [
+          chat?.user_id ? chat?.user_id : 0,
+          chat?.group_id ? chat?.group_id : 0,
+        ],
+        chatToFind
+      )
     );
 
     if (!userChat) {
@@ -54,45 +60,47 @@ const Chat = () => {
       } = lastJsonMessage?.data;
 
       const newChat = {
-        user_id: group_id ? 0 : sender_id,
+        user_id: group_id > 0 ? 0 : sender_id,
         group_id,
         timestamp,
         avatar_image,
         name: group_name ? group_name : sender_name,
       };
 
-      chatlist?.[1]((prevChatlist) => [newChat, ...prevChatlist]);
+      newChat?.group_id > 0
+        ? setGroupChatlist((prevChatlist) => [newChat, ...prevChatlist])
+        : setUserChatlist((prevChatlist) => [newChat, ...prevChatlist]);
     } else {
-      const filteredChatlist = chatlist?.[0]?.filter(
-        (chat) => !checkChat([chat?.user_id, chat?.group_id], chatToFind)
+      const filteredChatlist = chatlist?.filter(
+        (chat) =>
+          !checkChat(
+            [
+              chat?.user_id ? chat?.user_id : 0,
+              chat?.group_id ? chat?.group_id : 0,
+            ],
+            chatToFind
+          )
       );
-      chatlist?.[1]([userChat, ...filteredChatlist]);
+      chatToFind?.[1] > 0
+        ? setGroupChatlist([userChat, ...filteredChatlist])
+        : setUserChatlist([userChat, ...filteredChatlist]);
     }
   };
 
   useEffect(() => {
     switch (lastJsonMessage?.type) {
       case "chatlist":
-        console.log(lastJsonMessage?.data);
         setUser(lastJsonMessage?.data?.user_id);
         setUserChatlist([...lastJsonMessage?.data?.user_chatlist]);
         setGroupChatlist([...lastJsonMessage?.data?.group_chatlist]);
         break;
       case "message":
-        const chatToFind = [
+        updateChatlist([
           lastJsonMessage?.data?.group_id > 0
             ? 0
             : lastJsonMessage?.data?.sender_id,
           lastJsonMessage?.data?.group_id,
-        ];
-
-        const chatlist =
-          chatToFind?.[0] > 0
-            ? [groupChatlist, setGroupChatlist]
-            : [userChatlist, setUserChatlist];
-
-        updateChatlist(chatlist, chatToFind);
-
+        ]);
         break;
       default:
         break;
@@ -100,7 +108,12 @@ const Chat = () => {
   }, [lastJsonMessage]);
 
   const openedChatbox = (
-    <Chatbox toggleChat={toggleChat} chat={openChat} user={user} />
+    <Chatbox
+      toggleChat={toggleChat}
+      chat={openChat}
+      user={user}
+      updateChatlist={updateChatlist}
+    />
   );
 
   const renderedChats = (chatlist) =>
