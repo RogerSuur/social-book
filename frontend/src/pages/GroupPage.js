@@ -10,6 +10,7 @@ import Select from "react-select";
 import Modal from "../components/Modal";
 import AvatarUpdater from "../components/AvatarUpdater";
 import Events from "../components/Events";
+import GroupRequestButton from "../components/GroupRequestButton.js";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -43,6 +44,7 @@ const GroupPage = () => {
             withCredentials: true,
           })
           .then((response) => {
+            console.log("RESP: ", response.data);
             setGroup(response.data);
           });
       } catch (err) {
@@ -106,39 +108,44 @@ const GroupPage = () => {
           {image()}
           <h1>{group.title}</h1>
           <p>{group.description}</p>
-
-          <div>
-            <button onClick={handleOpen}>Add members</button>
-            {open && (
-              <>
-                <Select
-                  options={followersOptions}
-                  isMulti
-                  onChange={handleSelectChange}
-                />
-                <button onClick={handleSubmit} disabled={submitting}>
-                  Submit
-                </button>
-              </>
-            )}
-          </div>
-          <GroupMembers groupId={id} />
-          <div className="profile-actions">
-            <Modal open={modalOpen} onClose={handleModalClose}>
-              <AvatarUpdater
-                url={`http://localhost:8000/groups/${id}/avatar`}
-                onUploadSuccess={handleModalClose}
+          {group.isMember ? (
+            <>
+              <div>
+                <button onClick={handleOpen}>Add members</button>
+                {open && (
+                  <>
+                    <Select
+                      options={followersOptions}
+                      isMulti
+                      onChange={handleSelectChange}
+                    />
+                    <button onClick={handleSubmit} disabled={submitting}>
+                      Submit
+                    </button>
+                  </>
+                )}
+              </div>
+              <GroupMembers groupId={id} />
+              <div className="profile-actions">
+                <Modal open={modalOpen} onClose={handleModalClose}>
+                  <AvatarUpdater
+                    url={`http://localhost:8000/groups/${id}/avatar`}
+                    onUploadSuccess={handleModalClose}
+                  />
+                </Modal>
+                <button onClick={handleModalClick}>Upload New Image</button>
+              </div>
+              <Posts
+                forGroupPage={true}
+                showGroupSidebar={false}
+                showCreatePost={true}
+                url={`/groupfeed/${id}`}
               />
-            </Modal>
-            <button onClick={handleModalClick}>Upload New Image</button>
-          </div>
-          <Posts
-            forGroupPage={true}
-            showGroupSidebar={false}
-            showCreatePost={true}
-            url={`/groupfeed/${id}`}
-          />
-          <Events groupId={id} />
+              <Events groupId={id} />
+            </>
+          ) : (
+            <GroupRequestButton groupid={group.id} />
+          )}
         </div>
       )}
     </>
