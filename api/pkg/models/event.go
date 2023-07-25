@@ -19,8 +19,8 @@ type Event struct {
 }
 
 type CreateGroupEventFormData struct {
-	GroupId      int64  `json:"groupId"`
-	UserId       int64  `json:"userId"`
+	GroupId int `json:"group_id"`
+	//UserId       int64  `json:"userId"`
 	EventTime    string `json:"startTime"`
 	EventEndTime string `json:"endTime"`
 	Title        string `json:"title"`
@@ -32,6 +32,7 @@ type IEventRepository interface {
 	GetAllByUserId(userId int64) ([]*Event, error)
 	Insert(event *Event) (int64, error)
 	InsertSeedEvent(event *Event) (int64, error)
+	GetById(id int64) (*Event, error)
 }
 
 type EventRepository struct {
@@ -170,4 +171,23 @@ func (repo EventRepository) GetAllByUserId(id int64) ([]*Event, error) {
 	repo.Logger.Printf("Found %d events for user %d", len(events), id)
 
 	return events, err
+}
+
+// Get event by id
+func (repo EventRepository) GetById(id int64) (*Event, error) {
+	query := `SELECT id, group_id, user_id, created_at, event_time, event_end_time, title, description FROM group_events WHERE id = ?`
+
+	row := repo.DB.QueryRow(query, id)
+
+	event := &Event{}
+
+	err := row.Scan(&event.Id, &event.GroupId, &event.UserId, &event.CreatedAt, &event.EventTime, &event.EventEndTime, &event.Title, &event.Description)
+
+	if err != nil {
+		return nil, err
+	}
+
+	repo.Logger.Printf("Found event %d", event.Id)
+
+	return event, nil
 }

@@ -22,6 +22,7 @@ type NotificationService struct {
 	NotificationRepository models.INotificationRepository
 	GroupRepo              models.IGroupRepository
 	GroupMemberRepo        models.IGroupMemberRepository
+	EventRepo              models.IEventRepository
 }
 
 func InitNotificationService(
@@ -31,6 +32,7 @@ func InitNotificationService(
 	notificationRepo *models.NotificationRepository,
 	groupRepo *models.GroupRepository,
 	groupMemberRepo *models.GroupMemberRepository,
+	eventRepo *models.EventRepository,
 ) *NotificationService {
 	return &NotificationService{
 		Logger:                 logger,
@@ -39,6 +41,7 @@ func InitNotificationService(
 		NotificationRepository: notificationRepo,
 		GroupRepo:              groupRepo,
 		GroupMemberRepo:        groupMemberRepo,
+		EventRepo:              eventRepo,
 	}
 }
 
@@ -67,48 +70,44 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 
 	for _, notification := range notifications {
 		singleNotification := &models.NotificationJSON{
+			ReceiverId:       userId,
 			NotificationType: notification.NotificationType,
 			NotificationId:   notification.Id,
 			SenderId:         notification.SenderId,
 		}
-		switch notification.NotificationType {
-		case "follow_request":
-			sender, err := s.UserRepo.GetById(notification.SenderId)
+		sender, err := s.UserRepo.GetById(notification.SenderId)
+		if err != nil {
+			s.Logger.Printf("Cannot get sender: %s", err)
+			return nil, err
+		}
+		if sender.Nickname == "" {
+			singleNotification.SenderName = sender.FirstName + " " + sender.LastName
+		} else {
+			singleNotification.SenderName = sender.Nickname
+		}
+
+		if notification.NotificationType == "group_invite" || notification.NotificationType == "group_request" || notification.NotificationType == "event_invite" {
+			group, err := s.GroupRepo.GetById(notification.EntityId)
 			if err != nil {
-				s.Logger.Printf("Cannot get sender: %s", err)
+				s.Logger.Printf("Cannot get group: %s", err)
 				return nil, err
 			}
-			if sender.Nickname == "" {
-				singleNotification.SenderName = sender.FirstName + " " + sender.LastName
-			} else {
-				singleNotification.SenderName = sender.Nickname
-			}
-			// COMMENTED OUT UNTIL GROUPS AND EVENTS ARE IMPLEMENTED
-			/*
-				case "group_invite":
-					group, err := s.GroupRepo.GetById(notification.EntityId)
-					if err != nil {
-						s.Logger.Printf("Cannot get group: %s", err)
-						return nil, err
-					}
-					notification.GroupName = group.Name
-				case "group_request":
-					group, err := s.GroupRepo.GetById(notification.EntityId)
-					if err != nil {
-						s.Logger.Printf("Cannot get group: %s", err)
-						return nil, err
-					}
-					notification.GroupName = group.Name
-				case "event_invite":
-					event, err := s.EventRepo.GetById(notification.EntityId)
-					if err != nil {
-						s.Logger.Printf("Cannot get event: %s", err)
-						return nil, err
-					}
-					notification.EventName = event.Name
-					notification.EventDate = event.Date.Format(time.RFC3339)
-			*/
+			singleNotification.GroupId = group.Id
+			singleNotification.GroupName = group.Title
 		}
+
+		if notification.NotificationType == "event_invite" {
+			s.Logger.Printf("Getting event: %d", notification.EntityId)
+			event, err := s.EventRepo.GetById(notification.EntityId)
+			if err != nil {
+				s.Logger.Printf("Cannot get event: %s", err)
+				return nil, err
+			}
+			singleNotification.EventId = event.Id
+			singleNotification.EventName = event.Title
+			singleNotification.EventDate = event.EventTime
+		}
+
 		NotificationJSON = append(NotificationJSON, singleNotification)
 	}
 

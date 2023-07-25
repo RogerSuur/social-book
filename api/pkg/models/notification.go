@@ -180,7 +180,7 @@ func (repo NotificationRepository) GetByReceiverId(userId int64) ([]*Notificatio
 		WHERE n.receiver_id = ?`
 	*/
 
-	query := `SELECT n.id, nt.name, nd.sender_id, n.reaction FROM notifications n
+	query := `SELECT n.id, nd.sender_id, nt.name, nd.entity_id, n.seen_at, n.reaction FROM notifications n
 	JOIN notification_details nd ON n.notification_details_id = nd.id
 	JOIN notification_types nt ON nd.notification_type_id = nt.id
 	WHERE n.receiver_id = ?`
@@ -203,7 +203,7 @@ func (repo NotificationRepository) GetByReceiverId(userId int64) ([]*Notificatio
 	for rows.Next() {
 		var notification Notification
 
-		err := rows.Scan(&notification.Id, &notification.NotificationType, &notification.SenderId, &notification.Reaction)
+		err := rows.Scan(&notification.Id, &notification.SenderId, &notification.NotificationType, &notification.EntityId, &notification.SeenAt, &notification.Reaction)
 
 		if err != nil {
 			repo.Logger.Printf("Error scanning notification: %s", err.Error())
