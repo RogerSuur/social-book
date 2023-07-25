@@ -40,6 +40,18 @@ const ProfileInfo = () => {
     });
   };
 
+  const birthdayConverter = (date) => {
+    if (!date) {
+      return;
+    }
+    const [day, month, year] = date?.split("/");
+    return new Date(year, month - 1, day).toLocaleDateString("en-UK", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
   const image = () =>
     ImageHandler(user?.avatarImage, "defaultuser.jpg", "profile-image");
 
@@ -73,11 +85,7 @@ const ProfileInfo = () => {
               <div className="row">
                 <div className="column-title">Birthday</div>
                 <div className="column">
-                  {new Date(user.birthday).toLocaleDateString("en-UK", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+                  {birthdayConverter(user?.birthday)}
                 </div>
               </div>
               <div className="row">

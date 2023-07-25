@@ -24,6 +24,8 @@ const ProfileEditor = (props) => {
     criteriaMode: "all",
   });
 
+  console.log("EDITOR PROFILE: ", user);
+
   const image = () =>
     ImageHandler(user?.avatarImage, "defaultuser.jpg", "profile-image");
 
@@ -65,6 +67,18 @@ const ProfileEditor = (props) => {
 
   const handleModalClick = () => {
     setModalOpen(true);
+  };
+
+  const birthdayConverter = (date) => {
+    if (!date) {
+      return;
+    }
+    const [day, month, year] = date?.split("/");
+    return new Date(year, month - 1, day).toLocaleDateString("en-UK", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
   return (
@@ -121,11 +135,7 @@ const ProfileEditor = (props) => {
               <div className="profile-row">
                 <div className="profile-title">Birthday</div>
                 <div className="profile-column">
-                  {new Date(user.birthday).toLocaleDateString("en-UK", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+                  {birthdayConverter(user?.birthday)}
                 </div>
               </div>
               <div className="profile-row">
