@@ -8,13 +8,13 @@ import (
 
 type EventJSON struct {
 	Id           int64     `json:"id"`
-	GroupId      int64     `json:"group_id"`
-	GroupName    string    `json:"group_name"`
-	UserId       int64     `json:"creator_id"`
-	NickName     string    `json:"creator_name"`
-	CreatedAt    time.Time `json:"created_at"`
-	EventTime    time.Time `json:"event_time"`
-	EventEndTime time.Time `json:"event_end_time"`
+	GroupId      int64     `json:"groupId"`
+	GroupName    string    `json:"groupName"`
+	UserId       int64     `json:"creatorId"`
+	NickName     string    `json:"creatorName"`
+	CreatedAt    time.Time `json:"createdAt"`
+	EventTime    time.Time `json:"eventTime"`
+	EventEndTime time.Time `json:"eventEndTime"`
 	Title        string    `json:"title"`
 	Description  string    `json:"description"`
 }

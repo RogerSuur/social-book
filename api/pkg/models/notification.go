@@ -21,7 +21,7 @@ type Notification struct {
 type NotificationJSON struct {
 	ReceiverId       int64     `json:"receiver_id"`
 	NotificationType string    `json:"notification_type"`
-	NotificationId   int64     `json:"id"`
+	NotificationId   int64     `json:"notification_id"`
 	SenderId         int64     `json:"sender_id"`
 	SenderName       string    `json:"sender_name"`
 	GroupId          int64     `json:"group_id"`
