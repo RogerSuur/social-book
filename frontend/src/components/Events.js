@@ -6,10 +6,10 @@ import CreateEvent from "./CreateEvent";
 const Events = ({ groupId }) => {
   const [eventsData, setEventsData] = useState([]);
 
-  const [loadNewEvents, setloadNewEvents] = useState(0);
+  const [loadNewEvents, setLoadNewEvents] = useState(0);
 
   const handleEventUpdate = () => {
-    setloadNewEvents((prevCount) => prevCount + 1);
+    setLoadNewEvents((prevCount) => prevCount + 1);
   };
 
   useEffect(() => {
