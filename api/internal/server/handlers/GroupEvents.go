@@ -14,7 +14,6 @@ func (app *Application) GroupEvents(rw http.ResponseWriter, r *http.Request) {
 	case "GET":
 		vars := mux.Vars(r)
 
-		//fmt.Println("Groupevents GET")
 		groupIdStr := vars["groupId"]
 		groupId, err := strconv.ParseInt(groupIdStr, 10, 64)
 
@@ -25,7 +24,6 @@ func (app *Application) GroupEvents(rw http.ResponseWriter, r *http.Request) {
 
 		groupEvents, err := app.GroupEventService.GetGroupEvents(groupId)
 
-		//fmt.Println("GroupEvents, GetGroupEvents result: ", groupEvents)
 		if err != nil {
 			app.Logger.Printf("Failed fetching groups: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)

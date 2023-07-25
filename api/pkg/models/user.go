@@ -33,9 +33,9 @@ type SignupJSON struct {
 }
 
 type SimpleUserJSON struct {
-	Id        int
+	Id        int    `json:"id"`
 	Nickname  string `json:"nickname"`
-	ImagePath string
+	ImagePath string `json:"imagePath"`
 }
 
 type IUserRepository interface {

@@ -310,6 +310,37 @@ nav {
     
 }
 
+.pop-form{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-items: center;
+  
+}
+
+.text-big{
+width: 28vw;
+height: 7vh;
+}
+
+.create-but{
+  padding: 10px;
+  font-size: 17px;
+  border-radius: 20px;
+  list-style-type: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-big{
+  width: 30vw;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+}
+
 .results-list{
   max-height: 50vh;
   overflow: auto;

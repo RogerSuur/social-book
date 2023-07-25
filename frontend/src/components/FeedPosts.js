@@ -21,7 +21,6 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
       if (entries[0].isIntersecting) {
         toggleSpinner();
         const postId = node.getAttribute("data-post-id"); // Get the post ID from the element attribute
-        console.log("Post ID:", postId);
         onLoadMore(postId);
       }
     });

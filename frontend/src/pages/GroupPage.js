@@ -83,7 +83,6 @@ const GroupPage = () => {
 
   const handleSubmit = async () => {
     try {
-      console.log(formData);
       await axios.post(
         ADD_GROUP_MEMBERS_URL,
         JSON.stringify({ groupId: id, userIds: formData }),

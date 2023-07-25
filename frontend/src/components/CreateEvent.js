@@ -2,7 +2,7 @@ import Modal from "./Modal";
 import { useState } from "react";
 import axios from "axios";
 
-const CreateEvent = ({ onEventCreated, groupId }) => {
+const CreateEvent = ({ onEventCreated, id }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [createEventForm, setcreateEventForm] = useState({
@@ -10,7 +10,7 @@ const CreateEvent = ({ onEventCreated, groupId }) => {
     description: "",
     startTime: "",
     endTime: "",
-    group_id: groupId,
+    group_id: id,
   });
 
   const openModal = () => {
@@ -56,13 +56,13 @@ const CreateEvent = ({ onEventCreated, groupId }) => {
 
   return (
     <>
-      <div className="newModal"> 
+      <div className="newModal">
         <i className="iconoir-add-circle" onClick={openModal} />
         <Modal open={modalOpen} onClose={closeModal}>
           {errMsg && <p className="error">{errMsg}</p>}
-          <form onSubmit={handleSubmit}>
-            <label>
-              Title:
+          <form className="pop-form" onSubmit={handleSubmit}>
+            Title:
+            <label className="input-big">
               <input
                 type="text"
                 name="title"
@@ -72,9 +72,10 @@ const CreateEvent = ({ onEventCreated, groupId }) => {
               />
             </label>
             <br />
+            Description:
             <label>
-              Description:
               <textarea
+              className="text-big"
                 name="description"
                 value={createEventForm.description}
                 onChange={handleChange}
@@ -82,9 +83,8 @@ const CreateEvent = ({ onEventCreated, groupId }) => {
               ></textarea>
             </label>
             <br />
-
-            <label>
               Start Time:
+            <label>
               <input
                 type="datetime-local"
                 name="startTime"
@@ -94,8 +94,8 @@ const CreateEvent = ({ onEventCreated, groupId }) => {
               />
             </label>
             <br />
+            End Time:
             <label>
-              End Time:
               <input
                 type="datetime-local"
                 name="endTime"
@@ -105,7 +105,7 @@ const CreateEvent = ({ onEventCreated, groupId }) => {
               />
             </label>
             <br />
-            <button type="submit">Create</button>
+            <button className="create-but" type="submit">Create</button>
           </form>
         </Modal>
       </div>

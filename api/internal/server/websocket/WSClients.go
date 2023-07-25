@@ -89,7 +89,7 @@ func (c *Client) write() {
 	ticker := time.NewTicker(pingInterval)
 
 	defer func() {
-		c.manager.Logger.Println("Closing connection")
+		c.manager.Logger.Printf("Closing connection for client %v", c.clientID)
 		ticker.Stop()
 		c.manager.removeClient(c)
 	}()
