@@ -3,8 +3,6 @@ import { useState, useRef } from "react";
 import FileUploader from "./FileUploader";
 import axios from "axios";
 
-const IMAGE_UPLOAD_URL = "http://localhost:8000/profile/update/avatar";
-
 const AvatarUpdater = ({ url, onUploadSuccess }) => {
   const editorRef = useRef();
   const [selectedImage, setSelectedImage] = useState(null);
@@ -15,7 +13,8 @@ const AvatarUpdater = ({ url, onUploadSuccess }) => {
 
     canvas.toBlob(async (blob) => {
       const formData = new FormData();
-      formData.append("image", blob, "avatar.png");
+      formData.append("image", blob, "avatar.jpg");
+
       try {
         await axios.post(url, formData, { withCredentials: true });
         onUploadSuccess();
@@ -28,7 +27,7 @@ const AvatarUpdater = ({ url, onUploadSuccess }) => {
           setErrMsg("Internal Server Error");
         }
       }
-    });
+    }, "image/jpeg");
   };
 
   return (
