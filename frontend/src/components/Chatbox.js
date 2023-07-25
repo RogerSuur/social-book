@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroller";
 import ImageHandler from "../utils/imageHandler";
 
-const Chatbox = ({ toggleChat, chat, user }) => {
+const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
   const [messageHistory, setMessageHistory] = useState([]);
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
@@ -17,6 +17,11 @@ const Chatbox = ({ toggleChat, chat, user }) => {
       body: "",
     },
   });
+
+  useEffect(() => {
+    setMessageHistory([]);
+    setHasMoreMessages(true);
+  }, [chat]);
 
   const messageboxRef = useRef(null);
 
@@ -43,8 +48,6 @@ const Chatbox = ({ toggleChat, chat, user }) => {
   useEffect(() => {
     switch (lastJsonMessage?.type) {
       case "message_history":
-        // console.log(lastJsonMessage, "MSG HISTORY");
-
         if (lastJsonMessage?.data.length > 0) {
           setMessageHistory((prevMessageHistory) => [
             ...lastJsonMessage?.data,
@@ -137,6 +140,11 @@ const Chatbox = ({ toggleChat, chat, user }) => {
       { ...msg.data, timestamp: new Date().toISOString() },
     ]);
 
+    updateChatlist([
+      chat?.user_id ? chat?.user_id : 0,
+      chat?.group_id ? chat?.group_id : 0,
+    ]);
+
     setMessage({ ...message, data: { body: "" } });
     setScrollToBottomNeeded(true);
   };
@@ -202,7 +210,10 @@ const Chatbox = ({ toggleChat, chat, user }) => {
             required
           />
           <button>
-          <img className="send-icon" src={`${process.env.PUBLIC_URL}/send-icon.png`}/>
+            <img
+              className="send-icon"
+              src={`${process.env.PUBLIC_URL}/send-icon.png`}
+            />
           </button>
         </form>
       </div>

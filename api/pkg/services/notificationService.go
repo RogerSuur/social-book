@@ -13,6 +13,8 @@ type INotificationService interface {
 	CreateFollowRequest(followerId int64, followingId int64) (int64, bool, error)
 	HandleFollowRequest(notificationId int64, accepted bool) error
 	CreateGroupRequest(senderId int64, groupId int64) (int64, error)
+	HandleGroupInvite(notificationID int64, accepted bool) error
+	HandleGroupRequest(creatorID int64, notificationID int64, accepted bool) error
 }
 
 type NotificationService struct {
@@ -273,4 +275,127 @@ func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) 
 	}
 
 	return notificationId, nil
+}
+
+func (s *NotificationService) HandleGroupInvite(notificationID int64, accepted bool) error {
+	notification, err := s.NotificationRepository.GetById(notificationID)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification: %s", err)
+		return err
+	}
+
+	// check if group invite already handled
+	if notification.Reaction {
+		return errors.New("group invite already handled")
+	}
+
+	// check if group invite exists
+	groupMember, err := s.GroupMemberRepo.GetById(notification.EntityId)
+	if err != nil {
+		s.Logger.Printf("Cannot get group invite: %s", err)
+		return err
+	}
+
+	// check if group invite is accepted
+	if groupMember.JoinedAt != (time.Time{}) {
+		return errors.New("group invite already accepted")
+	}
+
+	// update group invite
+	if accepted {
+		groupMember.JoinedAt = time.Now()
+		err = s.GroupMemberRepo.Update(groupMember)
+		if err != nil {
+			s.Logger.Printf("Cannot update group invite: %s", err)
+			return err
+		}
+	} else {
+		err = s.GroupMemberRepo.Delete(groupMember)
+		if err != nil {
+			s.Logger.Printf("Cannot delete group invite: %s", err)
+			return err
+		}
+	}
+
+	s.Logger.Printf("Group invite updated: %d", notification.EntityId)
+
+	// update notification
+	notification.Reaction = true
+	err = s.NotificationRepository.Update(notification)
+	if err != nil {
+		s.Logger.Printf("Cannot update notification: %s", err)
+		return err
+	}
+
+	s.Logger.Printf("Notification updated: %d", notification.Id)
+
+	return nil
+}
+
+func (s *NotificationService) HandleGroupRequest(creatorID int64, notificationID int64, accepted bool) error {
+
+	notification, err := s.NotificationRepository.GetById(notificationID)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification: %s", err)
+		return err
+	}
+
+	// check if group request already handled
+	if notification.Reaction {
+		return errors.New("group request already handled")
+	}
+
+	// check if group request exists
+	groupMember, err := s.GroupMemberRepo.GetById(notification.EntityId)
+	if err != nil {
+		s.Logger.Printf("Cannot get group request: %s", err)
+		return err
+	}
+
+	// check if group request is accepted
+	if groupMember.JoinedAt != (time.Time{}) {
+		return errors.New("group request already accepted")
+	}
+
+	// check if user is creator of group
+	group, err := s.GroupRepo.GetById(groupMember.GroupId)
+	if err != nil {
+		s.Logger.Printf("Cannot get group: %s", err)
+		return err
+	}
+
+	if group.CreatorId != creatorID {
+		return errors.New("user is not creator of group")
+	}
+
+	// update group request
+	if accepted {
+		groupMember.JoinedAt = time.Now()
+		err = s.GroupMemberRepo.Update(groupMember)
+		if err != nil {
+			s.Logger.Printf("Cannot update group request: %s", err)
+			return err
+		}
+	} else {
+		err = s.GroupMemberRepo.Delete(groupMember)
+		if err != nil {
+			s.Logger.Printf("Cannot delete group request: %s", err)
+			return err
+		}
+	}
+
+	s.Logger.Printf("Group request updated: %d", notification.EntityId)
+
+	// update notification
+	notification.Reaction = true
+	err = s.NotificationRepository.Update(notification)
+	if err != nil {
+		s.Logger.Printf("Cannot update notification: %s", err)
+		return err
+	}
+
+	s.Logger.Printf("Notification updated: %d", notification.Id)
+
+	return nil
+
 }
