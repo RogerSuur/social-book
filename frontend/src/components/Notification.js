@@ -103,7 +103,7 @@ const Notification = ({ notification, onClose }) => {
         return groupInviteNotification();
       case "group_join":
         return groupJoinNotification();
-      case "event":
+      case "event_invite":
         return eventNotification();
       default:
         break;
