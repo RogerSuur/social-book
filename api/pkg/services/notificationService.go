@@ -241,7 +241,7 @@ func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) 
 
 	// check if user is already member of group
 	isMember, err := s.GroupMemberRepo.IsGroupMember(senderId, groupId)
-	if err == nil {
+	if err != nil {
 		return -1, errors.New("error in checking if user is already member of group")
 	}
 	if isMember {
