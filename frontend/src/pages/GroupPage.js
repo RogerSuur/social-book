@@ -143,7 +143,7 @@ const GroupPage = () => {
               <Events groupId={id} />
             </>
           ) : (
-            <GroupRequestButton groupid={id} />
+            <GroupRequestButton groupid={+id} />
           )}
         </div>
       )}
