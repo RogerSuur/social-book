@@ -7,17 +7,17 @@ import (
 )
 
 type EventJSON struct {
-	Id           int64                    `json:"id"`
-	GroupId      int64                    `json:"groupId"`
-	GroupName    string                   `json:"groupName"`
-	UserId       int64                    `json:"creatorId"`
-	NickName     string                   `json:"creatorName"`
-	CreatedAt    time.Time                `json:"createdAt"`
-	EventTime    time.Time                `json:"eventTime"`
-	EventEndTime time.Time                `json:"eventEndTime"`
-	Title        string                   `json:"title"`
-	Description  string                   `json:"description"`
-	Members      []*models.SimpleUserJSON `json:"members"`
+	Id           int64                  `json:"id"`
+	GroupId      int64                  `json:"groupId"`
+	GroupName    string                 `json:"groupName"`
+	UserId       int64                  `json:"creatorId"`
+	NickName     string                 `json:"creatorName"`
+	CreatedAt    time.Time              `json:"createdAt"`
+	EventTime    time.Time              `json:"eventTime"`
+	EventEndTime time.Time              `json:"eventEndTime"`
+	Title        string                 `json:"title"`
+	Description  string                 `json:"description"`
+	Members      []*models.AttendeeJSON `json:"members"`
 }
 
 type IGroupEventService interface {
@@ -259,15 +259,11 @@ func (s *GroupEventService) GetEventById(eventId int64) (*EventJSON, error) {
 		return nil, err
 	}
 
-	attendeesJSON := []*models.SimpleUserJSON{}
+	attendeesJSON := []*models.AttendeeJSON{}
 
 	for _, attendee := range attendees {
 
-		if !attendee.IsAttending {
-			continue
-		}
-
-		singleJSON := &models.SimpleUserJSON{}
+		singleJSON := &models.AttendeeJSON{}
 
 		user, err := s.UserRepository.GetById(attendee.UserId)
 		if err != nil {
@@ -282,6 +278,7 @@ func (s *GroupEventService) GetEventById(eventId int64) (*EventJSON, error) {
 		singleJSON.Id = int(attendee.UserId)
 		singleJSON.Nickname = user.Nickname
 		singleJSON.ImagePath = user.ImagePath
+		singleJSON.IsAttending = attendee.IsAttending
 
 		attendeesJSON = append(attendeesJSON, singleJSON)
 	}

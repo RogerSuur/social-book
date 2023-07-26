@@ -6,6 +6,13 @@ import (
 	"os"
 )
 
+type AttendeeJSON struct {
+	Id          int    `json:"id"`
+	Nickname    string `json:"nickname"`
+	ImagePath   string `json:"imagePath"`
+	IsAttending bool   `json:"isAttending"`
+}
+
 type EventAttendance struct {
 	UserId      int64 `json:"userId"`
 	EventId     int64 `json:"eventId"`
