@@ -105,7 +105,7 @@ var SeedEventAttendanceDataAccepted = []*SeedEventAttendance{
 	{
 		UserId:      3,
 		EventId:     5,
-		IsAttending: true,
+		IsAttending: false,
 	},
 	{
 		UserId:      1,
@@ -116,23 +116,19 @@ var SeedEventAttendanceDataAccepted = []*SeedEventAttendance{
 
 var SeedEventAttendanceDataPending = []*SeedEventAttendance{
 	{
-		UserId:      1,
-		EventId:     2,
-		IsAttending: false,
+		UserId:  1,
+		EventId: 2,
 	},
 	{
-		UserId:      3,
-		EventId:     2,
-		IsAttending: false,
+		UserId:  3,
+		EventId: 2,
 	},
 	{
-		UserId:      3,
-		EventId:     1,
-		IsAttending: false,
+		UserId:  3,
+		EventId: 1,
 	},
 	{
-		UserId:      2,
-		EventId:     3,
-		IsAttending: false,
+		UserId:  2,
+		EventId: 3,
 	},
 }
