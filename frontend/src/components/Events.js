@@ -29,13 +29,22 @@ const Events = ({ groupId }) => {
 
   console.log("GROUPEVENTS: ", eventsData);
 
+  const timeConverter = (datetime) =>
+    new Date(datetime).toLocaleTimeString("en-UK", {
+      month: "short",
+      day: "2-digit",
+      year: "2-digit",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+
   const eventsDataMap = eventsData.map((event, index) => (
     <div key={index}>
-      <Link to={`/event/${event.id}`}>
+      <Link to={`/event/${event.Id}`}>
         <h1>{event.Title}</h1>
-        <p>{event.Description}</p>
-        <p>{event.EventTime}</p>
       </Link>
+      <p>{event.Description}</p>
+      <p>Begins {timeConverter(event.EventTime)}</p>
     </div>
   ));
 
