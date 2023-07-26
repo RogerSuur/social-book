@@ -84,7 +84,7 @@ const Notification = ({ notification, onClose }) => {
   const eventNotification = () => {
     return (
       <>
-        <Link to={`/events/${notification?.event_id}`}>
+        <Link to={`/event/${notification?.event_id}`}>
           {notification?.event_name}
         </Link>{" "}
         is going to take place at{" "}
