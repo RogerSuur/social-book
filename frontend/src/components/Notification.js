@@ -65,7 +65,7 @@ const Notification = ({ notification, onClose }) => {
     );
   };
 
-  const groupJoinNotification = () => {
+  const groupRequestNotification = () => {
     return (
       <>
         <Link to={`/profile/${notification?.sender_id}`}>
@@ -101,8 +101,8 @@ const Notification = ({ notification, onClose }) => {
         return followRequestNotification();
       case "group_invite":
         return groupInviteNotification();
-      case "group_join":
-        return groupJoinNotification();
+      case "group_request":
+        return groupRequestNotification();
       case "event_invite":
         return eventNotification();
       default:
