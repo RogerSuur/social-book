@@ -8,7 +8,7 @@ import ImageHandler from "../utils/imageHandler.js";
 const PROFILE_URL = "http://localhost:8000/profile";
 const PROFILE_UPDATE_URL = "http://localhost:8000/profile/update";
 
-const ProfileEditor = (props) => {
+const ProfileEditor = () => {
   const [user, setUser] = useState({});
   const [errMsg, setErrMsg] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -44,14 +44,10 @@ const ProfileEditor = (props) => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post(
-        PROFILE_UPDATE_URL,
-        JSON.stringify(data),
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      await axios.post(PROFILE_UPDATE_URL, JSON.stringify(data), {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
