@@ -5,7 +5,6 @@ import axios from "axios";
 import ImageHandler from "../utils/imageHandler";
 import GroupSidebar from "../components/GroupSidebar";
 import Modal from "../components/Modal.js";
-import { set } from "react-hook-form";
 
 const EventPage = () => {
   const [event, setEvent] = useState({});
