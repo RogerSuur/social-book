@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { GROUP_EVENTS_URL } from "../utils/routes";
 import CreateEvent from "./CreateEvent";
 
@@ -15,7 +16,6 @@ const Events = ({ groupId }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        console.log("REQUEST URL", GROUP_EVENTS_URL + groupId);
         const response = await axios.get(GROUP_EVENTS_URL + groupId, {
           withCredentials: true,
         });
@@ -27,14 +27,15 @@ const Events = ({ groupId }) => {
     fetchEvents();
   }, [groupId, loadNewEvents]);
 
+  console.log("GROUPEVENTS: ", eventsData);
+
   const eventsDataMap = eventsData.map((event, index) => (
     <div key={index}>
-      {/* LOO SIIA LINK EVENTI LEHELE */}
-      {/* <Link to={`/profile/${member.Id}`}> */}
-      <h1>{event.Title}</h1>
-      <p>{event.Description}</p>
-      <p>{event.EventTime}</p>
-      {/* </Link> */}
+      <Link to={`/event/${event.id}`}>
+        <h1>{event.Title}</h1>
+        <p>{event.Description}</p>
+        <p>{event.EventTime}</p>
+      </Link>
     </div>
   ));
 

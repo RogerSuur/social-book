@@ -38,8 +38,6 @@ const EventPage = () => {
     loadEvent();
   }, [id]);
 
-  console.log("EVENT DATA: ", event);
-
   const userList = (attendance) => {
     const users = event?.members?.filter(
       (member) => member.isAttending === attendance
@@ -68,8 +66,18 @@ const EventPage = () => {
     setModalOpen(false);
   };
 
-  const handleModalClick = () => {
+  const handleModalClick = (attending) => {
+    setActiveTab(attending);
     setModalOpen(true);
+  };
+
+  const countUsers = (attending) => {
+    const userArray = event?.members?.map((member) => member.isAttending);
+
+    return userArray?.reduce(
+      (count, obj) => (obj === attending ? count + 1 : count),
+      0
+    );
   };
 
   console.log("ACTIVE", activeTab);
@@ -87,7 +95,12 @@ const EventPage = () => {
         </ul>
         <ul>{userList(activeTab)}</ul>
       </Modal>
-      <button onClick={handleModalClick}>See who is going</button>
+      <button onClick={() => handleModalClick(true)}>
+        Going {countUsers(true)}
+      </button>
+      <button onClick={() => handleModalClick(false)}>
+        Not going {countUsers(false)}
+      </button>
     </div>
   );
 
