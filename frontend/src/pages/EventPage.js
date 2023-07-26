@@ -51,7 +51,7 @@ const EventPage = () => {
     </div>
   );
 
-  return <div>{renderedEvent}</div>;
+  return <>{error ? <div>{error}</div> : <div>{renderedEvent}</div>}</>;
 };
 
 export default EventPage;
