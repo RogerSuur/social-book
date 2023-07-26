@@ -278,6 +278,9 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 }
 
 func (w *WebsocketServer) GroupRequestHandler(p Payload, c *Client) error {
+
+	w.Logger.Printf("Payload: %v", p)
+
 	data := &RequestPayload{}
 	err := json.Unmarshal(p.Data, &data)
 	if err != nil {

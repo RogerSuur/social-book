@@ -7,37 +7,39 @@ import (
 )
 
 type EventJSON struct {
-	Id           int64     `json:"id"`
-	GroupId      int64     `json:"groupId"`
-	GroupName    string    `json:"groupName"`
-	UserId       int64     `json:"creatorId"`
-	NickName     string    `json:"creatorName"`
-	CreatedAt    time.Time `json:"createdAt"`
-	EventTime    time.Time `json:"eventTime"`
-	EventEndTime time.Time `json:"eventEndTime"`
-	Title        string    `json:"title"`
-	Description  string    `json:"description"`
+	Id           int64                     `json:"id"`
+	GroupId      int64                     `json:"groupId"`
+	GroupName    string                    `json:"groupName"`
+	UserId       int64                     `json:"creatorId"`
+	NickName     string                    `json:"creatorName"`
+	CreatedAt    time.Time                 `json:"createdAt"`
+	EventTime    time.Time                 `json:"eventTime"`
+	EventEndTime time.Time                 `json:"eventEndTime"`
+	Title        string                    `json:"title"`
+	Description  string                    `json:"description"`
+	Members      []*models.EventAttendance `json:"members"`
 }
 
 type IGroupEventService interface {
 	GetGroupEvents(groupId int64) ([]*models.Event, error)
 	CreateGroupEvent(formData *models.CreateGroupEventFormData, userId int64) ([]*models.NotificationJSON, error)
 	GetUserEvents(userId int64) ([]*EventJSON, error)
+	GetEventById(eventId int64) (*EventJSON, error)
 }
 
 type GroupEventService struct {
-	Logger                         *log.Logger
-	GroupEventAttendanceRepository models.IEventAttendanceRepository
-	EventRepository                models.IEventRepository
-	GroupRepository                models.IGroupRepository
-	GroupMemberRepository          models.IGroupMemberRepository
-	UserRepository                 models.IUserRepository
-	NotificationRepository         models.INotificationRepository
+	Logger                    *log.Logger
+	EventAttendanceRepository models.IEventAttendanceRepository
+	EventRepository           models.IEventRepository
+	GroupRepository           models.IGroupRepository
+	GroupMemberRepository     models.IGroupMemberRepository
+	UserRepository            models.IUserRepository
+	NotificationRepository    models.INotificationRepository
 }
 
 func InitGroupEventService(
 	logger *log.Logger,
-	groupEventAttendanceRepo *models.EventAttendanceRepository,
+	eventAttendanceRepo *models.EventAttendanceRepository,
 	groupEventRepo *models.EventRepository,
 	groupRepo *models.GroupRepository,
 	GroupMemberRepository *models.GroupMemberRepository,
@@ -45,13 +47,13 @@ func InitGroupEventService(
 	notificationRepo *models.NotificationRepository,
 ) *GroupEventService {
 	return &GroupEventService{
-		Logger:                         logger,
-		GroupEventAttendanceRepository: groupEventAttendanceRepo,
-		EventRepository:                groupEventRepo,
-		GroupRepository:                groupRepo,
-		GroupMemberRepository:          GroupMemberRepository,
-		UserRepository:                 userRepo,
-		NotificationRepository:         notificationRepo,
+		Logger:                    logger,
+		EventAttendanceRepository: eventAttendanceRepo,
+		EventRepository:           groupEventRepo,
+		GroupRepository:           groupRepo,
+		GroupMemberRepository:     GroupMemberRepository,
+		UserRepository:            userRepo,
+		NotificationRepository:    notificationRepo,
 	}
 }
 
@@ -239,4 +241,44 @@ func (s *GroupEventService) InviteUser(userId int64, eventId int64) error {
 	}
 
 	return nil
+}
+
+func (s *GroupEventService) GetEventById(eventId int64) (*EventJSON, error) {
+
+	event, err := s.EventRepository.GetById(eventId)
+
+	if err != nil {
+		s.Logger.Printf("Failed fetching event: %s", err)
+		return nil, err
+	}
+
+	attendees, err := s.EventAttendanceRepository.GetAttendeesByEventId(eventId)
+
+	if err != nil {
+		s.Logger.Printf("Failed fetching event attendance: %s", err)
+		return nil, err
+	}
+
+	group, err := s.GroupRepository.GetById(event.GroupId)
+
+	if err != nil {
+		s.Logger.Printf("Failed fetching group: %s", err)
+		return nil, err
+	}
+
+	eventJSON := &EventJSON{
+		Id:           event.Id,
+		GroupId:      event.GroupId,
+		GroupName:    group.Title,
+		CreatedAt:    event.CreatedAt,
+		EventTime:    event.EventTime,
+		EventEndTime: event.EventEndTime,
+		Title:        event.Title,
+		Description:  event.Description,
+		Members:      attendees,
+	}
+
+	//s.Logger.Printf("Fetched event: %v", eventJSON)
+
+	return eventJSON, nil
 }

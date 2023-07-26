@@ -7,9 +7,9 @@ import (
 )
 
 type EventAttendance struct {
-	UserId      int64
-	EventId     int64
-	IsAttending bool
+	UserId      int64 `json:"userId"`
+	EventId     int64 `json:"eventId"`
+	IsAttending bool  `json:"isAttending"`
 }
 
 type IEventAttendanceRepository interface {

@@ -81,3 +81,32 @@ func (app *Application) CreateGroupEvent(rw http.ResponseWriter, r *http.Request
 	}
 
 }
+
+func (app *Application) Event(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		vars := mux.Vars(r)
+
+		eventIdStr := vars["eventId"]
+		eventId, err := strconv.ParseInt(eventIdStr, 10, 64)
+
+		if eventId < 0 || err != nil {
+			app.Logger.Printf("DATA PARSE error: %v", err)
+			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
+		}
+
+		event, err := app.GroupEventService.GetEventById(eventId)
+
+		if err != nil {
+			app.Logger.Printf("Failed fetching groups: %v", err)
+			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
+
+		json.NewEncoder(rw).Encode(&event)
+
+	default:
+		http.Error(rw, "method is not supported", http.StatusNotFound)
+		return
+	}
+
+}
