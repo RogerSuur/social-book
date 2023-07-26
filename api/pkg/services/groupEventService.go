@@ -7,17 +7,17 @@ import (
 )
 
 type EventJSON struct {
-	Id           int64                     `json:"id"`
-	GroupId      int64                     `json:"groupId"`
-	GroupName    string                    `json:"groupName"`
-	UserId       int64                     `json:"creatorId"`
-	NickName     string                    `json:"creatorName"`
-	CreatedAt    time.Time                 `json:"createdAt"`
-	EventTime    time.Time                 `json:"eventTime"`
-	EventEndTime time.Time                 `json:"eventEndTime"`
-	Title        string                    `json:"title"`
-	Description  string                    `json:"description"`
-	Members      []*models.EventAttendance `json:"members"`
+	Id           int64                    `json:"id"`
+	GroupId      int64                    `json:"groupId"`
+	GroupName    string                   `json:"groupName"`
+	UserId       int64                    `json:"creatorId"`
+	NickName     string                   `json:"creatorName"`
+	CreatedAt    time.Time                `json:"createdAt"`
+	EventTime    time.Time                `json:"eventTime"`
+	EventEndTime time.Time                `json:"eventEndTime"`
+	Title        string                   `json:"title"`
+	Description  string                   `json:"description"`
+	Members      []*models.SimpleUserJSON `json:"members"`
 }
 
 type IGroupEventService interface {
@@ -259,6 +259,33 @@ func (s *GroupEventService) GetEventById(eventId int64) (*EventJSON, error) {
 		return nil, err
 	}
 
+	attendeesJSON := []*models.SimpleUserJSON{}
+
+	for _, attendee := range attendees {
+
+		if !attendee.IsAttending {
+			continue
+		}
+
+		singleJSON := &models.SimpleUserJSON{}
+
+		user, err := s.UserRepository.GetById(attendee.UserId)
+		if err != nil {
+			s.Logger.Printf("Failed fetching user: %s", err)
+			return nil, err
+		}
+
+		if user.Nickname == "" {
+			user.Nickname = user.FirstName + " " + user.LastName
+		}
+
+		singleJSON.Id = int(attendee.UserId)
+		singleJSON.Nickname = user.Nickname
+		singleJSON.ImagePath = user.ImagePath
+
+		attendeesJSON = append(attendeesJSON, singleJSON)
+	}
+
 	group, err := s.GroupRepository.GetById(event.GroupId)
 
 	if err != nil {
@@ -275,7 +302,7 @@ func (s *GroupEventService) GetEventById(eventId int64) (*EventJSON, error) {
 		EventEndTime: event.EventEndTime,
 		Title:        event.Title,
 		Description:  event.Description,
-		Members:      attendees,
+		Members:      attendeesJSON,
 	}
 
 	//s.Logger.Printf("Fetched event: %v", eventJSON)
