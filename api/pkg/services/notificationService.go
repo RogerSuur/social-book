@@ -92,8 +92,25 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 			singleNotification.SenderName = sender.Nickname
 		}
 
-		if notification.NotificationType == "group_invite" || notification.NotificationType == "group_request" || notification.NotificationType == "event_invite" {
+		if notification.NotificationType == "group_invite" || notification.NotificationType == "event_invite" {
 			group, err := s.GroupRepo.GetById(notification.EntityId)
+			if err != nil {
+				s.Logger.Printf("Cannot get group: %s", err)
+				return nil, err
+			}
+			singleNotification.GroupId = group.Id
+			singleNotification.GroupName = group.Title
+		}
+
+		if notification.NotificationType == "group_request" {
+			member, err := s.GroupMemberRepo.GetById(notification.EntityId)
+
+			if err != nil {
+				s.Logger.Printf("Cannot get group member: %s", err)
+				return nil, err
+			}
+
+			group, err := s.GroupRepo.GetById(member.GroupId)
 			if err != nil {
 				s.Logger.Printf("Cannot get group: %s", err)
 				return nil, err
@@ -240,7 +257,7 @@ func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) 
 	}
 
 	// check if user is already member of group
-	isMember, err := s.GroupMemberRepo.IsGroupMember(senderId, groupId)
+	isMember, err := s.GroupMemberRepo.IsGroupMember(groupId, senderId)
 	if err != nil {
 		return -1, errors.New("error in checking if user is already member of group")
 	}
