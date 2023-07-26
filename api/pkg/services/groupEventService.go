@@ -21,10 +21,11 @@ type EventJSON struct {
 }
 
 type IGroupEventService interface {
-	GetGroupEvents(groupId int64) ([]*models.Event, error)
+	GetGroupEvents(groupId int64) ([]*EventJSON, error)
 	CreateGroupEvent(formData *models.CreateGroupEventFormData, userId int64) ([]*models.NotificationJSON, error)
 	GetUserEvents(userId int64) ([]*EventJSON, error)
 	GetEventById(eventId int64) (*EventJSON, error)
+	ParseEventJSON(events []*models.Event) ([]*EventJSON, error)
 }
 
 type GroupEventService struct {
@@ -57,7 +58,7 @@ func InitGroupEventService(
 	}
 }
 
-func (s *GroupEventService) GetGroupEvents(groupId int64) ([]*models.Event, error) {
+func (s *GroupEventService) GetGroupEvents(groupId int64) ([]*EventJSON, error) {
 
 	events, err := s.EventRepository.GetAllByGroupId(groupId)
 
@@ -68,7 +69,13 @@ func (s *GroupEventService) GetGroupEvents(groupId int64) ([]*models.Event, erro
 
 	s.Logger.Printf("Fetched %d events", len(events))
 
-	return events, nil
+	eventJSON, err := s.ParseEventJSON(events)
+	if err != nil {
+		s.Logger.Printf("Failed parsing event json: %s", err)
+		return nil, err
+	}
+
+	return eventJSON, nil
 }
 
 func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFormData, userId int64) ([]*models.NotificationJSON, error) {
@@ -177,41 +184,13 @@ func (s *GroupEventService) GetUserEvents(userId int64) ([]*EventJSON, error) {
 		return nil, err
 	}
 
-	var eventJSON []*EventJSON
-
-	for _, event := range events {
-
-		groupName, err := s.GroupRepository.GetById(event.GroupId)
-		if err != nil {
-			s.Logger.Printf("Failed fetching group name: %s", err)
-			return nil, err
-		}
-
-		userData, err := s.UserRepository.GetById(event.UserId)
-		if err != nil {
-			s.Logger.Printf("Failed fetching user data: %s", err)
-			return nil, err
-		}
-
-		if userData.Nickname == "" {
-			userData.Nickname = userData.FirstName + " " + userData.LastName
-		}
-
-		eventJSON = append(eventJSON, &EventJSON{
-			Id:           event.Id,
-			GroupId:      event.GroupId,
-			GroupName:    groupName.Title,
-			UserId:       event.UserId,
-			NickName:     userData.Nickname,
-			CreatedAt:    event.CreatedAt,
-			EventTime:    event.EventTime,
-			EventEndTime: event.EventEndTime,
-			Title:        event.Title,
-			Description:  event.Description,
-		})
-	}
-
 	s.Logger.Printf("Fetched %d events", len(events))
+
+	eventJSON, err := s.ParseEventJSON(events)
+	if err != nil {
+		s.Logger.Printf("Failed parsing event json: %s", err)
+		return nil, err
+	}
 
 	return eventJSON, nil
 }
@@ -303,6 +282,47 @@ func (s *GroupEventService) GetEventById(eventId int64) (*EventJSON, error) {
 	}
 
 	//s.Logger.Printf("Fetched event: %v", eventJSON)
+
+	return eventJSON, nil
+}
+
+func (s *GroupEventService) ParseEventJSON(events []*models.Event) ([]*EventJSON, error) {
+
+	var eventJSON []*EventJSON
+
+	for _, event := range events {
+
+		groupData, err := s.GroupRepository.GetById(event.GroupId)
+		if err != nil {
+			s.Logger.Printf("Failed fetching group name: %s", err)
+			return nil, err
+		}
+
+		userData, err := s.UserRepository.GetById(event.UserId)
+		if err != nil {
+			s.Logger.Printf("Failed fetching user data: %s", err)
+			return nil, err
+		}
+
+		if userData.Nickname == "" {
+			userData.Nickname = userData.FirstName + " " + userData.LastName
+		}
+
+		eventJSON = append(eventJSON, &EventJSON{
+			Id:           event.Id,
+			GroupId:      event.GroupId,
+			GroupName:    groupData.Title,
+			UserId:       event.UserId,
+			NickName:     userData.Nickname,
+			CreatedAt:    event.CreatedAt,
+			EventTime:    event.EventTime,
+			EventEndTime: event.EventEndTime,
+			Title:        event.Title,
+			Description:  event.Description,
+		})
+	}
+
+	//s.Logger.Println("Parsed events", eventJSON)
 
 	return eventJSON, nil
 }
