@@ -72,7 +72,7 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 
 	// perhaps case switch here?
 	if notification.NotificationType == "follow_request" {
-		w.Logger.Printf("User %v accepted follow request %v", c.clientID, data.ID)
+		w.Logger.Printf("User %v reacted to follow request %v", c.clientID, data.ID)
 		err = w.notificationService.HandleFollowRequest(int64(data.ID), data.Reaction)
 		if err != nil {
 			return err
@@ -81,7 +81,7 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 	}
 
 	if notification.NotificationType == "group_invite" {
-		w.Logger.Printf("User %v accepted group invite %v", c.clientID, data.ID)
+		w.Logger.Printf("User %v reacted to group invite %v", c.clientID, data.ID)
 		err = w.notificationService.HandleGroupInvite(int64(data.ID), data.Reaction)
 		if err != nil {
 			return err
@@ -90,7 +90,7 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 	}
 
 	if notification.NotificationType == "group_request" {
-		w.Logger.Printf("User %v accepted group request %v", c.clientID, data.ID)
+		w.Logger.Printf("User %v reacted to group request %v", c.clientID, data.ID)
 		err = w.notificationService.HandleGroupRequest(c.clientID, int64(data.ID), data.Reaction)
 		if err != nil {
 			return err
@@ -98,10 +98,18 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 		return nil
 	}
 
-	// TODO: handle other notification types
-	w.Logger.Printf("Notification type %v not handled (TODO)", notification.NotificationType)
+	if notification.NotificationType == "event_invite" {
+		w.Logger.Printf("User %v reacted to event invite %v", c.clientID, data.ID)
+		err = w.notificationService.HandleEventInvite(int64(data.ID), data.Reaction)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 
-	return nil
+	w.Logger.Printf("Notification type %v not handled", notification.NotificationType)
+
+	return errors.New("unknown notification type: " + notification.NotificationType)
 }
 
 func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {

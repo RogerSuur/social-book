@@ -48,8 +48,6 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 			Receivers:   JSONdata.Receivers,
 		}
 
-		// fmt.Println("Post", post)
-
 		err = app.PostService.CreatePost(post)
 
 		if err != nil {
@@ -104,8 +102,6 @@ func (app *Application) GroupPost(rw http.ResponseWriter, r *http.Request) {
 			ImagePath:   JSONdata.ImagePath,
 			GroupId:     groupId,
 		}
-
-		// fmt.Println("Post", post)
 
 		err = app.PostService.CreateGroupPost(post)
 

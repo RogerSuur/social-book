@@ -110,7 +110,7 @@ func (c *Client) write() {
 				c.manager.Logger.Printf("Error marshalling message: %v", err)
 				return
 			}
-			c.manager.Logger.Printf("Writing message '%v' to client %v", string(data), c.clientID)
+			c.manager.Logger.Printf("Writing message '%v' to client %v", message.Type, c.clientID)
 			if err := c.connection.WriteMessage(websocket.TextMessage, data); err != nil {
 				c.manager.Logger.Printf("Error writing message: %v", err)
 				return

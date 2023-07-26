@@ -209,6 +209,8 @@ func (s *GroupEventService) GetUserEvents(userId int64) ([]*EventJSON, error) {
 		})
 	}
 
+	s.Logger.Printf("Fetched %d events", len(events))
+
 	return eventJSON, nil
 }
 

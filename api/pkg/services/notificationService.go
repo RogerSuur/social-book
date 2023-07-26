@@ -15,6 +15,7 @@ type INotificationService interface {
 	CreateGroupRequest(senderId int64, groupId int64) (int64, error)
 	HandleGroupInvite(notificationID int64, accepted bool) error
 	HandleGroupRequest(creatorID int64, notificationID int64, accepted bool) error
+	HandleEventInvite(notificationID int64, accepted bool) error
 }
 
 type NotificationService struct {
@@ -25,6 +26,7 @@ type NotificationService struct {
 	GroupRepo              models.IGroupRepository
 	GroupMemberRepo        models.IGroupMemberRepository
 	EventRepo              models.IEventRepository
+	EventAttendanceRepo    models.IEventAttendanceRepository
 }
 
 func InitNotificationService(
@@ -35,6 +37,7 @@ func InitNotificationService(
 	groupRepo *models.GroupRepository,
 	groupMemberRepo *models.GroupMemberRepository,
 	eventRepo *models.EventRepository,
+	eventAttendanceRepo *models.EventAttendanceRepository,
 ) *NotificationService {
 	return &NotificationService{
 		Logger:                 logger,
@@ -44,6 +47,7 @@ func InitNotificationService(
 		GroupRepo:              groupRepo,
 		GroupMemberRepo:        groupMemberRepo,
 		EventRepo:              eventRepo,
+		EventAttendanceRepo:    eventAttendanceRepo,
 	}
 }
 
@@ -395,6 +399,65 @@ func (s *NotificationService) HandleGroupRequest(creatorID int64, notificationID
 	}
 
 	s.Logger.Printf("Notification updated: %d", notification.Id)
+
+	return nil
+
+}
+
+func (s *NotificationService) HandleEventInvite(notificationID int64, accepted bool) error {
+
+	notification, err := s.NotificationRepository.GetById(notificationID)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification: %s", err)
+		return err
+	}
+
+	// check if event invite already handled
+	if notification.Reaction {
+		return errors.New("event invite already handled")
+	}
+
+	// check if event exists
+	event, err := s.EventRepo.GetById(notification.EntityId)
+	if err != nil {
+		s.Logger.Printf("Cannot get event invite: %s", err)
+		return err
+	}
+
+	// check if event invite has been processed
+	attendees, err := s.EventAttendanceRepo.GetAttendeesByEventId(event.Id)
+	if err != nil {
+		s.Logger.Printf("Cannot get event attendees: %s", err)
+		return err
+	}
+
+	for _, attendee := range attendees {
+		if attendee.UserId == notification.ReceiverId {
+			return errors.New("event invite already processed")
+		}
+	}
+
+	// update event invite
+	eventAttendance := &models.EventAttendance{
+		UserId:      notification.ReceiverId,
+		EventId:     event.Id,
+		IsAttending: accepted,
+	}
+	_, err = s.EventAttendanceRepo.Insert(eventAttendance)
+	if err != nil {
+		s.Logger.Printf("Cannot insert event attendance: %s", err)
+		return err
+	}
+
+	// update notification
+	notification.Reaction = true
+	err = s.NotificationRepository.Update(notification)
+	if err != nil {
+		s.Logger.Printf("Cannot update notification: %s", err)
+		return err
+	}
+
+	s.Logger.Printf("Event attendance and notification updated: %d", notification.EntityId)
 
 	return nil
 

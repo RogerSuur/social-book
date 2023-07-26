@@ -239,12 +239,12 @@ func (s *UserService) UserLogin(user *models.User) (string, error) {
 	}
 
 	// store session in DB
-	lastID, err := s.SessionRepo.Insert(&session)
+	_, err = s.SessionRepo.Insert(&session)
 	if err != nil {
 		s.Logger.Printf("Cannot create session: %s", err)
 		return "", errors.New("cannot create session")
 	}
-	s.Logger.Println("Last inserted ID:", lastID)
+	//s.Logger.Println("Last inserted ID:", lastID)
 	return sessionToken, nil
 }
 

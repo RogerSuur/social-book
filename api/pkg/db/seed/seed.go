@@ -267,15 +267,6 @@ func SeedGroups(repos *models.Repositories) {
 			logger.Printf("%+v\n", err)
 		}
 
-		_, err = repos.EventAttendanceRepo.Insert(&models.EventAttendance{
-			EventId:     invitation.EventId,
-			UserId:      invitation.UserId,
-			IsAttending: invitation.IsAttending,
-		})
-		if err != nil {
-			logger.Printf("%+v\n", err)
-		}
-
 		_, err = repos.NotificationRepo.Insert(&models.Notification{
 			ReceiverId:       invitation.UserId,
 			SenderId:         event.UserId,

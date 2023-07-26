@@ -97,7 +97,6 @@ func (s *PostService) CreateGroupPost(post *models.Post) error {
 }
 
 func (s *PostService) GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON, error) {
-	// fmt.Println("userId", userId)
 
 	if offset == 0 {
 		lastPostId, err := s.PostRepository.GetLastPostId()
@@ -129,7 +128,6 @@ func (s *PostService) GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON,
 			p.CreatedAt,
 		})
 	}
-	// fmt.Println("feedPosts:", feedPosts)
 
 	s.Logger.Printf("Retrived feed posts: %d", len(feedPosts))
 
@@ -137,7 +135,6 @@ func (s *PostService) GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON,
 }
 
 func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJSON, error) {
-	// fmt.Println("userId", userId)
 
 	if offset == 0 {
 		lastPostId, err := s.PostRepository.GetLastPostId()
@@ -167,7 +164,6 @@ func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJS
 			p.CreatedAt,
 		})
 	}
-	// fmt.Println("feedPosts:", feedPosts)
 
 	return feedPosts, nil
 }

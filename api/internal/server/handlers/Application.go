@@ -38,6 +38,7 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 		repositories.GroupRepo,
 		repositories.GroupMemberRepo,
 		repositories.EventRepo,
+		repositories.EventAttendanceRepo,
 	)
 
 	chatServices := services.InitChatService(
