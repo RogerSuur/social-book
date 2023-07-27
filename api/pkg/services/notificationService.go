@@ -75,6 +75,7 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 	NotificationJSON := []*models.NotificationJSON{}
 
 	for _, notification := range notifications {
+
 		singleNotification := &models.NotificationJSON{
 			ReceiverId:       userId,
 			NotificationType: notification.NotificationType,

@@ -183,7 +183,7 @@ func (repo NotificationRepository) GetByReceiverId(userId int64) ([]*Notificatio
 	query := `SELECT n.id, nd.sender_id, nt.name, nd.entity_id, n.seen_at, n.reaction FROM notifications n
 	JOIN notification_details nd ON n.notification_details_id = nd.id
 	JOIN notification_types nt ON nd.notification_type_id = nt.id
-	WHERE n.receiver_id = ?`
+	WHERE n.receiver_id = ? AND n.reaction IS NULL`
 
 	args := []interface{}{
 		userId,
