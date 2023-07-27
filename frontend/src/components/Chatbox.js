@@ -106,15 +106,17 @@ const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
       switch (msg.sender_id) {
         case user:
           return (
-            <p key={index} className="own-message">
-              {getTime(msg.timestamp)} {msg.body}
+            <p key={index} className="own-message" >
+               {msg.body}
+             <span className="own-time"> {getTime(msg.timestamp)}</span>
             </p>
+            
           );
         default:
           return (
             <p key={index} className="message">
-              {msg.group_id > 0 && msg.sender_name} {msg.body}{" "}
-              {getTime(msg.timestamp)}
+              {msg.group_id > 0 && msg.sender_name} {msg.body}
+              <span className="message-time">{getTime(msg.timestamp)}</span>
             </p>
           );
       }

@@ -7,7 +7,7 @@ const Modal = ({ text, children, open, onClose }) => (
       
   justifyContent: "center",
   alignItems: "center",
-  backgroundColor: "lightgray",
+  backgroundColor: "rgb(224, 224, 224)",
   marginTop: "15vh",
   overflow: "auto",
   maxHeight: "60vh",
