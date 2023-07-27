@@ -366,3 +366,46 @@ func (app *Application) UpdateGroupImage(rw http.ResponseWriter, r *http.Request
 	}
 
 }
+
+func (app *Application) GetMembersToAdd(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		vars := mux.Vars(r)
+		groupId := vars["groupId"]
+		groupIdInt, err := strconv.ParseInt(groupId, 10, 64)
+		if err != nil {
+			app.Logger.Printf("Cannot parse group ID: %s", err)
+			http.Error(rw, "Cannot parse group ID", http.StatusBadRequest)
+			return
+		}
+
+		userID, err := app.UserService.GetUserID(r)
+		if err != nil {
+			app.Logger.Printf("Cannot get user ID: %s", err)
+			http.Error(rw, "Cannot get user ID", http.StatusUnauthorized)
+			return
+		}
+
+		members, err := app.GroupMemberService.GetMembersToAdd(userID, groupIdInt)
+		if err != nil {
+			app.Logger.Printf("Cannot get members to add: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		rw.Header().Set("Content-Type", "application/json")
+		rw.WriteHeader(http.StatusOK)
+		jsonResp, err := json.Marshal(members)
+		if err != nil {
+			app.Logger.Printf("Cannot marshal JSON: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		rw.Write(jsonResp)
+
+	default:
+		http.Error(rw, "method is not supported", http.StatusNotFound)
+		return
+	}
+
+}

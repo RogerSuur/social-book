@@ -45,8 +45,8 @@ type IUserRepository interface {
 	GetByEmail(email string) (*User, error)
 	GetByUserName(userName string) (*User, error)
 	CheckIfNicknameExists(nickname string, id int64) error
-	GetAllUserFollowers(id int) ([]*User, error)
-	GetAllFollowedBy(id int) ([]*User, error)
+	GetAllUserFollowers(id int64) ([]*User, error)
+	GetAllFollowedBy(id int64) ([]*User, error)
 	UpdateImage(id int64, imagePath string) error
 }
 
@@ -159,7 +159,7 @@ func (repo UserRepository) CheckIfNicknameExists(nickname string, id int64) erro
 }
 
 // Return all user followers, who follow user with given id
-func (repo UserRepository) GetAllUserFollowers(id int) ([]*User, error) {
+func (repo UserRepository) GetAllUserFollowers(id int64) ([]*User, error) {
 	stmt := `SELECT users.id, users.forname, users.surname, users.email, users.password, birthday, nickname, about, image_path, created_at, is_public FROM users
 	 INNER JOIN followers f on f.follower_id = users.id AND f.following_id = ?`
 
@@ -190,7 +190,7 @@ func (repo UserRepository) GetAllUserFollowers(id int) ([]*User, error) {
 }
 
 // Return all followed users by user id
-func (repo UserRepository) GetAllFollowedBy(id int) ([]*User, error) {
+func (repo UserRepository) GetAllFollowedBy(id int64) ([]*User, error) {
 
 	stmt := `SELECT users.id, users.forname, users.surname, users.email, users.password, birthday, nickname, about, image_path, created_at, is_public FROM users
 	 INNER JOIN followers f on f.following_id = users.id AND f.follower_id = ?`

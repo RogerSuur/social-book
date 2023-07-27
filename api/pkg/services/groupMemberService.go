@@ -11,6 +11,7 @@ type IGroupMemberService interface {
 	GetGroupMembers(groupId int64) ([]*models.SimpleUserJSON, error)
 	IsGroupMember(groupId int64, userId int64) (bool, error)
 	AddMembers(userId int64, members models.GroupMemberJSON) (*models.GroupMemberJSON, error)
+	GetMembersToAdd(groupId int64, userId int64) ([]*models.SimpleUserJSON, error)
 }
 
 type GroupMemberService struct {
@@ -134,4 +135,79 @@ func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMember
 	}
 
 	return result, nil
+}
+
+func (s *GroupMemberService) GetMembersToAdd(groupId int64, userId int64) ([]*models.SimpleUserJSON, error) {
+
+	followers, err := s.UserRepository.GetAllUserFollowers(userId)
+
+	if err != nil {
+		s.Logger.Printf("Failed fetching user followers: %s", err)
+		return nil, err
+	}
+
+	simpleMembers := map[int64]*models.SimpleUserJSON{}
+
+	for _, follower := range followers {
+
+		isGroupMember, err := s.IsGroupMember(groupId, follower.Id)
+
+		if err != nil {
+			s.Logger.Printf("Cannot validate user: %s", err)
+			return nil, err
+		}
+
+		if isGroupMember {
+			continue
+		}
+
+		simpleMember := &models.SimpleUserJSON{
+			Id:        int(follower.Id),
+			Nickname:  follower.Nickname,
+			ImagePath: follower.ImagePath,
+		}
+
+		simpleMembers[follower.Id] = simpleMember
+	}
+
+	following, err := s.UserRepository.GetAllFollowedBy(userId)
+
+	if err != nil {
+		s.Logger.Printf("Failed fetching users following: %s", err)
+		return nil, err
+	}
+
+	for _, followed := range following {
+
+		if simpleMembers[followed.Id] != nil {
+			continue
+		}
+
+		isGroupMember, err := s.IsGroupMember(groupId, followed.Id)
+
+		if err != nil {
+			s.Logger.Printf("Cannot validate user: %s", err)
+			return nil, err
+		}
+
+		if isGroupMember {
+			continue
+		}
+
+		simpleMember := &models.SimpleUserJSON{
+			Id:        int(followed.Id),
+			Nickname:  followed.Nickname,
+			ImagePath: followed.ImagePath,
+		}
+
+		simpleMembers[followed.Id] = simpleMember
+	}
+
+	simpleMembersArray := make([]*models.SimpleUserJSON, 0, len(simpleMembers))
+
+	for _, simpleMember := range simpleMembers {
+		simpleMembersArray = append(simpleMembersArray, simpleMember)
+	}
+
+	return simpleMembersArray, nil
 }
