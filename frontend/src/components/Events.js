@@ -38,7 +38,7 @@ const Events = ({ groupId }) => {
       minute: "2-digit",
     });
 
-  const eventsDataMap = eventsData.map((event, index) => (
+  const eventsDataMap = eventsData?.map((event, index) => (
     <div key={index}>
       <Link to={`/event/${event.Id}`}>
         <h1>{event.Title}</h1>
