@@ -41,7 +41,7 @@ type IGroupRepository interface {
 	GetAllByMemberId(userId int64) ([]*Group, error)
 	GetById(id int64) (*Group, error)
 	Insert(group *Group) (int64, error)
-	SearchGroupsAndUsersByString(searchString string) ([]*SearchResult, error)
+	SearchGroupsAndUsersByString(userId int64, searchString string) ([]*SearchResult, error)
 	UpdateImagePath(groupId int64, imagePath string) error
 }
 
@@ -163,26 +163,24 @@ func (repo GroupRepository) GetAllByMemberId(userId int64) ([]*Group, error) {
 	return groups, nil
 }
 
-func (repo GroupRepository) SearchGroupsAndUsersByString(searchString string) ([]*SearchResult, error) {
+func (repo GroupRepository) SearchGroupsAndUsersByString(userId int64, searchString string) ([]*SearchResult, error) {
 
 	formattedSearchString := fmt.Sprintf("%%%s%%", searchString)
 
-	repo.Logger.Println(formattedSearchString)
+	//repo.Logger.Println(formattedSearchString)
 
 	stmt := `SELECT * FROM(SELECT 0 as UserId, g.Id as GroupId, g.Title as Name, g.image_path as ImagePath FROM groups g
 		UNION
 		SELECT u.Id as UserId, 0 as GroupId, u.nickname as Name, u.image_path as ImagePath FROM users u)
-	WHERE Name LIKE ?`
+	WHERE Name LIKE ? AND UserId != ?`
 
-	rows, err := repo.DB.Query(stmt, formattedSearchString)
+	rows, err := repo.DB.Query(stmt, formattedSearchString, userId)
 
 	if err != nil {
 		return nil, err
 	}
 
 	defer rows.Close()
-
-	repo.Logger.Println()
 
 	groups := []*SearchResult{}
 
