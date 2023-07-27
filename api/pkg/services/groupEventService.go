@@ -136,7 +136,7 @@ func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFo
 
 	for _, member := range groupMembers {
 		notification := &models.Notification{
-			ReceiverId:       member.Id,
+			ReceiverId:       member.UserId,
 			SenderId:         userId,
 			EntityId:         result,
 			NotificationType: "group_events",
@@ -154,7 +154,7 @@ func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFo
 		// broadcast notification to all users
 
 		notificationJSON := &models.NotificationJSON{
-			ReceiverId:       member.Id,
+			ReceiverId:       member.UserId,
 			NotificationType: "event_invite",
 			NotificationId:   notificationId,
 			SenderId:         userId,

@@ -15,12 +15,17 @@ type IGroupMemberService interface {
 
 type GroupMemberService struct {
 	Logger                *log.Logger
+	UserRepository        models.IUserRepository
 	GroupMemberRepository models.IGroupMemberRepository
 }
 
-func InitGroupMemberService(logger *log.Logger, groupMemberRepo *models.GroupMemberRepository) *GroupMemberService {
+func InitGroupMemberService(
+	logger *log.Logger,
+	userRepo *models.UserRepository,
+	groupMemberRepo *models.GroupMemberRepository) *GroupMemberService {
 	return &GroupMemberService{
 		Logger:                logger,
+		UserRepository:        userRepo,
 		GroupMemberRepository: groupMemberRepo,
 	}
 }
@@ -38,18 +43,25 @@ func (s *GroupMemberService) GetGroupMembers(groupId int64) ([]*models.SimpleUse
 
 	for _, member := range members {
 
-		if member == nil {
+		if member.JoinedAt == (time.Time{}) {
 			continue
 		}
 
-		if member.Nickname == "" {
-			member.Nickname = member.FirstName + " " + member.LastName
+		userData, err := s.UserRepository.GetById(member.UserId)
+
+		if err != nil {
+			s.Logger.Printf("Failed fetching user data: %s", err)
+			return nil, err
+		}
+
+		if userData.Nickname == "" {
+			userData.Nickname = userData.FirstName + " " + userData.LastName
 		}
 
 		simpleMember := &models.SimpleUserJSON{
-			Id:        int(member.Id),
-			Nickname:  member.Nickname,
-			ImagePath: member.ImagePath,
+			Id:        int(member.UserId),
+			Nickname:  userData.Nickname,
+			ImagePath: userData.ImagePath,
 		}
 
 		simpleMembers = append(simpleMembers, simpleMember)

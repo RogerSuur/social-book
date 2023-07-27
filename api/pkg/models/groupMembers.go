@@ -22,7 +22,7 @@ type IGroupMemberRepository interface {
 	Insert(groupMember *GroupMember) (int64, error)
 	Update(groupMember *GroupMember) error
 	Delete(groupMember *GroupMember) error
-	GetGroupMembersByGroupId(groupId int64) ([]*User, error)
+	GetGroupMembersByGroupId(groupId int64) ([]*GroupMember, error)
 	IsGroupMember(group_id int64, userId int64) (bool, error)
 	GetById(id int64) (*GroupMember, error)
 }
@@ -105,10 +105,8 @@ func (repo GroupMemberRepository) Delete(groupMember *GroupMember) error {
 	return nil
 }
 
-func (repo GroupMemberRepository) GetGroupMembersByGroupId(groupId int64) ([]*User, error) {
-	query := `SELECT ug.user_id, u.forname, u.surname, u.nickname, u.image_path FROM user_groups ug
-	LEFT JOIN users u ON
-	u.id = ug.user_id
+func (repo GroupMemberRepository) GetGroupMembersByGroupId(groupId int64) ([]*GroupMember, error) {
+	query := `SELECT user_id, joined_at FROM user_groups
 	WHERE group_id = ?`
 
 	// INNER JOIN user_groups ug ON
@@ -120,12 +118,12 @@ func (repo GroupMemberRepository) GetGroupMembersByGroupId(groupId int64) ([]*Us
 
 	defer rows.Close()
 
-	groupMembers := []*User{}
+	groupMembers := []*GroupMember{}
 
 	for rows.Next() {
-		groupMember := &User{}
+		groupMember := &GroupMember{}
 
-		err := rows.Scan(&groupMember.Id, &groupMember.FirstName, &groupMember.LastName, &groupMember.Nickname, &groupMember.ImagePath)
+		err := rows.Scan(&groupMember.UserId, &groupMember.JoinedAt)
 		if err != nil {
 			return nil, err
 		}
