@@ -251,7 +251,7 @@ func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) 
 		s.Logger.Printf("Sender not found: %s", err)
 		return -1, err
 	}
-	_, err = s.GroupRepo.GetById(groupId)
+	groupData, err := s.GroupRepo.GetById(groupId)
 	if err != nil {
 		s.Logger.Printf("Group not found: %s", err)
 		return -1, err
@@ -283,7 +283,7 @@ func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) 
 
 	// create notification
 	notification := models.Notification{
-		ReceiverId:       groupId,
+		ReceiverId:       groupData.CreatorId,
 		NotificationType: "group_request",
 		SenderId:         senderId,
 		EntityId:         lastID,
