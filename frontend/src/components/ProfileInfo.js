@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useOutletContext } from "react-router-dom";
+import { useParams, useOutletContext, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import { PROFILE_URL } from "../utils/routes";
@@ -10,16 +10,28 @@ const ProfileInfo = () => {
   const { id } = useParams();
   const { socketUrl } = useOutletContext();
   const { sendJsonMessage } = useWebSocketConnection(socketUrl);
+  const [errMsg, setErrMsg] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadUser = async () => {
-      await axios
-        .get(PROFILE_URL + id, {
-          withCredentials: true,
-        })
-        .then((response) => {
-          setUser(response.data.user);
-        });
+      try {
+        await axios
+          .get(PROFILE_URL + id, {
+            withCredentials: true,
+          })
+          .then((response) => {
+            setUser(response.data.user);
+          });
+      } catch (err) {
+        if (!err?.response) {
+          setErrMsg("No Server Response");
+        } else if (err.response?.status === 203) {
+          navigate("/profile", { replace: true });
+        } else {
+          setErrMsg("Internal Server Error");
+        }
+      }
     };
     loadUser();
   }, [id]);

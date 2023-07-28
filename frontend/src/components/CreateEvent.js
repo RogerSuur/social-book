@@ -10,7 +10,7 @@ const CreateEvent = ({ onEventCreated, id }) => {
     description: "",
     startTime: "",
     endTime: "",
-    group_id: id,
+    group_id: +id,
   });
 
   const openModal = () => {
@@ -75,7 +75,7 @@ const CreateEvent = ({ onEventCreated, id }) => {
             Description:
             <label>
               <textarea
-              className="text-big"
+                className="text-big"
                 name="description"
                 value={createEventForm.description}
                 onChange={handleChange}
@@ -83,7 +83,7 @@ const CreateEvent = ({ onEventCreated, id }) => {
               ></textarea>
             </label>
             <br />
-              Start Time:
+            Start Time:
             <label>
               <input
                 type="datetime-local"
@@ -105,7 +105,9 @@ const CreateEvent = ({ onEventCreated, id }) => {
               />
             </label>
             <br />
-            <button className="create-but" type="submit">Create</button>
+            <button className="create-but" type="submit">
+              Create
+            </button>
           </form>
         </Modal>
       </div>
