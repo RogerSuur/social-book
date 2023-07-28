@@ -42,6 +42,7 @@ const CreateGroupPost = ({ groupId, onPostsUpdate }) => {
       onPostsUpdate();
     } catch (err) {
       if (!err?.response) {
+        console.log("ERROR: ", err);
         setErrMsg("No Server Response");
       } else {
         setErrMsg("Internal Server Error");

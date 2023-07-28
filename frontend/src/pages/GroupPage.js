@@ -11,6 +11,7 @@ import Modal from "../components/Modal";
 import AvatarUpdater from "../components/AvatarUpdater";
 import Events from "../components/Events";
 import GroupRequestButton from "../components/GroupRequestButton.js";
+import CreateGroupPosts from "../components/CreateGroupPosts";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -124,11 +125,7 @@ const GroupPage = () => {
                   </>
                 )}
               </div>
-              <GroupMembers
-                groupId={+id}
-                members={members}
-                setMembers={setMembers}
-              />
+              <GroupMembers groupId={+id} />
               <div className="profile-actions">
                 <Modal open={modalOpen} onClose={handleModalClose}>
                   <AvatarUpdater
@@ -139,7 +136,7 @@ const GroupPage = () => {
                 <button onClick={handleModalClick}>Upload New Image</button>
               </div>
               <Posts
-                forGroupPage={true}
+                groupId={+id}
                 showGroupSidebar={false}
                 showCreatePost={true}
                 url={`/groupfeed/${id}`}

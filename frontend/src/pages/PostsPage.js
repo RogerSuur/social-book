@@ -6,7 +6,7 @@ import { makeRequest } from "../services/makeRequest";
 import GroupSidebar from "../components/GroupSidebar";
 import CreateGroupPosts from "../components/CreateGroupPosts";
 
-const Posts = ({ groupId, showGroupSidebar, showCreatePost, url }) => {
+const Posts = ({ groupId, showGroupSidebar, showCreatePost, url, reload }) => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -44,7 +44,9 @@ const Posts = ({ groupId, showGroupSidebar, showCreatePost, url }) => {
     return () => {
       abortController.abort();
     };
-  }, [offset, loadMore]);
+  }, [offset, loadMore, reload]);
+
+  console.log("GROUP ID: ", groupId);
 
   return (
     <>
