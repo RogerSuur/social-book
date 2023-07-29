@@ -9,13 +9,15 @@ import (
 
 type INotificationService interface {
 	GetById(notificationId int64) (*models.Notification, error)
+	GetDetailsById(notificationId int64) (*models.NotificationDetails, error)
 	GetUserNotifications(userId int64) ([]*models.NotificationJSON, error)
 	CreateFollowRequest(followerId int64, followingId int64) (int64, bool, error)
 	HandleFollowRequest(notificationId int64, accepted bool) error
 	CreateGroupRequest(senderId int64, groupId int64) (int64, error)
-	HandleGroupInvite(notificationID int64, accepted bool) error
 	HandleGroupRequest(creatorID int64, notificationID int64, accepted bool) error
 	HandleEventInvite(notificationID int64, accepted bool) error
+	CreateGroupInvite(creatorId int64, groupId int64, membersToAdd []int64) (int64, error)
+	HandleGroupInvite(notificationID int64, accepted bool) error
 }
 
 type NotificationService struct {
@@ -64,6 +66,19 @@ func (s *NotificationService) GetById(notificationId int64) (*models.Notificatio
 	return notification, nil
 }
 
+func (s *NotificationService) GetDetailsById(notificationId int64) (*models.NotificationDetails, error) {
+
+	notificationDetails, err := s.NotificationRepository.GetDetailsById(notificationId)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification details: %s", err)
+		return nil, err
+	}
+
+	s.Logger.Printf("Notification details returned: %d", notificationDetails.Id)
+
+	return notificationDetails, nil
+}
+
 func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.NotificationJSON, error) {
 
 	notifications, err := s.NotificationRepository.GetByReceiverId(userId)
@@ -76,13 +91,23 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 
 	for _, notification := range notifications {
 
+		if notification.Reaction {
+			continue
+		}
+
+		notificationDetails, err := s.NotificationRepository.GetDetailsById(notification.NotificationDetailsId)
+		if err != nil {
+			s.Logger.Printf("Cannot get notification details: %s", err)
+			return nil, err
+		}
+
 		singleNotification := &models.NotificationJSON{
 			ReceiverId:       userId,
-			NotificationType: notification.NotificationType,
+			NotificationType: notificationDetails.NotificationType,
 			NotificationId:   notification.Id,
-			SenderId:         notification.SenderId,
+			SenderId:         notificationDetails.SenderId,
 		}
-		sender, err := s.UserRepo.GetById(notification.SenderId)
+		sender, err := s.UserRepo.GetById(notificationDetails.SenderId)
 		if err != nil {
 			s.Logger.Printf("Cannot get sender: %s", err)
 			return nil, err
@@ -93,8 +118,8 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 			singleNotification.SenderName = sender.Nickname
 		}
 
-		if notification.NotificationType == "group_invite" || notification.NotificationType == "event_invite" {
-			group, err := s.GroupRepo.GetById(notification.EntityId)
+		if notificationDetails.NotificationType == "group_invite" || notificationDetails.NotificationType == "event_invite" {
+			group, err := s.GroupRepo.GetById(notificationDetails.EntityId)
 			if err != nil {
 				s.Logger.Printf("Cannot get group: %s", err)
 				return nil, err
@@ -103,8 +128,8 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 			singleNotification.GroupName = group.Title
 		}
 
-		if notification.NotificationType == "group_request" {
-			member, err := s.GroupMemberRepo.GetById(notification.EntityId)
+		if notificationDetails.NotificationType == "group_request" {
+			member, err := s.GroupMemberRepo.GetById(notificationDetails.EntityId)
 
 			if err != nil {
 				s.Logger.Printf("Cannot get group member: %s", err)
@@ -120,9 +145,9 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 			singleNotification.GroupName = group.Title
 		}
 
-		if notification.NotificationType == "event_invite" {
-			s.Logger.Printf("Getting event: %d", notification.EntityId)
-			event, err := s.EventRepo.GetById(notification.EntityId)
+		if notificationDetails.NotificationType == "event_invite" {
+			//s.Logger.Printf("Getting event: %d", notificationDetails.EntityId)
+			event, err := s.EventRepo.GetById(notificationDetails.EntityId)
 			if err != nil {
 				s.Logger.Printf("Cannot get event: %s", err)
 				return nil, err
@@ -178,16 +203,26 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 	s.Logger.Printf("Follow request created: %d", lastID)
 
 	// create notification
-	notification := models.Notification{
-		ReceiverId:       followingId,
-		NotificationType: "follow_request",
+
+	notificationDetails := models.NotificationDetails{
 		SenderId:         followerId,
+		NotificationType: "follow_request",
 		EntityId:         lastID,
 		CreatedAt:        time.Now(),
-		Reaction:         false,
 	}
 
-	notificationId, err := s.NotificationRepository.Insert(&notification)
+	notificationDetailsId, err := s.NotificationRepository.InsertDetails(&notificationDetails)
+	if err != nil {
+		return -1, false, err
+	}
+
+	notification := models.Notification{
+		ReceiverId:            followingId,
+		NotificationDetailsId: notificationDetailsId,
+		Reaction:              false,
+	}
+
+	notificationId, err := s.NotificationRepository.InsertNotification(&notification)
 	if err != nil {
 		return -1, false, err
 	}
@@ -203,13 +238,19 @@ func (s *NotificationService) HandleFollowRequest(notificationId int64, accepted
 		return err
 	}
 
+	notificationDetails, err := s.NotificationRepository.GetDetailsById(notification.NotificationDetailsId)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification details: %s", err)
+		return err
+	}
+
 	// check if follow request already handled
 	if notification.Reaction {
 		return errors.New("follow request already handled")
 	}
 
 	// check if follow request exists
-	follower, err := s.FollowerRepo.GetById(notification.EntityId)
+	follower, err := s.FollowerRepo.GetById(notificationDetails.EntityId)
 	if err != nil {
 		s.Logger.Printf("Cannot get follow request: %s", err)
 		return err
@@ -268,9 +309,8 @@ func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) 
 
 	// add member to group with joined at Zero
 	groupMember := &models.GroupMember{
-		UserId:   senderId,
-		GroupId:  groupId,
-		JoinedAt: time.Time{},
+		UserId:  senderId,
+		GroupId: groupId,
 	}
 
 	lastID, err := s.GroupMemberRepo.Insert(groupMember)
@@ -282,76 +322,31 @@ func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) 
 	s.Logger.Printf("Member added: %d", lastID)
 
 	// create notification
-	notification := models.Notification{
-		ReceiverId:       groupData.CreatorId,
-		NotificationType: "group_request",
+
+	notifcationDetails := models.NotificationDetails{
 		SenderId:         senderId,
+		NotificationType: "group_request",
 		EntityId:         lastID,
 		CreatedAt:        time.Now(),
-		Reaction:         false,
 	}
 
-	notificationId, err := s.NotificationRepository.Insert(&notification)
+	notifcationDetailsId, err := s.NotificationRepository.InsertDetails(&notifcationDetails)
+	if err != nil {
+		return -1, err
+	}
+
+	notification := models.Notification{
+		ReceiverId:            groupData.CreatorId,
+		NotificationDetailsId: notifcationDetailsId,
+		Reaction:              false,
+	}
+
+	notificationId, err := s.NotificationRepository.InsertNotification(&notification)
 	if err != nil {
 		return -1, err
 	}
 
 	return notificationId, nil
-}
-
-func (s *NotificationService) HandleGroupInvite(notificationID int64, accepted bool) error {
-	notification, err := s.NotificationRepository.GetById(notificationID)
-	if err != nil {
-		s.Logger.Printf("Cannot get notification: %s", err)
-		return err
-	}
-
-	// check if group invite already handled
-	if notification.Reaction {
-		return errors.New("group invite already handled")
-	}
-
-	// check if group invite exists
-	groupMember, err := s.GroupMemberRepo.GetById(notification.EntityId)
-	if err != nil {
-		s.Logger.Printf("Cannot get group invite: %s", err)
-		return err
-	}
-
-	// check if group invite is accepted
-	if groupMember.JoinedAt != (time.Time{}) {
-		return errors.New("group invite already accepted")
-	}
-
-	// update group invite
-	if accepted {
-		groupMember.JoinedAt = time.Now()
-		err = s.GroupMemberRepo.Update(groupMember)
-		if err != nil {
-			s.Logger.Printf("Cannot update group invite: %s", err)
-			return err
-		}
-	} else {
-		err = s.GroupMemberRepo.Delete(groupMember)
-		if err != nil {
-			s.Logger.Printf("Cannot delete group invite: %s", err)
-			return err
-		}
-	}
-
-	s.Logger.Printf("Group invite updated: %d", notification.EntityId)
-
-	// update notification
-	notification.Reaction = true
-	err = s.NotificationRepository.Update(notification)
-	if err != nil {
-		s.Logger.Printf("Cannot update notification: %s", err)
-		return err
-	}
-
-	s.Logger.Printf("Notification updated: %d", notification.Id)
-
-	return nil
 }
 
 func (s *NotificationService) HandleGroupRequest(creatorID int64, notificationID int64, accepted bool) error {
@@ -367,8 +362,14 @@ func (s *NotificationService) HandleGroupRequest(creatorID int64, notificationID
 		return errors.New("group request already handled")
 	}
 
+	notificationDetails, err := s.NotificationRepository.GetDetailsById(notification.NotificationDetailsId)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification details: %s", err)
+		return err
+	}
+
 	// check if group request exists
-	groupMember, err := s.GroupMemberRepo.GetById(notification.EntityId)
+	groupMember, err := s.GroupMemberRepo.GetById(notificationDetails.EntityId)
 	if err != nil {
 		s.Logger.Printf("Cannot get group request: %s", err)
 		return err
@@ -406,7 +407,7 @@ func (s *NotificationService) HandleGroupRequest(creatorID int64, notificationID
 		}
 	}
 
-	s.Logger.Printf("Group request updated: %d", notification.EntityId)
+	s.Logger.Printf("Group request updated: %d", notificationDetails.EntityId)
 
 	// update notification
 	notification.Reaction = true
@@ -435,8 +436,14 @@ func (s *NotificationService) HandleEventInvite(notificationID int64, accepted b
 		return errors.New("event invite already handled")
 	}
 
+	notificationDetails, err := s.NotificationRepository.GetDetailsById(notification.NotificationDetailsId)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification details: %s", err)
+		return err
+	}
+
 	// check if event exists
-	event, err := s.EventRepo.GetById(notification.EntityId)
+	event, err := s.EventRepo.GetById(notificationDetails.EntityId)
 	if err != nil {
 		s.Logger.Printf("Cannot get event invite: %s", err)
 		return err
@@ -475,8 +482,92 @@ func (s *NotificationService) HandleEventInvite(notificationID int64, accepted b
 		return err
 	}
 
-	s.Logger.Printf("Event attendance and notification updated: %d", notification.EntityId)
+	s.Logger.Printf("Event attendance and notification updated: %d", notificationDetails.EntityId)
 
 	return nil
 
+}
+
+func (s *NotificationService) CreateGroupInvite(creatorId int64, groupId int64, membersToAdd []int64) (int64, error) {
+
+	// check if user is creator of group
+	group, err := s.GroupRepo.GetById(groupId)
+	if err != nil {
+		s.Logger.Printf("Cannot get group: %s", err)
+		return -1, err
+	}
+
+	if group.CreatorId != creatorId {
+		return -1, errors.New("user is not creator of group")
+	}
+
+	// create notification
+	for _, memberToAdd := range membersToAdd {
+		s.Logger.Printf("Member to add: %d", memberToAdd)
+		// TODO
+	}
+
+	return -1, nil
+
+}
+
+func (s *NotificationService) HandleGroupInvite(notificationID int64, accepted bool) error {
+	notification, err := s.NotificationRepository.GetById(notificationID)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification: %s", err)
+		return err
+	}
+
+	// check if group invite already handled
+	if notification.Reaction {
+		return errors.New("group invite already handled")
+	}
+
+	notificationDetails, err := s.NotificationRepository.GetDetailsById(notification.NotificationDetailsId)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification details: %s", err)
+		return err
+	}
+
+	// check if group invite exists
+	groupMember, err := s.GroupMemberRepo.GetById(notificationDetails.EntityId)
+	if err != nil {
+		s.Logger.Printf("Cannot get group invite: %s", err)
+		return err
+	}
+
+	// check if group invite is accepted
+	if groupMember.JoinedAt != (time.Time{}) {
+		return errors.New("group invite already accepted")
+	}
+
+	// update group invite
+	if accepted {
+		groupMember.JoinedAt = time.Now()
+		err = s.GroupMemberRepo.Update(groupMember)
+		if err != nil {
+			s.Logger.Printf("Cannot update group invite: %s", err)
+			return err
+		}
+	} else {
+		err = s.GroupMemberRepo.Delete(groupMember)
+		if err != nil {
+			s.Logger.Printf("Cannot delete group invite: %s", err)
+			return err
+		}
+	}
+
+	s.Logger.Printf("Group invite updated: %d", notificationDetails.EntityId)
+
+	// update notification
+	notification.Reaction = true
+	err = s.NotificationRepository.Update(notification)
+	if err != nil {
+		s.Logger.Printf("Cannot update notification: %s", err)
+		return err
+	}
+
+	s.Logger.Printf("Notification updated: %d", notification.Id)
+
+	return nil
 }

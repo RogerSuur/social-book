@@ -96,7 +96,7 @@ func _000001_users_followersDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000001_users_followers.down.sql", size: 63, mode: os.FileMode(420), modTime: time.Unix(1680720125, 0)}
+	info := bindataFileInfo{name: "000001_users_followers.down.sql", size: 63, mode: os.FileMode(420), modTime: time.Unix(1681132613, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -116,7 +116,7 @@ func _000001_users_followersUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000001_users_followers.up.sql", size: 778, mode: os.FileMode(420), modTime: time.Unix(1681673427, 0)}
+	info := bindataFileInfo{name: "000001_users_followers.up.sql", size: 778, mode: os.FileMode(420), modTime: time.Unix(1681480972, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -136,7 +136,7 @@ func _000002_posts_commentsDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000002_posts_comments.down.sql", size: 142, mode: os.FileMode(420), modTime: time.Unix(1680720229, 0)}
+	info := bindataFileInfo{name: "000002_posts_comments.down.sql", size: 142, mode: os.FileMode(420), modTime: time.Unix(1681132613, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -156,7 +156,7 @@ func _000002_posts_commentsUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000002_posts_comments.up.sql", size: 1075, mode: os.FileMode(420), modTime: time.Unix(1688555718, 0)}
+	info := bindataFileInfo{name: "000002_posts_comments.up.sql", size: 1075, mode: os.FileMode(420), modTime: time.Unix(1688552646, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -176,12 +176,12 @@ func _000003_groups_eventsDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000003_groups_events.down.sql", size: 148, mode: os.FileMode(420), modTime: time.Unix(1680720288, 0)}
+	info := bindataFileInfo{name: "000003_groups_events.down.sql", size: 148, mode: os.FileMode(420), modTime: time.Unix(1681132613, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-var __000003_groups_eventsUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xcc\x92\xcd\x4e\xc3\x30\x10\x84\xcf\xf6\x53\xec\xb1\x91\xfa\x06\x9c\xd2\xb2\xa9\x2c\xd2\x04\x39\x46\x6a\x4f\x51\x94\xac\x2a\x23\x70\xa2\xd8\xe5\xf9\x51\xfe\x20\x85\xd4\x54\x70\xe1\xea\xd9\x99\xd1\xb7\xde\xad\xc4\x50\x21\xa8\x70\x13\x23\x88\x08\x92\x54\x01\x1e\x44\xa6\x32\x38\xb5\xf5\xb9\xb1\x2b\xce\x74\x05\x22\x51\xb8\x43\x09\x8f\x52\xec\x43\x79\x84\x07\x3c\xae\x39\x2b\x5b\x2a\x5c\xdd\xe6\xb3\x81\xce\x9f\x3c\xc5\xf1\x9a\x33\xa7\xdd\x0b\x81\xc2\x83\x9a\xbf\x56\x64\xcb\x56\x37\x4e\xd7\xa6\xd7\xa6\x18\xaa\xf2\xc2\xc1\x7d\xa8\x50\x89\x3d\xce\x1d\x2c\x4a\x25\x8a\x5d\xd2\x95\xc2\xea\xb3\x33\xe0\x8c\x31\x89\x11\x4a\x4c\xb6\x98\xc1\xd9\x52\x6b\x57\xdd\x7b\x70\xc7\xb9\x07\xac\x1b\xcc\x07\x3a\xf0\xe1\xf5\x73\xcb\x6c\xbd\xfb\x8a\xf6\x5c\x6b\x73\x9d\xe6\x02\x66\x6c\x08\x80\x7f\x27\x81\x1e\xe5\x72\x7e\xaa\xfd\x6a\x98\x60\x6e\x80\x1f\x22\xe8\x8d\x8c\xf3\xd3\xfb\x10\x3d\x9b\xf9\xe1\x33\xfb\xe2\xdc\xe9\x57\x5a\x94\x3b\xc1\x36\x85\x99\x92\x6f\x3e\xa3\x7f\xba\xe2\xbc\x70\x8e\x4c\x55\x98\x92\x7e\x7b\x6a\x43\xce\xb2\xa6\xed\x58\xa0\xcd\x09\x36\x69\xfa\x67\xfa\xa9\x6c\x91\xfe\xe3\x6a\xc6\x1d\xbc\x07\x00\x00\xff\xff\x7d\x05\xe7\x30\x3c\x04\x00\x00")
+var __000003_groups_eventsUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xcc\x92\xc1\x6e\x83\x30\x10\x44\xcf\xf6\x57\xec\x31\x91\xf2\x07\x3d\x91\x74\x13\x59\x25\x50\x19\x57\x4a\x4e\xc8\x82\x55\xe4\xaa\x35\x08\x3b\xfd\xfe\x0a\x03\x2d\x69\x09\x8d\xda\x4b\xaf\x9e\xdd\x1d\xde\x30\x1b\x89\x91\x42\x50\xd1\x3a\x46\x10\x5b\x48\x52\x05\x78\x10\x99\xca\xe0\xd4\x54\xe7\xda\x2d\x38\x33\x25\x88\x44\xe1\x0e\x25\x3c\x4a\xb1\x8f\xe4\x11\x1e\xf0\xb8\xe2\xac\x68\x48\xfb\xaa\xc9\x47\x03\xed\x7e\xf2\x14\xc7\x2b\xce\xbc\xf1\x2f\x04\x0a\x0f\x6a\xfc\x5a\x92\x2b\x1a\x53\x7b\x53\xd9\xa0\x0d\x67\xa8\xcc\xb5\x87\xfb\x48\xa1\x12\x7b\x1c\x6f\xb0\x6d\x2a\x51\xec\x92\xd6\x14\x16\x9f\x9e\x4b\xce\x18\x93\xb8\x45\x89\xc9\x06\x33\x38\x3b\x6a\xdc\xa2\x7d\x5f\xde\x71\x3e\x03\xd6\x0e\xe6\x1d\x1d\xcc\xe1\x85\xb9\x69\xb6\xb0\x7d\x45\x7b\xae\x8c\xbd\x4e\xa3\x8b\x82\x6a\x4f\x25\xac\xd3\x34\x1e\x0b\x17\x94\xbd\xf5\x12\xf8\x77\x44\x08\x8c\x97\xf3\xc3\xf7\x7c\x5d\x18\x28\x6f\x48\xa5\x3b\x41\x6f\x64\xfd\x7c\x2c\x73\xec\x33\x91\xfd\xf0\x97\x83\x71\xee\xcd\x2b\x4d\xca\xad\xe0\x6a\x6d\x87\xcb\x37\xf7\xeb\x9f\x46\x9c\x6b\xef\xc9\x96\xda\x16\xf4\xdb\x0e\x76\x77\xa6\x35\xe3\x7a\x03\x63\x4f\xa1\x69\x7f\xa5\x1f\xcc\x26\xe9\x3f\x5a\xd3\x67\xf0\x1e\x00\x00\xff\xff\x39\x7b\xab\x95\x55\x04\x00\x00")
 
 func _000003_groups_eventsUpSqlBytes() ([]byte, error) {
 	return bindataRead(
@@ -196,7 +196,7 @@ func _000003_groups_eventsUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000003_groups_events.up.sql", size: 1084, mode: os.FileMode(420), modTime: time.Unix(1685890554, 0)}
+	info := bindataFileInfo{name: "000003_groups_events.up.sql", size: 1109, mode: os.FileMode(420), modTime: time.Unix(1690618389, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -216,7 +216,7 @@ func _000004_messagesDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000004_messages.down.sql", size: 32, mode: os.FileMode(420), modTime: time.Unix(1680720283, 0)}
+	info := bindataFileInfo{name: "000004_messages.down.sql", size: 32, mode: os.FileMode(420), modTime: time.Unix(1681132613, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -236,7 +236,7 @@ func _000004_messagesUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000004_messages.up.sql", size: 377, mode: os.FileMode(420), modTime: time.Unix(1688675348, 0)}
+	info := bindataFileInfo{name: "000004_messages.up.sql", size: 377, mode: os.FileMode(420), modTime: time.Unix(1688932007, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -256,7 +256,7 @@ func _000005_notificationsDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000005_notifications.down.sql", size: 122, mode: os.FileMode(420), modTime: time.Unix(1680720295, 0)}
+	info := bindataFileInfo{name: "000005_notifications.down.sql", size: 122, mode: os.FileMode(420), modTime: time.Unix(1681132613, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -276,7 +276,7 @@ func _000005_notificationsUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000005_notifications.up.sql", size: 984, mode: os.FileMode(420), modTime: time.Unix(1689502320, 0)}
+	info := bindataFileInfo{name: "000005_notifications.up.sql", size: 984, mode: os.FileMode(420), modTime: time.Unix(1688985613, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -296,7 +296,7 @@ func _000006_alter_posts_followers_groupsDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000006_alter_posts_followers_groups.down.sql", size: 167, mode: os.FileMode(420), modTime: time.Unix(1688555718, 0)}
+	info := bindataFileInfo{name: "000006_alter_posts_followers_groups.down.sql", size: 167, mode: os.FileMode(420), modTime: time.Unix(1688552646, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -316,7 +316,7 @@ func _000006_alter_posts_followers_groupsUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000006_alter_posts_followers_groups.up.sql", size: 201, mode: os.FileMode(420), modTime: time.Unix(1688555718, 0)}
+	info := bindataFileInfo{name: "000006_alter_posts_followers_groups.up.sql", size: 201, mode: os.FileMode(420), modTime: time.Unix(1688552646, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -336,7 +336,7 @@ func _000007_update_eventsDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000007_update_events.down.sql", size: 110, mode: os.FileMode(420), modTime: time.Unix(1689514740, 0)}
+	info := bindataFileInfo{name: "000007_update_events.down.sql", size: 110, mode: os.FileMode(420), modTime: time.Unix(1690302110, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -356,7 +356,7 @@ func _000007_update_eventsUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000007_update_events.up.sql", size: 118, mode: os.FileMode(420), modTime: time.Unix(1689514834, 0)}
+	info := bindataFileInfo{name: "000007_update_events.up.sql", size: 118, mode: os.FileMode(420), modTime: time.Unix(1690302110, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

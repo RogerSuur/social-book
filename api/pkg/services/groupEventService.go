@@ -134,18 +134,28 @@ func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFo
 
 	notificationsToBroadcast := []*models.NotificationJSON{}
 
+	notificationDetails := &models.NotificationDetails{
+		SenderId:         userId,
+		NotificationType: "event_invite",
+		EntityId:         result,
+		CreatedAt:        time.Now(),
+	}
+
+	detailsId, err := s.NotificationRepository.InsertDetails(notificationDetails)
+
+	if err != nil {
+		s.Logger.Printf("Failed inserting notification details: %s", err)
+	}
+
 	for _, member := range groupMembers {
 		notification := &models.Notification{
-			ReceiverId:       member.UserId,
-			SenderId:         userId,
-			EntityId:         result,
-			NotificationType: "group_events",
-			CreatedAt:        time.Now(),
+			ReceiverId:            member.UserId,
+			NotificationDetailsId: detailsId,
 		}
 
 		// should be added to group event attendance as false?
 
-		notificationId, err := s.NotificationRepository.Insert(notification)
+		notificationId, err := s.NotificationRepository.InsertNotification(notification)
 
 		if err != nil {
 			s.Logger.Printf("Failed inserting notification: %s", err)
@@ -155,7 +165,7 @@ func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFo
 
 		notificationJSON := &models.NotificationJSON{
 			ReceiverId:       member.UserId,
-			NotificationType: "event_invite",
+			NotificationType: notificationDetails.NotificationType,
 			NotificationId:   notificationId,
 			SenderId:         userId,
 			SenderName:       userData.Nickname,
@@ -163,10 +173,10 @@ func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFo
 			GroupName:        groupData.Title,
 			EventId:          result,
 			EventName:        formData.Title,
-			// EventDate:        formData.EventTime,
+			EventDate:        sTime,
 		}
 
-		s.Logger.Printf("Broadcasting notification: %v", notificationJSON)
+		//s.Logger.Printf("Broadcasting notification: %v", notificationJSON)
 
 		notificationsToBroadcast = append(notificationsToBroadcast, notificationJSON)
 
@@ -204,20 +214,33 @@ func (s *GroupEventService) InviteUser(userId int64, eventId int64) error {
 		return err
 	}
 
-	notification := &models.Notification{
-		ReceiverId:       userId,
+	notificationDetails := &models.NotificationDetails{
 		SenderId:         event.UserId,
-		EntityId:         eventId,
 		NotificationType: "event_invite",
+		EntityId:         eventId,
 		CreatedAt:        time.Now(),
 	}
 
-	_, err = s.NotificationRepository.Insert(notification)
+	detailsId, err := s.NotificationRepository.InsertDetails(notificationDetails)
+
+	if err != nil {
+		s.Logger.Printf("Failed inserting notification details: %s", err)
+		return err
+	}
+
+	notification := &models.Notification{
+		ReceiverId:            userId,
+		NotificationDetailsId: detailsId,
+	}
+
+	_, err = s.NotificationRepository.InsertNotification(notification)
 
 	if err != nil {
 		s.Logger.Printf("Failed inserting notification: %s", err)
 		return err
 	}
+
+	// TODO: Broadcast notification to user
 
 	return nil
 }

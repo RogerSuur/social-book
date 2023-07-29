@@ -8,14 +8,19 @@ import (
 )
 
 type Notification struct {
+	Id                    int64
+	ReceiverId            int64
+	NotificationDetailsId int64
+	SeenAt                time.Time
+	Reaction              bool
+}
+
+type NotificationDetails struct {
 	Id               int64
-	ReceiverId       int64
 	SenderId         int64
 	NotificationType string
 	EntityId         int64
 	CreatedAt        time.Time
-	SeenAt           time.Time
-	Reaction         bool
 }
 
 type NotificationJSON struct {
@@ -32,9 +37,11 @@ type NotificationJSON struct {
 }
 
 type INotificationRepository interface {
-	Insert(notification *Notification) (int64, error)
+	InsertDetails(notificationDetails *NotificationDetails) (int64, error)
+	InsertNotification(notification *Notification) (int64, error)
 	Update(notification *Notification) error
 	GetById(id int64) (*Notification, error)
+	GetDetailsById(id int64) (*NotificationDetails, error)
 	GetByReceiverId(receiverId int64) ([]*Notification, error)
 	GetNotificationType(notificationType string) (int64, error)
 }
@@ -51,9 +58,9 @@ func NewNotificationRepo(db *sql.DB) *NotificationRepository {
 	}
 }
 
-func (repo NotificationRepository) Insert(notification *Notification) (int64, error) {
+func (repo NotificationRepository) InsertDetails(notificationDetails *NotificationDetails) (int64, error) {
 
-	NotificationTypeID, err := repo.GetNotificationType(notification.NotificationType)
+	NotificationTypeID, err := repo.GetNotificationType(notificationDetails.NotificationType)
 
 	if err != nil {
 		repo.Logger.Printf("Error getting notification type: %s", err.Error())
@@ -64,10 +71,10 @@ func (repo NotificationRepository) Insert(notification *Notification) (int64, er
 	VALUES(?, ?, ?, ?)`
 
 	args := []interface{}{
-		notification.SenderId,
+		notificationDetails.SenderId,
 		NotificationTypeID,
-		notification.EntityId,
-		notification.CreatedAt,
+		notificationDetails.EntityId,
+		notificationDetails.CreatedAt,
 	}
 
 	result, err := repo.DB.Exec(query, args...)
@@ -84,24 +91,31 @@ func (repo NotificationRepository) Insert(notification *Notification) (int64, er
 		return -1, err
 	}
 
-	query = `INSERT INTO notifications (receiver_id, notification_details_id, seen_at, reaction)
+	repo.Logger.Printf("Inserted notification details (last insert ID: %d)", lastId)
+
+	return lastId, nil
+}
+
+func (repo NotificationRepository) InsertNotification(notification *Notification) (int64, error) {
+
+	query := `INSERT INTO notifications (receiver_id, notification_details_id, seen_at, reaction)
 	VALUES(?, ?, ?, ?)`
 
-	args = []interface{}{
+	args := []interface{}{
 		notification.ReceiverId,
-		lastId,
+		notification.NotificationDetailsId,
 		notification.SeenAt,
 		notification.Reaction,
 	}
 
-	result, err = repo.DB.Exec(query, args...)
+	result, err := repo.DB.Exec(query, args...)
 
 	if err != nil {
 		repo.Logger.Printf("Error inserting notification: %s", err.Error())
 		return -1, err
 	}
 
-	lastId, err = result.LastInsertId()
+	lastId, err := result.LastInsertId()
 
 	if err != nil {
 		return -1, err
@@ -110,6 +124,7 @@ func (repo NotificationRepository) Insert(notification *Notification) (int64, er
 	repo.Logger.Printf("Inserted notification for user %d (last insert ID: %d)", notification.ReceiverId, lastId)
 
 	return lastId, nil
+
 }
 
 func (repo NotificationRepository) Update(notification *Notification) error {
@@ -132,10 +147,8 @@ func (repo NotificationRepository) Update(notification *Notification) error {
 }
 
 func (repo NotificationRepository) GetById(id int64) (*Notification, error) {
-	query := `SELECT n.id, n.receiver_id, nd.sender_id, nt.name, nd.created_at, nd.entity_id, n.seen_at, n.reaction FROM notifications n
-	JOIN notification_details nd ON n.notification_details_id = nd.id
-	JOIN notification_types nt ON nd.notification_type_id = nt.id
-	WHERE n.id = ?`
+	query := `SELECT receiver_id, notification_details_id, seen_at, reaction FROM notifications
+	WHERE id = ?`
 
 	args := []interface{}{
 		id,
@@ -143,7 +156,7 @@ func (repo NotificationRepository) GetById(id int64) (*Notification, error) {
 
 	notification := &Notification{}
 
-	err := repo.DB.QueryRow(query, args...).Scan(&notification.Id, &notification.ReceiverId, &notification.SenderId, &notification.NotificationType, &notification.CreatedAt, &notification.EntityId, &notification.SeenAt, &notification.Reaction)
+	err := repo.DB.QueryRow(query, args...).Scan(&notification.ReceiverId, &notification.NotificationDetailsId, &notification.SeenAt, &notification.Reaction)
 
 	if err != nil {
 		repo.Logger.Printf("Error getting notification: %s", err.Error())
@@ -153,37 +166,31 @@ func (repo NotificationRepository) GetById(id int64) (*Notification, error) {
 	return notification, nil
 }
 
-func (repo NotificationRepository) GetNotificationType(notificationType string) (int64, error) {
-	query := `SELECT id FROM notification_types WHERE name = ?`
+func (repo NotificationRepository) GetDetailsById(id int64) (*NotificationDetails, error) {
+	query := `SELECT nd.sender_id, nt.name, nd.entity_id, nd.created_at FROM notification_details nd
+	JOIN notification_types nt ON nd.notification_type_id = nt.id
+	WHERE nd.id = ?`
 
 	args := []interface{}{
-		notificationType,
+		id,
 	}
 
-	var id int64
+	notificationDetails := &NotificationDetails{}
 
-	err := repo.DB.QueryRow(query, args...).Scan(&id)
+	err := repo.DB.QueryRow(query, args...).Scan(&notificationDetails.SenderId, &notificationDetails.NotificationType, &notificationDetails.EntityId, &notificationDetails.CreatedAt)
 
 	if err != nil {
-		repo.Logger.Printf("Error getting notification type: %s", err.Error())
-		return -1, err
+		repo.Logger.Printf("Error getting notification: %s", err.Error())
+		return nil, err
 	}
 
-	return id, nil
+	return notificationDetails, nil
 }
 
 func (repo NotificationRepository) GetByReceiverId(userId int64) ([]*Notification, error) {
-	/*
-		query := `SELECT n.id, nt.name, nd.sender_id, nd.created_at, n.seen_at, n.reaction FROM notifications n
-		JOIN notification_details nd ON n.notification_details_id = nd.id
-		JOIN notification_types nt ON nd.notification_type_id = nt.id
-		WHERE n.receiver_id = ?`
-	*/
 
-	query := `SELECT n.id, nd.sender_id, nt.name, nd.entity_id, n.seen_at, n.reaction FROM notifications n
-	JOIN notification_details nd ON n.notification_details_id = nd.id
-	JOIN notification_types nt ON nd.notification_type_id = nt.id
-	WHERE n.receiver_id = ? AND n.reaction IS false`
+	query := `SELECT id, seen_at, notification_details_id, reaction FROM notifications
+	WHERE receiver_id = ?` // AND n.reaction IS false`
 
 	args := []interface{}{
 		userId,
@@ -203,7 +210,7 @@ func (repo NotificationRepository) GetByReceiverId(userId int64) ([]*Notificatio
 	for rows.Next() {
 		var notification Notification
 
-		err := rows.Scan(&notification.Id, &notification.SenderId, &notification.NotificationType, &notification.EntityId, &notification.SeenAt, &notification.Reaction)
+		err := rows.Scan(&notification.Id, &notification.SeenAt, &notification.NotificationDetailsId, &notification.Reaction)
 
 		if err != nil {
 			repo.Logger.Printf("Error scanning notification: %s", err.Error())
@@ -214,4 +221,23 @@ func (repo NotificationRepository) GetByReceiverId(userId int64) ([]*Notificatio
 	}
 
 	return notifications, nil
+}
+
+func (repo NotificationRepository) GetNotificationType(notificationType string) (int64, error) {
+	query := `SELECT id FROM notification_types WHERE name = ?`
+
+	args := []interface{}{
+		notificationType,
+	}
+
+	var id int64
+
+	err := repo.DB.QueryRow(query, args...).Scan(&id)
+
+	if err != nil {
+		repo.Logger.Printf("Error getting notification type: %s", err.Error())
+		return -1, err
+	}
+
+	return id, nil
 }

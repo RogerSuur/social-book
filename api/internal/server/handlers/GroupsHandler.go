@@ -272,6 +272,7 @@ func (app *Application) AddMembers(rw http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			app.Logger.Printf("JSON error: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
+			return
 		}
 
 		userId, err := app.UserService.GetUserID(r)
@@ -279,19 +280,24 @@ func (app *Application) AddMembers(rw http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			app.Logger.Printf("Failed fetching user: %v", err)
 			http.Error(rw, "Get user error", http.StatusBadRequest)
-		}
-
-		result, err := app.GroupMemberService.AddMembers(userId, *JSONdata)
-
-		if err != nil {
-			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		app.Logger.Printf("Members added successfully")
-		app.Logger.Printf("Members added: %v", result)
+		notifications, err := app.GroupMemberService.AddMembers(userId, *JSONdata)
 
-		json.NewEncoder(rw).Encode(&result)
+		if err != nil {
+			app.Logger.Printf("Failed adding members: %v", err)
+			http.Error(rw, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		err = app.WS.BroadcastGroupNotifications(notifications)
+
+		if err != nil {
+			app.Logger.Printf("Failed broadcasting notifications: %v", err)
+			http.Error(rw, err.Error(), http.StatusBadRequest)
+			return
+		}
 
 	default:
 		http.Error(rw, "method is not supported", http.StatusNotFound)

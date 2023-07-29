@@ -71,7 +71,11 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 				repositories.GroupMemberRepo,
 				repositories.UserRepo,
 			),
-			services.InitGroupMemberService(logger, repositories.UserRepo, repositories.GroupMemberRepo),
+			services.InitGroupMemberService(
+				logger,
+				repositories.UserRepo,
+				repositories.NotificationRepo,
+				repositories.GroupMemberRepo),
 		),
 		UserService:         userServices,
 		NotificationService: notificationServices,
@@ -84,7 +88,11 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 			repositories.GroupMemberRepo,
 			repositories.UserRepo,
 		),
-		GroupMemberService: services.InitGroupMemberService(logger, repositories.UserRepo, repositories.GroupMemberRepo),
-		GroupEventService:  groupEventServices,
+		GroupMemberService: services.InitGroupMemberService(
+			logger,
+			repositories.UserRepo,
+			repositories.NotificationRepo,
+			repositories.GroupMemberRepo),
+		GroupEventService: groupEventServices,
 	}
 }

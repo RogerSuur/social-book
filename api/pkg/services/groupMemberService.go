@@ -10,24 +10,27 @@ import (
 type IGroupMemberService interface {
 	GetGroupMembers(groupId int64) ([]*models.SimpleUserJSON, error)
 	IsGroupMember(groupId int64, userId int64) (bool, error)
-	AddMembers(userId int64, members models.GroupMemberJSON) (*models.GroupMemberJSON, error)
+	AddMembers(userId int64, members models.GroupMemberJSON) ([]*models.NotificationJSON, error)
 	GetMembersToAdd(groupId int64, userId int64) ([]*models.SimpleUserJSON, error)
 }
 
 type GroupMemberService struct {
-	Logger                *log.Logger
-	UserRepository        models.IUserRepository
-	GroupMemberRepository models.IGroupMemberRepository
+	Logger                 *log.Logger
+	UserRepository         models.IUserRepository
+	NotificationRepository models.INotificationRepository
+	GroupMemberRepository  models.IGroupMemberRepository
 }
 
 func InitGroupMemberService(
 	logger *log.Logger,
 	userRepo *models.UserRepository,
+	notificationsRepo *models.NotificationRepository,
 	groupMemberRepo *models.GroupMemberRepository) *GroupMemberService {
 	return &GroupMemberService{
-		Logger:                logger,
-		UserRepository:        userRepo,
-		GroupMemberRepository: groupMemberRepo,
+		Logger:                 logger,
+		UserRepository:         userRepo,
+		NotificationRepository: notificationsRepo,
+		GroupMemberRepository:  groupMemberRepo,
 	}
 }
 
@@ -44,7 +47,7 @@ func (s *GroupMemberService) GetGroupMembers(groupId int64) ([]*models.SimpleUse
 
 	for _, member := range members {
 
-		if member.JoinedAt == (time.Time{}) {
+		if !member.Accepted {
 			continue
 		}
 
@@ -78,10 +81,12 @@ func (s *GroupMemberService) IsGroupMember(groupId int64, userId int64) (bool, e
 		s.Logger.Printf("Cannot validate user: %s", err)
 	}
 
+	s.Logger.Printf("User %d is group member: %t", userId, isgroupMember)
+
 	return isgroupMember, err
 }
 
-func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMemberJSON) (*models.GroupMemberJSON, error) {
+func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMemberJSON) ([]*models.NotificationJSON, error) {
 
 	isGroupMember, err := s.IsGroupMember(int64(members.GroupId), userId)
 
@@ -95,7 +100,21 @@ func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMember
 		return nil, errors.New("not a member of this group")
 	}
 
-	addedMembers := make([]int, 0)
+	notificationDetails := &models.NotificationDetails{
+		SenderId:         userId,
+		NotificationType: "group_invite",
+		EntityId:         int64(members.GroupId),
+		CreatedAt:        time.Now(),
+	}
+
+	detailsId, err := s.NotificationRepository.InsertDetails(notificationDetails)
+
+	if err != nil {
+		s.Logger.Printf("Cannot insert notification details: %s", err)
+		return nil, err
+	}
+
+	notificationsToBroadcast := []*models.NotificationJSON{}
 
 	for _, userIdToAdd := range members.UserIds {
 
@@ -115,6 +134,7 @@ func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMember
 			UserId:   int64(userIdToAdd),
 			GroupId:  int64(members.GroupId),
 			JoinedAt: time.Now(),
+			Accepted: false,
 		}
 
 		_, err = s.GroupMemberRepository.Insert(groupMember)
@@ -124,17 +144,39 @@ func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMember
 			return nil, err
 		}
 
-		addedMembers = append(addedMembers, userIdToAdd)
-
 		s.Logger.Printf("User %d added to group %d", userIdToAdd, members.GroupId)
+
+		// send notification to user
+
+		notification := &models.Notification{
+			ReceiverId:            int64(userIdToAdd),
+			NotificationDetailsId: detailsId,
+		}
+
+		notificationId, err := s.NotificationRepository.InsertNotification(notification)
+
+		if err != nil {
+			s.Logger.Printf("Cannot insert notification: %s", err)
+			return nil, err
+		}
+
+		// broadcast notification to users
+
+		notificationJSON := &models.NotificationJSON{
+			ReceiverId:       int64(userIdToAdd),
+			NotificationType: notificationDetails.NotificationType,
+			NotificationId:   notificationId,
+			SenderId:         userId,
+			SenderName:       "",
+			GroupId:          int64(members.GroupId),
+			GroupName:        "",
+		}
+
+		notificationsToBroadcast = append(notificationsToBroadcast, notificationJSON)
+
 	}
 
-	result := &models.GroupMemberJSON{
-		GroupId: members.GroupId,
-		UserIds: addedMembers,
-	}
-
-	return result, nil
+	return notificationsToBroadcast, nil
 }
 
 func (s *GroupMemberService) GetMembersToAdd(groupId int64, userId int64) ([]*models.SimpleUserJSON, error) {

@@ -52,6 +52,7 @@ func (app *Application) CreateGroupEvent(rw http.ResponseWriter, r *http.Request
 		if err != nil {
 			app.Logger.Printf("JSON error: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
+			return
 		}
 
 		userId, err := app.UserService.GetUserID(r)
@@ -59,6 +60,7 @@ func (app *Application) CreateGroupEvent(rw http.ResponseWriter, r *http.Request
 		if err != nil {
 			app.Logger.Printf("Failed fetching user: %v", err)
 			http.Error(rw, "Get user error", http.StatusBadRequest)
+			return
 		}
 
 		notifications, err := app.GroupEventService.CreateGroupEvent(JSONdata, userId)
@@ -68,7 +70,7 @@ func (app *Application) CreateGroupEvent(rw http.ResponseWriter, r *http.Request
 			return
 		}
 
-		err = app.WS.BroadcastGroupEventInvites(notifications)
+		err = app.WS.BroadcastGroupNotifications(notifications)
 
 		if err != nil {
 			http.Error(rw, "err", http.StatusBadRequest)

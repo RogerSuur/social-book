@@ -11,6 +11,7 @@ type GroupMember struct {
 	UserId   int64
 	GroupId  int64
 	JoinedAt time.Time
+	Accepted bool
 }
 
 type GroupMemberJSON struct {
@@ -40,13 +41,14 @@ func NewGroupMemberRepo(db *sql.DB) *GroupMemberRepository {
 }
 
 func (repo GroupMemberRepository) Insert(groupMember *GroupMember) (int64, error) {
-	query := `INSERT INTO user_groups (user_id, group_id, joined_at)
-	VALUES(?, ?, ?)`
+	query := `INSERT INTO user_groups (user_id, group_id, joined_at, accepted)
+	VALUES(?, ?, ?, ?)`
 
 	args := []interface{}{
 		groupMember.UserId,
 		groupMember.GroupId,
 		groupMember.JoinedAt,
+		groupMember.Accepted,
 	}
 
 	result, err := repo.DB.Exec(query, args...)
@@ -67,11 +69,12 @@ func (repo GroupMemberRepository) Insert(groupMember *GroupMember) (int64, error
 }
 
 func (repo GroupMemberRepository) Update(groupMember *GroupMember) error {
-	query := `UPDATE user_groups SET joined_at = ?
+	query := `UPDATE user_groups SET joined_at = ? AND accepted = ?
 	WHERE user_id = ? AND group_id = ?`
 
 	args := []interface{}{
 		groupMember.JoinedAt,
+		groupMember.Accepted,
 		groupMember.UserId,
 		groupMember.GroupId,
 	}
@@ -106,7 +109,7 @@ func (repo GroupMemberRepository) Delete(groupMember *GroupMember) error {
 }
 
 func (repo GroupMemberRepository) GetGroupMembersByGroupId(groupId int64) ([]*GroupMember, error) {
-	query := `SELECT user_id, joined_at FROM user_groups
+	query := `SELECT user_id, joined_at, accepted FROM user_groups
 	WHERE group_id = ?`
 
 	// INNER JOIN user_groups ug ON
@@ -123,7 +126,7 @@ func (repo GroupMemberRepository) GetGroupMembersByGroupId(groupId int64) ([]*Gr
 	for rows.Next() {
 		groupMember := &GroupMember{}
 
-		err := rows.Scan(&groupMember.UserId, &groupMember.JoinedAt)
+		err := rows.Scan(&groupMember.UserId, &groupMember.JoinedAt, &groupMember.Accepted)
 		if err != nil {
 			return nil, err
 		}
@@ -138,9 +141,8 @@ func (repo GroupMemberRepository) GetGroupMembersByGroupId(groupId int64) ([]*Gr
 }
 
 func (repo GroupMemberRepository) IsGroupMember(groupId int64, userId int64) (bool, error) {
-	query := `SELECT COUNT(id) FROM user_groups
-	WHERE user_id = ? AND group_id = ? AND joined_at IS NOT NULL
-	GROUP BY group_id`
+	query := `SELECT accepted FROM user_groups
+	WHERE user_id = ? AND group_id = ?`
 
 	args := []interface{}{
 		userId,
@@ -149,7 +151,7 @@ func (repo GroupMemberRepository) IsGroupMember(groupId int64, userId int64) (bo
 
 	row := repo.DB.QueryRow(query, args...)
 
-	var result int
+	var result bool
 
 	err := row.Scan(&result)
 
@@ -157,21 +159,17 @@ func (repo GroupMemberRepository) IsGroupMember(groupId int64, userId int64) (bo
 		return false, err
 	}
 
-	if result > 0 {
-		return true, err
-	}
-
-	return false, nil
+	return result, nil
 }
 
 func (repo GroupMemberRepository) GetById(id int64) (*GroupMember, error) {
-	query := `SELECT user_id, group_id, joined_at FROM user_groups WHERE id = ?`
+	query := `SELECT user_id, group_id, joined_at, accepted FROM user_groups WHERE id = ?`
 
 	row := repo.DB.QueryRow(query, id)
 
 	groupMember := &GroupMember{}
 
-	err := row.Scan(&groupMember.UserId, &groupMember.GroupId, &groupMember.JoinedAt)
+	err := row.Scan(&groupMember.UserId, &groupMember.GroupId, &groupMember.JoinedAt, &groupMember.Accepted)
 
 	if err != nil {
 		return nil, err
