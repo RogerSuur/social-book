@@ -1,12 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useOutletContext, useNavigate } from "react-router-dom";
+import {
+  useParams,
+  useOutletContext,
+  useNavigate,
+  Link,
+} from "react-router-dom";
 import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import { PROFILE_URL } from "../utils/routes";
+import { PROFILE_URL, FOLLOW_URL } from "../utils/routes";
 import ImageHandler from "../utils/imageHandler.js";
+import Modal from "../components/Modal.js";
+import Posts from "../pages/PostsPage.js";
 
 const ProfileInfo = () => {
   const [user, setUser] = useState({});
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [postsModalOpen, setPostsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(true);
   const { id } = useParams();
   const { socketUrl } = useOutletContext();
   const { sendJsonMessage } = useWebSocketConnection(socketUrl);
@@ -36,6 +48,28 @@ const ProfileInfo = () => {
     loadUser();
   }, [id]);
 
+  useEffect(() => {
+    const loadFollow = async () => {
+      try {
+        await axios
+          .get(FOLLOW_URL + id, {
+            withCredentials: true,
+          })
+          .then((response) => {
+            setFollowers(response?.data?.followers);
+            setFollowing(response?.data?.following);
+          });
+      } catch (err) {
+        if (!err?.response) {
+          setErrMsg("No Server Response");
+        } else {
+          setErrMsg("Internal Server Error");
+        }
+      }
+    };
+    loadFollow();
+  }, [setActiveTab]);
+
   console.log(user, "OTHER USER");
 
   const handleFollow = () => {
@@ -64,6 +98,36 @@ const ProfileInfo = () => {
     });
   };
 
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleModalClick = (follow) => {
+    setActiveTab(follow);
+    setModalOpen(true);
+  };
+
+  const handlePostsModalClose = () => {
+    setPostsModalOpen(false);
+  };
+
+  const handlePostsModalClick = () => {
+    setPostsModalOpen(true);
+  };
+
+  const userList = (follow) => {
+    const users = follow ? [...following] : [...followers];
+
+    return users?.map((user, index) => (
+      <li key={index}>
+        <Link to={`/profile/${user.userId}`}>
+          {ImageHandler(user.imagePath, "defaultuser.jpg", "profile-image")}
+          <p>{user.name}</p>
+        </Link>
+      </li>
+    ));
+  };
+
   const image = () =>
     ImageHandler(user?.avatarImage, "defaultuser.jpg", "profile-image");
 
@@ -75,6 +139,19 @@ const ProfileInfo = () => {
             <div>{image()}</div>
             <h1 className="column-title">{user.firstName}'s profile</h1>
           </div>
+          <Modal open={modalOpen} onClose={handleModalClose}>
+            <ul>
+              <li onClick={() => setActiveTab(true)}>Following</li>
+              <li onClick={() => setActiveTab(false)}>Followers</li>
+            </ul>
+            <ul>{userList(activeTab)}</ul>
+          </Modal>
+          <button onClick={() => handleModalClick(true)}>Following</button>
+          <button onClick={() => handleModalClick(false)}>Followers</button>
+          <Modal open={postsModalOpen} onClose={handlePostsModalClose}>
+            <Posts />
+          </Modal>
+          <button onClick={() => handlePostsModalClick()}>Posts</button>
 
           <div className="row">
             <div className="column-title">First Name</div>

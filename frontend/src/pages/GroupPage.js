@@ -11,7 +11,6 @@ import Modal from "../components/Modal";
 import AvatarUpdater from "../components/AvatarUpdater";
 import Events from "../components/Events";
 import GroupRequestButton from "../components/GroupRequestButton.js";
-import CreateGroupPosts from "../components/CreateGroupPosts";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -101,6 +100,7 @@ const GroupPage = () => {
   return (
     <>
       <GroupSidebar />
+      <Events groupId={+id} />
       {error ? (
         <div className="error">{error}</div>
       ) : (

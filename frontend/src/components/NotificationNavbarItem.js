@@ -3,12 +3,12 @@ import NotificationList from "../components/NotificationList.js";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { WS_URL, NOTIFICATIONS_URL } from "../utils/routes";
-
+import NotificationPopup from "../components/NotificationPopup";
 
 const NotificationNavbarItem = () => {
   const [toggle, setToggle] = useState(false);
-  // const [newNotification, setNewNotification] = useState();
-  // const [notificationTimer, setNotificationTimer] = useState(false);
+  const [newNotification, setNewNotification] = useState();
+  const [notificationTimer, setNotificationTimer] = useState(false);
   const { lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [notifications, setNotifications] = useState([]);
 
@@ -41,20 +41,20 @@ const NotificationNavbarItem = () => {
   }, []);
 
   console.log(notifications, "NOTLIST");
-  // useEffect(() => {
-  //   const exceptions = ["message", "chatlist", "message_history"];
+  useEffect(() => {
+    const exceptions = ["message", "chatlist", "message_history"];
 
-  //   if (!exceptions.includes(lastJsonMessage?.type)) {
-  //     setNewNotification(lastJsonMessage?.data);
-  //     setNotificationTimer(true);
+    if (!exceptions.includes(lastJsonMessage?.type)) {
+      setNewNotification(lastJsonMessage?.data);
+      setNotificationTimer(true);
 
-  //     const timer = setTimeout(() => {
-  //       setNotificationTimer(false);
-  //     }, 5000);
+      const timer = setTimeout(() => {
+        setNotificationTimer(false);
+      }, 5000);
 
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [lastJsonMessage]);
+      return () => clearTimeout(timer);
+    }
+  }, [lastJsonMessage]);
 
   const handleToggle = () => {
     setToggle(!toggle);
@@ -65,14 +65,17 @@ const NotificationNavbarItem = () => {
   return (
     <>
       <li onClick={handleToggle}>
-        <img className="text-link" src={`${process.env.PUBLIC_URL}/notification_bell.png`} />
+        <img
+          className="text-link"
+          src={`${process.env.PUBLIC_URL}/notification_bell.png`}
+        />
         {notificationCount > 0 && (
           <div className="notification-count">{notificationCount}</div>
         )}
       </li>
-      {/* {notificationTimer && (
+      {notificationTimer && (
         <NotificationPopup notification={newNotification} />
-      )} */}
+      )}
       {toggle && (
         <NotificationList
           notifications={notifications}
