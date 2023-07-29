@@ -24,12 +24,19 @@ func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 	if id == "" {
 		// self
 		profileId = requestingUserId
+		app.Logger.Printf("User opened their own profile")
 	} else {
 		app.Logger.Printf("Decoding user ID provided in the URL (user %v) for Profile handler", id)
 		profileId, err = strconv.ParseInt(id, 10, 64)
 		if err != nil {
 			app.Logger.Printf("Cannot parse user ID: %s", err)
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if profileId == requestingUserId {
+			// self
+			app.Logger.Printf("User is trying to view their own profile")
+			http.Redirect(rw, r, "/profile", http.StatusPermanentRedirect)
 			return
 		}
 	}
