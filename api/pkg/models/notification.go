@@ -147,7 +147,7 @@ func (repo NotificationRepository) Update(notification *Notification) error {
 }
 
 func (repo NotificationRepository) GetById(id int64) (*Notification, error) {
-	query := `SELECT receiver_id, notification_details_id, seen_at, reaction FROM notifications
+	query := `SELECT id, receiver_id, notification_details_id, seen_at, reaction FROM notifications
 	WHERE id = ?`
 
 	args := []interface{}{
@@ -156,7 +156,7 @@ func (repo NotificationRepository) GetById(id int64) (*Notification, error) {
 
 	notification := &Notification{}
 
-	err := repo.DB.QueryRow(query, args...).Scan(&notification.ReceiverId, &notification.NotificationDetailsId, &notification.SeenAt, &notification.Reaction)
+	err := repo.DB.QueryRow(query, args...).Scan(&notification.Id, &notification.ReceiverId, &notification.NotificationDetailsId, &notification.SeenAt, &notification.Reaction)
 
 	if err != nil {
 		repo.Logger.Printf("Error getting notification: %s", err.Error())
@@ -167,7 +167,7 @@ func (repo NotificationRepository) GetById(id int64) (*Notification, error) {
 }
 
 func (repo NotificationRepository) GetDetailsById(id int64) (*NotificationDetails, error) {
-	query := `SELECT nd.sender_id, nt.name, nd.entity_id, nd.created_at FROM notification_details nd
+	query := `SELECT nd.id, nd.sender_id, nt.name, nd.entity_id, nd.created_at FROM notification_details nd
 	JOIN notification_types nt ON nd.notification_type_id = nt.id
 	WHERE nd.id = ?`
 
@@ -177,7 +177,7 @@ func (repo NotificationRepository) GetDetailsById(id int64) (*NotificationDetail
 
 	notificationDetails := &NotificationDetails{}
 
-	err := repo.DB.QueryRow(query, args...).Scan(&notificationDetails.SenderId, &notificationDetails.NotificationType, &notificationDetails.EntityId, &notificationDetails.CreatedAt)
+	err := repo.DB.QueryRow(query, args...).Scan(&notificationDetails.Id, &notificationDetails.SenderId, &notificationDetails.NotificationType, &notificationDetails.EntityId, &notificationDetails.CreatedAt)
 
 	if err != nil {
 		repo.Logger.Printf("Error getting notification: %s", err.Error())

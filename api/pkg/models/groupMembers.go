@@ -24,7 +24,7 @@ type IGroupMemberRepository interface {
 	Update(groupMember *GroupMember) error
 	Delete(groupMember *GroupMember) error
 	GetGroupMembersByGroupId(groupId int64) ([]*GroupMember, error)
-	IsGroupMember(group_id int64, userId int64) (bool, error)
+	GetMemberByGroupId(groupId int64, userId int64) (*GroupMember, error)
 	GetById(id int64) (*GroupMember, error)
 }
 
@@ -69,7 +69,7 @@ func (repo GroupMemberRepository) Insert(groupMember *GroupMember) (int64, error
 }
 
 func (repo GroupMemberRepository) Update(groupMember *GroupMember) error {
-	query := `UPDATE user_groups SET joined_at = ? AND accepted = ?
+	query := `UPDATE user_groups SET joined_at = ?, accepted = ?
 	WHERE user_id = ? AND group_id = ?`
 
 	args := []interface{}{
@@ -81,12 +81,7 @@ func (repo GroupMemberRepository) Update(groupMember *GroupMember) error {
 
 	_, err := repo.DB.Exec(query, args...)
 
-	if err != nil {
-		repo.Logger.Printf("Error updating groupuser for user %d in group %d: %s", groupMember.UserId, groupMember.GroupId, err)
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (repo GroupMemberRepository) Delete(groupMember *GroupMember) error {
@@ -112,8 +107,6 @@ func (repo GroupMemberRepository) GetGroupMembersByGroupId(groupId int64) ([]*Gr
 	query := `SELECT user_id, joined_at, accepted FROM user_groups
 	WHERE group_id = ?`
 
-	// INNER JOIN user_groups ug ON
-	// g.id = ug.group_id
 	rows, err := repo.DB.Query(query, groupId)
 	if err != nil {
 		return nil, err
@@ -140,8 +133,8 @@ func (repo GroupMemberRepository) GetGroupMembersByGroupId(groupId int64) ([]*Gr
 	return groupMembers, nil
 }
 
-func (repo GroupMemberRepository) IsGroupMember(groupId int64, userId int64) (bool, error) {
-	query := `SELECT accepted FROM user_groups
+func (repo GroupMemberRepository) GetMemberByGroupId(groupId int64, userId int64) (*GroupMember, error) {
+	query := `SELECT user_id, group_id, joined_at, accepted FROM user_groups
 	WHERE user_id = ? AND group_id = ?`
 
 	args := []interface{}{
@@ -151,15 +144,15 @@ func (repo GroupMemberRepository) IsGroupMember(groupId int64, userId int64) (bo
 
 	row := repo.DB.QueryRow(query, args...)
 
-	var result bool
+	groupMember := &GroupMember{}
 
-	err := row.Scan(&result)
+	err := row.Scan(&groupMember.UserId, &groupMember.GroupId, &groupMember.JoinedAt, &groupMember.Accepted)
 
-	if err != nil && err != sql.ErrNoRows {
-		return false, err
+	if err != nil {
+		return nil, err
 	}
 
-	return result, nil
+	return groupMember, nil
 }
 
 func (repo GroupMemberRepository) GetById(id int64) (*GroupMember, error) {

@@ -145,6 +145,7 @@ func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFo
 
 	if err != nil {
 		s.Logger.Printf("Failed inserting notification details: %s", err)
+		return nil, err
 	}
 
 	for _, member := range groupMembers {
@@ -159,6 +160,7 @@ func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFo
 
 		if err != nil {
 			s.Logger.Printf("Failed inserting notification: %s", err)
+			return nil, err
 		}
 
 		// broadcast notification to all users

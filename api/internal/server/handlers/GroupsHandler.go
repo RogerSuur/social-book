@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"SocialNetworkRestApi/api/pkg/models"
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -92,15 +93,21 @@ func (app *Application) Group(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "Get user error", http.StatusBadRequest)
 		}
 
-		isMember, err := app.GroupMemberService.IsGroupMember(groupId, userId)
+		member, err := app.GroupMemberService.GetMemberById(groupId, userId)
 
-		if err != nil {
+		if err != nil && err != sql.ErrNoRows {
 			app.Logger.Printf("Failed checking group membership: %v", err)
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		group.IsMember = isMember
+		if err == sql.ErrNoRows {
+			group.IsMember = false
+		} else if !member.Accepted {
+			group.IsMember = false
+		} else {
+			group.IsMember = true
+		}
 
 		//app.Logger.Printf("Group data fetched successfully: %v", group)
 
@@ -134,14 +141,21 @@ func (app *Application) GroupMembers(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		isGroupMember, err := app.GroupMemberService.IsGroupMember(groupId, userId)
+		member, err := app.GroupMemberService.GetMemberById(groupId, userId)
 
-		if err != nil {
+		if err != nil && err != sql.ErrNoRows {
+			app.Logger.Printf("Failed checking group membership: %v", err)
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		if !isGroupMember {
+		if err == sql.ErrNoRows {
+			app.Logger.Printf("User %d is not a member of this group", userId)
+			http.Error(rw, "Not a member of this group", http.StatusForbidden)
+			return
+		}
+
+		if !member.Accepted {
 			app.Logger.Printf("User %d is not a member of this group", userId)
 			http.Error(rw, "Not a member of this group", http.StatusForbidden)
 			return
@@ -232,14 +246,21 @@ func (app *Application) GroupPosts(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		isGroupMember, err := app.GroupMemberService.IsGroupMember(groupId, userId)
+		member, err := app.GroupMemberService.GetMemberById(groupId, userId)
 
-		if err != nil {
+		if err != nil && err != sql.ErrNoRows {
+			app.Logger.Printf("Failed checking group membership: %v", err)
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		if !isGroupMember {
+		if err == sql.ErrNoRows {
+			app.Logger.Printf("User %d is not a member of this group", userId)
+			http.Error(rw, "Not a member of this group", http.StatusForbidden)
+			return
+		}
+
+		if !member.Accepted {
 			app.Logger.Printf("User %d is not a member of this group", userId)
 			http.Error(rw, "Not a member of this group", http.StatusForbidden)
 			return

@@ -2,6 +2,7 @@ package services
 
 import (
 	"SocialNetworkRestApi/api/pkg/models"
+	"database/sql"
 	"errors"
 	"log"
 	"time"
@@ -16,7 +17,7 @@ type INotificationService interface {
 	CreateGroupRequest(senderId int64, groupId int64) (int64, error)
 	HandleGroupRequest(creatorID int64, notificationID int64, accepted bool) error
 	HandleEventInvite(notificationID int64, accepted bool) error
-	CreateGroupInvite(creatorId int64, groupId int64, membersToAdd []int64) (int64, error)
+	CreateGroupInvite(creatorId int64, groupId int64, membersToAdd []int64) ([]*models.NotificationJSON, error)
 	HandleGroupInvite(notificationID int64, accepted bool) error
 }
 
@@ -299,12 +300,15 @@ func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) 
 	}
 
 	// check if user is already member of group
-	isMember, err := s.GroupMemberRepo.IsGroupMember(groupId, senderId)
-	if err != nil {
-		return -1, errors.New("error in checking if user is already member of group")
-	}
-	if isMember {
-		return -1, errors.New("user is already member of group")
+	member, err := s.GroupMemberRepo.GetMemberByGroupId(groupId, senderId)
+	if err != sql.ErrNoRows {
+		if err != nil {
+			s.Logger.Printf("Cannot validate user: %s", err)
+			return -1, errors.New("error in checking if user is already member of group")
+		} else if member.Accepted {
+			s.Logger.Printf("User %d is already a member of this group", senderId)
+			return -1, errors.New("already a member of this group")
+		}
 	}
 
 	// add member to group with joined at Zero
@@ -370,13 +374,18 @@ func (s *NotificationService) HandleGroupRequest(creatorID int64, notificationID
 
 	// check if group request exists
 	groupMember, err := s.GroupMemberRepo.GetById(notificationDetails.EntityId)
-	if err != nil {
-		s.Logger.Printf("Cannot get group request: %s", err)
+	if err == sql.ErrNoRows {
+		s.Logger.Printf("Group request not found: %s", err)
 		return err
 	}
 
-	// check if group request is accepted
-	if groupMember.JoinedAt != (time.Time{}) {
+	if err != nil {
+		s.Logger.Printf("Cannot validate request: %s", err)
+		return err
+	}
+
+	if groupMember.Accepted {
+		s.Logger.Printf("Group request already accepted: %d", notificationDetails.EntityId)
 		return errors.New("group request already accepted")
 	}
 
@@ -394,6 +403,7 @@ func (s *NotificationService) HandleGroupRequest(creatorID int64, notificationID
 	// update group request
 	if accepted {
 		groupMember.JoinedAt = time.Now()
+		groupMember.Accepted = true
 		err = s.GroupMemberRepo.Update(groupMember)
 		if err != nil {
 			s.Logger.Printf("Cannot update group request: %s", err)
@@ -488,27 +498,76 @@ func (s *NotificationService) HandleEventInvite(notificationID int64, accepted b
 
 }
 
-func (s *NotificationService) CreateGroupInvite(creatorId int64, groupId int64, membersToAdd []int64) (int64, error) {
+func (s *NotificationService) CreateGroupInvite(creatorId int64, groupId int64, membersToAdd []int64) ([]*models.NotificationJSON, error) {
 
 	// check if user is creator of group
 	group, err := s.GroupRepo.GetById(groupId)
 	if err != nil {
 		s.Logger.Printf("Cannot get group: %s", err)
-		return -1, err
+		return nil, err
 	}
 
 	if group.CreatorId != creatorId {
-		return -1, errors.New("user is not creator of group")
+		return nil, errors.New("user is not creator of group")
 	}
 
 	// create notification
-	for _, memberToAdd := range membersToAdd {
-		s.Logger.Printf("Member to add: %d", memberToAdd)
-		// TODO
+
+	notificationDetails := &models.NotificationDetails{
+		SenderId:         creatorId,
+		NotificationType: "group_invite",
+		EntityId:         groupId,
+		CreatedAt:        time.Now(),
 	}
 
-	return -1, nil
+	detailsId, err := s.NotificationRepository.InsertDetails(notificationDetails)
+	if err != nil {
+		s.Logger.Printf("Cannot insert notification details: %s", err)
+		return nil, err
+	}
 
+	creatorData, err := s.UserRepo.GetById(creatorId)
+	if err != nil {
+		s.Logger.Printf("Cannot get creator data: %s", err)
+		return nil, err
+	}
+
+	if creatorData.Nickname != "" {
+		creatorData.Nickname = creatorData.FirstName + " " + creatorData.LastName
+	}
+
+	notificationsToBroadcast := []*models.NotificationJSON{}
+
+	for _, memberToAdd := range membersToAdd {
+		notification := &models.Notification{
+			ReceiverId:            memberToAdd,
+			NotificationDetailsId: detailsId,
+		}
+
+		notificationId, err := s.NotificationRepository.InsertNotification(notification)
+
+		if err != nil {
+			s.Logger.Printf("Cannot insert notification: %s", err)
+			return nil, err
+		}
+
+		// broadcast notification to users
+
+		notificationJSON := &models.NotificationJSON{
+			ReceiverId:       memberToAdd,
+			NotificationType: notificationDetails.NotificationType,
+			NotificationId:   notificationId,
+			SenderId:         creatorId,
+			SenderName:       creatorData.Nickname,
+			GroupId:          groupId,
+			GroupName:        group.Title,
+		}
+
+		notificationsToBroadcast = append(notificationsToBroadcast, notificationJSON)
+
+	}
+
+	return notificationsToBroadcast, nil
 }
 
 func (s *NotificationService) HandleGroupInvite(notificationID int64, accepted bool) error {
@@ -530,20 +589,21 @@ func (s *NotificationService) HandleGroupInvite(notificationID int64, accepted b
 	}
 
 	// check if group invite exists
-	groupMember, err := s.GroupMemberRepo.GetById(notificationDetails.EntityId)
-	if err != nil {
-		s.Logger.Printf("Cannot get group invite: %s", err)
-		return err
-	}
-
-	// check if group invite is accepted
-	if groupMember.JoinedAt != (time.Time{}) {
-		return errors.New("group invite already accepted")
+	groupMember, err := s.GroupMemberRepo.GetMemberByGroupId(notificationDetails.EntityId, notification.ReceiverId)
+	if err != sql.ErrNoRows {
+		if err != nil {
+			s.Logger.Printf("Cannot validate user: %s", err)
+			return err
+		} else if groupMember.Accepted {
+			s.Logger.Printf("Group invite already accepted: %d", notificationDetails.EntityId)
+			return errors.New("group invite already accepted")
+		}
 	}
 
 	// update group invite
 	if accepted {
 		groupMember.JoinedAt = time.Now()
+		groupMember.Accepted = true
 		err = s.GroupMemberRepo.Update(groupMember)
 		if err != nil {
 			s.Logger.Printf("Cannot update group invite: %s", err)

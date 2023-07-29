@@ -2,6 +2,7 @@ package services
 
 import (
 	"SocialNetworkRestApi/api/pkg/models"
+	"database/sql"
 	"errors"
 	"log"
 	"time"
@@ -9,7 +10,7 @@ import (
 
 type IGroupMemberService interface {
 	GetGroupMembers(groupId int64) ([]*models.SimpleUserJSON, error)
-	IsGroupMember(groupId int64, userId int64) (bool, error)
+	GetMemberById(groupId int64, userId int64) (*models.GroupMember, error)
 	AddMembers(userId int64, members models.GroupMemberJSON) ([]*models.NotificationJSON, error)
 	GetMembersToAdd(groupId int64, userId int64) ([]*models.SimpleUserJSON, error)
 }
@@ -18,6 +19,7 @@ type GroupMemberService struct {
 	Logger                 *log.Logger
 	UserRepository         models.IUserRepository
 	NotificationRepository models.INotificationRepository
+	GroupRepository        models.IGroupRepository
 	GroupMemberRepository  models.IGroupMemberRepository
 }
 
@@ -25,11 +27,13 @@ func InitGroupMemberService(
 	logger *log.Logger,
 	userRepo *models.UserRepository,
 	notificationsRepo *models.NotificationRepository,
+	groupRepository *models.GroupRepository,
 	groupMemberRepo *models.GroupMemberRepository) *GroupMemberService {
 	return &GroupMemberService{
 		Logger:                 logger,
 		UserRepository:         userRepo,
 		NotificationRepository: notificationsRepo,
+		GroupRepository:        groupRepository,
 		GroupMemberRepository:  groupMemberRepo,
 	}
 }
@@ -74,28 +78,32 @@ func (s *GroupMemberService) GetGroupMembers(groupId int64) ([]*models.SimpleUse
 	return simpleMembers, nil
 }
 
-func (s *GroupMemberService) IsGroupMember(groupId int64, userId int64) (bool, error) {
-	isgroupMember, err := s.GroupMemberRepository.IsGroupMember(groupId, userId)
+func (s *GroupMemberService) GetMemberById(groupId int64, userId int64) (*models.GroupMember, error) {
+	member, err := s.GroupMemberRepository.GetMemberByGroupId(groupId, userId)
 
-	if err != nil {
-		s.Logger.Printf("Cannot validate user: %s", err)
-	}
-
-	s.Logger.Printf("User %d is group member: %t", userId, isgroupMember)
-
-	return isgroupMember, err
-}
-
-func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMemberJSON) ([]*models.NotificationJSON, error) {
-
-	isGroupMember, err := s.IsGroupMember(int64(members.GroupId), userId)
-
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		s.Logger.Printf("Cannot validate user: %s", err)
 		return nil, err
 	}
 
-	if !isGroupMember {
+	return member, err
+}
+
+func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMemberJSON) ([]*models.NotificationJSON, error) {
+
+	member, err := s.GroupMemberRepository.GetMemberByGroupId(int64(members.GroupId), userId)
+
+	if err == sql.ErrNoRows {
+		s.Logger.Printf("Cannot find user in group: %s", err)
+		return nil, errors.New("not a member of this group")
+	}
+
+	if err != nil {
+		s.Logger.Printf("Cannot validate user: %s", err)
+		return nil, errors.New("error in checking if user is already member of group")
+	}
+
+	if !member.Accepted {
 		s.Logger.Printf("User %d is not a member of this group", userId)
 		return nil, errors.New("not a member of this group")
 	}
@@ -114,20 +122,35 @@ func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMember
 		return nil, err
 	}
 
+	group, err := s.GroupRepository.GetById(int64(members.GroupId))
+	if err != nil {
+		s.Logger.Printf("Cannot get group: %s", err)
+		return nil, err
+	}
+
+	userData, err := s.UserRepository.GetById(userId)
+	if err != nil {
+		s.Logger.Printf("Cannot get user: %s", err)
+		return nil, err
+	}
+
+	if userData.Nickname == "" {
+		userData.Nickname = userData.FirstName + " " + userData.LastName
+	}
+
 	notificationsToBroadcast := []*models.NotificationJSON{}
 
 	for _, userIdToAdd := range members.UserIds {
 
-		isGroupMember, err := s.IsGroupMember(int64(members.GroupId), int64(userIdToAdd))
-
-		if err != nil {
-			s.Logger.Printf("Cannot validate user: %s", err)
-			return nil, err
-		}
-
-		if isGroupMember {
-			s.Logger.Printf("User %d is already a member of this group", userIdToAdd)
-			continue
+		member, err := s.GroupMemberRepository.GetMemberByGroupId(int64(members.GroupId), int64(userIdToAdd))
+		if err != sql.ErrNoRows {
+			if err != nil {
+				s.Logger.Printf("Cannot validate user: %s", err)
+				return nil, err
+			} else if member.Accepted {
+				s.Logger.Printf("User %d is already a member of this group", userIdToAdd)
+				continue
+			}
 		}
 
 		groupMember := &models.GroupMember{
@@ -167,9 +190,9 @@ func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMember
 			NotificationType: notificationDetails.NotificationType,
 			NotificationId:   notificationId,
 			SenderId:         userId,
-			SenderName:       "",
+			SenderName:       userData.Nickname,
 			GroupId:          int64(members.GroupId),
-			GroupName:        "",
+			GroupName:        group.Title,
 		}
 
 		notificationsToBroadcast = append(notificationsToBroadcast, notificationJSON)
@@ -192,15 +215,15 @@ func (s *GroupMemberService) GetMembersToAdd(groupId int64, userId int64) ([]*mo
 
 	for _, follower := range followers {
 
-		isGroupMember, err := s.IsGroupMember(groupId, follower.Id)
+		member, err := s.GroupMemberRepository.GetMemberByGroupId(groupId, follower.Id)
 
-		if err != nil {
-			s.Logger.Printf("Cannot validate user: %s", err)
-			return nil, err
-		}
-
-		if isGroupMember {
-			continue
+		if err != sql.ErrNoRows {
+			if err != nil {
+				s.Logger.Printf("Cannot validate user: %s", err)
+				return nil, err
+			} else if member.Accepted {
+				continue
+			}
 		}
 
 		simpleMember := &models.SimpleUserJSON{
@@ -225,15 +248,15 @@ func (s *GroupMemberService) GetMembersToAdd(groupId int64, userId int64) ([]*mo
 			continue
 		}
 
-		isGroupMember, err := s.IsGroupMember(groupId, followed.Id)
+		member, err := s.GroupMemberRepository.GetMemberByGroupId(groupId, followed.Id)
 
-		if err != nil {
-			s.Logger.Printf("Cannot validate user: %s", err)
-			return nil, err
-		}
-
-		if isGroupMember {
-			continue
+		if err != sql.ErrNoRows {
+			if err != nil {
+				s.Logger.Printf("Cannot validate user: %s", err)
+				return nil, err
+			} else if member.Accepted {
+				continue
+			}
 		}
 
 		simpleMember := &models.SimpleUserJSON{

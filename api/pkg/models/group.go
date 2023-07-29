@@ -134,7 +134,7 @@ func (repo GroupRepository) GetAllByMemberId(userId int64) ([]*Group, error) {
 	stmt := `SELECT DISTINCT g.id, g.creator_id,  g.title, g.description, g.created_at, g.image_path FROM groups g
 	INNER JOIN user_groups ug ON
 	g.id = ug.group_id
-	WHERE ug.user_id = ?
+	WHERE ug.user_id = ? AND ug.accepted = TRUE
     ORDER BY title ASC`
 
 	rows, err := repo.DB.Query(stmt, userId)
