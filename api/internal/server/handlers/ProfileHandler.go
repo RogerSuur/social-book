@@ -36,7 +36,7 @@ func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 		if profileId == requestingUserId {
 			// self
 			app.Logger.Printf("User is trying to view their own profile")
-			http.Redirect(rw, r, "/profile", http.StatusPermanentRedirect)
+			http.Redirect(rw, r, "/profile", http.StatusSeeOther)
 			return
 		}
 	}
