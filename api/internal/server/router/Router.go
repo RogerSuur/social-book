@@ -41,11 +41,13 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/groups/{groupId:[0-9]+?}/avatar", app.UserService.Authenticate(app.UpdateGroupImage)).Methods("POST")
 	r.HandleFunc("/groupmembers/{groupId:[0-9]+?}", app.UserService.Authenticate(app.GroupMembers)).Methods("GET")
 	r.HandleFunc("/addmembers", app.UserService.Authenticate(app.AddMembers)).Methods("POST")
+	r.HandleFunc("/addmembers/{groupId:[0-9]+?}", app.UserService.Authenticate(app.GetMembersToAdd)).Methods("GET")
 	r.HandleFunc("/groupfeed/{groupId:[0-9]+?}/{offset:[0-9]+?}", app.UserService.Authenticate(app.GroupPosts)).Methods("GET")
 	//Events
 	r.HandleFunc("/userevents", app.UserService.Authenticate(app.UserEvents)).Methods("GET")
 	r.HandleFunc("/creategroupevent", app.UserService.Authenticate(app.CreateGroupEvent)).Methods("POST")
 	r.HandleFunc("/groupevents/{groupId:[0-9]+?}", app.UserService.Authenticate(app.GroupEvents)).Methods("GET")
+	r.HandleFunc("/event/{eventId:[0-9]+?}", app.UserService.Authenticate(app.Event)).Methods("GET")
 	//Search
 	r.HandleFunc("/search/{searchcriteria}", app.UserService.Authenticate(app.Search)).Methods("GET")
 	r.HandleFunc("/notifications", app.UserService.Authenticate(app.Notifications)).Methods("GET")

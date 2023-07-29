@@ -14,7 +14,7 @@ type IGroupService interface {
 	GetUserGroups(userId int64) ([]*models.UserGroup, error)
 	GetUserCreatedGroups(userId int64) ([]*models.UserGroup, error)
 	GetGroupById(groupId int64) (models.GroupJSON, error)
-	SearchGroupsAndUsers(searchString string) ([]*models.SearchResult, error)
+	SearchGroupsAndUsers(userId int64, searchString string) ([]*models.SearchResult, error)
 	CreateGroup(groupFormData *models.GroupJSON, userId int64) (int64, error)
 	UpdateGroupImage(userId int64, groupId int64, imageFile multipart.File, header *multipart.FileHeader) error
 	GetGroupCreator(groupId int64) (*models.User, error)
@@ -97,14 +97,14 @@ func (s *GroupService) GetGroupById(groupId int64) (models.GroupJSON, error) {
 	return group, err
 }
 
-func (s *GroupService) SearchGroupsAndUsers(searchString string) ([]*models.SearchResult, error) {
+func (s *GroupService) SearchGroupsAndUsers(userId int64, searchString string) ([]*models.SearchResult, error) {
 
-	result, err := s.GroupRepository.SearchGroupsAndUsersByString(searchString)
+	result, err := s.GroupRepository.SearchGroupsAndUsersByString(userId, searchString)
 
 	if err != nil {
 		s.Logger.Printf("Failed searching groups: %s", err)
 	}
-	//TODO
+
 	return result, err
 }
 

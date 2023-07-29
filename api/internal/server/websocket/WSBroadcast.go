@@ -218,7 +218,7 @@ func (w *WebsocketServer) BroadcastGroupMessage(c *Client, message *models.Messa
 	return nil
 }
 
-func (w *WebsocketServer) BroadcastGroupEventInvites(notifications []*models.NotificationJSON) error {
+func (w *WebsocketServer) BroadcastGroupNotifications(notifications []*models.NotificationJSON) error {
 
 	for _, notification := range notifications {
 

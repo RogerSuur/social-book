@@ -70,9 +70,15 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 		return ErrorInvalidNotification
 	}
 
+	NotificationDetails, err := w.notificationService.GetDetailsById(notification.NotificationDetailsId)
+	if err != nil {
+		w.Logger.Printf("Error getting notification details: %s", err.Error())
+		return err
+	}
+
 	// perhaps case switch here?
-	if notification.NotificationType == "follow_request" {
-		w.Logger.Printf("User %v accepted follow request %v", c.clientID, data.ID)
+	if NotificationDetails.NotificationType == "follow_request" {
+		w.Logger.Printf("User %v reacted to follow request %v", c.clientID, data.ID)
 		err = w.notificationService.HandleFollowRequest(int64(data.ID), data.Reaction)
 		if err != nil {
 			return err
@@ -80,8 +86,8 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 		return nil
 	}
 
-	if notification.NotificationType == "group_invite" {
-		w.Logger.Printf("User %v accepted group invite %v", c.clientID, data.ID)
+	if NotificationDetails.NotificationType == "group_invite" {
+		w.Logger.Printf("User %v reacted to group invite %v", c.clientID, data.ID)
 		err = w.notificationService.HandleGroupInvite(int64(data.ID), data.Reaction)
 		if err != nil {
 			return err
@@ -89,8 +95,8 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 		return nil
 	}
 
-	if notification.NotificationType == "group_request" {
-		w.Logger.Printf("User %v accepted group request %v", c.clientID, data.ID)
+	if NotificationDetails.NotificationType == "group_request" {
+		w.Logger.Printf("User %v reacted to group request %v", c.clientID, data.ID)
 		err = w.notificationService.HandleGroupRequest(c.clientID, int64(data.ID), data.Reaction)
 		if err != nil {
 			return err
@@ -98,10 +104,18 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 		return nil
 	}
 
-	// TODO: handle other notification types
-	w.Logger.Printf("Notification type %v not handled (TODO)", notification.NotificationType)
+	if NotificationDetails.NotificationType == "event_invite" {
+		w.Logger.Printf("User %v reacted to event invite %v", c.clientID, data.ID)
+		err = w.notificationService.HandleEventInvite(int64(data.ID), data.Reaction)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 
-	return nil
+	w.Logger.Printf("Notification type %v not handled", NotificationDetails.NotificationType)
+
+	return errors.New("unknown notification type: " + NotificationDetails.NotificationType)
 }
 
 func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
@@ -270,6 +284,9 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 }
 
 func (w *WebsocketServer) GroupRequestHandler(p Payload, c *Client) error {
+
+	//w.Logger.Printf("Payload: %s", p)
+
 	data := &RequestPayload{}
 	err := json.Unmarshal(p.Data, &data)
 	if err != nil {

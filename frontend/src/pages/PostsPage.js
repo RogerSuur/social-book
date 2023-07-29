@@ -46,6 +46,8 @@ const Posts = ({ groupId, showGroupSidebar, showCreatePost, url }) => {
     };
   }, [offset, loadMore]);
 
+  console.log("GROUP ID: ", groupId);
+
   return (
     <>
       {showGroupSidebar && <GroupSidebar />}

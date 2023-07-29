@@ -52,6 +52,7 @@ func (app *Application) CreateGroupEvent(rw http.ResponseWriter, r *http.Request
 		if err != nil {
 			app.Logger.Printf("JSON error: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
+			return
 		}
 
 		userId, err := app.UserService.GetUserID(r)
@@ -59,6 +60,7 @@ func (app *Application) CreateGroupEvent(rw http.ResponseWriter, r *http.Request
 		if err != nil {
 			app.Logger.Printf("Failed fetching user: %v", err)
 			http.Error(rw, "Get user error", http.StatusBadRequest)
+			return
 		}
 
 		notifications, err := app.GroupEventService.CreateGroupEvent(JSONdata, userId)
@@ -68,7 +70,7 @@ func (app *Application) CreateGroupEvent(rw http.ResponseWriter, r *http.Request
 			return
 		}
 
-		err = app.WS.BroadcastGroupEventInvites(notifications)
+		err = app.WS.BroadcastGroupNotifications(notifications)
 
 		if err != nil {
 			http.Error(rw, "err", http.StatusBadRequest)
@@ -77,6 +79,35 @@ func (app *Application) CreateGroupEvent(rw http.ResponseWriter, r *http.Request
 
 	default:
 		http.Error(rw, "err", http.StatusBadRequest)
+		return
+	}
+
+}
+
+func (app *Application) Event(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		vars := mux.Vars(r)
+
+		eventIdStr := vars["eventId"]
+		eventId, err := strconv.ParseInt(eventIdStr, 10, 64)
+
+		if eventId < 0 || err != nil {
+			app.Logger.Printf("DATA PARSE error: %v", err)
+			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
+		}
+
+		event, err := app.GroupEventService.GetEventById(eventId)
+
+		if err != nil {
+			app.Logger.Printf("Failed fetching groups: %v", err)
+			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
+
+		json.NewEncoder(rw).Encode(&event)
+
+	default:
+		http.Error(rw, "method is not supported", http.StatusNotFound)
 		return
 	}
 

@@ -5,6 +5,7 @@ import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"SocialNetworkRestApi/api/pkg/services"
 	"log"
+	"math/rand"
 	"os"
 	"time"
 
@@ -191,8 +192,10 @@ func SeedGroups(repos *models.Repositories) {
 				logger.Printf("%+v\n", err)
 			}
 			tempGroupUser := &models.GroupMember{
-				UserId:  groupUser.Id,
-				GroupId: id,
+				UserId:   groupUser.Id,
+				GroupId:  id,
+				JoinedAt: time.Now(),
+				Accepted: true,
 			}
 
 			_, err = repos.GroupMemberRepo.Insert(tempGroupUser)
@@ -217,11 +220,52 @@ func SeedGroups(repos *models.Repositories) {
 				Title:        event.Title,
 				Description:  event.Description,
 			}
-			_, err = repos.EventRepo.InsertSeedEvent(tempEvent)
+			tempEventId, err := repos.EventRepo.InsertSeedEvent(tempEvent)
 			if err != nil {
 				logger.Printf("%+v\n", err)
 			}
 
+			detailsId, err := repos.NotificationRepo.InsertDetails(&models.NotificationDetails{
+				SenderId:         tempEvent.UserId,
+				NotificationType: "event_invite",
+				EntityId:         tempEventId,
+				CreatedAt:        time.Now(),
+			})
+
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+
+			for _, groupUserEmail := range group.Users {
+				groupUser, err := repos.UserRepo.GetByEmail(groupUserEmail)
+				if err != nil {
+					logger.Printf("%+v\n", err)
+				}
+
+				isAttending := (rand.Intn(10) % 2) == 0
+
+				if isAttending {
+					_, err := repos.EventAttendanceRepo.Insert(&models.EventAttendance{
+						EventId:     tempEventId,
+						UserId:      groupUser.Id,
+						IsAttending: isAttending,
+					})
+
+					if err != nil {
+						logger.Printf("%+v\n", err)
+					}
+
+				} else {
+					_, err := repos.NotificationRepo.InsertNotification(&models.Notification{
+						ReceiverId:            groupUser.Id,
+						NotificationDetailsId: detailsId,
+					})
+
+					if err != nil {
+						logger.Printf("%+v\n", err)
+					}
+				}
+			}
 		}
 
 		//Add group posts
@@ -244,47 +288,6 @@ func SeedGroups(repos *models.Repositories) {
 			if err != nil {
 				logger.Printf("%+v\n", err)
 			}
-		}
-
-	}
-
-	// Add group event attendees
-	for _, attendance := range SeedEventAttendanceDataAccepted {
-		_, err := repos.EventAttendanceRepo.Insert(&models.EventAttendance{
-			EventId:     attendance.EventId,
-			UserId:      attendance.UserId,
-			IsAttending: attendance.IsAttending,
-		})
-
-		if err != nil {
-			logger.Printf("%+v\n", err)
-		}
-	}
-
-	for _, invitation := range SeedEventAttendanceDataPending {
-		event, err := repos.EventRepo.GetById(invitation.EventId)
-		if err != nil {
-			logger.Printf("%+v\n", err)
-		}
-
-		_, err = repos.EventAttendanceRepo.Insert(&models.EventAttendance{
-			EventId:     invitation.EventId,
-			UserId:      invitation.UserId,
-			IsAttending: invitation.IsAttending,
-		})
-		if err != nil {
-			logger.Printf("%+v\n", err)
-		}
-
-		_, err = repos.NotificationRepo.Insert(&models.Notification{
-			ReceiverId:       invitation.UserId,
-			SenderId:         event.UserId,
-			EntityId:         invitation.EventId,
-			NotificationType: "event_invite",
-			CreatedAt:        time.Now(),
-		})
-		if err != nil {
-			logger.Printf("%+v\n", err)
 		}
 
 	}

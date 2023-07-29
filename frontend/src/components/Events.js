@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { GROUP_EVENTS_URL } from "../utils/routes";
 import CreateEvent from "./CreateEvent";
 
 const Events = ({ groupId }) => {
   const [eventsData, setEventsData] = useState([]);
 
-  const [loadNewEvents, setloadNewEvents] = useState(0);
+  const [loadNewEvents, setLoadNewEvents] = useState(0);
 
   const handleEventUpdate = () => {
-    setloadNewEvents((prevCount) => prevCount + 1);
+    setLoadNewEvents((prevCount) => prevCount + 1);
   };
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        console.log("REQUEST URL", GROUP_EVENTS_URL + groupId);
         const response = await axios.get(GROUP_EVENTS_URL + groupId, {
           withCredentials: true,
         });
@@ -27,14 +27,24 @@ const Events = ({ groupId }) => {
     fetchEvents();
   }, [groupId, loadNewEvents]);
 
-  const eventsDataMap = eventsData.map((event, index) => (
+  console.log("GROUPEVENTS: ", eventsData);
+
+  const timeConverter = (datetime) =>
+    new Date(datetime).toLocaleTimeString("en-UK", {
+      month: "short",
+      day: "2-digit",
+      year: "2-digit",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+
+  const eventsDataMap = eventsData?.map((event, index) => (
     <div key={index}>
-      {/* LOO SIIA LINK EVENTI LEHELE */}
-      {/* <Link to={`/profile/${member.Id}`}> */}
-      <h1>{event.Title}</h1>
-      <p>{event.Description}</p>
-      <p>{event.EventTime}</p>
-      {/* </Link> */}
+      <Link to={`/event/${event.id}`}>
+        <h1>{event.title}</h1>
+      </Link>
+      <p>{event.description}</p>
+      <p>Begins {timeConverter(event.eventTime)}</p>
     </div>
   ));
 

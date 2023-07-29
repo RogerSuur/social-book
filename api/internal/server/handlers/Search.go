@@ -12,11 +12,19 @@ func (app *Application) Search(rw http.ResponseWriter, r *http.Request) {
 	case "GET":
 		vars := mux.Vars(r)
 		searchString := vars["searchcriteria"]
-		app.Logger.Println(searchString)
+		//app.Logger.Println(searchString)
 
-		groupSearchResult, err := app.GroupService.SearchGroupsAndUsers(searchString)
+		userId, err := app.UserService.GetUserID(r)
 
-		app.Logger.Println(groupSearchResult)
+		if err != nil {
+			app.Logger.Printf("Cannot get user ID: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		groupSearchResult, err := app.GroupService.SearchGroupsAndUsers(userId, searchString)
+
+		//app.Logger.Println(groupSearchResult)
 
 		if err != nil {
 			app.Logger.Printf("JSON error: %v", err)

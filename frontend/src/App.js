@@ -12,6 +12,7 @@ import ProfileInfo from "./components/ProfileInfo";
 import GroupPage from "./pages/GroupPage";
 //import RequireGuest from "./components/RequireGuest";
 import Logout from "./components/Logout";
+import EventPage from "./pages/EventPage.js";
 
 import "./style.css";
 
@@ -28,6 +29,7 @@ function App() {
               <Route path="profile" element={<Profile />} />
               <Route path="profile/:id" element={<ProfileInfo />} />
               <Route path="groups/:id" element={<GroupPage />} />
+              <Route path="event/:id" element={<EventPage />} />
               <Route
                 path="posts"
                 element={

@@ -85,7 +85,7 @@ const GroupPage = () => {
     try {
       await axios.post(
         ADD_GROUP_MEMBERS_URL,
-        JSON.stringify({ groupId: id, userIds: formData }),
+        JSON.stringify({ groupId: +id, userIds: formData }),
         {
           withCredentials: true,
         }
@@ -99,7 +99,8 @@ const GroupPage = () => {
 
   return (
     <>
-      {<GroupSidebar />}
+      <GroupSidebar />
+      <Events groupId={+id} />
       {error ? (
         <div className="error">{error}</div>
       ) : (
@@ -124,7 +125,7 @@ const GroupPage = () => {
                   </>
                 )}
               </div>
-              <GroupMembers groupId={id} />
+              <GroupMembers groupId={+id} />
               <div className="profile-actions">
                 <Modal open={modalOpen} onClose={handleModalClose}>
                   <AvatarUpdater
@@ -135,15 +136,15 @@ const GroupPage = () => {
                 <button onClick={handleModalClick}>Upload New Image</button>
               </div>
               <Posts
-                forGroupPage={true}
+                groupId={+id}
                 showGroupSidebar={false}
                 showCreatePost={true}
                 url={`/groupfeed/${id}`}
               />
-              <Events groupId={id} />
+              <Events groupId={+id} />
             </>
           ) : (
-            <GroupRequestButton groupid={group.id} />
+            <GroupRequestButton groupid={+id} />
           )}
         </div>
       )}

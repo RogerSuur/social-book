@@ -6,14 +6,22 @@ import (
 	"os"
 )
 
+type AttendeeJSON struct {
+	Id          int    `json:"id"`
+	Nickname    string `json:"nickname"`
+	ImagePath   string `json:"imagePath"`
+	IsAttending bool   `json:"isAttending"`
+}
+
 type EventAttendance struct {
-	UserId      int64
-	EventId     int64
-	IsAttending bool
+	UserId      int64 `json:"userId"`
+	EventId     int64 `json:"eventId"`
+	IsAttending bool  `json:"isAttending"`
 }
 
 type IEventAttendanceRepository interface {
 	Insert(attendance *EventAttendance) (int64, error)
+	GetAttendeesByEventId(eventId int64) ([]*EventAttendance, error)
 }
 
 type EventAttendanceRepository struct {
@@ -53,4 +61,31 @@ func (repo EventAttendanceRepository) Insert(attendance *EventAttendance) (int64
 	repo.Logger.Printf("User %d added to attend event %d", attendance.UserId, attendance.EventId)
 
 	return lastId, nil
+}
+
+func (repo EventAttendanceRepository) GetAttendeesByEventId(eventId int64) ([]*EventAttendance, error) {
+	query := `SELECT user_id, event_id, is_attending FROM group_event_attendance WHERE event_id = ?`
+
+	rows, err := repo.DB.Query(query, eventId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	attendees := []*EventAttendance{}
+
+	for rows.Next() {
+		attendee := &EventAttendance{}
+		err := rows.Scan(&attendee.UserId, &attendee.EventId, &attendee.IsAttending)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attendees = append(attendees, attendee)
+	}
+
+	repo.Logger.Printf("Fetched %d attendees for event %d", len(attendees), eventId)
+
+	return attendees, nil
 }

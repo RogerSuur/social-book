@@ -266,6 +266,7 @@ nav {
 
 .group-post-area{
   top: 15vh;
+  min-height: 20vh;
   max-height: 78vh;
   width: 32vw;
   overflow: auto;

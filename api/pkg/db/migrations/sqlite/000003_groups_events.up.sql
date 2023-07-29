@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS user_groups (
 	user_id INTEGER NOT NULL,
 	group_id INTEGER NOT NULL,
 	joined_at DATETIME NOT NULL,
+	accepted BOOL NOT NULL,
 	FOREIGN KEY (user_id) 
 		REFERENCES users (id)
 	FOREIGN KEY (group_id) 

@@ -8,9 +8,11 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
     console.log(notifications, "NOTIFICATIONS");
     console.log(id, "ID");
     setNotifications((prevNotifications) =>
-      prevNotifications.filter(
-        (notification) => notification?.data?.notification_id !== id
-      )
+      prevNotifications.filter((notification) => {
+        console.log("NOTIFICATION_ID: ", notification?.notification_id);
+        console.log("PASSED ID: ", notification?.notification_id);
+        return notification?.notification_id !== id;
+      })
     );
   };
 

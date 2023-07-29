@@ -8,7 +8,7 @@ import ImageHandler from "../utils/imageHandler.js";
 const PROFILE_URL = "http://localhost:8000/profile";
 const PROFILE_UPDATE_URL = "http://localhost:8000/profile/update";
 
-const ProfileEditor = (props) => {
+const ProfileEditor = () => {
   const [user, setUser] = useState({});
   const [errMsg, setErrMsg] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -23,6 +23,8 @@ const ProfileEditor = (props) => {
     values,
     criteriaMode: "all",
   });
+
+  console.log("EDITOR PROFILE: ", user);
 
   const image = () =>
     ImageHandler(user?.avatarImage, "defaultuser.jpg", "profile-image");
@@ -42,14 +44,10 @@ const ProfileEditor = (props) => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post(
-        PROFILE_UPDATE_URL,
-        JSON.stringify(data),
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      await axios.post(PROFILE_UPDATE_URL, JSON.stringify(data), {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -65,6 +63,18 @@ const ProfileEditor = (props) => {
 
   const handleModalClick = () => {
     setModalOpen(true);
+  };
+
+  const birthdayConverter = (date) => {
+    if (!date) {
+      return;
+    }
+    const [day, month, year] = date?.split("/");
+    return new Date(year, month - 1, day).toLocaleDateString("en-UK", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
   return (
@@ -121,11 +131,7 @@ const ProfileEditor = (props) => {
               <div className="profile-row">
                 <div className="profile-title">Birthday</div>
                 <div className="profile-column">
-                  {new Date(user.birthday).toLocaleDateString("en-UK", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+                  {birthdayConverter(user?.birthday)}
                 </div>
               </div>
               <div className="profile-row">

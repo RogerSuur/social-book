@@ -17,6 +17,11 @@ type SeedEventAttendance struct {
 	IsAttending bool
 }
 
+type SeedEventPending struct {
+	EventId int64
+	UserIds []int64
+}
+
 var SeedEventsDataA = []*SeedEvent{
 	{
 		CreatorEmail: "b@b.com",
@@ -68,71 +73,5 @@ var SeedEventsDataC = []*SeedEvent{
 		TimeSpan:     time.Hour,
 		Title:        "Artistic Fusion: Collaborative Exhibition",
 		Description:  "Witness the convergence of creative minds as visionary artists from various disciplines come together to showcase their collaborative works. Experience the power of artistic fusion and be inspired by the vibrant energy that emerges when diverse talents unite.",
-	},
-}
-
-var SeedEventAttendanceDataAccepted = []*SeedEventAttendance{
-	{
-		UserId:      2,
-		EventId:     1,
-		IsAttending: true,
-	},
-	{
-		UserId:      2,
-		EventId:     2,
-		IsAttending: true,
-	},
-	{
-		UserId:      1,
-		EventId:     3,
-		IsAttending: true,
-	},
-	{
-		UserId:      1,
-		EventId:     4,
-		IsAttending: true,
-	},
-	{
-		UserId:      1,
-		EventId:     5,
-		IsAttending: true,
-	},
-	{
-		UserId:      2,
-		EventId:     5,
-		IsAttending: true,
-	},
-	{
-		UserId:      3,
-		EventId:     5,
-		IsAttending: true,
-	},
-	{
-		UserId:      1,
-		EventId:     1,
-		IsAttending: true,
-	},
-}
-
-var SeedEventAttendanceDataPending = []*SeedEventAttendance{
-	{
-		UserId:      1,
-		EventId:     2,
-		IsAttending: false,
-	},
-	{
-		UserId:      3,
-		EventId:     2,
-		IsAttending: false,
-	},
-	{
-		UserId:      3,
-		EventId:     1,
-		IsAttending: false,
-	},
-	{
-		UserId:      2,
-		EventId:     3,
-		IsAttending: false,
 	},
 }
