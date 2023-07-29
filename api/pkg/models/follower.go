@@ -77,10 +77,11 @@ func (repo FollowerRepository) Delete(follower *Follower) error {
 }
 
 func (repo FollowerRepository) Update(follower *Follower) error {
-	query := `UPDATE followers SET accepted = ? WHERE id = ?`
+	query := `UPDATE followers SET accepted = ? WHERE following_id = ? AND follower_id = ?`
 
 	args := []interface{}{
 		follower.Accepted,
+		follower.FollowingId,
 		follower.Id,
 	}
 

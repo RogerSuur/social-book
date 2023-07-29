@@ -201,7 +201,7 @@ func (s *UserService) UserRegister(user *models.User) (string, error) {
 	// create session
 	sessionToken := uuid.NewV4().String()
 	session := models.Session{
-		UserId: user.Id,
+		UserId: lastID,
 		Token:  sessionToken,
 	}
 

@@ -263,11 +263,19 @@ func (s *NotificationService) HandleFollowRequest(notificationId int64, accepted
 	}
 
 	// update follow request
-	follower.Accepted = accepted
-	err = s.FollowerRepo.Update(follower)
-	if err != nil {
-		s.Logger.Printf("Cannot update follow request: %s", err)
-		return err
+	if accepted {
+		follower.Accepted = true
+		err = s.FollowerRepo.Update(follower)
+		if err != nil {
+			s.Logger.Printf("Cannot update follow request: %s", err)
+			return err
+		}
+	} else {
+		err = s.FollowerRepo.Delete(follower)
+		if err != nil {
+			s.Logger.Printf("Cannot delete follow request: %s", err)
+			return err
+		}
 	}
 
 	s.Logger.Printf("Follow request updated: %d", follower.Id)
