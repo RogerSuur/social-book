@@ -127,6 +127,7 @@ func (s *GroupService) CreateGroup(groupFormData *models.GroupJSON, userId int64
 		UserId:   userId,
 		GroupId:  result,
 		JoinedAt: time.Now(),
+		Accepted: true,
 	}
 
 	_, err = s.GroupMemberRepo.Insert(creator)
