@@ -35,6 +35,8 @@ type SignupJSON struct {
 type SimpleUserJSON struct {
 	Id        int    `json:"id"`
 	Nickname  string `json:"nickname"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 	ImagePath string `json:"imagePath"`
 }
 
@@ -47,6 +49,7 @@ type IUserRepository interface {
 	CheckIfNicknameExists(nickname string, id int64) error
 	GetAllUserFollowers(id int64) ([]*User, error)
 	GetAllFollowedBy(id int64) ([]*User, error)
+	GetAllUsers(id int64) ([]*User, error)
 	UpdateImage(id int64, imagePath string) error
 }
 
@@ -208,6 +211,36 @@ func (repo UserRepository) GetAllFollowedBy(id int64) ([]*User, error) {
 		user := &User{}
 
 		err := rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Birthday, &user.Nickname, &user.About, &user.ImagePath, &user.CreatedAt, &user.IsPublic)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (repo UserRepository) GetAllUsers(id int64) ([]*User, error) {
+	stmt := `SELECT id, forname, surname, email, birthday, nickname, about, image_path, created_at, is_public FROM users 
+	WHERE id != ?`
+
+	rows, err := repo.DB.Query(stmt, id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	users := []*User{}
+
+	for rows.Next() {
+		user := &User{}
+
+		err := rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Birthday, &user.Nickname, &user.About, &user.ImagePath, &user.CreatedAt, &user.IsPublic)
 		if err != nil {
 			return nil, err
 		}

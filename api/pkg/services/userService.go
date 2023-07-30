@@ -47,8 +47,9 @@ type IUserService interface {
 	UserLogin(user *models.User) (string, error)
 	UserLogout(r *http.Request) error
 	UserRegister(user *models.User) (string, error)
-	GetUserFollowers(userID int64) ([]FollowerData, error)
-	GetUserFollowing(userID int64) ([]FollowerData, error)
+	GetUserFollowers(userID int64) ([]*FollowerData, error)
+	GetUserFollowing(userID int64) ([]*FollowerData, error)
+	GetPublicUsers(userID int64) ([]*models.SimpleUserJSON, error)
 	IsFollowed(followerID int64, followingID int64) bool
 	Unfollow(followerID int64, followingID int64) error
 	UpdateUserImage(userID int64, file multipart.File, fileHeader *multipart.FileHeader) error
@@ -327,21 +328,21 @@ func (s *UserService) GetUserID(r *http.Request) (int64, error) {
 	return session.UserId, nil
 }
 
-func (s *UserService) GetUserFollowers(userID int64) ([]FollowerData, error) {
+func (s *UserService) GetUserFollowers(userID int64) ([]*FollowerData, error) {
 
 	followers, err := s.FollowerRepo.GetFollowersById(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	followersData := []FollowerData{}
+	followersData := []*FollowerData{}
 
 	for _, follower := range followers {
 		user, err := s.UserRepo.GetById(follower.FollowerId)
 		if err != nil {
 			return nil, err
 		}
-		follower := FollowerData{
+		follower := &FollowerData{
 			UserID:      int(user.Id),
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
@@ -355,21 +356,21 @@ func (s *UserService) GetUserFollowers(userID int64) ([]FollowerData, error) {
 	return followersData, nil
 }
 
-func (s *UserService) GetUserFollowing(userID int64) ([]FollowerData, error) {
+func (s *UserService) GetUserFollowing(userID int64) ([]*FollowerData, error) {
 
 	following, err := s.FollowerRepo.GetFollowingById(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	followingData := []FollowerData{}
+	followingData := []*FollowerData{}
 
 	for _, follower := range following {
 		user, err := s.UserRepo.GetById(follower.FollowingId)
 		if err != nil {
 			return nil, err
 		}
-		following := FollowerData{
+		following := &FollowerData{
 			UserID:      int(user.Id),
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
@@ -381,6 +382,37 @@ func (s *UserService) GetUserFollowing(userID int64) ([]FollowerData, error) {
 	}
 
 	return followingData, nil
+}
+
+func (s *UserService) GetPublicUsers(userID int64) ([]*models.SimpleUserJSON, error) {
+
+	users, err := s.UserRepo.GetAllUsers(userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	usersJSON := []*models.SimpleUserJSON{}
+
+	for _, user := range users {
+
+		if !user.IsPublic {
+			continue
+		}
+
+		userJSON := &models.SimpleUserJSON{
+			Id:        int(user.Id),
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			Nickname:  user.Nickname,
+			ImagePath: user.ImagePath,
+		}
+
+		usersJSON = append(usersJSON, userJSON)
+
+	}
+
+	return usersJSON, nil
 }
 
 func (s *UserService) IsFollowed(userID int64, followerID int64) bool {

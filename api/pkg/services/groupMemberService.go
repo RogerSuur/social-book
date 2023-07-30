@@ -204,6 +204,46 @@ func (s *GroupMemberService) AddMembers(userId int64, members models.GroupMember
 
 func (s *GroupMemberService) GetMembersToAdd(groupId int64, userId int64) ([]*models.SimpleUserJSON, error) {
 
+	publicUsers, err := s.UserRepository.GetAllUsers(userId)
+
+	if err != nil {
+		s.Logger.Printf("Failed fetching public users: %s", err)
+		return nil, err
+	}
+
+	s.Logger.Printf("Public users: %v", publicUsers)
+
+	simpleMembers := map[int64]*models.SimpleUserJSON{}
+
+	for _, user := range publicUsers {
+
+		if !user.IsPublic {
+			continue
+		}
+
+		member, err := s.GroupMemberRepository.GetMemberByGroupId(groupId, user.Id)
+
+		if err != sql.ErrNoRows {
+			if err != nil {
+				s.Logger.Printf("Cannot validate user: %s", err)
+				return nil, err
+			} else if member.Accepted {
+				continue
+			}
+		}
+
+		simpleMember := &models.SimpleUserJSON{
+			Id:        int(user.Id),
+			Nickname:  user.Nickname,
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			ImagePath: user.ImagePath,
+		}
+
+		simpleMembers[user.Id] = simpleMember
+
+	}
+
 	followers, err := s.UserRepository.GetAllUserFollowers(userId)
 
 	if err != nil {
@@ -211,9 +251,11 @@ func (s *GroupMemberService) GetMembersToAdd(groupId int64, userId int64) ([]*mo
 		return nil, err
 	}
 
-	simpleMembers := map[int64]*models.SimpleUserJSON{}
-
 	for _, follower := range followers {
+
+		if simpleMembers[follower.Id] != nil {
+			continue
+		}
 
 		member, err := s.GroupMemberRepository.GetMemberByGroupId(groupId, follower.Id)
 
@@ -229,6 +271,8 @@ func (s *GroupMemberService) GetMembersToAdd(groupId int64, userId int64) ([]*mo
 		simpleMember := &models.SimpleUserJSON{
 			Id:        int(follower.Id),
 			Nickname:  follower.Nickname,
+			FirstName: follower.FirstName,
+			LastName:  follower.LastName,
 			ImagePath: follower.ImagePath,
 		}
 
@@ -262,6 +306,8 @@ func (s *GroupMemberService) GetMembersToAdd(groupId int64, userId int64) ([]*mo
 		simpleMember := &models.SimpleUserJSON{
 			Id:        int(followed.Id),
 			Nickname:  followed.Nickname,
+			FirstName: followed.FirstName,
+			LastName:  followed.LastName,
 			ImagePath: followed.ImagePath,
 		}
 
