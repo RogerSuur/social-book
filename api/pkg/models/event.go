@@ -109,7 +109,6 @@ func (repo EventRepository) InsertSeedEvent(event *Event) (int64, error) {
 	return lastId, nil
 }
 
-// Get all group events
 func (repo EventRepository) GetAllByGroupId(id int64) ([]*Event, error) {
 
 	query := `SELECT id, group_id, user_id, created_at, event_time, event_end_time, title, description FROM group_events WHERE group_id = ?`
@@ -139,10 +138,8 @@ func (repo EventRepository) GetAllByGroupId(id int64) ([]*Event, error) {
 	return events, err
 }
 
-// Get all events by user
 func (repo EventRepository) GetAllByUserId(id int64) ([]*Event, error) {
-	//TODO
-	//Get all events by attending user
+
 	query := `SELECT DISTINCT ge.id, group_id, ge.user_id, ge.created_at, ge.event_time, ge.event_end_time, ge.title, ge.description FROM group_events ge
 	INNER JOIN group_event_attendance gea
 	ON gea.event_id = ge.id
@@ -173,7 +170,6 @@ func (repo EventRepository) GetAllByUserId(id int64) ([]*Event, error) {
 	return events, err
 }
 
-// Get event by id
 func (repo EventRepository) GetById(id int64) (*Event, error) {
 	query := `SELECT id, group_id, user_id, created_at, event_time, event_end_time, title, description FROM group_events WHERE id = ?`
 

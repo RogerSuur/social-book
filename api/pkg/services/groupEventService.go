@@ -207,46 +207,6 @@ func (s *GroupEventService) GetUserEvents(userId int64) ([]*EventJSON, error) {
 	return eventJSON, nil
 }
 
-func (s *GroupEventService) InviteUser(userId int64, eventId int64) error {
-
-	event, err := s.EventRepository.GetById(eventId)
-
-	if err != nil {
-		s.Logger.Printf("Failed fetching event: %s", err)
-		return err
-	}
-
-	notificationDetails := &models.NotificationDetails{
-		SenderId:         event.UserId,
-		NotificationType: "event_invite",
-		EntityId:         eventId,
-		CreatedAt:        time.Now(),
-	}
-
-	detailsId, err := s.NotificationRepository.InsertDetails(notificationDetails)
-
-	if err != nil {
-		s.Logger.Printf("Failed inserting notification details: %s", err)
-		return err
-	}
-
-	notification := &models.Notification{
-		ReceiverId:            userId,
-		NotificationDetailsId: detailsId,
-	}
-
-	_, err = s.NotificationRepository.InsertNotification(notification)
-
-	if err != nil {
-		s.Logger.Printf("Failed inserting notification: %s", err)
-		return err
-	}
-
-	// TODO: Broadcast notification to user
-
-	return nil
-}
-
 func (s *GroupEventService) GetEventById(eventId int64) (*EventJSON, error) {
 
 	event, err := s.EventRepository.GetById(eventId)
