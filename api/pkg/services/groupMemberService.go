@@ -62,13 +62,11 @@ func (s *GroupMemberService) GetGroupMembers(groupId int64) ([]*models.SimpleUse
 			return nil, err
 		}
 
-		if userData.Nickname == "" {
-			userData.Nickname = userData.FirstName + " " + userData.LastName
-		}
-
 		simpleMember := &models.SimpleUserJSON{
 			Id:        int(member.UserId),
 			Nickname:  userData.Nickname,
+			FirstName: userData.FirstName,
+			LastName:  userData.LastName,
 			ImagePath: userData.ImagePath,
 		}
 
