@@ -136,6 +136,41 @@ func (app *Application) Followers(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (app *Application) OtherFollowers(rw http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	userID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		app.Logger.Printf("Cannot parse user ID: %s", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	userFollowers, err := app.UserService.GetUserFollowers(int64(userID))
+
+	if err != nil {
+		app.Logger.Printf("Cannot get user followers: %s", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	for i := len(userFollowers) - 1; i >= 0; i-- {
+		if int64(userFollowers[i].UserID) == userID || !userFollowers[i].Accepted {
+			userFollowers = append(userFollowers[:i], userFollowers[i+1:]...)
+		}
+	}
+
+	err = json.NewEncoder(rw).Encode(userFollowers)
+
+	if err != nil {
+		app.Logger.Printf("Cannot encode user followers: %s", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 func (app *Application) Following(rw http.ResponseWriter, r *http.Request) {
 
 	userID, err := app.UserService.GetUserID(r)
@@ -148,7 +183,7 @@ func (app *Application) Following(rw http.ResponseWriter, r *http.Request) {
 	userFollowing, err := app.UserService.GetUserFollowing(int64(userID))
 
 	if err != nil {
-		app.Logger.Printf("Cannot get user following: %s", err)
+		app.Logger.Printf("Cannot get user followings: %s", err)
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -156,7 +191,42 @@ func (app *Application) Following(rw http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(rw).Encode(userFollowing)
 
 	if err != nil {
-		app.Logger.Printf("Cannot encode user following: %s", err)
+		app.Logger.Printf("Cannot encode user followings: %s", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (app *Application) OtherFollowing(rw http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	userID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		app.Logger.Printf("Cannot parse user ID: %s", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	userFollowing, err := app.UserService.GetUserFollowing(int64(userID))
+
+	if err != nil {
+		app.Logger.Printf("Cannot get user followings: %s", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	for i := len(userFollowing) - 1; i >= 0; i-- {
+		if int64(userFollowing[i].UserID) == userID || !userFollowing[i].Accepted {
+			userFollowing = append(userFollowing[:i], userFollowing[i+1:]...)
+		}
+	}
+
+	err = json.NewEncoder(rw).Encode(userFollowing)
+
+	if err != nil {
+		app.Logger.Printf("Cannot encode user followings: %s", err)
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}

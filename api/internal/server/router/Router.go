@@ -25,7 +25,9 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/profile/update", app.UserService.Authenticate(app.UpdateProfile)).Methods("POST")
 	r.HandleFunc("/profile/update/avatar", app.UserService.Authenticate(app.UpdateUserImage)).Methods("POST")
 	r.HandleFunc("/following", app.UserService.Authenticate(app.Following)).Methods("GET")
+	r.HandleFunc("/following/{id:[0-9]+?}", app.UserService.Authenticate(app.OtherFollowing)).Methods("GET")
 	r.HandleFunc("/followers", app.UserService.Authenticate(app.Followers)).Methods("GET")
+	r.HandleFunc("/followers/{id:[0-9]+?}", app.UserService.Authenticate(app.OtherFollowers)).Methods("GET")
 	//Posts
 	r.HandleFunc("/feedposts/{offset:[0-9]+?}", app.UserService.Authenticate(app.FeedPosts)).Methods("GET")
 	r.HandleFunc("/comments/{postId:[0-9]+?}/{offset:[0-9]+?}", app.UserService.Authenticate(app.Comments)).Methods("GET")
