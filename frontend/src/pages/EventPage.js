@@ -83,24 +83,29 @@ const EventPage = () => {
   console.log("ACTIVE", activeTab);
 
   const renderedEvent = (
-    <div>
+    <div className="event-mid">
+    {/* <div className="event-stuff"> 
+     {/* event img here 
+    </div>*/} 
+    <div className="event-stuff">
       <p>{event?.title}</p>
       <p>{event?.description}</p>
       <p>Start: {timeConverter(event?.eventTime)}</p>
       <p>End: {timeConverter(event?.eventEndTime)}</p>
       <Modal open={modalOpen} onClose={handleModalClose}>
         <ul>
-          <li onClick={() => setActiveTab(true)}>Going</li>
-          <li onClick={() => setActiveTab(false)}>Not Going</li>
+          <li className="pepe" onClick={() => setActiveTab(true)}>Going</li>
+          <li className="pepe" onClick={() => setActiveTab(false)}>Not Going</li>
         </ul>
-        <ul>{userList(activeTab)}</ul>
+        <div className="pepe" >{userList(activeTab)}</div>
       </Modal>
-      <button onClick={() => handleModalClick(true)}>
+      <button className="event-but" onClick={() => handleModalClick(true)}>
         Going {countUsers(true)}
       </button>
-      <button onClick={() => handleModalClick(false)}>
+      <button className="event-but" onClick={() => handleModalClick(false)}>
         Not going {countUsers(false)}
       </button>
+    </div>
     </div>
   );
 
