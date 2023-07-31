@@ -2,6 +2,7 @@ package services
 
 import (
 	"SocialNetworkRestApi/api/pkg/models"
+	"database/sql"
 	"log"
 	"time"
 )
@@ -26,6 +27,7 @@ type IGroupEventService interface {
 	GetUserEvents(userId int64) ([]*EventJSON, error)
 	GetEventById(eventId int64) (*EventJSON, error)
 	ParseEventJSON(events []*models.Event) ([]*EventJSON, error)
+	UpdateEventAttendance(attendance *models.EventAttendance) error
 }
 
 type GroupEventService struct {
@@ -310,4 +312,57 @@ func (s *GroupEventService) ParseEventJSON(events []*models.Event) ([]*EventJSON
 	//s.Logger.Println("Parsed events", eventJSON)
 
 	return eventJSON, nil
+}
+
+func (s *GroupEventService) UpdateEventAttendance(attendance *models.EventAttendance) error {
+
+	// check if event exists
+
+	event, err := s.EventRepository.GetById(attendance.EventId)
+	if err != nil {
+		s.Logger.Printf("Failed fetching event: %s", err)
+		return err
+	}
+
+	// check if user is member of group
+	_, err = s.GroupMemberRepository.GetMemberByGroupId(event.GroupId, attendance.UserId)
+
+	if err == sql.ErrNoRows {
+		s.Logger.Printf("User is not a member of group")
+		return err
+	}
+
+	if err != nil {
+		s.Logger.Printf("Failed fetching group member: %s", err)
+		return err
+	}
+
+	// check if user is already attending event
+
+	existingAttendance, err := s.EventAttendanceRepository.GetAttendee(attendance.EventId, attendance.UserId)
+
+	if err == sql.ErrNoRows {
+		// add user to event attendance
+		_, err = s.EventAttendanceRepository.Insert(attendance)
+		if err != nil {
+			s.Logger.Printf("Failed inserting event attendance: %s", err)
+			return err
+		}
+		return nil
+	}
+
+	if err != nil {
+		s.Logger.Printf("Failed fetching event attendance: %s", err)
+		return err
+	}
+
+	// update user attendance
+	if existingAttendance == attendance {
+		s.Logger.Printf("User attendance is the same")
+		return nil
+	}
+
+	_, err = s.EventAttendanceRepository.Update(attendance)
+	return nil
+
 }

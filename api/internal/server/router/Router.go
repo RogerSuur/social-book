@@ -50,6 +50,7 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/creategroupevent", app.UserService.Authenticate(app.CreateGroupEvent)).Methods("POST")
 	r.HandleFunc("/groupevents/{groupId:[0-9]+?}", app.UserService.Authenticate(app.GroupEvents)).Methods("GET")
 	r.HandleFunc("/event/{eventId:[0-9]+?}", app.UserService.Authenticate(app.Event)).Methods("GET")
+	r.HandleFunc("/eventreaction", app.UserService.Authenticate(app.EventReaction)).Methods("PUT")
 	//Search
 	r.HandleFunc("/search/{searchcriteria}", app.UserService.Authenticate(app.Search)).Methods("GET")
 	r.HandleFunc("/notifications", app.UserService.Authenticate(app.Notifications)).Methods("GET")
