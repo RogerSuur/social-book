@@ -25,6 +25,21 @@ const ProfileInfo = () => {
   const [errMsg, setErrMsg] = useState("");
   const navigate = useNavigate();
 
+  const handleFollow = () => {
+    sendJsonMessage({
+      type: "follow_request",
+      data: { id: user.id },
+    });
+  };
+
+  const handleUnfollow = () => {
+    sendJsonMessage({
+      type: "unfollow",
+      data: { id: user.id },
+    });
+  };
+
+
   useEffect(() => {
     const loadUser = async () => {
       try {
@@ -50,7 +65,7 @@ const ProfileInfo = () => {
       }
     };
     loadUser();
-  }, [id]);
+  }, [id, handleUnfollow]);
 
   useEffect(() => {
     const loadFollow = async () => {
@@ -76,19 +91,6 @@ const ProfileInfo = () => {
 
   console.log(user, "OTHER USER");
 
-  const handleFollow = () => {
-    sendJsonMessage({
-      type: "follow_request",
-      data: { id: user.id },
-    });
-  };
-
-  const handleUnfollow = () => {
-    sendJsonMessage({
-      type: "unfollow",
-      data: { id: user.id },
-    });
-  };
 
   const birthdayConverter = (date) => {
     if (!date) {
