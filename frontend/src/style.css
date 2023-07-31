@@ -26,9 +26,11 @@ nav {
   left: 0;
   right: 0;
   width: 100%;
+  height: 13vh;
 }
 
 .content-as{
+  
   margin-top: 4vh;
   margin-left: auto;
   margin-right: auto;
@@ -194,6 +196,10 @@ nav {
   
 }
 
+.notification-count{
+  text-align: center;
+}
+
 .chat-title {
   border: 1px solid black;
   padding: 10px;
@@ -233,6 +239,7 @@ nav {
 .require-auth-container {
   display: flex;
   justify-content: space-between;
+  
 }
 
 
