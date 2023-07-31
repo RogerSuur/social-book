@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import { PROFILE_URL, FOLLOW_URL } from "../utils/routes";
+import { PROFILE_URL, USER_FOLLOWING_URL, USER_FOLLOWERS_URL } from "../utils/routes";
 import ImageHandler from "../utils/imageHandler.js";
 import Modal from "../components/Modal.js";
 import Posts from "../pages/PostsPage.js";
@@ -17,6 +17,7 @@ const ProfileInfo = () => {
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isFollowed, setIsFollowed] = useState(false);
   const [postsModalOpen, setPostsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(true);
   const { id } = useParams();
@@ -39,6 +40,22 @@ const ProfileInfo = () => {
     });
   };
 
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleModalClick = (follow) => {
+    setActiveTab(follow);
+    setModalOpen(true);
+  };
+
+  const handlePostsModalClose = () => {
+    setPostsModalOpen(false);
+  };
+
+  const handlePostsModalClick = () => {
+    setPostsModalOpen(true);
+  };
 
   useEffect(() => {
     const loadUser = async () => {
@@ -65,18 +82,17 @@ const ProfileInfo = () => {
       }
     };
     loadUser();
-  }, [id, handleUnfollow]);
+  }, [id]);
 
   useEffect(() => {
-    const loadFollow = async () => {
+    const loadFollowers = async () => {
       try {
         await axios
-          .get(FOLLOW_URL + id, {
+          .get(USER_FOLLOWERS_URL + id, {
             withCredentials: true,
           })
           .then((response) => {
-            setFollowers(response?.data?.followers);
-            setFollowing(response?.data?.following);
+            setFollowers(response?.data);
           });
       } catch (err) {
         if (!err?.response) {
@@ -86,8 +102,29 @@ const ProfileInfo = () => {
         }
       }
     };
-    loadFollow();
-  }, [setActiveTab]);
+    loadFollowers();
+  }, []);
+
+  useEffect(() => {
+    const loadFollowing = async () => {
+      try {
+        await axios
+          .get(USER_FOLLOWING_URL + id, {
+            withCredentials: true,
+          })
+          .then((response) => {
+            setFollowing(response?.data);
+          });
+      } catch (err) {
+        if (!err?.response) {
+          setErrMsg("No Server Response");
+        } else {
+          setErrMsg("Internal Server Error");
+        }
+      }
+    };
+    loadFollowing();
+  }, []);
 
   console.log(user, "OTHER USER");
 
@@ -104,22 +141,7 @@ const ProfileInfo = () => {
     });
   };
 
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
-
-  const handleModalClick = (follow) => {
-    setActiveTab(follow);
-    setModalOpen(true);
-  };
-
-  const handlePostsModalClose = () => {
-    setPostsModalOpen(false);
-  };
-
-  const handlePostsModalClick = () => {
-    setPostsModalOpen(true);
-  };
+  
 
   const userList = (follow) => {
     const users = follow ? [...following] : [...followers];
