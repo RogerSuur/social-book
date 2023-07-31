@@ -29,10 +29,11 @@ nav {
 }
 
 .content-as{
-  margin-top: 2em;
+  margin-top: 4vh;
   margin-left: auto;
   margin-right: auto;
-  max-width: 80%;
+  min-width: 400px;
+  max-width: 50vw;
   list-style-type: none;
   flex-direction: column;
   justify-content: center;
@@ -41,9 +42,9 @@ nav {
   background-color: white;
   border-radius: 20px;
   font-size: 0.9rem;
-  flex-shrink: 1;
-  max-width: 600px;
 }
+
+
 
 .comment-section {
   margin-top: 20px;
@@ -141,6 +142,8 @@ nav {
   float: right;
   width: 20vw;
   max-height: 78vh;
+  min-width: 200px;
+  max-width: 18vw;
   overflow: auto;
   background-color: #ffffff;
   padding: 10px;
@@ -182,12 +185,13 @@ nav {
   position: fixed;
   top: 80px;
   left: 1vw;
-  width: 400px; 
+  width: 30vw; 
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 9999; 
+  
 }
 
 .chat-title {
@@ -288,6 +292,7 @@ nav {
   margin-left: 5vw;
   margin-right: 5vw;
   max-width: 60vw;
+  min-width: 400px;
 }
 
 .event-but{
@@ -330,7 +335,8 @@ nav {
   margin-left: 2vw;
   top: 15vh;
   float: left;
-  width: 20vw;
+  min-width: 200px;
+  max-width: 18vw;
   max-height: 78vh;
   overflow: auto;
   background-color: #ffffff;
@@ -464,6 +470,8 @@ height: 7vh;
   float: left;
   width: 20vw;
   max-height: 78vh;
+  min-width: 200px;
+  max-width: 18vw;
   overflow: auto;
   background-color: #ffffff;
   padding: 10px;
@@ -682,6 +690,7 @@ align-items: center;
   cursor: not-allowed;
 }
 
+
 nav ul {
   list-style-type: none;
   margin: 0;
@@ -700,7 +709,7 @@ nav li {
 }		
 
 .content-area {
-  margin-top: 3em;
+  margin-top: 1vh;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 3em;
