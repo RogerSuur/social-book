@@ -39,19 +39,19 @@ const Events = ({ groupId }) => {
     });
 
   const eventsDataMap = eventsData?.map((event, index) => (
-    <div key={index}>
+    <li key={index}>
       <Link to={`/event/${event.id}`}>
         <h1>{event.title}</h1>
       </Link>
       <p>{event.description}</p>
       <p>Begins {timeConverter(event.eventTime)}</p>
-    </div>
+    </li>
   ));
 
   return (
     <>
       <p>Here comes the events of the group</p>
-      {eventsDataMap}
+      <ul>{eventsDataMap}</ul>
       <p>Here comes creating an event</p>
       <CreateEvent onEventCreated={handleEventUpdate} id={groupId} />
     </>

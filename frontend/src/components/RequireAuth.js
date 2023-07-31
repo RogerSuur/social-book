@@ -45,7 +45,7 @@ const RequireAuth = () => {
   useEffect(() => {
     const authorisation = async () => {
       try {
-        const response = await axios.get(AUTH_URL, {
+        await axios.get(AUTH_URL, {
           withCredentials: true,
         });
 
