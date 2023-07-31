@@ -128,7 +128,7 @@ func (s *UserService) GetUserData(requestingUserId int64, profileId int64) (*Pro
 
 	userJSON := &ProfileJSON{}
 
-	IsFollowed := s.IsFollowed(requestingUserId, profileId)
+	IsFollowed := s.IsFollowed(profileId, requestingUserId)
 
 	if !user.IsPublic && !IsFollowed && requestingUserId != profileId {
 		userJSON = &ProfileJSON{
@@ -420,7 +420,7 @@ func (s *UserService) GetPublicUsers(userID int64) ([]*models.SimpleUserJSON, er
 
 func (s *UserService) IsFollowed(userID int64, followerID int64) bool {
 
-	_, err := s.FollowerRepo.GetByFollowerAndFollowing(userID, followerID)
+	_, err := s.FollowerRepo.GetByFollowerAndFollowing(followerID, userID)
 	return err == nil
 }
 

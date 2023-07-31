@@ -21,7 +21,7 @@ type IFollowerRepository interface {
 	Update(follower *Follower) error
 	GetFollowersById(id int64) ([]*Follower, error)
 	GetFollowingById(id int64) ([]*Follower, error)
-	GetByFollowerAndFollowing(followerId int64, followingId int64) (*Follower, error)
+	GetByFollowerAndFollowing(followerId int64, userId int64) (*Follower, error)
 }
 
 type FollowerRepository struct {
@@ -82,7 +82,7 @@ func (repo FollowerRepository) Update(follower *Follower) error {
 	args := []interface{}{
 		follower.Accepted,
 		follower.FollowingId,
-		follower.Id,
+		follower.FollowerId,
 	}
 
 	_, err := repo.DB.Exec(query, args...)
@@ -156,9 +156,10 @@ func (repo FollowerRepository) GetFollowersById(followerId int64) ([]*Follower, 
 	return following, err
 }
 
-func (repo FollowerRepository) GetByFollowerAndFollowing(followerID int64, followingID int64) (*Follower, error) {
-	query := `SELECT id, following_id, follower_id, accepted FROM followers WHERE following_id = ? AND follower_id = ? AND accepted = true`
-	row := repo.DB.QueryRow(query, followingID, followerID)
+func (repo FollowerRepository) GetByFollowerAndFollowing(followerId int64, userId int64) (*Follower, error) {
+	query := `SELECT id, following_id, follower_id, accepted FROM followers
+	WHERE follower_id = ? AND following_id = ?`
+	row := repo.DB.QueryRow(query, followerId, userId)
 	follower := &Follower{}
 
 	err := row.Scan(&follower.Id, &follower.FollowingId, &follower.FollowerId, &follower.Accepted)
