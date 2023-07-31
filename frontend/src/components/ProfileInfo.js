@@ -33,7 +33,7 @@ const ProfileInfo = () => {
             withCredentials: true,
           })
           .then((response) => {
-            if (response?.data?.isOwnProfile === true) {
+            if (response?.data?.user?.isOwnProfile === true) {
               navigate("/profile", { replace: true });
             } else {
               setUser(response?.data?.user);
