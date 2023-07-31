@@ -100,7 +100,7 @@ func (app *Application) Event(rw http.ResponseWriter, r *http.Request) {
 		event, err := app.GroupEventService.GetEventById(eventId)
 
 		if err != nil {
-			app.Logger.Printf("Failed fetching groups: %v", err)
+			app.Logger.Printf("Failed fetching event: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
 		}
 
@@ -111,4 +111,35 @@ func (app *Application) Event(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+}
+
+func (app *Application) EventReaction(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "PUT":
+		decoder := json.NewDecoder(r.Body)
+		decoder.DisallowUnknownFields()
+
+		JSONdata := &models.EventAttendance{}
+		err := decoder.Decode(&JSONdata)
+
+		if err != nil {
+			app.Logger.Printf("JSON error: %v", err)
+			http.Error(rw, "JSON error", http.StatusBadRequest)
+			return
+		}
+		
+		userId, err := app.UserService.GetUserID(r)
+
+		if err != nil || userId != JSONdata.UserId {
+			app.Logger.Printf("Failed fetching user: %v", err)
+			http.Error(rw, "Get user error", http.StatusBadRequest)
+			return
+		}
+		
+		err = app.GroupEventService.UpdateEventAttendance(JSONdata)
+		
+
+
+
+	}
 }

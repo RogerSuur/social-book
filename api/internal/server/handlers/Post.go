@@ -38,6 +38,7 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			app.Logger.Printf("Failed fetching user: %v", err)
 			http.Error(rw, "Get user error", http.StatusBadRequest)
+			return
 		}
 
 		post := &models.Post{
