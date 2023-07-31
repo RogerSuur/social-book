@@ -33,12 +33,6 @@ func (app *Application) Profile(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if profileId == requestingUserId {
-			// self
-			app.Logger.Printf("User is trying to view their own profile")
-			http.Redirect(rw, r, "/profile", http.StatusSeeOther)
-			return
-		}
 	}
 
 	profileData, err := app.UserService.GetUserData(requestingUserId, profileId)

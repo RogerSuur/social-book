@@ -14,17 +14,18 @@ import (
 )
 
 type ProfileJSON struct {
-	UserID      int       `json:"id"`
-	FirstName   string    `json:"firstName"`
-	LastName    string    `json:"lastName"`
-	Email       string    `json:"email"`
-	Birthday    string    `json:"birthday"`
-	Nickname    string    `json:"nickname"`
-	About       string    `json:"about"`
-	AvatarImage string    `json:"avatarImage"`
-	CreatedAt   time.Time `json:"createdAt"`
-	IsPublic    bool      `json:"isPublic"`
-	IsFollowed  bool      `json:"isFollowed"`
+	UserID       int       `json:"id"`
+	FirstName    string    `json:"firstName"`
+	LastName     string    `json:"lastName"`
+	Email        string    `json:"email"`
+	Birthday     string    `json:"birthday"`
+	Nickname     string    `json:"nickname"`
+	About        string    `json:"about"`
+	AvatarImage  string    `json:"avatarImage"`
+	CreatedAt    time.Time `json:"createdAt"`
+	IsPublic     bool      `json:"isPublic"`
+	IsFollowed   bool      `json:"isFollowed"`
+	IsOwnProfile bool      `json:"isOwnProfile"`
 }
 
 type FollowerData struct {
@@ -131,27 +132,29 @@ func (s *UserService) GetUserData(requestingUserId int64, profileId int64) (*Pro
 
 	if !user.IsPublic && !IsFollowed && requestingUserId != profileId {
 		userJSON = &ProfileJSON{
-			UserID:      int(profileId),
-			FirstName:   user.FirstName,
-			LastName:    user.LastName,
-			Nickname:    user.Nickname,
-			AvatarImage: user.ImagePath,
-			IsPublic:    user.IsPublic,
-			IsFollowed:  IsFollowed,
+			UserID:       int(profileId),
+			FirstName:    user.FirstName,
+			LastName:     user.LastName,
+			Nickname:     user.Nickname,
+			AvatarImage:  user.ImagePath,
+			IsPublic:     user.IsPublic,
+			IsFollowed:   IsFollowed,
+			IsOwnProfile: requestingUserId == profileId,
 		}
 	} else {
 		userJSON = &ProfileJSON{
-			UserID:      int(profileId),
-			FirstName:   user.FirstName,
-			LastName:    user.LastName,
-			Email:       user.Email,
-			Birthday:    user.Birthday.Format("02/01/2006"),
-			Nickname:    user.Nickname,
-			About:       user.About,
-			AvatarImage: user.ImagePath,
-			CreatedAt:   user.CreatedAt,
-			IsPublic:    user.IsPublic,
-			IsFollowed:  IsFollowed,
+			UserID:       int(profileId),
+			FirstName:    user.FirstName,
+			LastName:     user.LastName,
+			Email:        user.Email,
+			Birthday:     user.Birthday.Format("02/01/2006"),
+			Nickname:     user.Nickname,
+			About:        user.About,
+			AvatarImage:  user.ImagePath,
+			CreatedAt:    user.CreatedAt,
+			IsPublic:     user.IsPublic,
+			IsFollowed:   IsFollowed,
+			IsOwnProfile: requestingUserId == profileId,
 		}
 	}
 
