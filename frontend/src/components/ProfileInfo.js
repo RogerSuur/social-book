@@ -33,12 +33,16 @@ const ProfileInfo = () => {
             withCredentials: true,
           })
           .then((response) => {
-            setUser(response.data.user);
+            if (response?.data?.isOwnProfile === true) {
+              navigate("/profile", { replace: true });
+            } else {
+              setUser(response?.data?.user);
+            }
           });
       } catch (err) {
         if (!err?.response) {
           setErrMsg("No Server Response");
-        } else if (err.response?.status === 203) {
+        } else if (err.response?.status === 303) {
           navigate("/profile", { replace: true });
         } else {
           setErrMsg("Internal Server Error");

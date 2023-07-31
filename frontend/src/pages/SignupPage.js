@@ -64,7 +64,7 @@ const Signup = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <h1 className="center">Sing up for FREE to start networking</h1>
         <div className="input-container">
-          <label for="smooth-input" className="input-label">
+          <label htmFor="smooth-input" className="input-label">
             Email
           </label>
 
@@ -82,11 +82,13 @@ const Signup = () => {
             })}
           />
         </div>
-        {errors.email && <p className="error-message">{errors.email.message}</p>}
+        {errors.email && (
+          <p className="error-message">{errors.email.message}</p>
+        )}
 
         <br />
         <div className="input-container">
-          <label for="smooth-input" className="input-label1">
+          <label htmFor="smooth-input" className="input-label1">
             Password
           </label>
           <input
@@ -107,11 +109,13 @@ const Signup = () => {
             })}
           />
         </div>
-        {errors.password && <p className="error-message">{errors.password.message}</p>}
+        {errors.password && (
+          <p className="error-message">{errors.password.message}</p>
+        )}
 
         <br />
         <div className="input-container">
-          <label for="smooth-input" className="input-label2">
+          <label htmFor="smooth-input" className="input-label2">
             Confirm password
           </label>
           <input
@@ -126,11 +130,13 @@ const Signup = () => {
             })}
           />
         </div>
-        {errors.confirmPassword && <p className="error-message">{errors.confirmPassword.message}</p>}
+        {errors.confirmPassword && (
+          <p className="error-message">{errors.confirmPassword.message}</p>
+        )}
 
         <br />
         <div className="input-container">
-          <label for="smooth-input" className="input-label1">
+          <label htmFor="smooth-input" className="input-label1">
             First name
           </label>
           <input
@@ -141,11 +147,13 @@ const Signup = () => {
             })}
           />
         </div>
-        {errors.firstName && <p className="error-message">{errors.firstName.message}</p>}
+        {errors.firstName && (
+          <p className="error-message">{errors.firstName.message}</p>
+        )}
 
         <br />
         <div className="input-container">
-          <label for="smooth-input" className="input-label1">
+          <label htmFor="smooth-input" className="input-label1">
             Last name
           </label>
           <input
@@ -156,11 +164,13 @@ const Signup = () => {
             })}
           />
         </div>
-        {errors.lastName && <p className="error-message">{errors.lastName.message}</p>}
+        {errors.lastName && (
+          <p className="error-message">{errors.lastName.message}</p>
+        )}
 
         <br />
         <div className="input-container">
-          <label for="smooth-input" className="input-label3">
+          <label htmFor="smooth-input" className="input-label3">
             Nickname (optional)
           </label>
           <input
@@ -180,10 +190,12 @@ const Signup = () => {
             })}
           />
         </div>
-        {errors.nickname && <p className="error-message">{errors.nickname.message}</p>}
+        {errors.nickname && (
+          <p className="error-message">{errors.nickname.message}</p>
+        )}
         <br />
         <div className="input-container">
-          <label for="smooth-input" className="input-label3">
+          <label htmFor="smooth-input" className="input-label3">
             About you (optional)
           </label>
           <textarea
@@ -194,7 +206,11 @@ const Signup = () => {
         </div>
         <br />
 
+        <label htmlFor="dob" className="input-label3">
+          Date of Birth
+        </label>
         <input
+          id="dob"
           className="smooth-input"
           type="date"
           {...register("dateOfBirth", {
@@ -208,7 +224,9 @@ const Signup = () => {
                 ) || "You must be 13 years of age or older to sign up",
           })}
         />
-        {errors.dateOfBirth && <p className="error-message">{errors.dateOfBirth.message}</p>}
+        {errors.dateOfBirth && (
+          <p className="error-message">{errors.dateOfBirth.message}</p>
+        )}
         <br />
         <div className="center">
           <button className="big-button">Sign Up</button>
