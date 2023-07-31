@@ -193,7 +193,10 @@ const Signup = () => {
           />
         </div>
         <br />
-
+        <div className="input-container">
+        <label for="smooth-input" className="input-label4">
+          Date of birth
+          </label>
         <input
           className="smooth-input"
           type="date"
@@ -210,6 +213,7 @@ const Signup = () => {
         />
         {errors.dateOfBirth && <p className="error-message">{errors.dateOfBirth.message}</p>}
         <br />
+        </div>
         <div className="center">
           <button className="big-button">Sign Up</button>
         </div>
