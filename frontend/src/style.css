@@ -27,6 +27,10 @@ nav {
   right: 0;
   width: 100%;
   height: 13vh;
+  display: flex;
+  flex-direction: row;
+  font-size: 1.25rem;
+  z-index: 9998;
 }
 
 .content-as{
@@ -703,9 +707,12 @@ nav ul {
   margin: 0;
   padding: 0;		 
   display: flex;		  
-  flex-direction: column;
   list-style-type: none;		  
-  align-items: center;		
+  align-items: center;	
+  display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-basis: 100%;	
 }		
 
 nav li {
@@ -933,21 +940,7 @@ hr {
 }
 
 @media only screen and (min-width: 600px) {
-  nav {
-    top: 0;
-    display: flex;
-    flex-direction: row;
-    font-size: 1.25rem;
-    z-index: 9998;
-  }
-
-  nav ul {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    flex-basis: 100%;
-  }
-
+  
   /* .nav-toggle-small {
     display: none;
   }
