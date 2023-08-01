@@ -377,6 +377,17 @@ nav {
   border-radius: 20px;
 }
 
+.dif-link a{
+  text-decoration: none;
+  color:#1f7da8
+}
+
+.dif-link a:hover{
+  background-color: #ececec;
+  cursor: pointer;
+  border-radius: 1px;
+}
+
 .modal{
     top: '35%';
     left: '50%';

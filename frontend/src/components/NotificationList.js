@@ -32,7 +32,7 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
 
   const renderedNotifications = notifications.map((notification, index) => (
     <div key={index} className="notification">
-      <li>
+      <li className="dif-link">
         <Notification
           notification={notification}
           onClose={handleNotificationClose}
