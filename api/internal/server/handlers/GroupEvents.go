@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"SocialNetworkRestApi/api/pkg/models"
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -97,11 +98,39 @@ func (app *Application) Event(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
 		}
 
+		userId, err := app.UserService.GetUserID(r)
+
+		if err != nil {
+			app.Logger.Printf("Failed fetching user: %v", err)
+			http.Error(rw, "Get user error", http.StatusBadRequest)
+			return
+		}
+
 		event, err := app.GroupEventService.GetEventById(eventId)
 
 		if err != nil {
 			app.Logger.Printf("Failed fetching event: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
+
+		member, err := app.GroupMemberService.GetMemberById(event.GroupId, userId)
+
+		if err != nil && err != sql.ErrNoRows {
+			app.Logger.Printf("Failed checking group membership: %v", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err == sql.ErrNoRows {
+			app.Logger.Printf("User %d is not a member of this group", userId)
+			http.Error(rw, "Not a member of this group", http.StatusForbidden)
+			return
+		}
+
+		if !member.Accepted {
+			app.Logger.Printf("User %d is not a member of this group", userId)
+			http.Error(rw, "Not a member of this group", http.StatusForbidden)
+			return
 		}
 
 		json.NewEncoder(rw).Encode(&event)
@@ -127,7 +156,7 @@ func (app *Application) EventReaction(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "JSON error", http.StatusBadRequest)
 			return
 		}
-		
+
 		userId, err := app.UserService.GetUserID(r)
 
 		if err != nil || userId != JSONdata.UserId {
@@ -135,11 +164,8 @@ func (app *Application) EventReaction(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "Get user error", http.StatusBadRequest)
 			return
 		}
-		
+
 		err = app.GroupEventService.UpdateEventAttendance(JSONdata)
-		
-
-
 
 	}
 }

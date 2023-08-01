@@ -19,6 +19,7 @@ type EventJSON struct {
 	Title        string                 `json:"title"`
 	Description  string                 `json:"description"`
 	Members      []*models.AttendeeJSON `json:"members"`
+	IsAttending  bool                   `json:"isAttending"`
 }
 
 type IGroupEventService interface {
@@ -204,6 +205,18 @@ func (s *GroupEventService) GetUserEvents(userId int64) ([]*EventJSON, error) {
 	if err != nil {
 		s.Logger.Printf("Failed parsing event json: %s", err)
 		return nil, err
+	}
+
+	for _, event := range eventJSON {
+		attendance, err := s.EventAttendanceRepository.GetAttendee(event.Id, userId)
+		if err != nil {
+			s.Logger.Printf("Failed fetching event attendance: %s", err)
+			return nil, err
+		}
+
+		if attendance != nil {
+			event.IsAttending = attendance.IsAttending
+		}
 	}
 
 	return eventJSON, nil
