@@ -171,7 +171,7 @@ func (repo GroupRepository) SearchGroupsAndUsersByString(userId int64, searchStr
 
 	stmt := `SELECT * FROM(SELECT 0 as UserId, g.Id as GroupId, g.Title as Name, g.image_path as ImagePath FROM groups g
 		UNION
-		SELECT u.Id as UserId, 0 as GroupId, u.nickname as Name, u.image_path as ImagePath FROM users u)
+		SELECT u.Id as UserId, 0 as GroupId, u.forname ||  " " || u.nickname || " " || u.surname as Name, u.image_path as ImagePath FROM users u)
 	WHERE Name LIKE ? AND UserId != ?`
 
 	rows, err := repo.DB.Query(stmt, formattedSearchString, userId)
