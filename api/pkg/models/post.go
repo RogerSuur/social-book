@@ -200,7 +200,7 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int64) ([]*F
 	p.id = app.post_id
 	LEFT JOIN comments c ON
 	p.id = c.post_id
-	WHERE (privacy_type_id = 1 
+	WHERE (privacy_type_id =  
 	OR p.user_id = ?
 	OR (privacy_type_id = 2 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1)
 	OR (privacy_type_id = 3 AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND app.id IS NOT NULL AND app.user_id = ?)

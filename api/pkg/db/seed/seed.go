@@ -39,6 +39,7 @@ func SeedUsers(repo *models.UserRepository) {
 			About:     seedUser.About,
 			Birthday:  date,
 			ImagePath: seedUser.ImagePath,
+			IsPublic:  seedUser.IsPublic,
 		}
 
 		id, err := repo.Insert(tempUser)
