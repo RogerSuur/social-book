@@ -1,11 +1,14 @@
 package services
 
 import (
+	"SocialNetworkRestApi/api/internal/server/utils"
 	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
 	"log"
+	"mime/multipart"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -16,6 +19,7 @@ type IPostService interface {
 	GetProfilePosts(userId int64, offset int64) ([]*feedPostJSON, error)
 	GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSON, error)
 	GetUserPosts(userId int64, offset int64, requestingUserId int64) ([]*feedPostJSON, error)
+	UpdatePostImage(userId int64, postId int64, file multipart.File, fileHeader *multipart.FileHeader) error
 }
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
@@ -247,4 +251,48 @@ func (s *PostService) GetUserPosts(userId int64, offset int64, requestingUserId 
 	}
 
 	return feedPosts, nil
+}
+
+func (s *PostService) UpdatePostImage(userId int64, postId int64, file multipart.File, fileHeader *multipart.FileHeader) error {
+
+	// check if user exists
+	post, err := s.PostRepository.GetById(postId)
+
+	if err != nil {
+		s.Logger.Printf("Post not found: %s", err)
+		return err
+	}
+
+	if post.UserId != userId {
+		err := errors.New("user not authorized to edit post")
+		s.Logger.Printf("UpdatePostImage error: %s", err)
+		return err
+	}
+
+	// check if file is an image
+	if !strings.HasPrefix(fileHeader.Header.Get("Content-Type"), "image") {
+		s.Logger.Println("Not an image")
+		return errors.New("not an image")
+	}
+
+	// save image
+	imagePath, err := utils.SaveImage(file, fileHeader)
+	if err != nil {
+		s.Logger.Printf("UpdatePostImage error: %s", err)
+		return err
+	}
+
+	// update post
+
+	post.ImagePath = imagePath
+
+	err = s.PostRepository.Update(post)
+	if err != nil {
+		s.Logger.Printf("UpdatePostImage error: %s", err)
+		return err
+	}
+
+	s.Logger.Printf("Post image updated: %d", postId)
+
+	return nil
 }

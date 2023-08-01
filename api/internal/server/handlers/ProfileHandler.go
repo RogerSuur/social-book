@@ -269,50 +269,55 @@ func (app *Application) OtherFollowing(rw http.ResponseWriter, r *http.Request) 
 }
 
 func (app *Application) UpdateUserImage(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		// Limit the size of the request body to 5MB
+		//app.Logger.Printf("Request body size: %d", r.ContentLength)
+		r.Body = http.MaxBytesReader(rw, r.Body, 20<<18+512)
 
-	// Limit the size of the request body to 5MB
-	app.Logger.Printf("Request body size: %d", r.ContentLength)
-	r.Body = http.MaxBytesReader(rw, r.Body, 20<<18+512)
+		userID, err := app.UserService.GetUserID(r)
+		if err != nil {
+			app.Logger.Printf("Cannot get user ID: %s", err)
+			http.Error(rw, "Cannot get user ID", http.StatusUnauthorized)
+			return
+		}
 
-	userID, err := app.UserService.GetUserID(r)
-	if err != nil {
-		app.Logger.Printf("Cannot get user ID: %s", err)
-		http.Error(rw, "Cannot get user ID", http.StatusUnauthorized)
+		err = r.ParseMultipartForm(20 << 18)
+		if err != nil {
+			app.Logger.Printf("Cannot parse multipart form: %s", err)
+			http.Error(rw, err.Error(), http.StatusRequestEntityTooLarge)
+			return
+		}
+
+		file, header, err := r.FormFile("image")
+		if err != nil {
+			app.Logger.Printf("Cannot get image file: %s", err)
+			http.Error(rw, err.Error(), http.StatusUnsupportedMediaType)
+			return
+		}
+		defer file.Close()
+
+		err = app.UserService.UpdateUserImage(userID, file, header)
+		if err != nil {
+			app.Logger.Printf("Cannot update user image: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		rw.Header().Set("Content-Type", "application/json")
+		rw.WriteHeader(http.StatusOK)
+		resp := make(map[string]interface{})
+		resp["message"] = "User image updated"
+		jsonResp, err := json.Marshal(resp)
+		if err != nil {
+			app.Logger.Printf("Cannot marshal JSON: %s", err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		rw.Write(jsonResp)
+
+	default:
+		http.Error(rw, "err", http.StatusBadRequest)
 		return
 	}
-
-	err = r.ParseMultipartForm(20 << 18)
-	if err != nil {
-		app.Logger.Printf("Cannot parse multipart form: %s", err)
-		http.Error(rw, err.Error(), http.StatusRequestEntityTooLarge)
-		return
-	}
-
-	file, header, err := r.FormFile("image")
-	if err != nil {
-		app.Logger.Printf("Cannot get image file: %s", err)
-		http.Error(rw, err.Error(), http.StatusUnsupportedMediaType)
-		return
-	}
-	defer file.Close()
-
-	err = app.UserService.UpdateUserImage(userID, file, header)
-	if err != nil {
-		app.Logger.Printf("Cannot update user image: %s", err)
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	rw.Header().Set("Content-Type", "application/json")
-	rw.WriteHeader(http.StatusOK)
-	resp := make(map[string]interface{})
-	resp["message"] = "User image updated"
-	resp["status"] = "success"
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		app.Logger.Printf("Cannot marshal JSON: %s", err)
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	rw.Write(jsonResp)
 }

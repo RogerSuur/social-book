@@ -36,6 +36,7 @@ type IPostRepository interface {
 	GetAllFeedPosts(currentUserId int64, offset int64) ([]*FeedPost, error)
 	GetById(id int64) (*Post, error)
 	Insert(post *Post) (int64, error)
+	Update(post *Post) error
 	GetCommentCount(postId int64) (int, error)
 	GetLastPostId() (int64, error)
 	GetAllByUserAndRequestingUserIds(userId int64, offset int64, requestingUserId int64) ([]*FeedPost, error)
@@ -83,6 +84,22 @@ func (repo PostRepository) Insert(post *Post) (int64, error) {
 	repo.Logger.Printf("Inserted post by user %d (last insert ID: %d)", post.UserId, lastId)
 
 	return lastId, nil
+}
+
+func (repo PostRepository) Update(post *Post) error {
+	query := `UPDATE posts SET content = ?, image_path = ?, privacy_type_id = ? WHERE id = ?`
+
+	args := []interface{}{
+		post.Content,
+		post.ImagePath,
+		post.PrivacyType,
+		post.Id,
+	}
+
+	_, err := repo.DB.Exec(query, args...)
+
+	return err
+
 }
 
 func (repo PostRepository) GetById(id int64) (*Post, error) {
