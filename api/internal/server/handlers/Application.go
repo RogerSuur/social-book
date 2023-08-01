@@ -80,7 +80,7 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 		),
 		UserService:         userServices,
 		NotificationService: notificationServices,
-		PostService:         services.InitPostService(logger, repositories.PostRepo, repositories.AllowedPostRepo),
+		PostService:         services.InitPostService(logger, repositories.GroupRepo, repositories.PostRepo, repositories.AllowedPostRepo),
 		CommentService:      services.InitCommentService(logger, repositories.CommentRepo),
 		ChatService:         chatServices,
 		GroupService: services.InitGroupService(

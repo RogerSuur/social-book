@@ -209,8 +209,6 @@ func (s *GroupMemberService) GetMembersToAdd(groupId int64, userId int64) ([]*mo
 		return nil, err
 	}
 
-	s.Logger.Printf("Public users: %v", publicUsers)
-
 	simpleMembers := map[int64]*models.SimpleUserJSON{}
 
 	for _, user := range publicUsers {

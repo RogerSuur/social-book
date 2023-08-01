@@ -20,13 +20,15 @@ type IPostService interface {
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
 type PostService struct {
 	Logger                *log.Logger
+	GroupRepository       models.IGroupRepository
 	PostRepository        models.IPostRepository
 	AllowedPostRepository models.IAllowedPostRepository
 }
 
-func InitPostService(logger *log.Logger, postRepo *models.PostRepository, allowedPostRepo *models.AllowedPostRepository) *PostService {
+func InitPostService(logger *log.Logger, groupRepo *models.GroupRepository, postRepo *models.PostRepository, allowedPostRepo *models.AllowedPostRepository) *PostService {
 	return &PostService{
 		Logger:                logger,
+		GroupRepository:       groupRepo,
 		PostRepository:        postRepo,
 		AllowedPostRepository: allowedPostRepo,
 	}
@@ -40,6 +42,8 @@ type feedPostJSON struct {
 	ImagePath    string    `json:"imagePath"`
 	CommentCount int       `json:"commentCount"`
 	CreatedAt    time.Time `json:"createdAt"`
+	GroupId      int64     `json:"groupId"`
+	GroupName    string    `json:"groupName"`
 }
 
 func (s *PostService) CreatePost(post *models.Post) error {
@@ -119,13 +123,13 @@ func (s *PostService) GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON,
 		// commentCount, err := s.PostRepository.GetCommentCount(p.Id)
 
 		feedPosts = append(feedPosts, &feedPostJSON{
-			p.Id,
-			p.UserId,
-			p.UserName,
-			p.Content,
-			p.ImagePath,
-			p.CommentCount,
-			p.CreatedAt,
+			Id:           p.Id,
+			UserId:       p.UserId,
+			UserName:     p.UserName,
+			Content:      p.Content,
+			ImagePath:    p.ImagePath,
+			CommentCount: p.CommentCount,
+			CreatedAt:    p.CreatedAt,
 		})
 	}
 
@@ -155,13 +159,13 @@ func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJS
 
 	for _, p := range posts {
 		feedPosts = append(feedPosts, &feedPostJSON{
-			p.Id,
-			p.UserId,
-			p.UserName,
-			p.Content,
-			p.ImagePath,
-			p.CommentCount,
-			p.CreatedAt,
+			Id:           p.Id,
+			UserId:       p.UserId,
+			UserName:     p.UserName,
+			Content:      p.Content,
+			ImagePath:    p.ImagePath,
+			CommentCount: p.CommentCount,
+			CreatedAt:    p.CreatedAt,
 		})
 	}
 
@@ -185,6 +189,12 @@ func (s *PostService) GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSO
 		s.Logger.Printf("GetFeedPosts error: %s", err)
 	}
 
+	group, err := s.GroupRepository.GetById(groupId)
+
+	if err != nil {
+		s.Logger.Printf("GetFeedPosts error: %s", err)
+	}
+
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
@@ -196,6 +206,8 @@ func (s *PostService) GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSO
 			p.ImagePath,
 			p.CommentCount,
 			p.CreatedAt,
+			groupId,
+			group.Title,
 		})
 	}
 

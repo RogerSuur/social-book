@@ -167,5 +167,14 @@ func (app *Application) EventReaction(rw http.ResponseWriter, r *http.Request) {
 
 		err = app.GroupEventService.UpdateEventAttendance(JSONdata)
 
+		if err != nil {
+			app.Logger.Printf("Failed updating event attendance: %v", err)
+			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
+
+	default:
+		http.Error(rw, "method is not supported", http.StatusNotFound)
+		return
+
 	}
 }
