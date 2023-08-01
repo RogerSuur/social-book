@@ -84,13 +84,13 @@ func (s *GroupEventService) GetGroupEvents(groupId int64) ([]*EventJSON, error) 
 func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFormData, userId int64) ([]*models.NotificationJSON, error) {
 
 	s.Logger.Printf("Event timestring: %s", formData.EventTime)
-	sTime, err := time.Parse("2006-01-02T15:04", formData.EventTime)
+	sTime, err := time.Parse(time.RFC3339, formData.EventTime)
 
 	if err != nil {
 		s.Logger.Printf("Failed parsing event start time: %s", err)
 	}
 
-	eTime, err := time.Parse("2006-01-02T15:04", formData.EventEndTime)
+	eTime, err := time.Parse(time.RFC3339, formData.EventEndTime)
 	if err != nil {
 		s.Logger.Printf("Failed parsing event start time: %s", err)
 	}
