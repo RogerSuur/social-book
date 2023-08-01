@@ -25,7 +25,7 @@ nav {
   padding: 10px;
   left: 0;
   right: 0;
-  width: 100%;
+  width: 100vw;
   height: 13vh;
   display: flex;
   flex-direction: row;
@@ -131,6 +131,7 @@ nav {
 .pepe{
   list-style-type: none;
 }
+
 
 .chat-unread-count{
   display: inline-block;
@@ -310,6 +311,7 @@ nav {
   padding: 10px;
   font-size: 17px;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 .event-stuff{
@@ -368,6 +370,11 @@ nav {
 .link a{
   text-decoration: none;
   color: inherit;
+}
+.link:hover{
+  background-color: #ececec;
+  cursor: pointer;
+  border-radius: 20px;
 }
 
 .modal{
@@ -940,6 +947,10 @@ hr {
 }
 
 @media only screen and (min-width: 600px) {
+
+  .nav{
+    flex-direction: column;
+  }
   
   /* .nav-toggle-small {
     display: none;
