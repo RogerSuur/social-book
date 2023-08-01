@@ -5,7 +5,7 @@ import axios from "axios";
 const CreateEvent = ({ onEventCreated, id }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
-  const [createEventForm, setcreateEventForm] = useState({
+  const [createEventForm, setCreateEventForm] = useState({
     title: "",
     description: "",
     startTime: "",
@@ -22,8 +22,8 @@ const CreateEvent = ({ onEventCreated, id }) => {
   };
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
-    setcreateEventForm((prevState) => ({
+    const { name, value } = event?.target;
+    setCreateEventForm((prevState) => ({
       ...prevState,
       [name]: value,
     }));
@@ -35,7 +35,11 @@ const CreateEvent = ({ onEventCreated, id }) => {
     try {
       const response = await axios.post(
         "http://localhost:8000/creategroupevent",
-        JSON.stringify(createEventForm),
+        JSON.stringify({
+          ...createEventForm,
+          startTime: new Date(createEventForm.startTime).toISOString(),
+          endTime: new Date(createEventForm.endTime).toISOString(),
+        }),
         { withCredentials: true },
         {
           headers: { "Content-Type": "application/json" },

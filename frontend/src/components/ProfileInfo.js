@@ -7,7 +7,11 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import { PROFILE_URL, FOLLOW_URL } from "../utils/routes";
+import {
+  PROFILE_URL,
+  USER_FOLLOWING_URL,
+  USER_FOLLOWERS_URL,
+} from "../utils/routes";
 import ImageHandler from "../utils/imageHandler.js";
 import Modal from "../components/Modal.js";
 import Posts from "../pages/PostsPage.js";
@@ -17,6 +21,7 @@ const ProfileInfo = () => {
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isFollowed, setIsFollowed] = useState(false);
   const [postsModalOpen, setPostsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(true);
   const { id } = useParams();
@@ -24,53 +29,6 @@ const ProfileInfo = () => {
   const { sendJsonMessage } = useWebSocketConnection(socketUrl);
   const [errMsg, setErrMsg] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        await axios
-          .get(PROFILE_URL + id, {
-            withCredentials: true,
-          })
-          .then((response) => {
-            setUser(response.data.user);
-          });
-      } catch (err) {
-        if (!err?.response) {
-          setErrMsg("No Server Response");
-        } else if (err.response?.status === 203) {
-          navigate("/profile", { replace: true });
-        } else {
-          setErrMsg("Internal Server Error");
-        }
-      }
-    };
-    loadUser();
-  }, [id]);
-
-  useEffect(() => {
-    const loadFollow = async () => {
-      try {
-        await axios
-          .get(FOLLOW_URL + id, {
-            withCredentials: true,
-          })
-          .then((response) => {
-            setFollowers(response?.data?.followers);
-            setFollowing(response?.data?.following);
-          });
-      } catch (err) {
-        if (!err?.response) {
-          setErrMsg("No Server Response");
-        } else {
-          setErrMsg("Internal Server Error");
-        }
-      }
-    };
-    loadFollow();
-  }, [setActiveTab]);
-
-  console.log(user, "OTHER USER");
 
   const handleFollow = () => {
     sendJsonMessage({
@@ -84,18 +42,7 @@ const ProfileInfo = () => {
       type: "unfollow",
       data: { id: user.id },
     });
-  };
-
-  const birthdayConverter = (date) => {
-    if (!date) {
-      return;
-    }
-    const [day, month, year] = date?.split("/");
-    return new Date(year, month - 1, day).toLocaleDateString("en-UK", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    setIsFollowed(false);
   };
 
   const handleModalClose = () => {
@@ -113,6 +60,89 @@ const ProfileInfo = () => {
 
   const handlePostsModalClick = () => {
     setPostsModalOpen(true);
+  };
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        await axios
+          .get(PROFILE_URL + id, {
+            withCredentials: true,
+          })
+          .then((response) => {
+            if (response?.data?.user?.isOwnProfile === true) {
+              navigate("/profile", { replace: true });
+            } else {
+              console.log("PROFILE INFO RESPONSE: ", response?.data);
+              setUser(response?.data?.user);
+              setIsFollowed(response?.data?.user?.isFollowed);
+            }
+          });
+      } catch (err) {
+        if (!err?.response) {
+          setErrMsg("No Server Response");
+        } else {
+          setErrMsg("Internal Server Error");
+        }
+      }
+    };
+    loadUser();
+  }, [id, isFollowed]);
+
+  useEffect(() => {
+    const loadFollowers = async () => {
+      try {
+        await axios
+          .get(USER_FOLLOWERS_URL + id, {
+            withCredentials: true,
+          })
+          .then((response) => {
+            setFollowers(response?.data);
+          });
+      } catch (err) {
+        if (!err?.response) {
+          setErrMsg("No Server Response");
+        } else {
+          setErrMsg("Internal Server Error");
+        }
+      }
+    };
+    loadFollowers();
+  }, []);
+
+  useEffect(() => {
+    const loadFollowing = async () => {
+      try {
+        await axios
+          .get(USER_FOLLOWING_URL + id, {
+            withCredentials: true,
+          })
+          .then((response) => {
+            setFollowing(response?.data);
+          });
+      } catch (err) {
+        if (!err?.response) {
+          setErrMsg("No Server Response");
+        } else {
+          setErrMsg("Internal Server Error");
+        }
+      }
+    };
+    loadFollowing();
+  }, []);
+
+  console.log(user, "OTHER USER");
+
+  const birthdayConverter = (date) => {
+    if (!date) {
+      return;
+    }
+    const [day, month, year] = date?.split("/");
+    return new Date(year, month - 1, day).toLocaleDateString("en-UK", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
   const userList = (follow) => {
@@ -198,10 +228,10 @@ const ProfileInfo = () => {
             <div className="column-title">Profile Type</div>
             <div className="column">{user.isPublic ? "Public" : "Private"}</div>
           </div>
-          <button disabled={user.isFollowed} onClick={handleFollow}>
+          <button disabled={isFollowed} onClick={handleFollow}>
             Follow
           </button>
-          <button disabled={!user.isFollowed} onClick={handleUnfollow}>
+          <button disabled={!isFollowed} onClick={handleUnfollow}>
             Unfollow
           </button>
         </div>

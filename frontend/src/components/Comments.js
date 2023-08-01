@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CreateComment from "./CreateComment";
+import { Link } from "react-router-dom";
 
 const Comments = ({ postId, commentCount, showCreateComment }) => {
   const [comments, setComments] = useState([]);
@@ -64,6 +65,8 @@ const Comments = ({ postId, commentCount, showCreateComment }) => {
     }
   }
 
+  console.log("COMMENTS: ", comments);
+
   return (
     <>
       {error ? (
@@ -86,9 +89,12 @@ const Comments = ({ postId, commentCount, showCreateComment }) => {
                           </small>
                         </p>
                       </div>
-                      <div className="column">{comment.userId}</div>
+                      <div className="column">
+                        <Link to={`/profile/${comment?.userId}`}>
+                          {comment?.userName}
+                        </Link>
+                      </div>
                     </div>
-
                     <hr />
                   </div>
                 ))}

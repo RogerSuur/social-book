@@ -57,9 +57,10 @@ const GroupPage = () => {
   useEffect(() => {
     const fetchFollowers = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/followers", {
+        const response = await axios.get(ADD_GROUP_MEMBERS_URL + `/${id}`, {
           withCredentials: true,
         });
+        console.log("ADD GROUP MEMBERS: ", response?.data);
         setFollowers(response.data);
       } catch (err) {
         console.error(err);
@@ -100,7 +101,9 @@ const GroupPage = () => {
   return (
     <>
       <GroupSidebar />
-      <Events groupId={+id} />
+      <div style={{ "max-width": `100px` }}>
+        <Events groupId={+id} />
+      </div>
       {error ? (
         <div className="error">{error}</div>
       ) : (
@@ -141,7 +144,7 @@ const GroupPage = () => {
                 showCreatePost={true}
                 url={`/groupfeed/${id}`}
               />
-              <Events groupId={+id} />
+              {/* <Events groupId={+id} /> */}
             </>
           ) : (
             <GroupRequestButton groupid={+id} />
