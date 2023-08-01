@@ -7,7 +7,11 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import { PROFILE_URL, USER_FOLLOWING_URL, USER_FOLLOWERS_URL } from "../utils/routes";
+import {
+  PROFILE_URL,
+  USER_FOLLOWING_URL,
+  USER_FOLLOWERS_URL,
+} from "../utils/routes";
 import ImageHandler from "../utils/imageHandler.js";
 import Modal from "../components/Modal.js";
 import Posts from "../pages/PostsPage.js";
@@ -38,6 +42,7 @@ const ProfileInfo = () => {
       type: "unfollow",
       data: { id: user.id },
     });
+    setIsFollowed(false);
   };
 
   const handleModalClose = () => {
@@ -69,20 +74,19 @@ const ProfileInfo = () => {
               navigate("/profile", { replace: true });
             } else {
               setUser(response?.data?.user);
+              setIsFollowed(response?.data?.user?.isFollowed);
             }
           });
       } catch (err) {
         if (!err?.response) {
           setErrMsg("No Server Response");
-        } else if (err.response?.status === 303) {
-          navigate("/profile", { replace: true });
         } else {
           setErrMsg("Internal Server Error");
         }
       }
     };
     loadUser();
-  }, [id]);
+  }, [id, isFollowed]);
 
   useEffect(() => {
     const loadFollowers = async () => {
@@ -128,7 +132,6 @@ const ProfileInfo = () => {
 
   console.log(user, "OTHER USER");
 
-
   const birthdayConverter = (date) => {
     if (!date) {
       return;
@@ -140,8 +143,6 @@ const ProfileInfo = () => {
       year: "numeric",
     });
   };
-
-  
 
   const userList = (follow) => {
     const users = follow ? [...following] : [...followers];
@@ -226,10 +227,10 @@ const ProfileInfo = () => {
             <div className="column-title">Profile Type</div>
             <div className="column">{user.isPublic ? "Public" : "Private"}</div>
           </div>
-          <button disabled={user.isFollowed} onClick={handleFollow}>
+          <button disabled={isFollowed} onClick={handleFollow}>
             Follow
           </button>
-          <button disabled={!user.isFollowed} onClick={handleUnfollow}>
+          <button disabled={!isFollowed} onClick={handleUnfollow}>
             Unfollow
           </button>
         </div>
