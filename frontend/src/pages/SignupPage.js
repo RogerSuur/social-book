@@ -64,7 +64,7 @@ const Signup = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <h1 className="center">Sing up for FREE to start networking</h1>
         <div className="input-container">
-          <label htmFor="smooth-input" className="input-label">
+          <label htmlFor="smooth-input" className="input-label">
             Email
           </label>
 
@@ -88,7 +88,7 @@ const Signup = () => {
 
         <br />
         <div className="input-container">
-          <label htmFor="smooth-input" className="input-label1">
+          <label htmlFor="smooth-input" className="input-label1">
             Password
           </label>
           <input
@@ -115,7 +115,7 @@ const Signup = () => {
 
         <br />
         <div className="input-container">
-          <label htmFor="smooth-input" className="input-label2">
+          <label htmlFor="smooth-input" className="input-label2">
             Confirm password
           </label>
           <input
@@ -136,7 +136,7 @@ const Signup = () => {
 
         <br />
         <div className="input-container">
-          <label htmFor="smooth-input" className="input-label1">
+          <label htmlFor="smooth-input" className="input-label1">
             First name
           </label>
           <input
@@ -153,7 +153,7 @@ const Signup = () => {
 
         <br />
         <div className="input-container">
-          <label htmFor="smooth-input" className="input-label1">
+          <label htmlFor="smooth-input" className="input-label1">
             Last name
           </label>
           <input
@@ -170,7 +170,7 @@ const Signup = () => {
 
         <br />
         <div className="input-container">
-          <label htmFor="smooth-input" className="input-label3">
+          <label htmlFor="smooth-input" className="input-label3">
             Nickname (optional)
           </label>
           <input
@@ -195,7 +195,7 @@ const Signup = () => {
         )}
         <br />
         <div className="input-container">
-          <label htmFor="smooth-input" className="input-label3">
+          <label htmlFor="smooth-input" className="input-label3">
             About you (optional)
           </label>
           <textarea
