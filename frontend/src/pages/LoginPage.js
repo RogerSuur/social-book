@@ -71,7 +71,7 @@ const Login = () => {
 
   return (
     <>
-      {errMsg && <h2>{errMsg}</h2>}
+      {errMsg && <h2 className="log-center">{errMsg}</h2>}
       <div
         style={{
           display: "flex",

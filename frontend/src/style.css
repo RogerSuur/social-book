@@ -291,6 +291,7 @@ nav {
   border-radius: 20px;
   box-shadow: 0 0 8px black;
   z-index: 2;
+  
 }
 
 .post-container {
@@ -925,6 +926,12 @@ hr {
   justify-content: center;
   align-items: center;
   height: 7vh;
+}
+
+.log-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .big-button {
