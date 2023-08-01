@@ -376,6 +376,12 @@ func (s *GroupEventService) UpdateEventAttendance(attendance *models.EventAttend
 	}
 
 	_, err = s.EventAttendanceRepository.Update(attendance)
+
+	if err != nil {
+		s.Logger.Printf("Failed updating event attendance: %s", err)
+		return err
+	}
+
 	return nil
 
 }

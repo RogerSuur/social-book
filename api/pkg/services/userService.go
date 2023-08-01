@@ -420,8 +420,13 @@ func (s *UserService) GetPublicUsers(userID int64) ([]*models.SimpleUserJSON, er
 
 func (s *UserService) IsFollowed(userID int64, followerID int64) bool {
 
-	_, err := s.FollowerRepo.GetByFollowerAndFollowing(followerID, userID)
-	return err == nil
+	follower, err := s.FollowerRepo.GetByFollowerAndFollowing(followerID, userID)
+
+	if err != nil {
+		return false
+	}
+
+	return follower.Accepted
 }
 
 func (s *UserService) Unfollow(userID int64, followerID int64) error {
