@@ -37,7 +37,7 @@ const Signup = () => {
 
       console.log(JSON.stringify(response));
 
-      navigate("/login", { replace: true });
+      navigate("/profile", { replace: true });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
