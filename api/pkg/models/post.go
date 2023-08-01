@@ -38,6 +38,7 @@ type IPostRepository interface {
 	Insert(post *Post) (int64, error)
 	GetCommentCount(postId int64) (int, error)
 	GetLastPostId() (int64, error)
+	GetAllByUserAndRequestingUserIds(userId int64, offset int64, requestingUserId int64) ([]*FeedPost, error)
 }
 
 type PostRepository struct {
@@ -302,4 +303,60 @@ func (repo PostRepository) GetLastPostId() (int64, error) {
 	}
 
 	return id, nil
+}
+
+func (repo PostRepository) GetAllByUserAndRequestingUserIds(userId int64, offset int64, requestingUserId int64) ([]*FeedPost, error) {
+
+	stmt := `SELECT p.id, p.user_id, u.nickname, p.content, p.created_at, p.image_path, p.privacy_type_id, COUNT(DISTINCT c.id) FROM posts p
+	LEFT JOIN users u on p.user_id = u.id
+	LEFT JOIN followers f ON p.user_id = f.following_id
+	LEFT JOIN allowed_private_posts app ON p.id = app.post_id 
+	LEFT JOIN comments c ON p.id = c.post_id
+	WHERE (p.privacy_type_id = 1 AND p.user_id = ?
+	OR (p.privacy_type_id = 2 AND p.user_id = ? AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1)
+	OR (p.privacy_type_id = 3 AND p.user_id = ? AND f.id IS NOT NULL AND f.follower_id = ? AND f.accepted = 1 AND app.id IS NOT NULL AND app.user_id = ?))
+	AND p.id < ?
+	GROUP BY p.id
+	ORDER BY p.id DESC
+	LIMIT ?`
+
+	args := []interface{}{
+		userId,
+		userId,
+		requestingUserId,
+		userId,
+		requestingUserId,
+		requestingUserId,
+		offset,
+		FeedLimit,
+	}
+
+	rows, err := repo.DB.Query(stmt, args...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	posts := []*FeedPost{}
+
+	for rows.Next() {
+		post := &FeedPost{}
+
+		err := rows.Scan(&post.Id, &post.UserId, &post.UserName, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.CommentCount)
+
+		if err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+
 }
