@@ -142,6 +142,27 @@ func (app *Application) OtherFollowers(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	requestingUser, err := app.UserService.GetUserID(r)
+	if err != nil {
+		app.Logger.Printf("Cannot get user ID: %s", err)
+		http.Error(rw, "Cannot get user ID", http.StatusUnauthorized)
+		return
+	}
+
+	user, err := app.UserService.GetUserByID(int64(userID))
+	if err != nil {
+		app.Logger.Printf("Cannot get user: %s", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	isFollowed := app.UserService.IsFollowed(int64(requestingUser), int64(userID))
+
+	if !isFollowed && !user.IsPublic {
+		http.Error(rw, "User may not access followings", http.StatusUnauthorized)
+		return
+	}
+
 	userFollowers, err := app.UserService.GetUserFollowers(int64(userID))
 
 	if err != nil {
@@ -200,6 +221,27 @@ func (app *Application) OtherFollowing(rw http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		app.Logger.Printf("Cannot parse user ID: %s", err)
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	requestingUser, err := app.UserService.GetUserID(r)
+	if err != nil {
+		app.Logger.Printf("Cannot get user ID: %s", err)
+		http.Error(rw, "Cannot get user ID", http.StatusUnauthorized)
+		return
+	}
+
+	user, err := app.UserService.GetUserByID(int64(userID))
+	if err != nil {
+		app.Logger.Printf("Cannot get user: %s", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	isFollowed := app.UserService.IsFollowed(int64(requestingUser), int64(userID))
+
+	if !isFollowed && !user.IsPublic {
+		http.Error(rw, "User may not access followings", http.StatusUnauthorized)
 		return
 	}
 
