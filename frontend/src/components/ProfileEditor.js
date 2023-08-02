@@ -134,7 +134,7 @@ const ProfileEditor = () => {
                   {birthdayConverter(user?.birthday)}
                 </div>
               </div>
-              <div className="profile-row">
+              <div className="profile-row-dif">
                 <div className="profile-title">Nickname</div>
                 <div className="profile-column">
                   <input
