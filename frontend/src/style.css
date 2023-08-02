@@ -67,14 +67,15 @@ nav {
   flex-direction: row;
   width: 98%;
   margin-top: 3px;
-  justify-content: center; /* Centers the content horizontally */
-  align-items: center; /* Centers the content vertically */
-  text-align: center; /* Centers the text inside the div */
-  font-family: Arial, sans-serif; /* Example font family, replace with your desired font */
-  font-size: 16px; /* Example font size, adjust as needed */
-  padding: 10px; /* Example padding, adjust as needed */
-  border-radius: 10px; /* Example border radius, adjust as needed */
+  justify-content: center;
+  align-items: center;
+  text-align: center; 
+  font-family: Arial, sans-serif; 
+  font-size: 16px;
+  padding: 10px; 
+  border-radius: 10px; 
   box-shadow: 0 2px 4px rgba(194, 194, 194, 0.1); 
+  cursor: pointer;
 }
 
 .area-text{
@@ -769,7 +770,7 @@ nav li {
   flex-direction: row;
   width: 100%;
   margin-top: 3px;
-  justify-content: flex-end; /* Aligns content to the right */
+  justify-content: flex-end; 
   align-items: center;
   text-align: center;
   font-family: Arial, sans-serif;
@@ -784,13 +785,13 @@ nav li {
   flex-direction: row;
   width: 100%;
   margin-top: 3px;
-  justify-content: center; /* Centers the content horizontally */
-  align-items: center; /* Centers the content vertically */
-  text-align: center; /* Centers the text inside the div */
-  font-family: Arial, sans-serif; /* Example font family, replace with your desired font */
-  font-size: 16px; /* Example font size, adjust as needed */
-  padding: 10px; /* Example padding, adjust as needed */
-  border-radius: 5px; /* Example border radius, adjust as needed */
+  justify-content: center; 
+  align-items: center;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 }
 
@@ -799,7 +800,7 @@ nav li {
   flex-direction: row;
   width: 100%;
   margin-top: 3px;
-  justify-content: flex-start; /* Aligns content to the left */
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
   font-family: Arial, sans-serif;
@@ -809,6 +810,24 @@ nav li {
  
   margin-left: 20px; 
 }		
+
+.row3 a{
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  padding: 8px 16px; 
+  border: 1px solid #ccc; 
+  background-color: #f0f0f0; 
+  border-radius: 10px; 
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.row3 a:hover{
+  background-color: #ececec;
+  cursor: pointer;
+  border-radius: 20px;
+}
 
 hr {
   width:100%;
@@ -823,6 +842,16 @@ hr {
   justify-content: flex-end;
   flex-shrink: 1;
   overflow: clip;
+}
+
+.column a{
+  text-decoration: none;
+  color: inherit;
+}
+.column a:hover{
+  background-color: #ececec;
+  cursor: pointer;
+  border-radius: 20px;
 }
 
 .column-title {
@@ -851,7 +880,7 @@ hr {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 5px; /* Adjust the height as needed */
+  height: 5px;
 }
 
 .text-link:visited {
@@ -880,38 +909,38 @@ hr {
 .input-label {
   font-size: 15px;
   color: rgb(66, 59, 59);
-  margin-right: 450px; /* Adjust the margin as desired */
+  margin-right: 450px; 
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 }
 .input-label1 {
   font-size: 15px;
   color: rgb(66, 59, 59);
-  margin-right: 420px; /* Adjust the margin as desired */
+  margin-right: 420px; 
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 }
 .input-label2 {
   font-size: 15px;
   color: rgb(66, 59, 59);
-  margin-right: 365px; /* Adjust the margin as desired */
+  margin-right: 365px;
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 }
 .input-label3 {
   font-size: 15px;
   color: rgb(66, 59, 59);
-  margin-right: 355px; /* Adjust the margin as desired */
+  margin-right: 355px; 
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 }
 .input-label4{
   font-size: 15px;
   color: rgb(66, 59, 59);
-  margin-right: 405px; /* Adjust the margin as desired */
+  margin-right: 405px;
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 }
 
 .log-in {
   font-size: 15px;
   color: rgb(66, 59, 59);
-  margin-left: 5px; /* Adjust the margin as desired */
+  margin-left: 5px;
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 }
 .input-container {
