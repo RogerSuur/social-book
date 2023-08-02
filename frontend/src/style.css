@@ -423,6 +423,7 @@ height: 7vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .input-big{
@@ -706,6 +707,7 @@ align-items: center;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  cursor: pointer;
 }
 
 .profile-actions button:hover {
