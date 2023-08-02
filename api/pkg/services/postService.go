@@ -127,10 +127,21 @@ func (s *PostService) GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON,
 	for _, p := range posts {
 		// commentCount, err := s.PostRepository.GetCommentCount(p.Id)
 
+		group := &models.Group{}
+
+		if p.GroupId > 0 {
+			group, err = s.GroupRepository.GetById(p.GroupId)
+			if err != nil {
+				s.Logger.Printf("GetFeedPosts error: %s", err)
+			}
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			Id:           p.Id,
 			UserId:       p.UserId,
 			UserName:     p.UserName,
+			GroupId:      p.GroupId,
+			GroupName:    group.Title,
 			Content:      p.Content,
 			ImagePath:    p.ImagePath,
 			CommentCount: p.CommentCount,
@@ -163,10 +174,22 @@ func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJS
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
+
+		group := &models.Group{}
+
+		if p.GroupId > 0 {
+			group, err = s.GroupRepository.GetById(p.GroupId)
+			if err != nil {
+				s.Logger.Printf("GetFeedPosts error: %s", err)
+			}
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			Id:           p.Id,
 			UserId:       p.UserId,
 			UserName:     p.UserName,
+			GroupId:      p.GroupId,
+			GroupName:    group.Title,
 			Content:      p.Content,
 			ImagePath:    p.ImagePath,
 			CommentCount: p.CommentCount,
@@ -239,10 +262,22 @@ func (s *PostService) GetUserPosts(userId int64, offset int64, requestingUserId 
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
+
+		group := &models.Group{}
+
+		if p.GroupId > 0 {
+			group, err = s.GroupRepository.GetById(p.GroupId)
+			if err != nil {
+				s.Logger.Printf("GetFeedPosts error: %s", err)
+			}
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			Id:           p.Id,
 			UserId:       p.UserId,
 			UserName:     p.UserName,
+			GroupId:      p.GroupId,
+			GroupName:    group.Title,
 			Content:      p.Content,
 			ImagePath:    p.ImagePath,
 			CommentCount: p.CommentCount,
