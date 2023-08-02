@@ -226,47 +226,12 @@ nav {
   height: 50px; 
 }
 
-/* .chatbox {
-  position: fixed;
-  min-width: 10vw;
-  bottom: 0;
-  margin-right: 10vw;
-}
-
-.message-box {
-  min-height: 12vh;
-  border: 1px solid black;
-}
-
-.chat-title {
-  border: 1px solid black;
-} */
-
 .require-auth-container {
   display: flex;
   justify-content: space-between;
   
 }
 
-
-
-/* .nav-visible {
-  display: flex;
-}
-
-.nav-toggle {
-  display: flex;
-  width: 30%;
-  height: 30vh;
-  top: 0;
-  position: sticky;
-}
-
-.nav-toggle-small {
-  height: 10vh;
-  font-weight: bold;
-  background-color: rgb(252, 175, 74);
-} */
 .post-area{
   position: sticky;
   top: 15vh;
@@ -476,8 +441,8 @@ height: 7vh;
   
 }
 .profile-area {
-  width: 50vw; /* Change to 80% of the viewport width */
-  margin-top: 5vh; /* Change to 5% of the viewport height */
+  width: 50vw;
+  margin-top: 5vh;
   padding: 5px;
   border-radius: 20px;
   box-shadow: 0 0 8px black;
@@ -486,7 +451,7 @@ height: 7vh;
 }
 
 .top-part {
-  width: 50vw; /* Change to 80% of the viewport width */
+  width: 50vw;
   height: 424px;
   flex-shrink: 0;
   border-radius: 10px;
@@ -699,11 +664,6 @@ line-height: normal;
   display: flex;
   flex-direction: column;
 }
-
-.popup-content{
-  
-}
-
 
 .group-button{
   display: flex;
@@ -1026,17 +986,6 @@ hr {
     flex-direction: column;
   }
   
-  /* .nav-toggle-small {
-    display: none;
-  }
-
-  .nav-toggle {
-    display: none;
-  }
-
-  .nav-visible {
-    display: none;
-  } */
 
   .column {
     display: flex;
