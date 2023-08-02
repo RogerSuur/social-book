@@ -34,7 +34,11 @@ const ImageUploadModal = ({ open, onClose, onImageUpload }) => {
     >
       <div className="image-upload-modal">
         <h2>Upload Image</h2>
-        <input type="file" accept="image/*" onChange={handleFileInput} />
+        <input
+          type="file"
+          accept="image/gif,image/jpeg,image/png"
+          onChange={handleFileInput}
+        />
         {selectedImage && (
           <div>
             <img
