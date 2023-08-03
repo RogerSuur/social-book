@@ -4,7 +4,6 @@ import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"database/sql"
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -144,10 +143,8 @@ func (app *Application) Event(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) EventReaction(rw http.ResponseWriter, r *http.Request) {
-	log.Println("EVENT REACTION")
 	switch r.Method {
 	case "PUT":
-		log.Println("HERE")
 		decoder := json.NewDecoder(r.Body)
 		decoder.DisallowUnknownFields()
 
