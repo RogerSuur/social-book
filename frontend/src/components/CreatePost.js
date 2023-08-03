@@ -64,14 +64,23 @@ const CreatePost = (props) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log("data when submitted", formData);
-    console.log("type of image", typeof formData.image);
+    const formDataWithImage = new FormData();
+    formDataWithImage.append("content", formData.content);
+    formDataWithImage.append("privacyType", formData.privacyType);
+    formDataWithImage.append(
+      "selectedReceivers",
+      JSON.stringify(formData.selectedReceivers)
+    );
+
+    formDataWithImage.append("image", formData.image); // Use the image from formData
+
+    console.log("data when submitted", formDataWithImage);
 
     try {
       const response = await axios.post(
         "http://localhost:8000/post",
-        // formDataWithImage,
-        JSON.stringify(formData),
+        formDataWithImage,
+        // JSON.stringify(formData),
         {
           withCredentials: true,
           headers: { "Content-Type": "multipart/form-data" }, // Set the correct Content-Type header
