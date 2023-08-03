@@ -20,7 +20,7 @@ const CreatePost = (props) => {
   const handleImageUpload = (image) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      image: image, // Set the image in formData
+      image: image,
     }));
     setSelectedImage(image);
     setShowModal(false);
@@ -72,7 +72,7 @@ const CreatePost = (props) => {
       JSON.stringify(formData.selectedReceivers)
     );
 
-    formDataWithImage.append("image", formData.image); // Use the image from formData
+    formDataWithImage.append("image", formData.image);
 
     console.log("data when submitted", formDataWithImage);
 
@@ -83,7 +83,7 @@ const CreatePost = (props) => {
         // JSON.stringify(formData),
         {
           withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" }, // Set the correct Content-Type header
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
 
