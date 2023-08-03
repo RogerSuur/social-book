@@ -62,26 +62,24 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		file, header, err := r.FormFile("image")
+		var imagePath string
 
-		if err != nil {
-			app.Logger.Printf("Failed getting file: %v", err)
-			http.Error(rw, "Get file error", http.StatusUnsupportedMediaType)
+		if err == nil {
+			defer file.Close()
+
+			imagePath, err = app.PostService.SavePostImage(file, header)
+			if err != nil {
+				app.Logger.Printf("Failed saving image: %v", err)
+				http.Error(rw, "Save image error", http.StatusBadRequest)
+				return
+			}
 		}
-
-		defer file.Close()
 
 		userId, err := app.UserService.GetUserID(r)
 
 		if err != nil {
 			app.Logger.Printf("Failed fetching user: %v", err)
 			http.Error(rw, "Get user error", http.StatusBadRequest)
-			return
-		}
-
-		imagePath, err := app.PostService.SavePostImage(file, header)
-		if err != nil {
-			app.Logger.Printf("Failed saving image: %v", err)
-			http.Error(rw, "Save image error", http.StatusBadRequest)
 			return
 		}
 
