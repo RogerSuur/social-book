@@ -4,8 +4,12 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroller";
 import ImageHandler from "../utils/imageHandler";
+import { Picker } from "emoji-mart";
+import { Data } from "emoji-mart";
 
 const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
+  const [isPickerVisible, setPickerVIsible] = useState(false);
+  const [currentEmoji, setCurrentEmoji] = useState(null);
   const [messageHistory, setMessageHistory] = useState([]);
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
@@ -106,11 +110,10 @@ const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
       switch (msg.sender_id) {
         case user:
           return (
-            <p key={index} className="own-message" >
-               {msg.body}
-             <span className="own-time"> {getTime(msg.timestamp)}</span>
+            <p key={index} className="own-message">
+              {msg.body}
+              <span className="own-time"> {getTime(msg.timestamp)}</span>
             </p>
-            
           );
         default:
           return (
@@ -201,6 +204,22 @@ const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
         </InfiniteScroll>
       </div>
       <div className="message-box">
+        <div className="emoji-picker">
+          <h2 className="select-emoji">{currentEmoji || "select emoji"}</h2>
+          <button onClick={() => setPickerVIsible(!isPickerVisible)}>
+            open emoji picker
+          </button>
+          <div className={isPickerVisible ? "d-block" : "d-none"}>
+            <Picker
+              data={Data}
+              previewPosition="none"
+              onEmojiSelect={(e) => {
+                setCurrentEmoji(e.native);
+                setPickerVIsible(!isPickerVisible);
+              }}
+            />
+          </div>
+        </div>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -211,6 +230,7 @@ const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
             autoFocus
             required
           />
+
           <button>
             <img
               className="send-icon"
