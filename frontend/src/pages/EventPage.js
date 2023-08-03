@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { EVENT_URL } from "../utils/routes";
+import { EVENT_URL, EVENT_ATTENDANCE_URL } from "../utils/routes";
 import axios from "axios";
 import ImageHandler from "../utils/imageHandler";
 import GroupSidebar from "../components/GroupSidebar";
@@ -66,15 +66,14 @@ const EventPage = () => {
     setModalOpen(false);
   };
 
-  const handleResponse = async (attending) => {
+  const handleResponse = async (isAttending) => {
+    console.log("IS ATTENDING: ", isAttending);
+    const data = { eventId: +id, isAttending };
     try {
       await axios
-        .get(EVENT_URL + id, {
-          withCredentials: true,
-        })
+        .put(EVENT_ATTENDANCE_URL, data, { withCredentials: true })
         .then((response) => {
-          console.log("RESP: ", response.data);
-          setEvent(response.data);
+          console.log("RESP: ", response?.data);
         });
     } catch (err) {
       if (!err?.response) {
@@ -109,11 +108,19 @@ const EventPage = () => {
       {/* <div className="event-stuff"> 
      {/* event img here 
     </div>*/}
-      <button className="event-but" onClick={() => handleResponse(true)}>
-        Going
+      <button
+        className="event-but"
+        onClick={() => handleResponse(true)}
+        disabled={event?.isAttending}
+      >
+        I'm going
       </button>
-      <button className="event-but" onClick={() => handleResponse(false)}>
-        Not going
+      <button
+        className="event-but"
+        onClick={() => handleResponse(false)}
+        disabled={!event?.isAttending}
+      >
+        I'm not going
       </button>
       <div className="event-stuff">
         <p>{event?.title}</p>

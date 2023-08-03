@@ -98,6 +98,7 @@ const ProfileInfo = () => {
             withCredentials: true,
           })
           .then((response) => {
+            console.log("FOLLOWERS: ", response?.data);
             setFollowers(response?.data);
           });
       } catch (err) {
@@ -119,6 +120,7 @@ const ProfileInfo = () => {
             withCredentials: true,
           })
           .then((response) => {
+            console.log("FOLLOWING: ", response?.data);
             setFollowing(response?.data);
           });
       } catch (err) {
