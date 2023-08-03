@@ -72,7 +72,9 @@ const CreatePost = (props) => {
       JSON.stringify(formData.selectedReceivers)
     );
 
-    formDataWithImage.append("image", formData.image);
+    if (selectedImage) {
+      formDataWithImage.append("image", selectedImage); // Append the image file if it exists
+    }
 
     console.log("data when submitted", formDataWithImage);
 
