@@ -11,6 +11,7 @@ import {
   PROFILE_URL,
   USER_FOLLOWING_URL,
   USER_FOLLOWERS_URL,
+  USER_POSTS_URL,
 } from "../utils/routes";
 import ImageHandler from "../utils/imageHandler.js";
 import Modal from "../components/Modal.js";
@@ -108,7 +109,7 @@ const ProfileInfo = () => {
       }
     };
     loadFollowers();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const loadFollowing = async () => {
@@ -129,9 +130,7 @@ const ProfileInfo = () => {
       }
     };
     loadFollowing();
-  }, []);
-
-  console.log(user, "OTHER USER");
+  }, [id]);
 
   const birthdayConverter = (date) => {
     if (!date) {
@@ -152,7 +151,13 @@ const ProfileInfo = () => {
       <li key={index}>
         <Link to={`/profile/${user.userId}`}>
           {ImageHandler(user.imagePath, "defaultuser.jpg", "profile-image")}
-          <p>{user.name}</p>
+          {user?.nickname ? (
+            <p>{user.nickname}</p>
+          ) : (
+            <p>
+              {user.firstName} {user.lastName}
+            </p>
+          )}
         </Link>
       </li>
     ));
@@ -179,7 +184,11 @@ const ProfileInfo = () => {
           <button onClick={() => handleModalClick(true)}>Following</button>
           <button onClick={() => handleModalClick(false)}>Followers</button>
           <Modal open={postsModalOpen} onClose={handlePostsModalClose}>
-            <Posts />
+            <Posts
+              showCreatePost={false}
+              showGroupSidebar={false}
+              url={USER_POSTS_URL + id}
+            />
           </Modal>
           <button onClick={() => handlePostsModalClick()}>Posts</button>
 

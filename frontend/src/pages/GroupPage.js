@@ -143,8 +143,8 @@ const GroupPage = () => {
                 showGroupSidebar={false}
                 showCreatePost={true}
                 url={`/groupfeed/${id}`}
+                key={id}
               />
-              {/* <Events groupId={+id} /> */}
             </>
           ) : (
             <GroupRequestButton groupid={+id} />

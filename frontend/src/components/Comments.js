@@ -65,8 +65,6 @@ const Comments = ({ postId, commentCount, showCreateComment }) => {
     }
   }
 
-  console.log("COMMENTS: ", comments);
-
   return (
     <>
       {error ? (

@@ -40,6 +40,8 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
       content,
       createdAt,
       commentCount,
+      groupId,
+      groupName,
     } = post;
     const isLastPost = index === posts.length - 1;
 
@@ -53,6 +55,9 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
         data-post-id={id}
       >
         <div>Post ID: {id}</div>
+        <div>
+          <Link to={`/groups/${groupId}`}>{groupName}</Link>
+        </div>
         <div className="row3">
           <Link to={`/profile/${userId}`}>{userName}</Link>
         </div>

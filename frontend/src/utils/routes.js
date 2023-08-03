@@ -12,8 +12,8 @@ export const ADD_GROUP_MEMBERS_URL = "http://localhost:8000/addmembers";
 //-------------------Followers/following ----------------//
 export const FOLLOWERS_URL = "http://localhost:8000/followers";
 export const FOLLOWING_URL = "http://localhost:8000/following";
-export const USER_FOLLOWING_URL = "http://localhost:8000/following/"
-export const USER_FOLLOWERS_URL = "http://localhost:8000/followers/";;
+export const USER_FOLLOWING_URL = "http://localhost:8000/following/";
+export const USER_FOLLOWERS_URL = "http://localhost:8000/followers/";
 
 //--------------------------Events-----------------------//
 export const EVENT_URL = "http://localhost:8000/event/";
@@ -23,3 +23,6 @@ export const CREATE_GROUP_EVENT_URL = "/creategroupevent";
 
 //--------------------------Search---------------------//
 export const SEARCH_URL = "http://localhost:8000/search";
+
+//--------------------------Posts---------------------//
+export const USER_POSTS_URL = "/userposts/";
