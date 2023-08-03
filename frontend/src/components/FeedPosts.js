@@ -52,14 +52,14 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
         ref={isLastPost ? lastPostElementRef : null}
         data-post-id={id}
       >
-        <div>Post ID: {id}</div>
         <div className="row3">
           <Link to={`/profile/${userId}`}>{userName}</Link>
         </div>
-        <div className="row2">
-          {content}
-          {imagePath}
-        </div>
+        <img
+          className="profile-pic"
+          src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
+        />
+        <div className="row2">{content}</div>;
         <div className="row">{new Date(createdAt).toLocaleString("et-EE")}</div>
         <div className="comment-section">
           <Comments postId={id} commentCount={commentCount} />

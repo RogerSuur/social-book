@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -32,6 +33,34 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "Parsing form error", http.StatusRequestEntityTooLarge)
 		}
 
+		// decoder := json.NewDecoder(r.Body)
+		// decoder.DisallowUnknownFields()
+
+		content := r.FormValue("content")
+		privacyTypeStr := r.FormValue("privacyType")
+
+		var privacyType enums.PrivacyType
+		switch privacyTypeStr {
+		case "1":
+			privacyType = 1
+		case "2":
+			privacyType = 2
+		case "3":
+			privacyType = 3
+		default:
+			app.Logger.Printf("Invalid privacyType value: %s", privacyTypeStr)
+			http.Error(rw, "Invalid privacyType value", http.StatusBadRequest)
+			return
+		}
+
+		receiversStr := r.FormValue("selectedReceivers")
+		receivers := strings.Split(receiversStr, ",")
+
+		if err != nil {
+			app.Logger.Printf("JSON error: %v", err)
+			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
+
 		file, header, err := r.FormFile("image")
 
 		if err != nil {
@@ -40,17 +69,6 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		defer file.Close()
-
-		decoder := json.NewDecoder(r.Body)
-		decoder.DisallowUnknownFields()
-
-		JSONdata := &createPostJSON{}
-		err = decoder.Decode(&JSONdata)
-
-		if err != nil {
-			app.Logger.Printf("JSON error: %v", err)
-			http.Error(rw, "JSON error", http.StatusBadRequest)
-		}
 
 		userId, err := app.UserService.GetUserID(r)
 
@@ -70,9 +88,9 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 		post := &models.Post{
 			UserId:      userId,
 			ImagePath:   imagePath,
-			Content:     JSONdata.Content,
-			PrivacyType: enums.PrivacyType(JSONdata.PrivacyType),
-			Receivers:   JSONdata.Receivers,
+			Content:     content,
+			PrivacyType: privacyType,
+			Receivers:   receivers,
 		}
 
 		err = app.PostService.CreatePost(post)
