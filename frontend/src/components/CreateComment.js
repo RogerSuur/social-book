@@ -45,11 +45,7 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
 
     const formDataWithImage = new FormData();
     formDataWithImage.append("content", formData.content);
-    formDataWithImage.append("privacyType", formData.privacyType);
-    formDataWithImage.append(
-      "selectedReceivers",
-      JSON.stringify(formData.selectedReceivers)
-    );
+    formDataWithImage.append("postId", formData.postId);
 
     if (selectedImage) {
       formDataWithImage.append("image", selectedImage); // Append the image file if it exists
