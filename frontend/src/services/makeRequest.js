@@ -10,6 +10,6 @@ export async function makeRequest(url, options) {
     const res = await api.get(url, options);
     return res.data;
   } catch (error) {
-    return await Promise.reject(error?.response?.data?.message ?? "Error");
+    throw error;
   }
 }

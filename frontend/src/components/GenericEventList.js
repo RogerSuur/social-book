@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 
 const GenericEventList = ({ url }) => {
   const mapGenericEventList = (event, index) => (
-    <li key={index}>
-      <Link to={`/event/${event.id}`}>{event.name}</Link>
+    <li className="link" key={index}>
+      <Link to={`/event/${event.id}`}>{event.title}</Link>
     </li>
   );
 

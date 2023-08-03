@@ -32,6 +32,14 @@ type SignupJSON struct {
 	About           string `json:"about"`
 }
 
+type SimpleUserJSON struct {
+	Id        int    `json:"id"`
+	Nickname  string `json:"nickname"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	ImagePath string `json:"imagePath"`
+}
+
 type IUserRepository interface {
 	Insert(*User) (int64, error)
 	Update(*User) error
@@ -39,8 +47,9 @@ type IUserRepository interface {
 	GetByEmail(email string) (*User, error)
 	GetByUserName(userName string) (*User, error)
 	CheckIfNicknameExists(nickname string, id int64) error
-	GetAllUserFollowers(id int) ([]*User, error)
-	GetAllFollowedBy(id int) ([]*User, error)
+	GetAllUserFollowers(id int64) ([]*User, error)
+	GetAllFollowedBy(id int64) ([]*User, error)
+	GetAllUsers(id int64) ([]*User, error)
 	UpdateImage(id int64, imagePath string) error
 }
 
@@ -153,7 +162,7 @@ func (repo UserRepository) CheckIfNicknameExists(nickname string, id int64) erro
 }
 
 // Return all user followers, who follow user with given id
-func (repo UserRepository) GetAllUserFollowers(id int) ([]*User, error) {
+func (repo UserRepository) GetAllUserFollowers(id int64) ([]*User, error) {
 	stmt := `SELECT users.id, users.forname, users.surname, users.email, users.password, birthday, nickname, about, image_path, created_at, is_public FROM users
 	 INNER JOIN followers f on f.follower_id = users.id AND f.following_id = ?`
 
@@ -184,7 +193,7 @@ func (repo UserRepository) GetAllUserFollowers(id int) ([]*User, error) {
 }
 
 // Return all followed users by user id
-func (repo UserRepository) GetAllFollowedBy(id int) ([]*User, error) {
+func (repo UserRepository) GetAllFollowedBy(id int64) ([]*User, error) {
 
 	stmt := `SELECT users.id, users.forname, users.surname, users.email, users.password, birthday, nickname, about, image_path, created_at, is_public FROM users
 	 INNER JOIN followers f on f.following_id = users.id AND f.follower_id = ?`
@@ -202,6 +211,36 @@ func (repo UserRepository) GetAllFollowedBy(id int) ([]*User, error) {
 		user := &User{}
 
 		err := rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Birthday, &user.Nickname, &user.About, &user.ImagePath, &user.CreatedAt, &user.IsPublic)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (repo UserRepository) GetAllUsers(id int64) ([]*User, error) {
+	stmt := `SELECT id, forname, surname, email, birthday, nickname, about, image_path, created_at, is_public FROM users 
+	WHERE id != ?`
+
+	rows, err := repo.DB.Query(stmt, id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	users := []*User{}
+
+	for rows.Next() {
+		user := &User{}
+
+		err := rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Birthday, &user.Nickname, &user.About, &user.ImagePath, &user.CreatedAt, &user.IsPublic)
 		if err != nil {
 			return nil, err
 		}

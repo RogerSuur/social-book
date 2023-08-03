@@ -1,17 +1,24 @@
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import NotificationList from "../components/NotificationList.js";
-import NotificationPopup from "../components/NotificationPopup";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { WS_URL, NOTIFICATIONS_URL } from "../utils/routes";
-import notificationBell from "../images/notification_bell.png";
+import NotificationPopup from "../components/NotificationPopup";
 
 const NotificationNavbarItem = () => {
   const [toggle, setToggle] = useState(false);
   const [newNotification, setNewNotification] = useState();
   const [notificationTimer, setNotificationTimer] = useState(false);
-  const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
+  const { lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    if (lastJsonMessage && lastJsonMessage.type === "notification") {
+      setNotifications((prevNotifications) => {
+        return [lastJsonMessage?.data, ...prevNotifications];
+      });
+    }
+  }, [lastJsonMessage]);
 
   useEffect(() => {
     const loadNotifications = async () => {
@@ -33,12 +40,7 @@ const NotificationNavbarItem = () => {
     loadNotifications();
   }, []);
 
-  // const loadNotifications = () => {
-  //   sendJsonMessage({
-  //     type: "notifications",
-  //   });
-  // };
-
+  console.log(notifications, "NOTLIST");
   useEffect(() => {
     const exceptions = ["message", "chatlist", "message_history"];
 
@@ -63,7 +65,10 @@ const NotificationNavbarItem = () => {
   return (
     <>
       <li onClick={handleToggle}>
-        <img className="text-link" src={notificationBell} />
+        <img
+          className="text-link"
+          src={`${process.env.PUBLIC_URL}/notification_bell.png`}
+        />
         {notificationCount > 0 && (
           <div className="notification-count">{notificationCount}</div>
         )}
@@ -71,7 +76,13 @@ const NotificationNavbarItem = () => {
       {notificationTimer && (
         <NotificationPopup notification={newNotification} />
       )}
-      {toggle && <NotificationList setToggle={setToggle} />}
+      {toggle && (
+        <NotificationList
+          notifications={notifications}
+          setNotifications={setNotifications}
+          setToggle={setToggle}
+        />
+      )}
     </>
   );
 };

@@ -6,24 +6,23 @@ import (
 	"log"
 	"mime/multipart"
 	"os"
-	"path/filepath"
 	"strings"
 
 	uuid "github.com/satori/go.uuid"
 )
 
 type IImageService interface {
-	SaveImage(userID int64, file multipart.File, fileHeader multipart.FileHeader) (string, error)
+	SaveImage(file multipart.File, fileHeader multipart.FileHeader) (string, error)
 }
 
-func SaveImage(userID int64, file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
+func SaveImage(file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
 	// Get the file extension
 	fileExtension := strings.Split(fileHeader.Filename, ".")[1]
 
 	// Generate new file name
 	newFileName := fmt.Sprintf("%s.%s", uuid.NewV4().String(), fileExtension)
 
-	imagePath := filepath.Join("images", fmt.Sprintf("%d", userID))
+	imagePath := "images"
 
 	// Create folder if not exists
 	err := os.MkdirAll(imagePath, os.ModePerm)

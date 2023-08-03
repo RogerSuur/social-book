@@ -1,37 +1,54 @@
 package services
 
 import (
+	"SocialNetworkRestApi/api/internal/server/utils"
+	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
 	"errors"
 	"log"
+	"mime/multipart"
+	"strconv"
+	"strings"
 	"time"
 )
 
 type IPostService interface {
 	CreatePost(post *models.Post) error
-	GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, error)
+	CreateGroupPost(post *models.Post) error
+	GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON, error)
+	GetProfilePosts(userId int64, offset int64) ([]*feedPostJSON, error)
+	GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSON, error)
+	GetUserPosts(userId int64, offset int64, requestingUserId int64) ([]*feedPostJSON, error)
+	UpdatePostImage(userId int64, postId int64, file multipart.File, fileHeader *multipart.FileHeader) error
 }
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
 type PostService struct {
-	Logger         *log.Logger
-	PostRepository models.IPostRepository
+	Logger                *log.Logger
+	GroupRepository       models.IGroupRepository
+	PostRepository        models.IPostRepository
+	AllowedPostRepository models.IAllowedPostRepository
 }
 
-func InitPostService(postRepo *models.PostRepository) *PostService {
+func InitPostService(logger *log.Logger, groupRepo *models.GroupRepository, postRepo *models.PostRepository, allowedPostRepo *models.AllowedPostRepository) *PostService {
 	return &PostService{
-		PostRepository: postRepo,
+		Logger:                logger,
+		GroupRepository:       groupRepo,
+		PostRepository:        postRepo,
+		AllowedPostRepository: allowedPostRepo,
 	}
 }
 
 type feedPostJSON struct {
-	Id           int       `json:"id"`
-	UserId       int       `json:"userId"`
+	Id           int64     `json:"id"`
+	UserId       int64     `json:"userId"`
 	UserName     string    `json:"userName"`
 	Content      string    `json:"content"`
 	ImagePath    string    `json:"imagePath"`
 	CommentCount int       `json:"commentCount"`
 	CreatedAt    time.Time `json:"createdAt"`
+	GroupId      int64     `json:"groupId"`
+	GroupName    string    `json:"groupName"`
 }
 
 func (s *PostService) CreatePost(post *models.Post) error {
@@ -42,7 +59,25 @@ func (s *PostService) CreatePost(post *models.Post) error {
 		return err
 	}
 
-	_, err := s.PostRepository.Insert(post)
+	postId, err := s.PostRepository.Insert(post)
+
+	if post.PrivacyType == enums.SubPrivate {
+		for _, receiver := range post.Receivers {
+
+			receiverId, err := strconv.Atoi(receiver)
+
+			if err != nil {
+				s.Logger.Printf("CreatePost atoi parse error: %s", err)
+			}
+
+			allowedPost := models.AllowedPost{
+				UserId: receiverId,
+				PostId: int(postId),
+			}
+
+			s.AllowedPostRepository.Insert(&allowedPost)
+		}
+	}
 
 	if err != nil {
 		log.Printf("CreatePost error: %s", err)
@@ -51,8 +86,36 @@ func (s *PostService) CreatePost(post *models.Post) error {
 	return err
 }
 
-func (s *PostService) GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, error) {
-	// fmt.Println("userId", userId)
+func (s *PostService) CreateGroupPost(post *models.Post) error {
+
+	if len(post.Content) == 0 {
+		err := errors.New("content too short")
+		log.Printf("Create Group Post error: %s", err)
+		return err
+	}
+
+	postId, err := s.PostRepository.Insert(post)
+
+	if err != nil {
+		log.Printf("Create Group Post error: %s", err)
+	}
+
+	s.Logger.Printf("Group post inserted: %d", postId)
+
+	return err
+}
+
+func (s *PostService) GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON, error) {
+
+	if offset == 0 {
+		lastPostId, err := s.PostRepository.GetLastPostId()
+		if err != nil {
+			s.Logger.Printf("GetFeedPosts error: %s", err)
+			return nil, err
+		}
+		offset = lastPostId + 1
+	}
+
 	posts, err := s.PostRepository.GetAllFeedPosts(userId, offset)
 
 	if err != nil {
@@ -65,6 +128,82 @@ func (s *PostService) GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, e
 		// commentCount, err := s.PostRepository.GetCommentCount(p.Id)
 
 		feedPosts = append(feedPosts, &feedPostJSON{
+			Id:           p.Id,
+			UserId:       p.UserId,
+			UserName:     p.UserName,
+			Content:      p.Content,
+			ImagePath:    p.ImagePath,
+			CommentCount: p.CommentCount,
+			CreatedAt:    p.CreatedAt,
+		})
+	}
+
+	s.Logger.Printf("Retrived feed posts: %d", len(feedPosts))
+
+	return feedPosts, nil
+}
+
+func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJSON, error) {
+
+	if offset == 0 {
+		lastPostId, err := s.PostRepository.GetLastPostId()
+		if err != nil {
+			s.Logger.Printf("GetFeedPosts error: %s", err)
+			return nil, err
+		}
+		offset = lastPostId + 1
+	}
+
+	posts, err := s.PostRepository.GetAllByUserId(userId, offset)
+
+	if err != nil {
+		s.Logger.Printf("GetFeedPosts error: %s", err)
+	}
+
+	feedPosts := []*feedPostJSON{}
+
+	for _, p := range posts {
+		feedPosts = append(feedPosts, &feedPostJSON{
+			Id:           p.Id,
+			UserId:       p.UserId,
+			UserName:     p.UserName,
+			Content:      p.Content,
+			ImagePath:    p.ImagePath,
+			CommentCount: p.CommentCount,
+			CreatedAt:    p.CreatedAt,
+		})
+	}
+
+	return feedPosts, nil
+}
+
+func (s *PostService) GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSON, error) {
+
+	if offset == 0 {
+		lastPostId, err := s.PostRepository.GetLastPostId()
+		if err != nil {
+			s.Logger.Printf("GetFeedPosts error: %s", err)
+			return nil, err
+		}
+		offset = lastPostId + 1
+	}
+
+	posts, err := s.PostRepository.GetAllByGroupId(groupId, offset)
+
+	if err != nil {
+		s.Logger.Printf("GetFeedPosts error: %s", err)
+	}
+
+	group, err := s.GroupRepository.GetById(groupId)
+
+	if err != nil {
+		s.Logger.Printf("GetFeedPosts error: %s", err)
+	}
+
+	feedPosts := []*feedPostJSON{}
+
+	for _, p := range posts {
+		feedPosts = append(feedPosts, &feedPostJSON{
 			p.Id,
 			p.UserId,
 			p.UserName,
@@ -72,9 +211,88 @@ func (s *PostService) GetFeedPosts(userId int64, offset int) ([]*feedPostJSON, e
 			p.ImagePath,
 			p.CommentCount,
 			p.CreatedAt,
+			groupId,
+			group.Title,
 		})
 	}
-	// fmt.Println("feedPosts:", feedPosts)
 
 	return feedPosts, nil
+}
+
+func (s *PostService) GetUserPosts(userId int64, offset int64, requestingUserId int64) ([]*feedPostJSON, error) {
+
+	if offset == 0 {
+		lastPostId, err := s.PostRepository.GetLastPostId()
+		if err != nil {
+			s.Logger.Printf("GetFeedPosts error: %s", err)
+			return nil, err
+		}
+		offset = lastPostId + 1
+	}
+
+	posts, err := s.PostRepository.GetAllByUserAndRequestingUserIds(userId, offset, requestingUserId)
+
+	if err != nil {
+		s.Logger.Printf("GetFeedPosts error: %s", err)
+	}
+
+	feedPosts := []*feedPostJSON{}
+
+	for _, p := range posts {
+		feedPosts = append(feedPosts, &feedPostJSON{
+			Id:           p.Id,
+			UserId:       p.UserId,
+			UserName:     p.UserName,
+			Content:      p.Content,
+			ImagePath:    p.ImagePath,
+			CommentCount: p.CommentCount,
+			CreatedAt:    p.CreatedAt,
+		})
+	}
+
+	return feedPosts, nil
+}
+
+func (s *PostService) UpdatePostImage(userId int64, postId int64, file multipart.File, fileHeader *multipart.FileHeader) error {
+
+	// check if user exists
+	post, err := s.PostRepository.GetById(postId)
+
+	if err != nil {
+		s.Logger.Printf("Post not found: %s", err)
+		return err
+	}
+
+	if post.UserId != userId {
+		err := errors.New("user not authorized to edit post")
+		s.Logger.Printf("UpdatePostImage error: %s", err)
+		return err
+	}
+
+	// check if file is an image
+	if !strings.HasPrefix(fileHeader.Header.Get("Content-Type"), "image") {
+		s.Logger.Println("Not an image")
+		return errors.New("not an image")
+	}
+
+	// save image
+	imagePath, err := utils.SaveImage(file, fileHeader)
+	if err != nil {
+		s.Logger.Printf("UpdatePostImage error: %s", err)
+		return err
+	}
+
+	// update post
+
+	post.ImagePath = imagePath
+
+	err = s.PostRepository.Update(post)
+	if err != nil {
+		s.Logger.Printf("UpdatePostImage error: %s", err)
+		return err
+	}
+
+	s.Logger.Printf("Post image updated: %d", postId)
+
+	return nil
 }

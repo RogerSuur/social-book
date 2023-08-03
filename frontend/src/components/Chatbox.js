@@ -1,11 +1,16 @@
 import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroller";
+import ImageHandler from "../utils/imageHandler";
 
-const Chatbox = ({ toggleChat, chat, user }) => {
+const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
   const [messageHistory, setMessageHistory] = useState([]);
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [scrollToBottomNeeded, setScrollToBottomNeeded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({
     type: "message",
     data: {
@@ -13,167 +18,54 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     },
   });
 
-  console.log(chat);
+  useEffect(() => {
+    setMessageHistory([]);
+    setHasMoreMessages(true);
+  }, [chat]);
 
-  console.log(messageHistory);
+  const messageboxRef = useRef(null);
 
-  const defaultImage = () =>
-    chat.userid ? "defaultuser.jpg" : "defaultgroup.png";
+  const image = () =>
+    chat?.user_id > 0
+      ? ImageHandler(chat?.avatar_image, "defaultuser.jpg", "chatbox-img")
+      : ImageHandler("", "defaultgroup.png", "chatbox-img");
 
-  const imageHandler = () => {
-    const source = chat?.avatarImage
-      ? `images/${chat.id}/${chat.avatarImage}`
-      : defaultImage();
+  const loadMessages = useCallback(async () => {
+    if (loading) {
+      return;
+    }
 
-    const image = (
-      <img
-        style={{
-          width: "20px",
-          height: "20px",
-        }}
-        src={source}
-      ></img>
-    );
-    return image;
-  };
+    setLoading(true);
 
-  const sms = [
-    {
-      id: 1, //message id
-      sender_id: 2, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 1, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message1",
-      timestamp: "2023-06-05 16:01:00.303095707 +03:00",
-    },
-    {
-      id: 2, //message id
-      sender_id: 1, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 2, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message2",
-      timestamp: "2023-06-05 16:01:01.303095707 +03:00",
-    },
-    {
-      id: 3, //message id
-      sender_id: 2, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 1, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message3",
-      timestamp: "2023-06-05 16:01:02.303095707 +03:00",
-    },
-    {
-      id: 4, //message id
-      sender_id: 1, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 2, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message4",
-      timestamp: "2023-06-05 16:01:03.303095707 +03:00",
-    },
-    {
-      id: 5, //message id
-      sender_id: 2, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 1, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message5",
-      timestamp: "2023-06-05 16:01:04.303095707 +03:00",
-    },
-    {
-      id: 6, //message id
-      sender_id: 2, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 1, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message6",
-      timestamp: "2023-06-05 16:01:05.303095707 +03:00",
-    },
-    {
-      id: 7, //message id
-      sender_id: 1, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 2, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message7",
-      timestamp: "2023-06-05 16:01:06.303095707 +03:00",
-    },
-    {
-      id: 8, //message id
-      sender_id: 1, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 2, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message8",
-      timestamp: "2023-06-05 16:01:07.303095707 +03:00",
-    },
-    {
-      id: 9, //message id
-      sender_id: 1, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 2, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message9",
-      timestamp: "2023-06-05 16:01:08.303095707 +03:00",
-    },
-    {
-      id: 10, //message id
-      sender_id: 2, // 0 if group
-      sender_name: "Scary Mary", // either a  username (if exists) or firstname and lastname
-      recipient_id: 1, // 0 if group
-      recipient_name: "AnnieA", // either a username (if   exists) or firstname and lastname && empty if     group
-      group_id: 0, // 0 if user
-      group_name: "", //empty if user
-      body: "message10",
-      timestamp: "2023-06-05 16:01:09.303095707 +03:00",
-    },
-  ];
+    const offset = messageHistory.length > 0 ? messageHistory[0].id : 0;
 
-  const loadMessages = () => {
     sendJsonMessage({
       type: "request_message_history",
-      data: { id: chat.userid, group_id: chat.group_id },
+      data: { id: chat.user_id, group_id: chat.group_id, last_message: offset },
     });
-  };
-
-  useEffect(() => {
-    loadMessages();
-  }, []);
+  }, [loading, hasMoreMessages]);
 
   useEffect(() => {
     switch (lastJsonMessage?.type) {
       case "message_history":
-        setMessageHistory((prevMessageHistory) => [
-          ...lastJsonMessage?.data?.messages,
-          ...prevMessageHistory,
-        ]);
+        if (lastJsonMessage?.data.length > 0) {
+          setMessageHistory((prevMessageHistory) => [
+            ...lastJsonMessage?.data,
+            ...prevMessageHistory,
+          ]);
+        }
+
+        if (lastJsonMessage?.data.length < 10) {
+          setHasMoreMessages(false);
+        }
+
+        setLoading(false);
         break;
       case "message":
         if (
-          (lastJsonMessage?.data?.sender_id === chat.userid &&
+          (lastJsonMessage?.data?.sender_id === chat.user_id &&
             lastJsonMessage?.data?.group_id === 0) ||
-          lastJsonMessage?.data?.recipient_id === chat.userid ||
+          lastJsonMessage?.data?.recipient_id === chat.user_id ||
           lastJsonMessage?.data?.group_id === chat.group_id
         ) {
           setMessageHistory((prevMessageHistory) => [
@@ -181,11 +73,14 @@ const Chatbox = ({ toggleChat, chat, user }) => {
             lastJsonMessage?.data,
           ]);
         }
+        break;
+      default:
+        break;
     }
   }, [lastJsonMessage]);
 
   const closeChat = () => {
-    toggleChat(0);
+    toggleChat(null);
   };
 
   const handleChange = (event) => {
@@ -199,57 +94,112 @@ const Chatbox = ({ toggleChat, chat, user }) => {
     });
   };
 
-  const renderedMessages = sms.map((msg) => {
-    switch (msg.sender_id) {
-      case user:
-        return <p className="own-message">{msg.body}</p>;
-      default:
-        return <p className="message">{msg.body}</p>;
+  const getTime = (datetime) =>
+    new Date(datetime).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+
+  const renderedMessages = messageHistory.map((msg, index) => {
+    if (msg) {
+      switch (msg.sender_id) {
+        case user:
+          return (
+            <p key={index} className="own-message" >
+               {msg.body}
+             <span className="own-time"> {getTime(msg.timestamp)}</span>
+            </p>
+            
+          );
+        default:
+          return (
+            <p key={index} className="message">
+              {msg.group_id > 0 && msg.sender_name} {msg.body}
+              <span className="message-time">{getTime(msg.timestamp)}</span>
+            </p>
+          );
+      }
     }
   });
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (chat?.group_id > 0) {
-      console.log({
-        ...message,
-        data: { ...message.data, recipient_id: chat.group_id },
-      });
-      // sendJsonMessage({
-      //   ...message,
-      //   data: { ...message.data, recipient_id: chat.group_id },
-      // });
-    } else {
-      console.log(
-        {
-          ...message,
-          data: { ...message.data, recipient_id: chat.userid },
-        },
-        "SENDING"
-      );
-      // sendJsonMessage({
-      //   ...message,
-      //   data: { ...message.data, recipient_id: chat.userid },
-      // });
-    }
+    let msg = {
+      ...message,
+      data: {
+        ...message.data,
+        sender_id: user,
+        recipient_id: chat?.user_id,
+        group_id: chat?.group_id,
+      },
+    };
+
+    sendJsonMessage(msg);
+
+    setMessageHistory((prevMessageHistory) => [
+      ...prevMessageHistory,
+      { ...msg.data, timestamp: new Date().toISOString() },
+    ]);
+
+    updateChatlist([
+      chat?.user_id ? chat?.user_id : 0,
+      chat?.group_id ? chat?.group_id : 0,
+    ]);
+
     setMessage({ ...message, data: { body: "" } });
+    setScrollToBottomNeeded(true);
   };
 
+  useEffect(() => {
+    if (scrollToBottomNeeded) {
+      scrollToBottom();
+      setScrollToBottomNeeded(false);
+    }
+  }, [scrollToBottomNeeded]);
+
   const chatName =
-    chat?.userid > 0 ? (
-      <Link to={`/profile/${chat.userid}`}>{chat.name}</Link>
+    chat?.user_id > 0 ? (
+      <Link to={`/profile/${chat.user_id}`}>{chat.name}</Link>
     ) : (
       <Link to={`/groups/${chat.group_id}`}>{chat.name}</Link>
     );
 
+  // const handleEmojiClick = (emojiData) => {
+  //   const { emoji } = emojiData;
+
+  //   setMessage((prevMessage) => ({
+  //     ...prevMessage,
+  //     data: { ...prevMessage.data, body: prevMessage.data.body + emoji },
+  //   }));
+  // };
+
+  const scrollToBottom = () => {
+    messageboxRef.current.scrollTop = messageboxRef.current.scrollHeight;
+  };
+
   const chatbox = (
     <div className="chatbox">
       <div className="chat-title">
+        {image()}
         {chatName}
-        {imageHandler()}
-        <button onClick={closeChat}>Close</button>
+        <img
+          className="exit-but"
+          src={`${process.env.PUBLIC_URL}/Vectorexit.png`}
+          onClick={closeChat}
+        />
       </div>
-      <div className="message-history">{renderedMessages}</div>
+      <div className="message-history" ref={messageboxRef}>
+        <InfiniteScroll
+          pageStart={0}
+          isReverse={true}
+          loadMore={loadMessages}
+          hasMore={hasMoreMessages}
+          useWindow={false}
+        >
+          {renderedMessages}
+        </InfiniteScroll>
+      </div>
       <div className="message-box">
         <form onSubmit={handleSubmit}>
           <input
@@ -261,7 +211,12 @@ const Chatbox = ({ toggleChat, chat, user }) => {
             autoFocus
             required
           />
-          <button>Send</button>
+          <button>
+            <img
+              className="send-icon"
+              src={`${process.env.PUBLIC_URL}/send-icon.png`}
+            />
+          </button>
         </form>
       </div>
     </div>

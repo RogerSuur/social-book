@@ -1,9 +1,11 @@
 package seed
 
 import (
+	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
 	"SocialNetworkRestApi/api/pkg/services"
 	"log"
+	"math/rand"
 	"os"
 	"time"
 
@@ -35,12 +37,13 @@ func SeedUsers(repo *models.UserRepository) {
 			Password:  pwd,
 			Nickname:  seedUser.Nickname,
 			About:     seedUser.About,
-			ImagePath: faker.Word(),
 			Birthday:  date,
+			ImagePath: seedUser.ImagePath,
+			IsPublic:  seedUser.IsPublic,
 		}
 
 		id, err := repo.Insert(tempUser)
-		seedUser.Id = int(id)
+		seedUser.Id = id
 
 		if err != nil {
 			logger.Println(err)
@@ -58,13 +61,14 @@ func SeedPosts(repos *models.Repositories) {
 			for _, seedPost := range seedUser.PostSet {
 				tempPost := &models.Post{
 					Content:     seedPost.Content,
-					UserId:      int64(seedUser.Id),
+					UserId:      seedUser.Id,
 					PrivacyType: seedPost.PrivacyType,
+					CreatedAt:   seedPost.CreatedAt,
 				}
 
-				postId, err := repos.PostRepo.Insert(tempPost)
+				postId, err := repos.PostRepo.InsertSeedPost(tempPost)
 				seedPost.Id = int(postId)
-				tempPost.Id = int(postId)
+				tempPost.Id = postId
 
 				//Insert post comments
 				for _, comments := range seedPost.CommentSet {
@@ -75,14 +79,15 @@ func SeedPosts(repos *models.Repositories) {
 					}
 
 					tempComment := &models.Comment{
-						Content: comments.Content,
-						UserId:  commentUser.Id,
-						PostId:  int(postId),
+						Content:   comments.Content,
+						UserId:    commentUser.Id,
+						PostId:    postId,
+						CreatedAt: seedPost.CreatedAt.Add(comments.PostOffSet),
 					}
 
-					id, err := repos.CommentRepo.Insert(tempComment)
+					id, err := repos.CommentRepo.InsertSeedComment(tempComment)
 
-					tempComment.Id = int(id)
+					tempComment.Id = id
 
 					// logger.Printf("%+v\n", tempComment)
 
@@ -101,12 +106,12 @@ func SeedPosts(repos *models.Repositories) {
 					tempComment := &models.Comment{
 						Content: faker.Sentence(),
 						UserId:  loremUser.Id,
-						PostId:  int(postId),
+						PostId:  postId,
 					}
 
 					id, err := repos.CommentRepo.Insert(tempComment)
 
-					tempComment.Id = int(id)
+					tempComment.Id = id
 
 					// logger.Printf("%+v\n", tempComment)
 
@@ -140,7 +145,7 @@ func SeedFollowers(repos *models.Repositories) {
 
 				tempFollowing := &models.Follower{
 					FollowingId: followedUser.Id,
-					FollowerId:  int64(seedUser.Id),
+					FollowerId:  seedUser.Id,
 					Accepted:    true,
 				}
 
@@ -171,7 +176,8 @@ func SeedGroups(repos *models.Repositories) {
 		tempGroup := &models.Group{
 			Title:       group.Title,
 			Description: group.Description,
-			CreatorId:   int(user.Id),
+			CreatorId:   user.Id,
+			ImagePath:   group.ImagePath,
 		}
 
 		id, err := repos.GroupRepo.Insert(tempGroup)
@@ -186,12 +192,100 @@ func SeedGroups(repos *models.Repositories) {
 			if err != nil {
 				logger.Printf("%+v\n", err)
 			}
-			tempGroupUser := &models.GroupUser{
-				UserId:  int(groupUser.Id),
-				GroupId: int(id),
+			tempGroupUser := &models.GroupMember{
+				UserId:   groupUser.Id,
+				GroupId:  id,
+				JoinedAt: time.Now(),
+				Accepted: true,
 			}
 
-			_, err = repos.GroupUserRepo.Insert(tempGroupUser)
+			_, err = repos.GroupMemberRepo.Insert(tempGroupUser)
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+		}
+
+		//Add group events
+		for _, event := range group.SeedEventsData {
+			eventCreator, err := repos.UserRepo.GetByEmail(event.CreatorEmail)
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+
+			tempEvent := &models.Event{
+				GroupId:      id,
+				UserId:       eventCreator.Id,
+				CreatedAt:    event.CreatedAt,
+				EventTime:    event.EventTime,
+				EventEndTime: event.EventTime.Add(event.TimeSpan),
+				Title:        event.Title,
+				Description:  event.Description,
+			}
+			tempEventId, err := repos.EventRepo.InsertSeedEvent(tempEvent)
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+
+			detailsId, err := repos.NotificationRepo.InsertDetails(&models.NotificationDetails{
+				SenderId:         tempEvent.UserId,
+				NotificationType: "event_invite",
+				EntityId:         tempEventId,
+				CreatedAt:        time.Now(),
+			})
+
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+
+			for _, groupUserEmail := range group.Users {
+				groupUser, err := repos.UserRepo.GetByEmail(groupUserEmail)
+				if err != nil {
+					logger.Printf("%+v\n", err)
+				}
+
+				isAttending := (rand.Intn(10) % 2) == 0
+
+				if isAttending {
+					_, err := repos.EventAttendanceRepo.Insert(&models.EventAttendance{
+						EventId:     tempEventId,
+						UserId:      groupUser.Id,
+						IsAttending: isAttending,
+					})
+
+					if err != nil {
+						logger.Printf("%+v\n", err)
+					}
+
+				} else {
+					_, err := repos.NotificationRepo.InsertNotification(&models.Notification{
+						ReceiverId:            groupUser.Id,
+						NotificationDetailsId: detailsId,
+					})
+
+					if err != nil {
+						logger.Printf("%+v\n", err)
+					}
+				}
+			}
+		}
+
+		//Add group posts
+		for _, post := range group.SeedGroupPostsData {
+			eventCreator, err := repos.UserRepo.GetByEmail(post.CreatorEmail)
+
+			if err != nil {
+				logger.Printf("%+v\n", err)
+			}
+
+			tempPost := &models.Post{
+				GroupId:     id,
+				UserId:      eventCreator.Id,
+				Content:     post.Content,
+				CreatedAt:   post.CreatedAt,
+				PrivacyType: enums.PrivacyType(enums.None),
+			}
+
+			_, err = repos.PostRepo.InsertSeedPost(tempPost)
 			if err != nil {
 				logger.Printf("%+v\n", err)
 			}

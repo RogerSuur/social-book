@@ -10,7 +10,7 @@ import (
 )
 
 type insertCommentJSON struct {
-	PostId    int    `json:"postId"`
+	PostId    int64  `json:"postId"`
 	Content   string `json:"content"`
 	ImagePath string `json:"imagePath"`
 }

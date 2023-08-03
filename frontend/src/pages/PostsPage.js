@@ -4,8 +4,9 @@ import FeedPosts from "../components/FeedPosts";
 import CreatePost from "../components/CreatePost";
 import { makeRequest } from "../services/makeRequest";
 import GroupSidebar from "../components/GroupSidebar";
+import CreateGroupPosts from "../components/CreateGroupPosts";
 
-const Posts = ({ showCreatePost }) => {
+const Posts = ({ groupId, showGroupSidebar, showCreatePost, url }) => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -19,15 +20,15 @@ const Posts = ({ showCreatePost }) => {
     setPosts([]);
   };
 
-  const handlePageChange = () => {
-    setOffset((prevOffset) => prevOffset + 1);
+  const handlePageChange = (postId) => {
+    setOffset(postId);
   };
 
   useEffect(() => {
     const abortController = new AbortController();
     const loadPosts = async () => {
       try {
-        const response = await makeRequest(`feedposts/${offset}`, {
+        const response = await makeRequest(`${url}/${offset}`, {
           signal: abortController.signal,
         });
         setPosts((prevPosts) => {
@@ -45,22 +46,33 @@ const Posts = ({ showCreatePost }) => {
     };
   }, [offset, loadMore]);
 
+  console.log("GROUP ID: ", groupId);
+
   return (
     <>
-      {/* <CreatePost onPostsUpdate={handlePostUpdate} /> */}
-      <GroupSidebar />
-      {showCreatePost && <CreatePost onPostsUpdate={handlePostUpdate} />}
-      {error ? (
-        <div className="error">{error}</div>
-      ) : (
-        <div className="content-as">
+      {showGroupSidebar && <GroupSidebar />}
+      <div className="content-as">
+        {showCreatePost && !groupId && (
+          <CreatePost onPostsUpdate={handlePostUpdate} />
+        )}
+
+        {showCreatePost && groupId && (
+          <CreateGroupPosts
+            onPostsUpdate={handlePostUpdate}
+            groupId={groupId}
+          />
+        )}
+
+        {error ? (
+          <div className="error">{error}</div>
+        ) : (
           <FeedPosts
             posts={posts}
             hasMore={hasMore}
             onLoadMore={handlePageChange}
           />
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 };

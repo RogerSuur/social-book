@@ -1,34 +1,21 @@
+import ImageHandler from "../utils/imageHandler";
+
 const SingleChatlistItem = ({ chat, toggleChat }) => {
-  const id = chat?.userid > 0 ? [chat.userid, 0] : [0, chat.group_id];
-
   const handleToggle = () => {
-    toggleChat(id);
+    toggleChat(chat);
   };
 
-  const defaultImage = () =>
-    id[0] > 0 ? "defaultuser.jpg" : "defaultgroup.png";
-
-  const imageHandler = () => {
-    const source = chat?.avatarImage
-      ? `images/${chat.id}/${chat.avatarImage}`
-      : defaultImage();
-
-    const image = (
-      <img
-        style={{
-          width: "20px",
-          height: "20px",
-        }}
-        src={source}
-      ></img>
-    );
-    return image;
-  };
+  const image = () =>
+    chat?.user_id > 0
+      ? ImageHandler(chat?.avatar_image, "defaultuser.jpg", "chatbox-img")
+      : ImageHandler("", "defaultgroup.png", "chatbox-img");
 
   const listItem = (
     <p>
-      {chat.name}
-      {imageHandler()}
+      {image()} {chat.name}{" "}
+      {chat?.user_id > 0 && (
+        <span className="chat-unread-count">{chat.unread_count}</span>
+      )}
     </p>
   );
 

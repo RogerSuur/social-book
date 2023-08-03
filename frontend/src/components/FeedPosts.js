@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from "react";
 import Comments from "./Comments";
+import { Link } from "react-router-dom";
 
 const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
   const observer = useRef();
@@ -20,7 +21,8 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
     observer.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
         toggleSpinner();
-        onLoadMore();
+        const postId = node.getAttribute("data-post-id"); // Get the post ID from the element attribute
+        onLoadMore(postId);
       }
     });
 
@@ -32,7 +34,7 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
   const renderPost = (post, index) => {
     const {
       id,
-      // userId,
+      userId,
       imagePath,
       userName,
       content,
@@ -41,15 +43,20 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
     } = post;
     const isLastPost = index === posts.length - 1;
 
+    console.log("SINGLE POST: ", post);
+
     return (
       
       <div
         className="content-area"
         key={id}
         ref={isLastPost ? lastPostElementRef : null}
+        data-post-id={id}
       >
         <div>Post ID: {id}</div>
-        <div className="row3">{userName}</div>
+        <div className="row3">
+          <Link to={`/profile/${userId}`}>{userName}</Link>
+        </div>
         <div className="row2">
           {content}
           {imagePath}
@@ -63,7 +70,9 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
     );
   };
 
-  const renderedPosts = posts.map(renderPost);
+  console.log("POSTS: ", posts);
+
+  const renderedPosts = posts?.map(renderPost);
   return (
     <>
       <div>

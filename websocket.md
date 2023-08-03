@@ -3,12 +3,13 @@
 ## 1. BACKEND to FRONTEND
 
 ### 1.1 notification
+
 ```JSON
 {
     "type": "notification",
     "data": {
         "notification_type": "follow_request" || "group_invite" || "group_request" || "event_invite",
-        "id": 1, // notification id
+        "notification_id": 1, // notification id
         "sender_id": 123,
         "sender_name": "something", // either a username (if exists) or firstname and lastname
         "group_id": 123, // 0 if not group
@@ -27,13 +28,21 @@
     "type": "chatlist",
     "data": {
         "userid": 1, //own id
-        "chatlist" : [
+        "user_chatlist" : [
             {
-                "user_id": 123, // 0 if group
-                "group_id": 123, // 0 if user
-                "name": "username" || "firstname lastname" || "group name", // username (if exists) or combined full name or group name if group
-                "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any, might use it to sort chats by last message
-                "avatar_image": "link" // empty if no image or group
+                "user_id": 123,
+                "name": "username" || "firstname lastname", // username (if exists) or combined full name
+                "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any
+                "avatar_image": "link",
+                "unread_count": 123, // number of unread messages
+            }
+        ],
+        "group_chatlist" : [
+            {
+                "group_id": 123,
+                "name": "group name",
+                "timestamp": "2006-01-02T15:04:05Z07:00", // date of last message in the chat if any
+                "avatar_image": "link",
             }
         ]
     }
@@ -48,7 +57,7 @@
     "data": {
         "messages" : [{
             "id": 1, //message id
-            "sender_id": 123, // 0 if group
+            "sender_id": 123, // not 0 if group (message still has sender)
             "sender_name": "username", // either a  username (if exists) or firstname and lastname
             "recipient_id": 1, // 0 if group
             "recipient_name": 1, // either a username (if   exists) or firstname and lastname && empty if     group
@@ -72,6 +81,7 @@
         "id": 1, // message id
         "sender_id": 1,
         "sender_name" : "sdfs", // username (if exists) or first name last name
+        "avatar_image": "link", // empty if no image
         "recipient_id": 123, // 0 if group chat
         "recipient_name": "somename", // username (if exists) or first name last name
         "group_id": 123, // 0 if private chat
@@ -100,6 +110,7 @@
     "data": {
         "id": 123, //0 if group chat
         "group_id": 123, // 0 if private chat
+        "last_message": 123 // 0 if from latest message
     }
 }
 ```

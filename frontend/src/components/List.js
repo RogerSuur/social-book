@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const List = ({ url, mapFunction }) => {
-  console.log(url);
+const List = ({ url, mapFunction, loadNewGroups }) => {
   const [listData, setListData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
@@ -10,11 +9,13 @@ const List = ({ url, mapFunction }) => {
         .get(url, {
           withCredentials: true,
         })
-        .then((response) => setListData(response.data));
+        .then((response) => {
+          setListData(response.data);
+        });
     };
     fetchData();
-  }, [url]);
-  const renderedList = listData.map(mapFunction);
+  }, [url, loadNewGroups]);
+  const renderedList = listData?.map(mapFunction);
   return <div>{renderedList}</div>;
 };
 

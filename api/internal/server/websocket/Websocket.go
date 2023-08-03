@@ -4,7 +4,6 @@ import (
 	"SocialNetworkRestApi/api/pkg/services"
 	"log"
 	"net/http"
-	"os"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -24,6 +23,8 @@ type WebsocketServer struct {
 	userService         services.IUserService
 	notificationService services.INotificationService
 	chatService         services.IChatService
+	groupService        services.IGroupService
+	groupMemberService  services.IGroupMemberService
 	sync.RWMutex
 }
 
@@ -54,12 +55,15 @@ func (w *WebsocketServer) WShandler(rw http.ResponseWriter, r *http.Request) {
 }
 
 func InitWebsocket(
+	logger *log.Logger,
 	userService *services.UserService,
 	notificationService *services.NotificationService,
 	chatService *services.ChatService,
+	groupService *services.GroupService,
+	groupMemberService *services.GroupMemberService,
 ) *WebsocketServer {
 	w := &WebsocketServer{
-		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
+		Logger: logger,
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
@@ -70,6 +74,8 @@ func InitWebsocket(
 		userService:         userService,
 		notificationService: notificationService,
 		chatService:         chatService,
+		groupService:        groupService,
+		groupMemberService:  groupMemberService,
 	}
 	w.setupHandlers()
 	return w

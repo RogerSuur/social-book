@@ -3,9 +3,7 @@ import { useState, useRef } from "react";
 import FileUploader from "./FileUploader";
 import axios from "axios";
 
-const IMAGE_UPLOAD_URL = "http://localhost:8000/profile/update/avatar";
-
-const AvatarUpdater = ({ onUploadSuccess }) => {
+const AvatarUpdater = ({ url, onUploadSuccess }) => {
   const editorRef = useRef();
   const [selectedImage, setSelectedImage] = useState(null);
   const [errMsg, setErrMsg] = useState("");
@@ -14,22 +12,22 @@ const AvatarUpdater = ({ onUploadSuccess }) => {
     const canvas = editorRef.current.getImage();
 
     canvas.toBlob(async (blob) => {
-      // Create a FormData object and append the blob as a file
       const formData = new FormData();
-      formData.append("image", blob, "avatar.png");
+      formData.append("image", blob, "avatar.jpg");
+
       try {
-        // Send the image data to the server using Axios
-        await axios.post(IMAGE_UPLOAD_URL, formData, { withCredentials: true });
+        await axios.post(url, formData, { withCredentials: true });
         onUploadSuccess();
         console.log("Image uploaded successfully!");
       } catch (err) {
         if (!err?.response) {
           setErrMsg("No Server Response");
         } else if (err.response?.status > 200) {
+          //handle image size errors
           setErrMsg("Internal Server Error");
         }
       }
-    });
+    }, "image/jpeg");
   };
 
   return (
@@ -39,7 +37,7 @@ const AvatarUpdater = ({ onUploadSuccess }) => {
         image={
           selectedImage
             ? selectedImage
-            : "https://hopatcongpolice.org/wp-content/uploads/2019/03/default-person.png"
+            : `${process.env.PUBLIC_URL}/defaultuser.jpg`
         }
         width={250}
         height={250}
@@ -50,7 +48,10 @@ const AvatarUpdater = ({ onUploadSuccess }) => {
       <button onClick={handleClick}>Save image</button>
       {errMsg && <h3>{errMsg}</h3>}
       <FileUploader
-        onFileSelectSuccess={(file) => setSelectedImage(file)}
+        onFileSelectSuccess={(file) => {
+          setSelectedImage(file);
+          setErrMsg("");
+        }}
         onFileSelectError={({ error }) => setErrMsg(error)}
       />
     </>

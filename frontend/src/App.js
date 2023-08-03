@@ -9,8 +9,10 @@ import NoPage from "./pages/NoPage";
 import Category from "./pages/CategoryPage";
 import RequireAuth from "./components/RequireAuth";
 import ProfileInfo from "./components/ProfileInfo";
+import GroupPage from "./pages/GroupPage";
 //import RequireGuest from "./components/RequireGuest";
 import Logout from "./components/Logout";
+import EventPage from "./pages/EventPage.js";
 
 import "./style.css";
 
@@ -26,9 +28,18 @@ function App() {
             <Route element={<RequireAuth />}>
               <Route path="profile" element={<Profile />} />
               <Route path="profile/:id" element={<ProfileInfo />} />
+              <Route path="groups/:id" element={<GroupPage />} />
+              <Route path="event/:id" element={<EventPage />} />
               <Route
                 path="posts"
-                element={<PostsPage showCreatePost={true} />}
+                element={
+                  <PostsPage
+                    groupId={false}
+                    showGroupSidebar={true}
+                    showCreatePost={true}
+                    url={"/feedposts"}
+                  />
+                }
               />
               <Route path="posts/:id" element={<Post />} />
               <Route path="categories/:id" element={<Category />} />

@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import ChatTest from "../components/ChatTest";
+import Chat from "./Chat";
 import { WS_URL } from "../utils/routes";
+import Login from "../pages/LoginPage";
 
 const AUTH_URL = "http://localhost:8000/auth";
 
@@ -16,7 +17,7 @@ const RequireAuth = () => {
 
   const location = useLocation();
 
-  console.log(location, "LOC AUTH");
+  const from = location.state?.from?.pathname;
 
   // const updateUsers = (message) => {
   //   const { user_id, username, online, datetime } = message;
@@ -44,11 +45,11 @@ const RequireAuth = () => {
   useEffect(() => {
     const authorisation = async () => {
       try {
-        const response = await axios.get(AUTH_URL, {
+        await axios.get(AUTH_URL, {
           withCredentials: true,
         });
 
-        console.log(JSON.stringify(response), "RESPONSE!!!!!!!!!!!!!!!!!!!");
+        // console.log(JSON.stringify(response), "RESPONSE!!!!!!!!!!!!!!!!!!!");
         setAuth(true);
       } catch (err) {
         if (!err?.response) {
@@ -79,10 +80,13 @@ const RequireAuth = () => {
           setUsers,
         }}
       />
-      <ChatTest className="chat-sidebar" chatlist={users} />
+      <Chat className="chat-sidebar" chatlist={users} />
     </div>
   ) : (
-    <Navigate to="/login" state={{ from: location }} replace />
+    <>
+      {from && <Navigate to="/login" state={{ from: location }} replace />}
+      <Login />
+    </>
   );
 };
 
