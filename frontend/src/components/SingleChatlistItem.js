@@ -13,8 +13,8 @@ const SingleChatlistItem = ({ chat, toggleChat }) => {
   const listItem = (
     <p>
       {image()} {chat.name}{" "}
-      {chat?.user_id > 0 && (
-        <span className="chat-unread-count">{chat.unread_count}</span>
+      {chat?.user_id > 0 && chat?.unread_count > 0 && (
+        <span className="chat-unread-count">0</span>
       )}
     </p>
   );

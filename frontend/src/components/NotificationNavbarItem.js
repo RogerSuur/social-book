@@ -50,6 +50,7 @@ const NotificationNavbarItem = () => {
 
       const timer = setTimeout(() => {
         setNotificationTimer(false);
+        setNewNotification();
       }, 5000);
 
       return () => clearTimeout(timer);
@@ -73,8 +74,10 @@ const NotificationNavbarItem = () => {
           <div className="notification-count">{notificationCount}</div>
         )}
       </li>
-      {notificationTimer && (
-        <NotificationPopup notification={newNotification} />
+      {notificationTimer && newNotification && (
+        <div className="notification-popup">
+          <NotificationPopup notification={newNotification} />
+        </div>
       )}
       {toggle && (
         <NotificationList

@@ -2,14 +2,6 @@
   box-sizing: border-box; 
 }
 
-.EmojiPickerReact{
-  --epr-emoji-size: 1vw;
-  --epr-search-input-height: 20px;
-  --epr-category-navigation-button-size: 10px;
-  --epr-preview-height: 20px;
-  --epr-emoji-size: 20px;
-}
-
 body {
   min-width: 320px;
   margin: 0;
@@ -135,7 +127,7 @@ nav {
 
 .chat-unread-count{
   display: inline-block;
-  background-color: #a3a3a3;
+  background-color: #ff0000;
   color: #ffffff; 
   font-size: 12px; 
   padding: 4px 8px; 
@@ -278,7 +270,20 @@ nav {
   z-index: 2;
 }
 
-
+.notification-popup {
+  background-color: rgba(240, 0, 0, 0.3);
+  position: fixed;
+  min-width: 40%;
+  min-height: 10vh;
+  top: 7vh;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 1px solid #000000; /* Example border for the popup */
+  border-radius: 5px; 
+}
 
 .group-post-area{
   top: 15vh;
