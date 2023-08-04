@@ -113,6 +113,15 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 		return nil
 	}
 
+	if NotificationDetails.NotificationType == "messages_read" {
+		w.Logger.Printf("User %v read message %v", c.clientID, data.ID)
+		err = w.chatService.HandleMessagesRead(c.clientID, int64(data.ID))
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
 	w.Logger.Printf("Notification type %v not handled", NotificationDetails.NotificationType)
 
 	return errors.New("unknown notification type: " + NotificationDetails.NotificationType)

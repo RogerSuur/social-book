@@ -12,6 +12,7 @@ type IChatService interface {
 	GetChatlist(userID int64) ([]UserChatList, []GroupChatList, error)
 	CreateMessage(message *models.Message) (int64, error)
 	GetMessageHistory(userId int64, otherId int64, groupId int64, lastMessage int64) ([]*MessageJSON, error)
+	HandleMessagesRead(userId int64, messageId int64) error
 }
 
 type ChatService struct {
@@ -286,11 +287,47 @@ func (s *ChatService) GetMessageHistory(userId int64, otherId int64, groupId int
 
 	// mark messages as read
 	if otherId != 0 {
-		err = s.ChatRepo.MarkMessagesAsRead(userId, otherId)
+		err = s.ChatRepo.MarkMessagesRead(otherId, userId, lastMessage)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	return messagesJSON, nil
+}
+
+func (s *ChatService) HandleMessagesRead(userId int64, messageId int64) error {
+
+	// check if user and message exist
+	_, err := s.UserRepo.GetById(userId)
+	if err != nil {
+		s.Logger.Printf("User with id %d does not exist", userId)
+		return err
+	}
+
+	message, err := s.ChatRepo.GetById(messageId)
+
+	if err != nil {
+		s.Logger.Printf("Error while getting message with id %d", messageId)
+		return err
+	}
+
+	if message == nil {
+		s.Logger.Printf("Message with id %d does not exist", messageId)
+		return errors.New("message does not exist")
+	}
+
+	if message.RecipientId != userId {
+		s.Logger.Printf("User with id %d is not recipient of message with id %d", userId, messageId)
+		return errors.New("user is not recipient of message")
+	}
+
+	err = s.ChatRepo.MarkMessagesRead(message.SenderId, userId, messageId)
+	if err != nil {
+		s.Logger.Printf("Error while marking messages as read")
+		return err
+	}
+
+	return nil
+
 }
