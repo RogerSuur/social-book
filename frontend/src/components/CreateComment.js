@@ -89,7 +89,6 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
         style={{
           maxWidth: "100%",
           width: "100%",
-          maxHeight: "200px",
           overflow: "hidden",
         }}
       >
