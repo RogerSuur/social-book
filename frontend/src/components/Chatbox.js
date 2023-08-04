@@ -5,7 +5,13 @@ import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroller";
 import ImageHandler from "../utils/imageHandler";
 
-const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
+const Chatbox = ({
+  toggleChat,
+  chat,
+  user,
+  updateChatlist,
+  resetUnreadCount,
+}) => {
   const [messageHistory, setMessageHistory] = useState([]);
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
@@ -106,11 +112,10 @@ const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
       switch (msg.sender_id) {
         case user:
           return (
-            <p key={index} className="own-message" >
-               {msg.body}
-             <span className="own-time"> {getTime(msg.timestamp)}</span>
+            <p key={index} className="own-message">
+              {msg.body}
+              <span className="own-time"> {getTime(msg.timestamp)}</span>
             </p>
-            
           );
         default:
           return (
@@ -149,6 +154,7 @@ const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
 
     setMessage({ ...message, data: { body: "" } });
     setScrollToBottomNeeded(true);
+    resetUnreadCount();
   };
 
   useEffect(() => {

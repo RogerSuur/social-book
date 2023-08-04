@@ -71,7 +71,14 @@ const EventPage = () => {
     const data = { eventId: +id, isAttending };
     try {
       await axios
-        .put(EVENT_ATTENDANCE_URL, data, { withCredentials: true })
+        .put(
+          EVENT_ATTENDANCE_URL,
+          JSON.stringify(data),
+          { withCredentials: true },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        )
         .then((response) => {
           console.log("RESP: ", response?.data);
         });

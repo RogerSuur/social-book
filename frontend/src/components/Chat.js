@@ -22,6 +22,14 @@ const Chat = () => {
     loadChatlist();
   }, []);
 
+  const resetUnreadCount = (userid) => {
+    setUserChatlist((prevChatlist) =>
+      prevChatlist.map((chat) =>
+        chat.user_id === userid ? { ...chat, unread_count: 0 } : chat
+      )
+    );
+  };
+
   const toggleChat = (chat) => {
     if (!chat) {
       setOpenChat(null);
@@ -116,6 +124,7 @@ const Chat = () => {
       chat={openChat}
       user={user}
       updateChatlist={updateChatlist}
+      resetUnreadCount={resetUnreadCount}
     />
   );
 
