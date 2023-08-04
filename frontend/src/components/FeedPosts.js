@@ -45,8 +45,6 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
     } = post;
     const isLastPost = index === posts.length - 1;
 
-    console.log("SINGLE POST: ", post);
-
     return (
       <div
         className="content-area"
@@ -71,8 +69,6 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
       </div>
     );
   };
-
-  console.log("POSTS: ", posts);
 
   const renderedPosts = posts?.map(renderPost);
   return (

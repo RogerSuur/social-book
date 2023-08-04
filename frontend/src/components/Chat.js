@@ -65,6 +65,7 @@ const Chat = () => {
         timestamp,
         avatar_image,
         name: group_name ? group_name : sender_name,
+        unread_count: 1,
       };
 
       newChat?.group_id > 0
@@ -81,6 +82,8 @@ const Chat = () => {
             chatToFind
           )
       );
+
+      userChat.unread_count += 1;
       chatToFind?.[1] > 0
         ? setGroupChatlist([userChat, ...filteredChatlist])
         : setUserChatlist([userChat, ...filteredChatlist]);
@@ -121,6 +124,9 @@ const Chat = () => {
       <div className="hov" key={index}>
         <li>
           <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
+          {chat?.user_id > 0 && chat.unread_count > 0 && (
+            <span className="chat-unread-count">{chat.unread_count}</span>
+          )}
         </li>
       </div>
     ));
@@ -134,7 +140,6 @@ const Chat = () => {
         <p>Group Chats</p>
         <ul className="pepe">{renderedChats(groupChatlist)}</ul>
       </div>
-
       {openChat && openedChatbox}
     </>
   );
