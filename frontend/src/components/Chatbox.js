@@ -24,6 +24,7 @@ const Chatbox = ({
     },
   });
 
+  console.log(messageHistory);
   useEffect(() => {
     setMessageHistory([]);
     setHasMoreMessages(true);
@@ -35,10 +36,20 @@ const Chatbox = ({
     console.log("SCROLLING");
     console.log("SCROLLTOP: ", messageboxRef?.current?.scrollTop);
     console.log("SCROLLHEIGHT: ", messageboxRef?.current?.scrollHeight);
+    console.log("CLIENTHEIGHT: ", messageboxRef?.current?.clientHeight);
     if (
-      messageboxRef?.current?.scrollTop === messageboxRef?.current?.scrollHeight
+      messageboxRef?.current?.scrollHeight -
+        messageboxRef?.current?.clientHeight <=
+      messageboxRef?.current?.scrollTop + 1
     ) {
-      console.log("MATCH");
+      console.log(
+        "LAST MESSAGE: ",
+        messageHistory?.[messageHistory.length - 1]?.id
+      );
+      sendJsonMessage({
+        type: "messages_read",
+        data: { id: messageHistory?.[messageHistory.length - 1]?.id },
+      });
       resetUnreadCount([chat.user_id, chat.group_id]);
     }
   };
@@ -166,7 +177,6 @@ const Chatbox = ({
 
     setMessage({ ...message, data: { body: "" } });
     setScrollToBottomNeeded(true);
-    resetUnreadCount([chat.user_id, chat.group_id]);
   };
 
   useEffect(() => {
