@@ -127,10 +127,14 @@ func (s *PostService) GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON,
 	for _, p := range posts {
 		// commentCount, err := s.PostRepository.GetCommentCount(p.Id)
 
+		if p.Nickname == "" {
+			p.Nickname = p.FirstName + " " + p.LastName
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			Id:           p.Id,
 			UserId:       p.UserId,
-			UserName:     p.UserName,
+			UserName:     p.Nickname,
 			Content:      p.Content,
 			ImagePath:    p.ImagePath,
 			CommentCount: p.CommentCount,
@@ -163,10 +167,15 @@ func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJS
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
+
+		if p.Nickname == "" {
+			p.Nickname = p.FirstName + " " + p.LastName
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			Id:           p.Id,
 			UserId:       p.UserId,
-			UserName:     p.UserName,
+			UserName:     p.Nickname,
 			Content:      p.Content,
 			ImagePath:    p.ImagePath,
 			CommentCount: p.CommentCount,
@@ -203,10 +212,15 @@ func (s *PostService) GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSO
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
+
+		if p.Nickname == "" {
+			p.Nickname = p.FirstName + " " + p.LastName
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			p.Id,
 			p.UserId,
-			p.UserName,
+			p.Nickname,
 			p.Content,
 			p.ImagePath,
 			p.CommentCount,
@@ -239,10 +253,15 @@ func (s *PostService) GetUserPosts(userId int64, offset int64, requestingUserId 
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
+
+		if p.Nickname == "" {
+			p.Nickname = p.FirstName + " " + p.LastName
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			Id:           p.Id,
 			UserId:       p.UserId,
-			UserName:     p.UserName,
+			UserName:     p.Nickname,
 			Content:      p.Content,
 			ImagePath:    p.ImagePath,
 			CommentCount: p.CommentCount,
