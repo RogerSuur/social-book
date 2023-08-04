@@ -156,7 +156,7 @@ func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
 
 	query := `
 		SELECT u.id, u.forname, u.surname, u.nickname, u.image_path, u.created_at FROM users u 
-		JOIN followers f ON u.id = f.following_id WHERE f.follower_id = ?
+		JOIN followers f ON u.id = f.following_id WHERE f.follower_id = ? AND f.accepted = 1 GROUP BY u.id
 		UNION
 		SELECT u.id, u.forname, u.surname, u.nickname, u.image_path, u.created_at FROM users u
 		JOIN messages m ON u.id = m.sender_id WHERE m.recipient_id = ? GROUP BY u.id

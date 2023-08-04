@@ -126,16 +126,47 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 	}
 	w.Logger.Printf("User %v wants to start following user %v", c.clientID, data.ID)
 
-	followRequestId, sendNewChatlist, err := w.notificationService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
+	followRequestId, err := w.notificationService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
 	if err != nil {
 		return err
+	}
+
+	if followRequestId == -1 {
+		w.Logger.Printf("User %v now follows public user %v", c.clientID, data.ID)
+
+		// sendNewChatlist
+		userChatList, groupChatList, err := w.chatService.GetChatlist(int64(c.clientID))
+		if err != nil {
+			return err
+		}
+
+		dataToSend, err := json.Marshal(
+			&ChatListPayload{
+				UserID:        int(c.clientID),
+				UserChatlist:  userChatList,
+				GroupChatlist: groupChatList,
+			},
+		)
+
+		if err != nil {
+			return err
+		}
+
+		c.gate <- Payload{
+			Type: "chatlist",
+			Data: dataToSend,
+		}
+
+		w.Logger.Printf("Sent new chatlist to sender %v", c.clientID)
+
+		return nil
 	}
 
 	w.Logger.Printf("Created follow request with id %v", followRequestId)
 
 	// broadcast to recipient
 
-	err = w.BroadcastFollowRequest(c, followRequestId, sendNewChatlist, int64(data.ID))
+	err = w.BroadcastFollowRequest(c, followRequestId, int64(data.ID))
 	if err != nil {
 		return err
 	}
