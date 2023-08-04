@@ -58,10 +58,13 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
         <div className="row3">
           <Link to={`/profile/${userId}`}>{userName}</Link>
         </div>
-        <div className="row2">
-          {content}
-          {imagePath}
-        </div>
+        {imagePath && (
+          <img
+            className="profile-pic"
+            src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
+          />
+        )}
+        <div className="row2">{content}</div>;
         <div className="row">{new Date(createdAt).toLocaleString("et-EE")}</div>
         <div className="comment-section">
           <Comments postId={id} commentCount={commentCount} />

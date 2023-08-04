@@ -23,7 +23,7 @@ func (app *Application) Comments(rw http.ResponseWriter, r *http.Request) {
 
 		//Get postId from endpoint and parse
 		postIdStr := vars["postId"]
-		postId, err := strconv.Atoi(postIdStr)
+		postId, err := strconv.ParseInt(postIdStr, 10, 64)
 
 		// fmt.Println("postIdStr", postIdStr)
 
@@ -34,7 +34,7 @@ func (app *Application) Comments(rw http.ResponseWriter, r *http.Request) {
 
 		//Get offset from endpoint and parse
 		offsetStr := vars["offset"]
-		offset, err := strconv.Atoi(offsetStr)
+		offset, err := strconv.ParseInt(offsetStr, 10, 64)
 
 		if offset < 0 || err != nil {
 			app.Logger.Printf("DATA PARSE error: %v", err)
@@ -61,15 +61,45 @@ func (app *Application) Comment(rw http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "POST":
-		decoder := json.NewDecoder(r.Body)
+
+		// Limit the size of the request body to 5MB
+		r.Body = http.MaxBytesReader(rw, r.Body, 20<<18+512)
+
+		err := r.ParseMultipartForm(20 << 18)
+
+		if err != nil {
+			app.Logger.Printf("Failed parsing form: %v", err)
+			http.Error(rw, "Parsing form error", http.StatusRequestEntityTooLarge)
+		}
+
+		/* decoder := json.NewDecoder(r.Body)
 		decoder.DisallowUnknownFields()
 
 		JSONdata := &insertCommentJSON{}
-		err := decoder.Decode(&JSONdata)
+		err = decoder.Decode(&JSONdata)
 
 		if err != nil {
 			app.Logger.Printf("JSON error: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
+		} */
+
+		postIdStr := r.FormValue("postId")
+		postId, err := strconv.ParseInt(postIdStr, 10, 64)
+
+		content := r.FormValue("content")
+
+		file, header, err := r.FormFile("image")
+		var imagePath string
+
+		if err == nil {
+			defer file.Close()
+
+			imagePath, err = app.PostService.SavePostImage(file, header)
+			if err != nil {
+				app.Logger.Printf("Failed saving image: %v", err)
+				http.Error(rw, "Save image error", http.StatusBadRequest)
+				return
+			}
 		}
 
 		userId, err := app.UserService.GetUserID(r)
@@ -80,10 +110,10 @@ func (app *Application) Comment(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		comment := &models.Comment{
-			PostId:    JSONdata.PostId,
+			PostId:    postId,
 			UserId:    userId,
-			Content:   JSONdata.Content,
-			ImagePath: JSONdata.ImagePath,
+			Content:   content,
+			ImagePath: imagePath,
 		}
 
 		err = app.CommentService.CreateComment(comment)

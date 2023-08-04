@@ -8,7 +8,7 @@ import (
 )
 
 type ICommentService interface {
-	GetPostComments(userId int, offset int) ([]*CommentJSON, error)
+	GetPostComments(userId int64, offset int64) ([]*CommentJSON, error)
 	CreateComment(comment *models.Comment) error
 }
 
@@ -34,7 +34,7 @@ type CommentJSON struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
-func (s *CommentService) GetPostComments(postId int, offset int) ([]*CommentJSON, error) {
+func (s *CommentService) GetPostComments(postId int64, offset int64) ([]*CommentJSON, error) {
 
 	result, err := s.CommentRepository.GetAllByPostId(postId, offset)
 

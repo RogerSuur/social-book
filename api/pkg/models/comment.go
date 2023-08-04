@@ -28,7 +28,7 @@ type PostComment struct {
 }
 
 type ICommentRepository interface {
-	GetAllByPostId(postId int, offset int) ([]*PostComment, error)
+	GetAllByPostId(postId int64, offset int64) ([]*PostComment, error)
 	GetAllByUserId(userId int) ([]*Comment, error)
 	GetById(id int64) (*Comment, error)
 	Insert(comment *Comment) (int64, error)
@@ -94,8 +94,8 @@ func (repo CommentRepository) GetById(id int64) (*Comment, error) {
 	return comment, err
 }
 
-func (repo CommentRepository) GetAllByPostId(postId int, offset int) ([]*PostComment, error) {
-	query := `SELECT c.id, c.user_id, u.nickname, c.content,  c.image_path, c.created_at FROM comments c
+func (repo CommentRepository) GetAllByPostId(postId int64, offset int64) ([]*PostComment, error) {
+	query := `SELECT c.id, c.user_id, u.nickname, c.content, c.image_path, c.created_at FROM comments c
 	LEFT JOIN users u ON
 	c.user_id = u.id
 	WHERE c.post_id = ? 

@@ -23,7 +23,9 @@ type FeedPost struct {
 	Id           int64
 	UserId       int64
 	GroupId      int64
-	UserName     string
+	FirstName    string
+	LastName     string
+	Nickname     string
 	Content      string
 	CommentCount int
 	ImagePath    string
@@ -115,7 +117,7 @@ func (repo PostRepository) GetById(id int64) (*Post, error) {
 
 func (repo PostRepository) GetAllByUserId(id int64, offset int64) ([]*FeedPost, error) {
 
-	stmt := `SELECT p.id, p.user_id, u.nickname, p.content, p.created_at, p.image_path, p.privacy_type_id, p.group_id, COUNT(DISTINCT c.id) FROM posts p
+	stmt := `SELECT p.id, p.user_id, u.forname, u.surname, u.nickname, p.content, p.created_at, p.image_path, p.privacy_type_id, p.group_id, COUNT(DISTINCT c.id) FROM posts p
 	LEFT JOIN users u on
 	p.user_id = u.id
 	LEFT JOIN comments c ON
@@ -143,7 +145,7 @@ func (repo PostRepository) GetAllByUserId(id int64, offset int64) ([]*FeedPost, 
 	for rows.Next() {
 		post := &FeedPost{}
 
-		err := rows.Scan(&post.Id, &post.UserId, &post.UserName, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.GroupId, &post.CommentCount)
+		err := rows.Scan(&post.Id, &post.UserId, &post.FirstName, &post.LastName, &post.Nickname, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.GroupId, &post.CommentCount)
 		if err != nil {
 			return nil, err
 		}
@@ -160,7 +162,7 @@ func (repo PostRepository) GetAllByUserId(id int64, offset int64) ([]*FeedPost, 
 
 func (repo PostRepository) GetAllByGroupId(groupId int64, offset int64) ([]*FeedPost, error) {
 
-	stmt := `SELECT p.id, p.user_id, u.nickname, p.content, p.created_at, p.image_path, p.privacy_type_id, COUNT(DISTINCT c.id) FROM posts p
+	stmt := `SELECT p.id, p.user_id, u.forname, u.surname, u.nickname, p.content, p.created_at, p.image_path, p.privacy_type_id, COUNT(DISTINCT c.id) FROM posts p
 	LEFT JOIN users u on
 	p.user_id = u.id
 	LEFT JOIN comments c ON
@@ -188,7 +190,7 @@ func (repo PostRepository) GetAllByGroupId(groupId int64, offset int64) ([]*Feed
 	for rows.Next() {
 		post := &FeedPost{}
 
-		err := rows.Scan(&post.Id, &post.UserId, &post.UserName, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.CommentCount)
+		err := rows.Scan(&post.Id, &post.UserId, &post.FirstName, &post.LastName, &post.Nickname, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.CommentCount)
 		if err != nil {
 			return nil, err
 		}
@@ -210,7 +212,7 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int64) ([]*F
 	// currentUserId = 11
 	// because seeded posts have similar created_at, using p.id as temporary order by
 
-	stmt := `SELECT p.id, p.user_id, u.nickname, p.content, p.created_at, p.image_path, privacy_type_id, p.group_id, COUNT(DISTINCT c.id) FROM posts p 
+	stmt := `SELECT p.id, p.user_id, u.forname, u.surname, u.nickname, p.content, p.created_at, p.image_path, privacy_type_id, p.group_id, COUNT(DISTINCT c.id) FROM posts p 
 	LEFT JOIN users u on
 	p.user_id = u.id
 	LEFT JOIN  followers f ON  
@@ -251,7 +253,7 @@ func (m PostRepository) GetAllFeedPosts(currentUserId int64, offset int64) ([]*F
 	for rows.Next() {
 		post := &FeedPost{}
 
-		err := rows.Scan(&post.Id, &post.UserId, &post.UserName, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.GroupId, &post.CommentCount)
+		err := rows.Scan(&post.Id, &post.UserId, &post.FirstName, &post.LastName, &post.Nickname, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.GroupId, &post.CommentCount)
 		if err != nil {
 			return nil, err
 		}
@@ -325,7 +327,7 @@ func (repo PostRepository) GetLastPostId() (int64, error) {
 
 func (repo PostRepository) GetAllByUserAndRequestingUserIds(userId int64, offset int64, requestingUserId int64) ([]*FeedPost, error) {
 
-	stmt := `SELECT p.id, p.user_id, u.nickname, p.content, p.created_at, p.image_path, p.privacy_type_id, p.group_id, COUNT(DISTINCT c.id) FROM posts p
+	stmt := `SELECT p.id, p.user_id, u.forname, u.surname, u.nickname, p.content, p.created_at, p.image_path, p.privacy_type_id, p.group_id, COUNT(DISTINCT c.id) FROM posts p
 	LEFT JOIN users u on p.user_id = u.id
 	LEFT JOIN followers f ON p.user_id = f.following_id
 	LEFT JOIN allowed_private_posts app ON p.id = app.post_id 
@@ -362,7 +364,7 @@ func (repo PostRepository) GetAllByUserAndRequestingUserIds(userId int64, offset
 	for rows.Next() {
 		post := &FeedPost{}
 
-		err := rows.Scan(&post.Id, &post.UserId, &post.UserName, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.GroupId, &post.CommentCount)
+		err := rows.Scan(&post.Id, &post.UserId, &post.FirstName, &post.LastName, &post.Nickname, &post.Content, &post.CreatedAt, &post.ImagePath, &post.PrivacyType, &post.GroupId, &post.CommentCount)
 
 		if err != nil {
 			return nil, err

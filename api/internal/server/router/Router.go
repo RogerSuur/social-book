@@ -33,7 +33,6 @@ func New(app *handlers.Application) *mux.Router {
 	r.HandleFunc("/comments/{postId:[0-9]+?}/{offset:[0-9]+?}", app.UserService.Authenticate(app.Comments)).Methods("GET")
 	r.HandleFunc("/insertcomment", app.UserService.Authenticate(app.Comment)).Methods("POST")
 	r.HandleFunc("/post", app.UserService.Authenticate(app.Post)).Methods("POST")
-	r.HandleFunc("/post/{postId:[0-9]+?}/image", app.UserService.Authenticate(app.PostImage)).Methods("POST")
 	r.HandleFunc("/profileposts/{offset:[0-9]+?}", app.UserService.Authenticate(app.ProfilePosts)).Methods("GET")
 	r.HandleFunc("/userposts/{userId:[0-9]+?}/{offset:[0-9]+?}", app.UserService.Authenticate(app.UserPosts)).Methods("GET")
 	r.HandleFunc("/groups/{groupId:[0-9]+?}/post", app.UserService.Authenticate(app.GroupPost)).Methods("POST")

@@ -1,20 +1,40 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Select from "react-select";
+import ImageUploadModal from "./ImageUploadModal";
 
 const CreatePost = (props) => {
   const initialFormData = {
     content: "",
-    imagePath: "",
+    image: null,
     privacyType: 1,
     selectedReceivers: [],
   };
 
   const [formData, setFormData] = useState(initialFormData);
   const [followers, setFollowers] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
+
+  const handleImageUpload = (image) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      image: image,
+    }));
+    setSelectedImage(image);
+    setShowModal(false);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  const handleModalClick = () => {
+    setShowModal(true);
+  };
 
   // errordata state
-  const [errMsg, setErrMsg] = useState("");
 
   const handleChange = (event) => {
     const { name, value, type } = event.target;
@@ -44,13 +64,28 @@ const CreatePost = (props) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const formDataWithImage = new FormData();
+    formDataWithImage.append("content", formData.content);
+    formDataWithImage.append("privacyType", formData.privacyType);
+    formDataWithImage.append(
+      "selectedReceivers",
+      JSON.stringify(formData.selectedReceivers)
+    );
+
+    if (selectedImage) {
+      formDataWithImage.append("image", selectedImage); // Append the image file if it exists
+    }
+
+    console.log("data when submitted", formDataWithImage);
+
     try {
       const response = await axios.post(
         "http://localhost:8000/post",
-        JSON.stringify(formData),
-        { withCredentials: true },
+        formDataWithImage,
+        // JSON.stringify(formData),
         {
-          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
 
@@ -66,6 +101,7 @@ const CreatePost = (props) => {
     }
 
     setFormData(initialFormData);
+    setSelectedImage(null);
   };
 
   const handleSelectChange = (selectedOptions) => {
@@ -87,6 +123,12 @@ const CreatePost = (props) => {
     <>
       <div className="post-area">
         {errMsg && <h2>{errMsg}</h2>}
+
+        {/* Display selected image(s) */}
+        {selectedImage && (
+          <img src={URL.createObjectURL(selectedImage)} alt="Selected" />
+        )}
+
         <form onSubmit={handleSubmit}>
           <textarea
             className="area-text"
@@ -138,6 +180,13 @@ const CreatePost = (props) => {
           )}
           <button className="post-button">Post</button>
         </form>
+
+        <button onClick={handleModalClick}>Add an image</button>
+        <ImageUploadModal
+          open={showModal}
+          onClose={handleModalClose}
+          onImageUpload={handleImageUpload}
+        />
       </div>
     </>
   );
