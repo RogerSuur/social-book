@@ -156,7 +156,7 @@ func (app *Application) OtherFollowers(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	isFollowed := app.UserService.IsFollowed(int64(requestingUser), int64(userID))
+	isFollowed := app.UserService.IsFollowed(int64(userID), int64(requestingUser))
 
 	if !isFollowed && !user.IsPublic {
 		http.Error(rw, "User may not access followings", http.StatusUnauthorized)
@@ -238,7 +238,7 @@ func (app *Application) OtherFollowing(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	isFollowed := app.UserService.IsFollowed(int64(requestingUser), int64(userID))
+	isFollowed := app.UserService.IsFollowed(int64(userID), int64(requestingUser))
 
 	if !isFollowed && !user.IsPublic {
 		http.Error(rw, "User may not access followings", http.StatusUnauthorized)
