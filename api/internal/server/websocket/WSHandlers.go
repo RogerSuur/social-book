@@ -23,6 +23,7 @@ const (
 	Message         = "message"
 	GroupRequest    = "group_request"
 	Response        = "response"
+	MessagesRead    = "messages_read"
 )
 
 func (w *WebsocketServer) setupHandlers() {
@@ -33,6 +34,7 @@ func (w *WebsocketServer) setupHandlers() {
 	w.handlers[Message] = w.NewMessageHandler
 	w.handlers[GroupRequest] = w.GroupRequestHandler
 	w.handlers[Response] = w.ResponseHandler
+	w.handlers[MessagesRead] = w.MessagesReadHandler
 }
 
 func (w *WebsocketServer) routePayloads(payload Payload, client *Client) error {
@@ -107,15 +109,6 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 	if NotificationDetails.NotificationType == "event_invite" {
 		w.Logger.Printf("User %v reacted to event invite %v", c.clientID, data.ID)
 		err = w.notificationService.HandleEventInvite(int64(data.ID), data.Reaction)
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-
-	if NotificationDetails.NotificationType == "messages_read" {
-		w.Logger.Printf("User %v read message %v", c.clientID, data.ID)
-		err = w.chatService.HandleMessagesRead(c.clientID, int64(data.ID))
 		if err != nil {
 			return err
 		}
@@ -348,6 +341,23 @@ func (w *WebsocketServer) GroupRequestHandler(p Payload, c *Client) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (w *WebsocketServer) MessagesReadHandler(p Payload, c *Client) error {
+	data := &RequestPayload{}
+	err := json.Unmarshal(p.Data, &data)
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("User %v has read messages from user %v", c.clientID, data.ID)
+
+	err = w.chatService.HandleMessagesRead(c.clientID, int64(data.ID))
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("Messages successfully marked as read")
 
 	return nil
 }
