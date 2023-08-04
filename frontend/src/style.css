@@ -92,7 +92,7 @@ nav {
   color: #278042;
   font-size:large;
   position: relative;
-  text-align: left;
+  text-align: right;
   padding: 10px;
   border-radius: 8px;
   
@@ -102,13 +102,13 @@ nav {
   color: #777;
   position: absolute;
   bottom: 0;
-  left: 9px;
+  right: 9px;
 }
 
 .message{
   font-size:large;
   position: relative;
-  text-align: right;
+  text-align: left;
   padding: 10px;
   border-radius: 8px;
 }
@@ -118,7 +118,7 @@ nav {
   color: #777;
   position: absolute;
   bottom: 0;
-  right: 5px;
+  left: 5px;
 }
 .pepe{
   list-style-type: none;

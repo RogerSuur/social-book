@@ -15,6 +15,7 @@ const Chatbox = ({
   const [messageHistory, setMessageHistory] = useState([]);
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [lastMessageRead, setLastMessageRead] = useState(0);
   const [scrollToBottomNeeded, setScrollToBottomNeeded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({
@@ -32,26 +33,54 @@ const Chatbox = ({
 
   const messageboxRef = useRef(null);
 
-  const handleScrolling = () => {
+  const debounce = (f, ms) => {
+    let timeout;
+    return function executedFunction() {
+      const context = this;
+      const args = arguments;
+      const later = function () {
+        timeout = null;
+        f.apply(context, args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, ms);
+    };
+  };
+
+  const sendMessageRead = () => {
     console.log("SCROLLING");
     console.log("SCROLLTOP: ", messageboxRef?.current?.scrollTop);
     console.log("SCROLLHEIGHT: ", messageboxRef?.current?.scrollHeight);
     console.log("CLIENTHEIGHT: ", messageboxRef?.current?.clientHeight);
-    if (
-      messageboxRef?.current?.scrollHeight -
-        messageboxRef?.current?.clientHeight <=
-      messageboxRef?.current?.scrollTop + 1
-    ) {
-      console.log(
-        "LAST MESSAGE: ",
-        messageHistory?.[messageHistory.length - 1]?.id
-      );
-      sendJsonMessage({
-        type: "messages_read",
-        data: { id: messageHistory?.[messageHistory.length - 1]?.id },
-      });
-      resetUnreadCount([chat.user_id, chat.group_id]);
+
+    const lastMessage = messageHistory?.[messageHistory.length - 1]?.message_id;
+    console.log(
+      "MESSAGE HUISTORY: ",
+      messageHistory?.[messageHistory.length - 1]
+    );
+
+    console.log("LAST MESSAGE: ", lastMessage);
+    console.log("lastReadMessage: ", lastMessageRead);
+
+    if (lastMessage && lastMessage !== lastMessageRead) {
+      setLastMessageRead(lastMessage);
+      if (
+        messageboxRef?.current?.scrollHeight -
+          messageboxRef?.current?.clientHeight <=
+        messageboxRef?.current?.scrollTop + 1
+      ) {
+        console.log("SENDing");
+        sendJsonMessage({
+          type: "messages_read",
+          data: { message_id: lastMessage },
+        });
+        resetUnreadCount([chat.user_id, chat.group_id]);
+      }
     }
+  };
+
+  const handleScrolling = () => {
+    debounce(sendMessageRead(), 200);
   };
 
   const image = () =>
@@ -177,6 +206,7 @@ const Chatbox = ({
 
     setMessage({ ...message, data: { body: "" } });
     setScrollToBottomNeeded(true);
+    resetUnreadCount([chat.user_id, chat.group_id]);
   };
 
   useEffect(() => {
