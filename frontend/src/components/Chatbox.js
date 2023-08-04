@@ -33,21 +33,7 @@ const Chatbox = ({
 
   const messageboxRef = useRef(null);
 
-  const debounce = (f, ms) => {
-    let timeout;
-    return function executedFunction() {
-      const context = this;
-      const args = arguments;
-      const later = function () {
-        timeout = null;
-        f.apply(context, args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, ms);
-    };
-  };
-
-  const sendMessageRead = () => {
+  const handleScrolling = () => {
     console.log("SCROLLING");
     console.log("SCROLLTOP: ", messageboxRef?.current?.scrollTop);
     console.log("SCROLLHEIGHT: ", messageboxRef?.current?.scrollHeight);
@@ -69,7 +55,6 @@ const Chatbox = ({
           messageboxRef?.current?.clientHeight <=
         messageboxRef?.current?.scrollTop + 1
       ) {
-        console.log("SENDing");
         sendJsonMessage({
           type: "messages_read",
           data: { message_id: lastMessage },
@@ -77,10 +62,6 @@ const Chatbox = ({
         resetUnreadCount([chat.user_id, chat.group_id]);
       }
     }
-  };
-
-  const handleScrolling = () => {
-    debounce(sendMessageRead(), 200);
   };
 
   const image = () =>
