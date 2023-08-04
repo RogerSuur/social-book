@@ -144,7 +144,7 @@ func (app *Application) Event(rw http.ResponseWriter, r *http.Request) {
 
 func (app *Application) EventReaction(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	case "PUT":
+	case "POST":
 		decoder := json.NewDecoder(r.Body)
 		decoder.DisallowUnknownFields()
 
@@ -159,11 +159,13 @@ func (app *Application) EventReaction(rw http.ResponseWriter, r *http.Request) {
 
 		userId, err := app.UserService.GetUserID(r)
 
-		if err != nil || userId != JSONdata.UserId {
+		if err != nil {
 			app.Logger.Printf("Failed fetching user: %v", err)
 			http.Error(rw, "Get user error", http.StatusBadRequest)
 			return
 		}
+
+		JSONdata.UserId = userId
 
 		err = app.GroupEventService.UpdateEventAttendance(JSONdata)
 
@@ -171,6 +173,8 @@ func (app *Application) EventReaction(rw http.ResponseWriter, r *http.Request) {
 			app.Logger.Printf("Failed updating event attendance: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
 		}
+
+		rw.Write([]byte("ok"))
 
 	default:
 		http.Error(rw, "method is not supported", http.StatusNotFound)

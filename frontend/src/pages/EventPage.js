@@ -71,7 +71,7 @@ const EventPage = () => {
     const data = { eventId: +id, isAttending };
     try {
       await axios
-        .put(
+        .post(
           EVENT_ATTENDANCE_URL,
           JSON.stringify(data),
           { withCredentials: true },
