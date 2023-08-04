@@ -12,7 +12,7 @@ type INotificationService interface {
 	GetById(notificationId int64) (*models.Notification, error)
 	GetDetailsById(notificationId int64) (*models.NotificationDetails, error)
 	GetUserNotifications(userId int64) ([]*models.NotificationJSON, error)
-	CreateFollowRequest(followerId int64, followingId int64) (int64, bool, error)
+	CreateFollowRequest(followerId int64, followingId int64) (int64, error)
 	HandleFollowRequest(notificationId int64, accepted bool) error
 	CreateGroupRequest(senderId int64, groupId int64) (int64, error)
 	HandleGroupRequest(creatorID int64, notificationID int64, accepted bool) error
@@ -166,45 +166,47 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 	return NotificationJSON, nil
 }
 
-func (s *NotificationService) CreateFollowRequest(followerId int64, followingId int64) (int64, bool, error) {
+func (s *NotificationService) CreateFollowRequest(followerId int64, followingId int64) (int64, error) {
 
 	// check if follower and following exist
 	_, err := s.UserRepo.GetById(followerId)
 	if err != nil {
 		s.Logger.Printf("Follower not found: %s", err)
-		return -1, false, err
+		return -1, err
 	}
 	following, err := s.UserRepo.GetById(followingId)
 	if err != nil {
 		s.Logger.Printf("Following not found: %s", err)
-		return -1, false, err
+		return -1, err
 	}
 
 	// check if follow request already exists
 	_, err = s.FollowerRepo.GetByFollowerAndFollowing(followerId, followingId)
 	if err == nil {
-		return -1, false, errors.New("follow request already exists")
+		return -1, errors.New("follow request already exists")
 	}
 
-	// check if following is private
 	follower := &models.Follower{
 		FollowerId:  followerId,
 		FollowingId: followingId,
 		Accepted:    following.IsPublic,
 	}
 
-	// create follow reque
-
+	// create follow request
 	lastID, err := s.FollowerRepo.Insert(follower)
 	if err != nil {
 		s.Logger.Printf("Cannot insert follow request: %s", err)
-		return -1, false, err
+		return -1, err
 	}
 
 	s.Logger.Printf("Follow request created: %d", lastID)
 
-	// create notification
+	// check if following is private
+	if following.IsPublic {
+		return -1, nil
+	}
 
+	// create notification
 	notificationDetails := models.NotificationDetails{
 		SenderId:         followerId,
 		NotificationType: "follow_request",
@@ -214,7 +216,7 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 
 	notificationDetailsId, err := s.NotificationRepository.InsertDetails(&notificationDetails)
 	if err != nil {
-		return -1, false, err
+		return -1, err
 	}
 
 	notification := models.Notification{
@@ -225,10 +227,10 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 
 	notificationId, err := s.NotificationRepository.InsertNotification(&notification)
 	if err != nil {
-		return -1, false, err
+		return -1, err
 	}
 
-	return notificationId, following.IsPublic, nil
+	return notificationId, nil
 }
 
 func (s *NotificationService) HandleFollowRequest(notificationId int64, accepted bool) error {

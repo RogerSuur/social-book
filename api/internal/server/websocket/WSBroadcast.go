@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-func (w *WebsocketServer) BroadcastFollowRequest(c *Client, followRequestId int64, sendNewChatlist bool, otherId int64) error {
+func (w *WebsocketServer) BroadcastFollowRequest(c *Client, followRequestId int64, otherId int64) error {
 	userData, err := w.userService.GetUserByID(int64(c.clientID))
 	if err != nil {
 		return err
@@ -39,33 +39,6 @@ func (w *WebsocketServer) BroadcastFollowRequest(c *Client, followRequestId int6
 	}
 
 	w.Logger.Printf("Sent notification to recipient")
-
-	// send new chatlist to sender
-	if sendNewChatlist {
-		userChatList, groupChatList, err := w.chatService.GetChatlist(int64(c.clientID))
-		if err != nil {
-			return err
-		}
-
-		dataToSend, err := json.Marshal(
-			&ChatListPayload{
-				UserID:        int(c.clientID),
-				UserChatlist:  userChatList,
-				GroupChatlist: groupChatList,
-			},
-		)
-
-		if err != nil {
-			return err
-		}
-
-		c.gate <- Payload{
-			Type: "chatlist",
-			Data: dataToSend,
-		}
-
-		w.Logger.Printf("Sent new chatlist to sender %v", c.clientID)
-	}
 
 	return nil
 }
