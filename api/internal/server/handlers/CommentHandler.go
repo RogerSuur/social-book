@@ -93,6 +93,8 @@ func (app *Application) Comment(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "Error", http.StatusBadRequest)
 		}
 
+		rw.Write([]byte("ok"))
+
 	default:
 		http.Error(rw, "method is not supported", http.StatusNotFound)
 		return

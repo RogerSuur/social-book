@@ -210,6 +210,8 @@ func (app *Application) CreateGroup(rw http.ResponseWriter, r *http.Request) {
 		app.Logger.Printf("Group with id %d created successfully", result)
 		rw.WriteHeader(http.StatusCreated)
 
+		rw.Write([]byte("ok"))
+
 	default:
 		http.Error(rw, "err", http.StatusBadRequest)
 		return
@@ -320,6 +322,8 @@ func (app *Application) AddMembers(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		rw.Write([]byte("ok"))
+
 	default:
 		http.Error(rw, "method is not supported", http.StatusNotFound)
 		return
@@ -374,18 +378,7 @@ func (app *Application) UpdateGroupImage(rw http.ResponseWriter, r *http.Request
 			return
 		}
 
-		rw.Header().Set("Content-Type", "application/json")
-		rw.WriteHeader(http.StatusOK)
-		resp := make(map[string]interface{})
-		resp["message"] = "User image updated"
-		resp["status"] = "success"
-		jsonResp, err := json.Marshal(resp)
-		if err != nil {
-			app.Logger.Printf("Cannot marshal JSON: %s", err)
-			http.Error(rw, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		rw.Write(jsonResp)
+		rw.Write([]byte("ok"))
 
 	default:
 		http.Error(rw, "method is not supported", http.StatusNotFound)

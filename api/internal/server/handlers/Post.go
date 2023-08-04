@@ -57,6 +57,8 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		rw.Write([]byte("ok"))
+
 	default:
 		http.Error(rw, "err", http.StatusBadRequest)
 		return
@@ -111,6 +113,8 @@ func (app *Application) GroupPost(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "err", http.StatusBadRequest)
 			return
 		}
+
+		rw.Write([]byte("ok"))
 
 	default:
 		http.Error(rw, "err", http.StatusBadRequest)
@@ -167,10 +171,7 @@ func (app *Application) PostImage(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		resp := make(map[string]interface{})
-		resp["message"] = "Image uploaded successfully"
-		resp["status"] = http.StatusOK
-		json.NewEncoder(rw).Encode(resp)
+		rw.Write([]byte("ok"))
 
 	default:
 		http.Error(rw, "err", http.StatusBadRequest)

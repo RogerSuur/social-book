@@ -78,6 +78,8 @@ func (app *Application) CreateGroupEvent(rw http.ResponseWriter, r *http.Request
 			return
 		}
 
+		rw.Write([]byte("ok"))
+
 	default:
 		http.Error(rw, "err", http.StatusBadRequest)
 		return

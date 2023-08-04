@@ -304,17 +304,7 @@ func (app *Application) UpdateUserImage(rw http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		rw.Header().Set("Content-Type", "application/json")
-		rw.WriteHeader(http.StatusOK)
-		resp := make(map[string]interface{})
-		resp["message"] = "User image updated"
-		jsonResp, err := json.Marshal(resp)
-		if err != nil {
-			app.Logger.Printf("Cannot marshal JSON: %s", err)
-			http.Error(rw, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		rw.Write(jsonResp)
+		rw.Write([]byte("ok"))
 
 	default:
 		http.Error(rw, "err", http.StatusBadRequest)
