@@ -22,10 +22,12 @@ const Chat = () => {
     loadChatlist();
   }, []);
 
-  const resetUnreadCount = (userid) => {
+  const resetUnreadCount = (openChatbox) => {
     setUserChatlist((prevChatlist) =>
       prevChatlist.map((chat) =>
-        chat.user_id === userid ? { ...chat, unread_count: 0 } : chat
+        checkChat([chat.user_id, chat.group_id], openChatbox)
+          ? { ...chat, unread_count: 0 }
+          : chat
       )
     );
   };

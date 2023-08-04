@@ -10,6 +10,7 @@ const EventPage = () => {
   const [event, setEvent] = useState({});
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [response, setResponse] = useState(false);
   const [activeTab, setActiveTab] = useState(true);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -36,7 +37,7 @@ const EventPage = () => {
       }
     };
     loadEvent();
-  }, [id]);
+  }, [id, response]);
 
   const userList = (attendance) => {
     const users = event?.members?.filter(
@@ -70,23 +71,19 @@ const EventPage = () => {
     console.log("IS ATTENDING: ", isAttending);
     const data = { eventId: +id, isAttending };
     try {
-      await axios
-        .post(
-          EVENT_ATTENDANCE_URL,
-          JSON.stringify(data),
-          { withCredentials: true },
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        )
-        .then((response) => {
-          console.log("RESP: ", response?.data);
-        });
+      await axios.post(
+        EVENT_ATTENDANCE_URL,
+        JSON.stringify(data),
+        { withCredentials: true },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      setResponse(!response);
     } catch (err) {
       if (!err?.response) {
         setError("No Server Response");
-      } else if (err.response?.status === 404) {
-        navigate("404", { replace: true });
       } else if (err.response?.status > 200) {
         setError("Internal Server Error");
       }
@@ -115,18 +112,10 @@ const EventPage = () => {
       {/* <div className="event-stuff"> 
      {/* event img here 
     </div>*/}
-      <button
-        className="event-but"
-        onClick={() => handleResponse(true)}
-        disabled={event?.isAttending}
-      >
+      <button className="event-but" onClick={() => handleResponse(true)}>
         I'm going
       </button>
-      <button
-        className="event-but"
-        onClick={() => handleResponse(false)}
-        disabled={!event?.isAttending}
-      >
+      <button className="event-but" onClick={() => handleResponse(false)}>
         I'm not going
       </button>
       <div className="event-stuff">

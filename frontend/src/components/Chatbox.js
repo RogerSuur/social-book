@@ -31,6 +31,18 @@ const Chatbox = ({
 
   const messageboxRef = useRef(null);
 
+  const handleScrolling = () => {
+    console.log("SCROLLING");
+    console.log("SCROLLTOP: ", messageboxRef?.current?.scrollTop);
+    console.log("SCROLLHEIGHT: ", messageboxRef?.current?.scrollHeight);
+    if (
+      messageboxRef?.current?.scrollTop === messageboxRef?.current?.scrollHeight
+    ) {
+      console.log("MATCH");
+      resetUnreadCount([chat.user_id, chat.group_id]);
+    }
+  };
+
   const image = () =>
     chat?.user_id > 0
       ? ImageHandler(chat?.avatar_image, "defaultuser.jpg", "chatbox-img")
@@ -154,7 +166,7 @@ const Chatbox = ({
 
     setMessage({ ...message, data: { body: "" } });
     setScrollToBottomNeeded(true);
-    resetUnreadCount();
+    resetUnreadCount([chat.user_id, chat.group_id]);
   };
 
   useEffect(() => {
@@ -195,7 +207,11 @@ const Chatbox = ({
           onClick={closeChat}
         />
       </div>
-      <div className="message-history" ref={messageboxRef}>
+      <div
+        className="message-history"
+        ref={messageboxRef}
+        onScroll={handleScrolling}
+      >
         <InfiniteScroll
           pageStart={0}
           isReverse={true}
