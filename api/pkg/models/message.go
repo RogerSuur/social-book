@@ -277,7 +277,7 @@ func (repo MessageRepository) GetUnreadCount(userId int64, otherId int64) (int64
 	err := row.Scan(&count)
 
 	if err != nil {
-		return 0, err
+		return -1, err
 	}
 
 	return count, nil

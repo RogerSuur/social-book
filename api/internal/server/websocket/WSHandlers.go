@@ -269,7 +269,20 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 		return err
 	}
 
-	var messageData *models.Message
+	messageData := &models.Message{
+		SenderId:    c.clientID,
+		RecipientId: int64(data.RecipientID),
+		GroupId:     int64(data.GroupID),
+		Content:     data.Content,
+		SentAt:      time.Now(),
+	}
+
+	messageID, err := w.chatService.CreateMessage(messageData)
+	if err != nil {
+		return err
+	}
+
+	messageData.Id = messageID
 
 	if data.GroupID == 0 && data.RecipientID > 0 {
 
@@ -296,19 +309,6 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 		w.Logger.Printf("Invalid request payload")
 		return ErrorInvalidPayload
 
-	}
-
-	messageData = &models.Message{
-		SenderId:    c.clientID,
-		RecipientId: int64(data.RecipientID),
-		GroupId:     int64(data.GroupID),
-		Content:     data.Content,
-		SentAt:      time.Now(),
-	}
-
-	messageID, err := w.chatService.CreateMessage(messageData)
-	if err != nil {
-		return err
 	}
 
 	w.Logger.Printf("Message successfully created with id %v", messageID)
