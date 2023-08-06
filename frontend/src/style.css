@@ -294,6 +294,28 @@ nav {
   margin-left: 1vw;
   margin-right: 1vw;
 }
+.event-down {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.event-but2 {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgb(190, 190, 190);
+  border-radius: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.event-but2 img {
+  margin-right: 5px;
+}
 
 .group-page{
   box-shadow: 5px 5px 5px rgb(184, 184, 184);
@@ -457,11 +479,11 @@ height: 7vh;
 
 .top-part {
   width: 50vw;
-  height: 424px;
+  height: 380px;
   flex-shrink: 0;
   border-radius: 10px;
   border: 1px solid rgba(199, 199, 199, 0.25);
-  margin: 5px;
+  margin-top: 5px;
 }
 
 .umber{

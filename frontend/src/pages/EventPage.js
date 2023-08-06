@@ -112,12 +112,7 @@ const EventPage = () => {
       {/* <div className="event-stuff"> 
      {/* event img here 
     </div>*/}
-      <button className="event-but" onClick={() => handleResponse(true)}>
-        I'm going
-      </button>
-      <button className="event-but" onClick={() => handleResponse(false)}>
-        I'm not going
-      </button>
+      
       <div className="event-stuff">
         <p>{event?.title}</p>
         <p>{event?.description}</p>
@@ -140,6 +135,20 @@ const EventPage = () => {
         <button className="event-but" onClick={() => handleModalClick(false)}>
           Not going {countUsers(false)}
         </button>
+        <div className="event-down">
+        <button className="event-but2" onClick={() => handleResponse(true)}>
+            <img
+              src={`${process.env.PUBLIC_URL}/accept.png`}
+            />
+            <h3>I'm going</h3> 
+          </button>
+          <button className="event-but2" onClick={() => handleResponse(false)}>
+            <img
+              src={`${process.env.PUBLIC_URL}/decline.png`}
+            />
+            <h3>I'm not going</h3>
+          </button>
+        </div>
       </div>
     </div>
   );
