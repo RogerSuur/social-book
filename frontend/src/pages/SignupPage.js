@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
 
 const SIGNUP_URL = "http://localhost:8000/signup";
 
@@ -61,7 +66,7 @@ const Signup = () => {
   return (
     <>
       {errMsg && <h3>{errMsg}</h3>}
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <h1 className="center">Sing up for FREE to start networking</h1>
         <div className="input-container">
           <label htmlFor="smooth-input" className="input-label">
@@ -206,33 +211,34 @@ const Signup = () => {
         </div>
         <br />
         <div className="input-container">
-        <label htmlFor="dob" className="input-label4">
-          Date of Birth
-        </label>
-        <input
-          id="dob"
-          className="smooth-input"
-          type="date"
-          {...register("dateOfBirth", {
-            required: "Please enter your birth date",
-            validate: (value) =>
-              new Date(value) <
-                new Date(
-                  new Date().getFullYear() - 13,
-                  new Date().getMonth(),
-                  new Date().getDate()
-                ) || "You must be 13 years of age or older to sign up",
-          })}
-        />
-        {errors.dateOfBirth && (
-          <p className="error-message">{errors.dateOfBirth.message}</p>
-        )}
-        <br />
+          <label htmlFor="dob" className="input-label4">
+            Date of Birth
+          </label>
+          <input
+            id="dob"
+            className="smooth-input"
+            type="date"
+            {...register("dateOfBirth", {
+              required: "Please enter your birth date",
+              validate: (value) =>
+                new Date(value) <
+                  new Date(
+                    new Date().getFullYear() - 13,
+                    new Date().getMonth(),
+                    new Date().getDate()
+                  ) || "You must be 13 years of age or older to sign up",
+            })}
+          />
+          {errors.dateOfBirth && (
+            <p className="error-message">{errors.dateOfBirth.message}</p>
+          )}
+          <br />
         </div>
-        <div className="center">
-          <button className="big-button">Sign Up</button>
-        </div>
-      </form>
+
+        <Button variant="primary" type="submit">
+          Sign Up
+        </Button>
+      </Form>
       <div className="center">
         Already have an account? <Link to={`/login`}>Sign in</Link>
       </div>

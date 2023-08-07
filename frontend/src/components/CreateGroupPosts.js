@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import Select from "react-select";
 
 const CreateGroupPost = ({ groupId, onPostsUpdate }) => {
   const initialFormData = {

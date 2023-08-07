@@ -1,10 +1,46 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Comments from "./Comments";
+import { makeRequest } from "../services/makeRequest";
 import { Link } from "react-router-dom";
 
-const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
+const FeedPosts = ({ url, reload }) => {
   const observer = useRef();
+  const [posts, setPosts] = useState([]);
+  const [error, setError] = useState(null);
   const [isPostsLoading, setPostsLoading] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+
+  const handlePageChange = (postId) => {
+    setOffset(postId);
+  };
+
+  useEffect(() => {
+    setPosts([]);
+    setOffset(0);
+  }, [reload]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    const loadPosts = async () => {
+      try {
+        const response = await makeRequest(`${url}/${offset}`, {
+          signal: abortController.signal,
+        });
+        setPosts((prevPosts) => {
+          return [...prevPosts, ...response];
+        });
+        setHasMore(response.length > 0);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+    loadPosts();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [offset, reload]);
 
   async function toggleSpinner() {
     setPostsLoading((prev) => !prev);
@@ -22,7 +58,7 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
       if (entries[0].isIntersecting) {
         toggleSpinner();
         const postId = node.getAttribute("data-post-id"); // Get the post ID from the element attribute
-        onLoadMore(postId);
+        handlePageChange(postId);
       }
     });
 

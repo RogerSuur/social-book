@@ -15,7 +15,7 @@ import {
 } from "../utils/routes";
 import ImageHandler from "../utils/imageHandler.js";
 import Modal from "../components/Modal.js";
-import Posts from "../pages/PostsPage.js";
+import FeedPosts from "../components/FeedPosts.js";
 
 const ProfileInfo = () => {
   const [user, setUser] = useState({});
@@ -186,11 +186,7 @@ const ProfileInfo = () => {
           <button onClick={() => handleModalClick(true)}>Following</button>
           <button onClick={() => handleModalClick(false)}>Followers</button>
           <Modal open={postsModalOpen} onClose={handlePostsModalClose}>
-            <Posts
-              showCreatePost={false}
-              showGroupSidebar={false}
-              url={USER_POSTS_URL + id}
-            />
+            <FeedPosts url={USER_POSTS_URL + id} />
           </Modal>
           <button onClick={() => handlePostsModalClick()}>Posts</button>
 

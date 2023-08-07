@@ -1,5 +1,5 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import NavigationBar from "./components/NavigationBar";
 import Profile from "./pages/ProfilePage";
 import PostsPage from "./pages/PostsPage";
 import Post from "./components/Post";
@@ -20,7 +20,7 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navbar />}>
+          <Route path="/" element={<NavigationBar />}>
             <Route path="login" element={<Login />} />
             <Route path="signup" element={<Signup />} />
 
@@ -29,17 +29,7 @@ function App() {
               <Route path="profile/:id" element={<ProfileInfo />} />
               <Route path="groups/:id" element={<GroupPage />} />
               <Route path="event/:id" element={<EventPage />} />
-              <Route
-                path="posts"
-                element={
-                  <PostsPage
-                    groupId={false}
-                    showGroupSidebar={true}
-                    showCreatePost={true}
-                    url={"/feedposts"}
-                  />
-                }
-              />
+              <Route path="posts" element={<PostsPage url={"/feedposts"} />} />
               <Route path="posts/:id" element={<Post />} />
               <Route path="logout" element={<Logout />} />
               <Route path="*" element={<NoPage />} />

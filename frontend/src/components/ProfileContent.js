@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Posts from "../pages/PostsPage.js";
+import FeedPosts from "../components/FeedPosts.js";
 import GenericUserList from "../components/GenericUserList.js";
 import ProfileEditor from "../components/ProfileEditor.js";
 import { FOLLOWERS_URL, FOLLOWING_URL } from "../utils/routes.js";
@@ -27,13 +27,7 @@ const ProfileContent = ({ selected }) => {
   return (
     <div className="profile-content">
       {displayedContent}
-      {selected === "your-posts" && (
-        <Posts
-          showGroupSidebar={false}
-          showCreatePost={false}
-          url={"/profileposts"}
-        />
-      )}
+      {selected === "your-posts" && <FeedPosts url={"/profileposts"} />}
     </div>
   );
 };

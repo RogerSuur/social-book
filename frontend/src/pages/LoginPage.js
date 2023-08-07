@@ -3,6 +3,12 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
+import Button from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Container from "react-bootstrap/Container";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
 
 const LOGIN_URL = "http://localhost:8000/login";
 
@@ -72,58 +78,44 @@ const Login = () => {
   return (
     <>
       {errMsg && <h2 className="log-center">{errMsg}</h2>}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <div
-          style={{
-            width: "500px",
-            height: "450px",
-            border: "1px solid #ccc",
-            borderRadius: "20px",
-            padding: "20px",
-          }}
+      {/* <Row className="justify-content-md-center">
+        <Col xs lg="2">
+          1 of 3
+        </Col>
+        <Col md="1">Variable width content</Col>
+        <Col xs lg="2">
+          3 of 3
+        </Col>
+      </Row> */}
+      <Form onSubmit={handleSubmit}>
+        <FloatingLabel
+          controlId="floatingEmail"
+          label="Email address or username"
         >
-          <form onSubmit={handleSubmit}>
-            <h1>Sign in</h1>
-
-            <label className="log-in">Email or username</label>
-
-            <input
-              className="login-input"
-              type="text"
-              placeholder="Email or username"
-              onChange={handleChange}
-              name="username"
-              value={formData.username}
-              required
-              autoFocus
-            />
-            <br />
-            <label className="log-in">Password</label>
-            <input
-              className="login-input"
-              type="password"
-              placeholder="Password"
-              onChange={handleChange}
-              name="password"
-              value={formData.password}
-              required
-            />
-
-            <div className="center1">
-              <button className="log-button">Sign In</button>
-            </div>
-          </form>
-          <div style={{ marginTop: "10px", textAlign: "center" }}>
-            Do not have an account? <Link to={`/signup`}>Sign up</Link>
-          </div>
-        </div>
+          <Form.Control
+            type="email"
+            placeholder="Email address"
+            onChange={handleChange}
+            name="username"
+            value={formData.username}
+            required
+            autoFocus
+          />
+        </FloatingLabel>
+        <FloatingLabel controlId="floatingPassword" label="Password">
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            onChange={handleChange}
+            name="password"
+            value={formData.password}
+            required
+          />
+        </FloatingLabel>
+        <Button type="submit">Sign In</Button>
+      </Form>
+      <div style={{ marginTop: "10px", textAlign: "center" }}>
+        Do not have an account? <Link to={`/signup`}>Sign up</Link>
       </div>
     </>
   );

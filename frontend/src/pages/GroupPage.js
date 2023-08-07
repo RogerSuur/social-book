@@ -5,12 +5,13 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import GroupMembers from "../components/GroupMembers";
 import ImageHandler from "../utils/imageHandler";
-import Posts from "../pages/PostsPage.js";
+import FeedPosts from "../components/FeedPosts.js";
 import Select from "react-select";
 import Modal from "../components/Modal";
 import AvatarUpdater from "../components/AvatarUpdater";
 import Events from "../components/Events";
 import GroupRequestButton from "../components/GroupRequestButton.js";
+import CreateGroupPosts from "../components/CreateGroupPosts.js";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -20,8 +21,12 @@ const GroupPage = () => {
   const [formData, setFormData] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-
   const [open, setOpen] = useState(false);
+  const [reload, setReload] = useState(false);
+
+  const handlePostUpdate = () => {
+    setReload(!reload);
+  };
 
   const handleOpen = () => {
     setOpen(!open);
@@ -138,13 +143,8 @@ const GroupPage = () => {
                 </Modal>
                 <button onClick={handleModalClick}>Upload New Image</button>
               </div>
-              <Posts
-                groupId={+id}
-                showGroupSidebar={false}
-                showCreatePost={true}
-                url={`/groupfeed/${id}`}
-                key={id}
-              />
+              <CreateGroupPosts groupId={id} onPostsUpdate={handlePostUpdate} />
+              <FeedPosts url={`/groupfeed/${id}`} key={id} reload={reload} />
             </>
           ) : (
             <GroupRequestButton groupid={+id} />

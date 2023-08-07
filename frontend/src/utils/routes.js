@@ -27,3 +27,4 @@ export const SEARCH_URL = "http://localhost:8000/search";
 
 //--------------------------Posts---------------------//
 export const USER_POSTS_URL = "/userposts/";
+export const FEEDPOSTS_URL = "/feedposts";

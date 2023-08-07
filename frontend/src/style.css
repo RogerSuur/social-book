@@ -157,8 +157,6 @@ nav {
   right: 0px;
 }
 
-/* Add media query for smaller screens */
-
 .send-icon{
   width: 20px;
   height: 20px;
@@ -247,7 +245,7 @@ nav {
   justify-content: center;
   align-items: center;
   text-align: center;
-  border: 1px solid #000000; /* Example border for the popup */
+  border: 1px solid #000000;
   border-radius: 5px; 
 }
 
@@ -815,8 +813,7 @@ hr {
   flex-direction: column;
   align-items: flex-end;
   flex-basis: 100%;
-  /* flex: 2.5; */
-  justify-content: flex-end;
+justify-content: flex-end;
   flex-shrink: 1;
   overflow: clip;
 }

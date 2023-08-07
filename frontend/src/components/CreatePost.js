@@ -3,7 +3,7 @@ import axios from "axios";
 import Select from "react-select";
 import ImageUploadModal from "./ImageUploadModal";
 
-const CreatePost = (props) => {
+const CreatePost = ({ onPostsUpdate }) => {
   const initialFormData = {
     content: "",
     image: null,
@@ -91,7 +91,7 @@ const CreatePost = (props) => {
 
       setErrMsg(response.data?.message);
 
-      props.onPostsUpdate();
+      onPostsUpdate();
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");

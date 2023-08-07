@@ -1,80 +1,26 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import FeedPosts from "../components/FeedPosts";
 import CreatePost from "../components/CreatePost";
-import { makeRequest } from "../services/makeRequest";
 import GroupSidebar from "../components/GroupSidebar";
-import CreateGroupPosts from "../components/CreateGroupPosts";
+import { FEEDPOSTS_URL } from "../utils/routes";
 
-const Posts = ({ groupId, showGroupSidebar, showCreatePost, url }) => {
-  const [posts, setPosts] = useState([]);
-  const [error, setError] = useState(null);
-  const [offset, setOffset] = useState(0);
-  const [loadMore, setLoadMore] = useState(true);
-  const [hasMore, setHasMore] = useState(false);
+const PostsPage = () => {
+  const [reload, setReload] = useState(false);
 
   const handlePostUpdate = () => {
-    // console.log("handlePostUpdate", posts, offset);
-    setOffset(0);
-    setLoadMore(!loadMore);
-    setPosts([]);
+    setReload(!reload);
   };
-
-  const handlePageChange = (postId) => {
-    setOffset(postId);
-  };
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    const loadPosts = async () => {
-      try {
-        const response = await makeRequest(`${url}/${offset}`, {
-          signal: abortController.signal,
-        });
-        setPosts((prevPosts) => {
-          return [...prevPosts, ...response];
-        });
-        setHasMore(response.length > 0);
-      } catch (error) {
-        setError(error.message);
-      }
-    };
-    loadPosts();
-
-    return () => {
-      abortController.abort();
-    };
-  }, [offset, loadMore]);
-
-  console.log("GROUP ID: ", groupId);
 
   return (
     <>
-      {showGroupSidebar && <GroupSidebar />}
+      <GroupSidebar />
       <div className="content-as">
-        {showCreatePost && !groupId && (
-          <CreatePost onPostsUpdate={handlePostUpdate} />
-        )}
+        <CreatePost onPostsUpdate={handlePostUpdate} />
 
-        {showCreatePost && groupId && (
-          <CreateGroupPosts
-            onPostsUpdate={handlePostUpdate}
-            groupId={groupId}
-          />
-        )}
-
-        {error ? (
-          <div className="error">{error}</div>
-        ) : (
-          <FeedPosts
-            posts={posts}
-            hasMore={hasMore}
-            onLoadMore={handlePageChange}
-          />
-        )}
+        <FeedPosts url={FEEDPOSTS_URL} reload={reload} />
       </div>
     </>
   );
 };
 
-export default Posts;
+export default PostsPage;
