@@ -9,11 +9,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type insertCommentJSON struct {
+/* type insertCommentJSON struct {
 	PostId    int64  `json:"postId"`
 	Content   string `json:"content"`
 	ImagePath string `json:"imagePath"`
-}
+} */
 
 func (app *Application) Comments(rw http.ResponseWriter, r *http.Request) {
 

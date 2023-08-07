@@ -3,7 +3,6 @@ package handlers
 import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,13 +10,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type createPostJSON struct {
+/* type createPostJSON struct {
 	UserId      int      `json:"userId"`
 	Content     string   `json:"content"`
 	ImagePath   string   `json:"image"`
 	PrivacyType int      `json:"privacyType"`
 	Receivers   []string `json:"selectedReceivers"`
-}
+} */
 
 func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 
@@ -56,10 +55,10 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 		receiversStr := r.FormValue("selectedReceivers")
 		receivers := strings.Split(receiversStr, ",")
 
-		if err != nil {
+		/* if err != nil {
 			app.Logger.Printf("JSON error: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
-		}
+		} */
 
 		file, header, err := r.FormFile("image")
 		var imagePath string
@@ -122,15 +121,31 @@ func (app *Application) GroupPost(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
 		}
 
-		decoder := json.NewDecoder(r.Body)
+		/* decoder := json.NewDecoder(r.Body)
 		decoder.DisallowUnknownFields()
 
 		JSONdata := &createPostJSON{}
-		err = decoder.Decode(&JSONdata)
+		err = decoder.Decode(&JSONdata) */
 
-		if err != nil {
+		content := r.FormValue("content")
+
+		/* if err != nil {
 			app.Logger.Printf("JSON error: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
+		} */
+
+		file, header, err := r.FormFile("image")
+		var imagePath string
+
+		if err == nil {
+			defer file.Close()
+
+			imagePath, err = app.PostService.SavePostImage(file, header)
+			if err != nil {
+				app.Logger.Printf("Failed saving image: %v", err)
+				http.Error(rw, "Save image error", http.StatusBadRequest)
+				return
+			}
 		}
 
 		userId, err := app.UserService.GetUserID(r)
@@ -141,11 +156,10 @@ func (app *Application) GroupPost(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		post := &models.Post{
-			UserId:      userId,
-			PrivacyType: enums.PrivacyType(enums.None),
-			Content:     JSONdata.Content,
-			ImagePath:   JSONdata.ImagePath,
-			GroupId:     groupId,
+			UserId:    userId,
+			Content:   content,
+			ImagePath: imagePath,
+			GroupId:   groupId,
 		}
 
 		err = app.PostService.CreateGroupPost(post)
