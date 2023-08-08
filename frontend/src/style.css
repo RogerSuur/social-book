@@ -320,7 +320,7 @@ nav {
 .group-page{
   box-shadow: 5px 5px 5px rgb(184, 184, 184);
   background-color: #ffffff;
-  margin-top: 40px;
+  margin-top: 5vh;
   margin-right: 30px;
   margin-left: 30px;
   width: 50vw;
@@ -377,6 +377,11 @@ nav {
 }
 
 .dif-link a:hover{
+  background-color: #ececec;
+  cursor: pointer;
+  border-radius: 1px;
+}
+.dif-link h1:hover{
   background-color: #ececec;
   cursor: pointer;
   border-radius: 1px;
@@ -711,6 +716,25 @@ line-height: normal;
   height: 10vh;
   resize: none;
   padding: 10px;
+}
+
+.group-add-img{
+ margin: 5px;
+}
+.group-add-img button {
+  width: 10vw;
+  height: 5vh;
+  color: #A9A9A9;
+  font-family: Open Sans;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  cursor: pointer;
+}
+
+.group-add-img button:hover {
+  background-color: #3b5998;
 }
 
 .profile-image {

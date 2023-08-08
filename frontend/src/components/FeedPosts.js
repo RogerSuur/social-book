@@ -52,7 +52,7 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
         ref={isLastPost ? lastPostElementRef : null}
         data-post-id={id}
       >
-        <div>
+        <div className="dif-link">
           <Link to={`/groups/${groupId}`}>{groupName}</Link>
         </div>
         <div className="row3">
