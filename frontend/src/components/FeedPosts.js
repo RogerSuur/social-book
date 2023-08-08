@@ -40,10 +40,10 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
       content,
       createdAt,
       commentCount,
+      groupId,
+      groupName,
     } = post;
     const isLastPost = index === posts.length - 1;
-
-    console.log("SINGLE POST: ", post);
 
     return (
       <div
@@ -52,14 +52,19 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
         ref={isLastPost ? lastPostElementRef : null}
         data-post-id={id}
       >
-        <div>Post ID: {id}</div>
+        <div className="dif-link">
+          <Link to={`/groups/${groupId}`}>{groupName}</Link>
+        </div>
         <div className="row3">
           <Link to={`/profile/${userId}`}>{userName}</Link>
         </div>
-        <div className="row2">
-          {content}
-          {imagePath}
-        </div>
+        {imagePath && (
+          <img
+            className="profile-pic"
+            src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
+          />
+        )}
+        <div className="row2">{content}</div>;
         <div className="row">{new Date(createdAt).toLocaleString("et-EE")}</div>
         <div className="comment-section">
           <Comments postId={id} commentCount={commentCount} />
@@ -67,8 +72,6 @@ const FeedPosts = ({ posts, onLoadMore, hasMore }) => {
       </div>
     );
   };
-
-  console.log("POSTS: ", posts);
 
   const renderedPosts = posts?.map(renderPost);
   return (

@@ -101,9 +101,7 @@ const GroupPage = () => {
   return (
     <>
       <GroupSidebar />
-      <div style={{ "max-width": `100px` }}>
-        <Events groupId={+id} />
-      </div>
+      <div>
       {error ? (
         <div className="error">{error}</div>
       ) : (
@@ -129,7 +127,7 @@ const GroupPage = () => {
                 )}
               </div>
               <GroupMembers groupId={+id} />
-              <div className="profile-actions">
+              <div className="group-add-img">
                 <Modal open={modalOpen} onClose={handleModalClose}>
                   <AvatarUpdater
                     url={`http://localhost:8000/groups/${id}/avatar`}
@@ -143,14 +141,18 @@ const GroupPage = () => {
                 showGroupSidebar={false}
                 showCreatePost={true}
                 url={`/groupfeed/${id}`}
+                key={id}
               />
-              {/* <Events groupId={+id} /> */}
             </>
           ) : (
             <GroupRequestButton groupid={+id} />
           )}
         </div>
       )}
+       <div className="group-page">
+        <Events groupId={+id} />
+      </div>
+      </div>
     </>
   );
 };

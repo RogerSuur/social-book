@@ -26,7 +26,8 @@ type IMessageRepository interface {
 	GetChatGroups(id int64) ([]*Group, error)
 	GetLastMessage(userId int64, otherId int64, isGroup bool) (*Message, error)
 	GetUnreadCount(userId int64, otherId int64) (int64, error)
-	MarkMessagesAsRead(userId int64, otherId int64) error
+	MarkMessagesRead(senderId int64, recipientId int64, messageId int64) error
+	GetById(id int64) (*Message, error)
 }
 
 type MessageRepository struct {
@@ -156,7 +157,7 @@ func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
 
 	query := `
 		SELECT u.id, u.forname, u.surname, u.nickname, u.image_path, u.created_at FROM users u 
-		JOIN followers f ON u.id = f.following_id WHERE f.follower_id = ?
+		JOIN followers f ON u.id = f.following_id WHERE f.follower_id = ? AND f.accepted = 1 GROUP BY u.id
 		UNION
 		SELECT u.id, u.forname, u.surname, u.nickname, u.image_path, u.created_at FROM users u
 		JOIN messages m ON u.id = m.sender_id WHERE m.recipient_id = ? GROUP BY u.id
@@ -276,22 +277,22 @@ func (repo MessageRepository) GetUnreadCount(userId int64, otherId int64) (int64
 	err := row.Scan(&count)
 
 	if err != nil {
-		return 0, err
+		return -1, err
 	}
 
 	return count, nil
 }
 
-func (repo MessageRepository) MarkMessagesAsRead(userId int64, otherId int64) error {
+func (repo MessageRepository) MarkMessagesRead(senderId int64, recipientId int64, messageId int64) error {
 	var query string
 	var args []interface{}
-	var now = time.Now()
 
-	query = `UPDATE messages SET read_at = ? WHERE sender_id = ? AND recipient_id = ?`
+	query = `UPDATE messages SET read_at = ? WHERE sender_id = ? AND recipient_id = ? AND id <= ? AND read_at IS NULL`
 	args = []interface{}{
-		now,
-		otherId,
-		userId,
+		time.Now(),
+		senderId,
+		recipientId,
+		messageId,
 	}
 
 	_, err := repo.DB.Exec(query, args...)
@@ -301,4 +302,22 @@ func (repo MessageRepository) MarkMessagesAsRead(userId int64, otherId int64) er
 	}
 
 	return nil
+}
+
+func (repo MessageRepository) GetById(id int64) (*Message, error) {
+	row := repo.DB.QueryRow("SELECT id, sender_id, recipient_id, group_id, content, sent_at FROM messages WHERE id = ?", id)
+
+	message := &Message{}
+
+	err := row.Scan(&message.Id, &message.SenderId, &message.RecipientId, &message.GroupId, &message.Content, &message.SentAt) // , &message.ReadAt)
+
+	if err == sql.ErrNoRows {
+		return &Message{}, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return message, nil
 }

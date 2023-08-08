@@ -156,7 +156,7 @@ func (app *Application) OtherFollowers(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	isFollowed := app.UserService.IsFollowed(int64(requestingUser), int64(userID))
+	isFollowed := app.UserService.IsFollowed(int64(userID), int64(requestingUser))
 
 	if !isFollowed && !user.IsPublic {
 		http.Error(rw, "User may not access followings", http.StatusUnauthorized)
@@ -238,7 +238,7 @@ func (app *Application) OtherFollowing(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	isFollowed := app.UserService.IsFollowed(int64(requestingUser), int64(userID))
+	isFollowed := app.UserService.IsFollowed(int64(userID), int64(requestingUser))
 
 	if !isFollowed && !user.IsPublic {
 		http.Error(rw, "User may not access followings", http.StatusUnauthorized)
@@ -304,17 +304,7 @@ func (app *Application) UpdateUserImage(rw http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		rw.Header().Set("Content-Type", "application/json")
-		rw.WriteHeader(http.StatusOK)
-		resp := make(map[string]interface{})
-		resp["message"] = "User image updated"
-		jsonResp, err := json.Marshal(resp)
-		if err != nil {
-			app.Logger.Printf("Cannot marshal JSON: %s", err)
-			http.Error(rw, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		rw.Write(jsonResp)
+		rw.Write([]byte("ok"))
 
 	default:
 		http.Error(rw, "err", http.StatusBadRequest)

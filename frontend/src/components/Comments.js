@@ -65,8 +65,6 @@ const Comments = ({ postId, commentCount, showCreateComment }) => {
     }
   }
 
-  console.log("COMMENTS: ", comments);
-
   return (
     <>
       {error ? (
@@ -78,6 +76,12 @@ const Comments = ({ postId, commentCount, showCreateComment }) => {
               <div className="column">
                 {comments.map((comment, index) => (
                   <div key={index}>
+                    {comment.imagePath && (
+                      <img
+                        className="profile-pic"
+                        src={`${process.env.PUBLIC_URL}/images/${comment.imagePath}`}
+                      />
+                    )}
                     <div key={comment.id}>{comment.content}</div>
                     <div className="row">
                       <div className="column">

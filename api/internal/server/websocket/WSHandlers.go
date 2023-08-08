@@ -23,6 +23,7 @@ const (
 	Message         = "message"
 	GroupRequest    = "group_request"
 	Response        = "response"
+	MessagesRead    = "messages_read"
 )
 
 func (w *WebsocketServer) setupHandlers() {
@@ -33,6 +34,7 @@ func (w *WebsocketServer) setupHandlers() {
 	w.handlers[Message] = w.NewMessageHandler
 	w.handlers[GroupRequest] = w.GroupRequestHandler
 	w.handlers[Response] = w.ResponseHandler
+	w.handlers[MessagesRead] = w.MessagesReadHandler
 }
 
 func (w *WebsocketServer) routePayloads(payload Payload, client *Client) error {
@@ -126,16 +128,47 @@ func (w *WebsocketServer) FollowRequestHandler(p Payload, c *Client) error {
 	}
 	w.Logger.Printf("User %v wants to start following user %v", c.clientID, data.ID)
 
-	followRequestId, sendNewChatlist, err := w.notificationService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
+	followRequestId, err := w.notificationService.CreateFollowRequest(int64(c.clientID), int64(data.ID))
 	if err != nil {
 		return err
+	}
+
+	if followRequestId == -1 {
+		w.Logger.Printf("User %v now follows public user %v", c.clientID, data.ID)
+
+		// sendNewChatlist
+		userChatList, groupChatList, err := w.chatService.GetChatlist(int64(c.clientID))
+		if err != nil {
+			return err
+		}
+
+		dataToSend, err := json.Marshal(
+			&ChatListPayload{
+				UserID:        int(c.clientID),
+				UserChatlist:  userChatList,
+				GroupChatlist: groupChatList,
+			},
+		)
+
+		if err != nil {
+			return err
+		}
+
+		c.gate <- Payload{
+			Type: "chatlist",
+			Data: dataToSend,
+		}
+
+		w.Logger.Printf("Sent new chatlist to sender %v", c.clientID)
+
+		return nil
 	}
 
 	w.Logger.Printf("Created follow request with id %v", followRequestId)
 
 	// broadcast to recipient
 
-	err = w.BroadcastFollowRequest(c, followRequestId, sendNewChatlist, int64(data.ID))
+	err = w.BroadcastFollowRequest(c, followRequestId, int64(data.ID))
 	if err != nil {
 		return err
 	}
@@ -236,7 +269,20 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 		return err
 	}
 
-	var messageData *models.Message
+	messageData := &models.Message{
+		SenderId:    c.clientID,
+		RecipientId: int64(data.RecipientID),
+		GroupId:     int64(data.GroupID),
+		Content:     data.Content,
+		SentAt:      time.Now(),
+	}
+
+	messageID, err := w.chatService.CreateMessage(messageData)
+	if err != nil {
+		return err
+	}
+
+	messageData.Id = messageID
 
 	if data.GroupID == 0 && data.RecipientID > 0 {
 
@@ -263,19 +309,6 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 		w.Logger.Printf("Invalid request payload")
 		return ErrorInvalidPayload
 
-	}
-
-	messageData = &models.Message{
-		SenderId:    c.clientID,
-		RecipientId: int64(data.RecipientID),
-		GroupId:     int64(data.GroupID),
-		Content:     data.Content,
-		SentAt:      time.Now(),
-	}
-
-	messageID, err := w.chatService.CreateMessage(messageData)
-	if err != nil {
-		return err
 	}
 
 	w.Logger.Printf("Message successfully created with id %v", messageID)
@@ -308,6 +341,23 @@ func (w *WebsocketServer) GroupRequestHandler(p Payload, c *Client) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (w *WebsocketServer) MessagesReadHandler(p Payload, c *Client) error {
+	data := &RequestPayload{}
+	err := json.Unmarshal(p.Data, &data)
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("User %v has read messages from user %v", c.clientID, data.ID)
+
+	err = w.chatService.HandleMessagesRead(c.clientID, int64(data.ID))
+	if err != nil {
+		return err
+	}
+	w.Logger.Printf("Messages successfully marked as read")
 
 	return nil
 }

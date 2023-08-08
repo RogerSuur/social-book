@@ -19,7 +19,7 @@ type IPostService interface {
 	GetProfilePosts(userId int64, offset int64) ([]*feedPostJSON, error)
 	GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSON, error)
 	GetUserPosts(userId int64, offset int64, requestingUserId int64) ([]*feedPostJSON, error)
-	UpdatePostImage(userId int64, postId int64, file multipart.File, fileHeader *multipart.FileHeader) error
+	SavePostImage(file multipart.File, fileHeader *multipart.FileHeader) (string, error)
 }
 
 // Controller contains the service, which contains database-related logic, as an injectable dependency, allowing us to decouple business logic from db logic.
@@ -127,10 +127,25 @@ func (s *PostService) GetFeedPosts(userId int64, offset int64) ([]*feedPostJSON,
 	for _, p := range posts {
 		// commentCount, err := s.PostRepository.GetCommentCount(p.Id)
 
+		group := &models.Group{}
+
+		if p.GroupId > 0 {
+			group, err = s.GroupRepository.GetById(p.GroupId)
+			if err != nil {
+				s.Logger.Printf("GetFeedPosts error: %s", err)
+			}
+		}
+
+		if p.Nickname == "" {
+			p.Nickname = p.FirstName + " " + p.LastName
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			Id:           p.Id,
 			UserId:       p.UserId,
-			UserName:     p.UserName,
+			UserName:     p.Nickname,
+			GroupId:      p.GroupId,
+			GroupName:    group.Title,
 			Content:      p.Content,
 			ImagePath:    p.ImagePath,
 			CommentCount: p.CommentCount,
@@ -163,10 +178,27 @@ func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJS
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
+
+		group := &models.Group{}
+
+		if p.GroupId > 0 {
+			group, err = s.GroupRepository.GetById(p.GroupId)
+			if err != nil {
+				s.Logger.Printf("GetFeedPosts error: %s", err)
+			}
+		}
+
+
+		if p.Nickname == "" {
+			p.Nickname = p.FirstName + " " + p.LastName
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			Id:           p.Id,
 			UserId:       p.UserId,
-			UserName:     p.UserName,
+			UserName:     p.Nickname,
+			GroupId:      p.GroupId,
+			GroupName:    group.Title,
 			Content:      p.Content,
 			ImagePath:    p.ImagePath,
 			CommentCount: p.CommentCount,
@@ -203,10 +235,15 @@ func (s *PostService) GetGroupPosts(groupId int64, offset int64) ([]*feedPostJSO
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
+
+		if p.Nickname == "" {
+			p.Nickname = p.FirstName + " " + p.LastName
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			p.Id,
 			p.UserId,
-			p.UserName,
+			p.Nickname,
 			p.Content,
 			p.ImagePath,
 			p.CommentCount,
@@ -239,10 +276,27 @@ func (s *PostService) GetUserPosts(userId int64, offset int64, requestingUserId 
 	feedPosts := []*feedPostJSON{}
 
 	for _, p := range posts {
+
+		group := &models.Group{}
+
+		if p.GroupId > 0 {
+			group, err = s.GroupRepository.GetById(p.GroupId)
+			if err != nil {
+				s.Logger.Printf("GetFeedPosts error: %s", err)
+			}
+		}
+
+
+		if p.Nickname == "" {
+			p.Nickname = p.FirstName + " " + p.LastName
+		}
+
 		feedPosts = append(feedPosts, &feedPostJSON{
 			Id:           p.Id,
 			UserId:       p.UserId,
-			UserName:     p.UserName,
+			UserName:     p.Nickname,
+			GroupId:      p.GroupId,
+			GroupName:    group.Title,
 			Content:      p.Content,
 			ImagePath:    p.ImagePath,
 			CommentCount: p.CommentCount,
@@ -253,46 +307,19 @@ func (s *PostService) GetUserPosts(userId int64, offset int64, requestingUserId 
 	return feedPosts, nil
 }
 
-func (s *PostService) UpdatePostImage(userId int64, postId int64, file multipart.File, fileHeader *multipart.FileHeader) error {
-
-	// check if user exists
-	post, err := s.PostRepository.GetById(postId)
-
-	if err != nil {
-		s.Logger.Printf("Post not found: %s", err)
-		return err
-	}
-
-	if post.UserId != userId {
-		err := errors.New("user not authorized to edit post")
-		s.Logger.Printf("UpdatePostImage error: %s", err)
-		return err
-	}
+func (s *PostService) SavePostImage(file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
 
 	// check if file is an image
 	if !strings.HasPrefix(fileHeader.Header.Get("Content-Type"), "image") {
 		s.Logger.Println("Not an image")
-		return errors.New("not an image")
+		return "", errors.New("not an image")
 	}
 
 	// save image
 	imagePath, err := utils.SaveImage(file, fileHeader)
 	if err != nil {
 		s.Logger.Printf("UpdatePostImage error: %s", err)
-		return err
 	}
 
-	// update post
-
-	post.ImagePath = imagePath
-
-	err = s.PostRepository.Update(post)
-	if err != nil {
-		s.Logger.Printf("UpdatePostImage error: %s", err)
-		return err
-	}
-
-	s.Logger.Printf("Post image updated: %d", postId)
-
-	return nil
+	return imagePath, err
 }

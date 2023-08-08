@@ -2,14 +2,6 @@
   box-sizing: border-box; 
 }
 
-.EmojiPickerReact{
-  --epr-emoji-size: 1vw;
-  --epr-search-input-height: 20px;
-  --epr-category-navigation-button-size: 10px;
-  --epr-preview-height: 20px;
-  --epr-emoji-size: 20px;
-}
-
 body {
   min-width: 320px;
   margin: 0;
@@ -101,7 +93,7 @@ nav {
   color: #278042;
   font-size:large;
   position: relative;
-  text-align: left;
+  text-align: right;
   padding: 10px;
   border-radius: 8px;
   
@@ -111,13 +103,13 @@ nav {
   color: #777;
   position: absolute;
   bottom: 0;
-  left: 9px;
+  right: 9px;
 }
 
 .message{
   font-size:large;
   position: relative;
-  text-align: right;
+  text-align: left;
   padding: 10px;
   border-radius: 8px;
 }
@@ -127,7 +119,7 @@ nav {
   color: #777;
   position: absolute;
   bottom: 0;
-  right: 5px;
+  left: 5px;
 }
 .pepe{
   list-style-type: none;
@@ -136,7 +128,7 @@ nav {
 
 .chat-unread-count{
   display: inline-block;
-  background-color: #a3a3a3;
+  background-color: #ff0000;
   color: #ffffff; 
   font-size: 12px; 
   padding: 4px 8px; 
@@ -244,7 +236,20 @@ nav {
   z-index: 2;
 }
 
-
+.notification-popup {
+  background-color: rgba(240, 0, 0, 0.3);
+  position: fixed;
+  min-width: 40%;
+  min-height: 10vh;
+  top: 7vh;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 1px solid #000000; /* Example border for the popup */
+  border-radius: 5px; 
+}
 
 .group-post-area{
   top: 15vh;
@@ -289,11 +294,33 @@ nav {
   margin-left: 1vw;
   margin-right: 1vw;
 }
+.event-down {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.event-but2 {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgb(190, 190, 190);
+  border-radius: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.event-but2 img {
+  margin-right: 5px;
+}
 
 .group-page{
   box-shadow: 5px 5px 5px rgb(184, 184, 184);
   background-color: #ffffff;
-  margin-top: 40px;
+  margin-top: 5vh;
   margin-right: 30px;
   margin-left: 30px;
   width: 50vw;
@@ -350,6 +377,11 @@ nav {
 }
 
 .dif-link a:hover{
+  background-color: #ececec;
+  cursor: pointer;
+  border-radius: 1px;
+}
+.dif-link h1:hover{
   background-color: #ececec;
   cursor: pointer;
   border-radius: 1px;
@@ -452,11 +484,11 @@ height: 7vh;
 
 .top-part {
   width: 50vw;
-  height: 424px;
+  height: 380px;
   flex-shrink: 0;
   border-radius: 10px;
   border: 1px solid rgba(199, 199, 199, 0.25);
-  margin: 5px;
+  margin-top: 5px;
 }
 
 .umber{
@@ -684,6 +716,25 @@ line-height: normal;
   height: 10vh;
   resize: none;
   padding: 10px;
+}
+
+.group-add-img{
+ margin: 5px;
+}
+.group-add-img button {
+  width: 10vw;
+  height: 5vh;
+  color: #A9A9A9;
+  font-family: Open Sans;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  cursor: pointer;
+}
+
+.group-add-img button:hover {
+  background-color: #3b5998;
 }
 
 .profile-image {

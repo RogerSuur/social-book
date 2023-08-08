@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { EVENT_URL } from "../utils/routes";
+import { EVENT_URL, EVENT_ATTENDANCE_URL } from "../utils/routes";
 import axios from "axios";
 import ImageHandler from "../utils/imageHandler";
 import GroupSidebar from "../components/GroupSidebar";
@@ -10,6 +10,7 @@ const EventPage = () => {
   const [event, setEvent] = useState({});
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [response, setResponse] = useState(false);
   const [activeTab, setActiveTab] = useState(true);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -36,7 +37,7 @@ const EventPage = () => {
       }
     };
     loadEvent();
-  }, [id]);
+  }, [id, response]);
 
   const userList = (attendance) => {
     const users = event?.members?.filter(
@@ -66,6 +67,29 @@ const EventPage = () => {
     setModalOpen(false);
   };
 
+  const handleResponse = async (isAttending) => {
+    console.log("IS ATTENDING: ", isAttending);
+    const data = { eventId: +id, isAttending };
+    try {
+      await axios.post(
+        EVENT_ATTENDANCE_URL,
+        JSON.stringify(data),
+        { withCredentials: true },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      setResponse(!response);
+    } catch (err) {
+      if (!err?.response) {
+        setError("No Server Response");
+      } else if (err.response?.status > 200) {
+        setError("Internal Server Error");
+      }
+    }
+  };
+
   const handleModalClick = (attending) => {
     setActiveTab(attending);
     setModalOpen(true);
@@ -81,31 +105,51 @@ const EventPage = () => {
   };
 
   console.log("ACTIVE", activeTab);
+  console.log("EVENT: ", event);
 
   const renderedEvent = (
     <div className="event-mid">
-    {/* <div className="event-stuff"> 
+      {/* <div className="event-stuff"> 
      {/* event img here 
-    </div>*/} 
-    <div className="event-stuff">
-      <p>{event?.title}</p>
-      <p>{event?.description}</p>
-      <p>Start: {timeConverter(event?.eventTime)}</p>
-      <p>End: {timeConverter(event?.eventEndTime)}</p>
-      <Modal open={modalOpen} onClose={handleModalClose}>
-        <ul>
-          <li className="pepe" onClick={() => setActiveTab(true)}>Going</li>
-          <li className="pepe" onClick={() => setActiveTab(false)}>Not Going</li>
-        </ul>
-        <div className="pepe" >{userList(activeTab)}</div>
-      </Modal>
-      <button className="event-but" onClick={() => handleModalClick(true)}>
-        Going {countUsers(true)}
-      </button>
-      <button className="event-but" onClick={() => handleModalClick(false)}>
-        Not going {countUsers(false)}
-      </button>
-    </div>
+    </div>*/}
+      
+      <div className="event-stuff">
+        <p>{event?.title}</p>
+        <p>{event?.description}</p>
+        <p>Start: {timeConverter(event?.eventTime)}</p>
+        <p>End: {timeConverter(event?.eventEndTime)}</p>
+        <Modal open={modalOpen} onClose={handleModalClose}>
+          <ul>
+            <li className="pepe" onClick={() => setActiveTab(true)}>
+              Going
+            </li>
+            <li className="pepe" onClick={() => setActiveTab(false)}>
+              Not Going
+            </li>
+          </ul>
+          <div className="pepe">{userList(activeTab)}</div>
+        </Modal>
+        <button className="event-but" onClick={() => handleModalClick(true)}>
+          Going {countUsers(true)}
+        </button>
+        <button className="event-but" onClick={() => handleModalClick(false)}>
+          Not going {countUsers(false)}
+        </button>
+        <div className="event-down">
+        <button className="event-but2" onClick={() => handleResponse(true)}>
+            <img
+              src={`${process.env.PUBLIC_URL}/accept.png`}
+            />
+            <h3>I'm going</h3> 
+          </button>
+          <button className="event-but2" onClick={() => handleResponse(false)}>
+            <img
+              src={`${process.env.PUBLIC_URL}/decline.png`}
+            />
+            <h3>I'm not going</h3>
+          </button>
+        </div>
+      </div>
     </div>
   );
 

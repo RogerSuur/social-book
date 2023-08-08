@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -13,7 +14,7 @@ import (
 type createPostJSON struct {
 	UserId      int      `json:"userId"`
 	Content     string   `json:"content"`
-	ImagePath   string   `json:"imagePath"`
+	ImagePath   string   `json:"image"`
 	PrivacyType int      `json:"privacyType"`
 	Receivers   []string `json:"selectedReceivers"`
 }
@@ -22,15 +23,56 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "POST":
-		decoder := json.NewDecoder(r.Body)
-		decoder.DisallowUnknownFields()
+		// Limit the size of the request body to 5MB
+		r.Body = http.MaxBytesReader(rw, r.Body, 20<<18+512)
 
-		JSONdata := &createPostJSON{}
-		err := decoder.Decode(&JSONdata)
+		err := r.ParseMultipartForm(20 << 18)
+
+		if err != nil {
+			app.Logger.Printf("Failed parsing form: %v", err)
+			http.Error(rw, "Parsing form error", http.StatusRequestEntityTooLarge)
+		}
+
+		// decoder := json.NewDecoder(r.Body)
+		// decoder.DisallowUnknownFields()
+
+		content := r.FormValue("content")
+		privacyTypeStr := r.FormValue("privacyType")
+
+		var privacyType enums.PrivacyType
+		switch privacyTypeStr {
+		case "1":
+			privacyType = 1
+		case "2":
+			privacyType = 2
+		case "3":
+			privacyType = 3
+		default:
+			app.Logger.Printf("Invalid privacyType value: %s", privacyTypeStr)
+			http.Error(rw, "Invalid privacyType value", http.StatusBadRequest)
+			return
+		}
+
+		receiversStr := r.FormValue("selectedReceivers")
+		receivers := strings.Split(receiversStr, ",")
 
 		if err != nil {
 			app.Logger.Printf("JSON error: %v", err)
 			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
+
+		file, header, err := r.FormFile("image")
+		var imagePath string
+
+		if err == nil {
+			defer file.Close()
+
+			imagePath, err = app.PostService.SavePostImage(file, header)
+			if err != nil {
+				app.Logger.Printf("Failed saving image: %v", err)
+				http.Error(rw, "Save image error", http.StatusBadRequest)
+				return
+			}
 		}
 
 		userId, err := app.UserService.GetUserID(r)
@@ -43,10 +85,10 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 
 		post := &models.Post{
 			UserId:      userId,
-			ImagePath:   JSONdata.ImagePath,
-			Content:     JSONdata.Content,
-			PrivacyType: enums.PrivacyType(JSONdata.PrivacyType),
-			Receivers:   JSONdata.Receivers,
+			ImagePath:   imagePath,
+			Content:     content,
+			PrivacyType: privacyType,
+			Receivers:   receivers,
 		}
 
 		err = app.PostService.CreatePost(post)
@@ -56,6 +98,8 @@ func (app *Application) Post(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "err", http.StatusBadRequest)
 			return
 		}
+
+		rw.Write([]byte("ok"))
 
 	default:
 		http.Error(rw, "err", http.StatusBadRequest)
@@ -112,65 +156,7 @@ func (app *Application) GroupPost(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-	default:
-		http.Error(rw, "err", http.StatusBadRequest)
-		return
-	}
-
-}
-
-func (app *Application) PostImage(rw http.ResponseWriter, r *http.Request) {
-
-	switch r.Method {
-	case "POST":
-		vars := mux.Vars(r)
-		id := vars["postId"]
-
-		postId, err := strconv.ParseInt(id, 10, 64)
-		if postId < 0 || err != nil {
-			app.Logger.Printf("DATA PARSE error: %v", err)
-			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
-		}
-
-		// Limit the size of the request body to 5MB
-		//app.Logger.Printf("Request body size: %d", r.ContentLength)
-		r.Body = http.MaxBytesReader(rw, r.Body, 20<<18+512)
-
-		userId, err := app.UserService.GetUserID(r)
-
-		if err != nil {
-			app.Logger.Printf("Failed fetching user: %v", err)
-			http.Error(rw, "Get user error", http.StatusUnauthorized)
-		}
-
-		err = r.ParseMultipartForm(20 << 18)
-
-		if err != nil {
-			app.Logger.Printf("Failed parsing form: %v", err)
-			http.Error(rw, "Parsing form error", http.StatusRequestEntityTooLarge)
-		}
-
-		file, header, err := r.FormFile("image")
-
-		if err != nil {
-			app.Logger.Printf("Failed getting file: %v", err)
-			http.Error(rw, "Get file error", http.StatusUnsupportedMediaType)
-		}
-
-		defer file.Close()
-
-		err = app.PostService.UpdatePostImage(userId, postId, file, header)
-
-		if err != nil {
-			app.Logger.Printf("Cannot upload image: %s", err)
-			http.Error(rw, "err", http.StatusBadRequest)
-			return
-		}
-
-		resp := make(map[string]interface{})
-		resp["message"] = "Image uploaded successfully"
-		resp["status"] = http.StatusOK
-		json.NewEncoder(rw).Encode(resp)
+		rw.Write([]byte("ok"))
 
 	default:
 		http.Error(rw, "err", http.StatusBadRequest)

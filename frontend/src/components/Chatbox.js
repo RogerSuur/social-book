@@ -7,12 +7,17 @@ import ImageHandler from "../utils/imageHandler";
 import { Picker } from "emoji-mart";
 import { Data } from "emoji-mart";
 
-const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
-  const [isPickerVisible, setPickerVIsible] = useState(false);
-  const [currentEmoji, setCurrentEmoji] = useState(null);
+const Chatbox = ({
+  toggleChat,
+  chat,
+  user,
+  updateChatlist,
+  resetUnreadCount,
+}) => {
   const [messageHistory, setMessageHistory] = useState([]);
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [lastMessageRead, setLastMessageRead] = useState(0);
   const [scrollToBottomNeeded, setScrollToBottomNeeded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({
@@ -22,12 +27,44 @@ const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
     },
   });
 
+  console.log(messageHistory);
   useEffect(() => {
     setMessageHistory([]);
     setHasMoreMessages(true);
   }, [chat]);
 
   const messageboxRef = useRef(null);
+
+  const handleScrolling = () => {
+    console.log("SCROLLING");
+    console.log("SCROLLTOP: ", messageboxRef?.current?.scrollTop);
+    console.log("SCROLLHEIGHT: ", messageboxRef?.current?.scrollHeight);
+    console.log("CLIENTHEIGHT: ", messageboxRef?.current?.clientHeight);
+
+    const lastMessage = messageHistory?.[messageHistory.length - 1]?.message_id;
+    console.log(
+      "MESSAGE HUISTORY: ",
+      messageHistory?.[messageHistory.length - 1]
+    );
+
+    console.log("LAST MESSAGE: ", lastMessage);
+    console.log("lastReadMessage: ", lastMessageRead);
+
+    if (lastMessage && lastMessage !== lastMessageRead) {
+      setLastMessageRead(lastMessage);
+      if (
+        messageboxRef?.current?.scrollHeight -
+          messageboxRef?.current?.clientHeight <=
+        messageboxRef?.current?.scrollTop + 1
+      ) {
+        sendJsonMessage({
+          type: "messages_read",
+          data: { message_id: lastMessage },
+        });
+        resetUnreadCount([chat.user_id, chat.group_id]);
+      }
+    }
+  };
 
   const image = () =>
     chat?.user_id > 0
@@ -152,6 +189,7 @@ const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
 
     setMessage({ ...message, data: { body: "" } });
     setScrollToBottomNeeded(true);
+    resetUnreadCount([chat.user_id, chat.group_id]);
   };
 
   useEffect(() => {
@@ -192,7 +230,11 @@ const Chatbox = ({ toggleChat, chat, user, updateChatlist }) => {
           onClick={closeChat}
         />
       </div>
-      <div className="message-history" ref={messageboxRef}>
+      <div
+        className="message-history"
+        ref={messageboxRef}
+        onScroll={handleScrolling}
+      >
         <InfiniteScroll
           pageStart={0}
           isReverse={true}

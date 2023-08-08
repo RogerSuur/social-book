@@ -40,6 +40,11 @@ const NotificationNavbarItem = () => {
     loadNotifications();
   }, []);
 
+  const onPopupClose = () => {
+    setNewNotification([]);
+    setNotificationTimer(false);
+  };
+
   console.log(notifications, "NOTLIST");
   useEffect(() => {
     const exceptions = ["message", "chatlist", "message_history"];
@@ -50,6 +55,7 @@ const NotificationNavbarItem = () => {
 
       const timer = setTimeout(() => {
         setNotificationTimer(false);
+        setNewNotification();
       }, 5000);
 
       return () => clearTimeout(timer);
@@ -73,8 +79,13 @@ const NotificationNavbarItem = () => {
           <div className="notification-count">{notificationCount}</div>
         )}
       </li>
-      {notificationTimer && (
-        <NotificationPopup notification={newNotification} />
+      {notificationTimer && newNotification && (
+        <div className="notification-popup">
+          <NotificationPopup
+            notification={newNotification}
+            onPopupClose={onPopupClose}
+          />
+        </div>
       )}
       {toggle && (
         <NotificationList

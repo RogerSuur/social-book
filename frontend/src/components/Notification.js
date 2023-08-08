@@ -2,7 +2,7 @@ import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import { Link } from "react-router-dom";
 
-const Notification = ({ notification, onClose }) => {
+const Notification = ({ notification, onClose, popup }) => {
   const { sendJsonMessage } = useWebSocketConnection(WS_URL);
 
   console.log(notification, "NOT BASIC");
@@ -43,8 +43,12 @@ const Notification = ({ notification, onClose }) => {
           {notification?.sender_name}
         </Link>{" "}
         wants to follow you
-        {acceptButton()}
-        {rejectButton()}
+        {!popup && (
+          <>
+            {acceptButton()}
+            {rejectButton()}
+          </>
+        )}
       </>
     );
   };
@@ -59,8 +63,12 @@ const Notification = ({ notification, onClose }) => {
         <Link to={`/groups/${notification?.group_id}`}>
           {notification?.group_name}
         </Link>
-        {acceptButton()}
-        {rejectButton()}
+        {!popup && (
+          <>
+            {acceptButton()}
+            {rejectButton()}
+          </>
+        )}
       </>
     );
   };
@@ -75,8 +83,12 @@ const Notification = ({ notification, onClose }) => {
         <Link to={`/groups/${notification?.group_id}`}>
           {notification?.group_name}
         </Link>
-        {acceptButton()}
-        {rejectButton()}
+        {!popup && (
+          <>
+            {acceptButton()}
+            {rejectButton()}
+          </>
+        )}
       </>
     );
   };
@@ -89,8 +101,12 @@ const Notification = ({ notification, onClose }) => {
         </Link>{" "}
         is going to take place at{" "}
         {new Date(notification?.event_datetime).toLocaleString("et-EE")}
-        {acceptButton("Going")}
-        {rejectButton("Not going")}
+        {!popup && (
+          <>
+            {acceptButton("Going")}
+            {rejectButton("Not going")}
+          </>
+        )}
       </>
     );
   };

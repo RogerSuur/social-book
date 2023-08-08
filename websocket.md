@@ -159,3 +159,15 @@
     }
 }
 ```
+
+### 3.6 messages read - indication of open chatbox and scrolldown to last message
+
+```JSON
+{
+    "type": "messages_read",
+    "data": {
+        "id": 123, // message id
+    }
+}
+```
+
