@@ -180,6 +180,16 @@ nav {
   box-shadow: 0 0 8px black; 
 }		
 
+.chat-title a{
+  text-decoration: none;
+  color: inherit;
+}
+
+.chat-title a:hover{
+  background-color: #ececec;
+  cursor: pointer;
+  border-radius: 20px;
+}
 .chat-sidebar {
   position: sticky;
   top: 15vh;
