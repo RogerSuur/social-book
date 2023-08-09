@@ -2,6 +2,29 @@
   box-sizing: border-box; 
 }
 
+.sidebar {
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.content-wrapper {
+  margin-top: 80px;
+}
+
+#group-sidebar {
+  left: 0;
+}
+
+#chat-sidebar {
+  right: 0;
+}
+
+.chatbox-img {
+  width: 30px;
+  height: auto;
+}
+/*
 body {
   min-width: 320px;
   margin: 0;
@@ -1022,4 +1045,4 @@ justify-content: flex-end;
   to {
     transform: rotate(360deg);
   }
-}
+}*/

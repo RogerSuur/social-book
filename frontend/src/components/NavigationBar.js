@@ -14,6 +14,7 @@ const NavigationBar = () => {
       <Navbar
         as={Nav}
         className="bg-warning flex-sm-row justify-content-evenly"
+        fixed="top"
       >
         {!auth && (
           <>
@@ -38,7 +39,9 @@ const NavigationBar = () => {
           </Nav.Link>
         </LinkContainer>
       </Navbar>
-      <Outlet />
+      <div className="content-wrapper">
+        <Outlet />
+      </div>
     </>
   );
 };

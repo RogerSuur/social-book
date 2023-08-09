@@ -4,6 +4,9 @@ import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import Chatbox from "./Chatbox";
 import MessageNotification from "./MessageNotification";
 import { WS_URL } from "../utils/routes";
+import Container from "react-bootstrap/Container";
+import ListGroup from "react-bootstrap/ListGroup";
+import Badge from "react-bootstrap/Badge";
 
 const Chat = () => {
   const [openChat, setOpenChat] = useState(null);
@@ -132,25 +135,20 @@ const Chat = () => {
 
   const renderedChats = (chatlist) =>
     chatlist.map((chat, index) => (
-      <div className="hov" key={index}>
-        <li>
-          <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
-          {chat?.user_id > 0 && chat.unread_count > 0 && (
-            <span className="chat-unread-count">{chat.unread_count}</span>
-          )}
-        </li>
-      </div>
+      <ListGroup.Item key={index} action onClick={() => toggleChat(chat)}>
+        <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
+        {chat?.user_id > 0 && chat.unread_count > 0 && (
+          <Badge bg="danger">{chat.unread_count}</Badge>
+        )}
+      </ListGroup.Item>
     ));
 
   return (
     <>
-      <MessageNotification />
-      <div className="chat-sidebar">
-        <p>Private Chats</p>
-        <ul className="pepe">{renderedChats(userChatlist)}</ul>
-        <p>Group Chats</p>
-        <ul className="pepe">{renderedChats(groupChatlist)}</ul>
-      </div>
+      <Container fluid className="bg-danger p-0">
+        <ListGroup>Private Chats{renderedChats(userChatlist)}</ListGroup>
+        <ListGroup>Group Chats{renderedChats(groupChatlist)}</ListGroup>
+      </Container>
       {openChat && openedChatbox}
     </>
   );

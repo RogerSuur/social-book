@@ -6,6 +6,10 @@ import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import Chat from "./Chat";
 import { WS_URL } from "../utils/routes";
 import Login from "../pages/LoginPage";
+import Container from "react-bootstrap/Container";
+import GroupSidebar from "../components/GroupSidebar";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 const AUTH_URL = "http://localhost:8000/auth";
 
@@ -72,16 +76,25 @@ const RequireAuth = () => {
   }, [lastJsonMessage]);
 
   return auth ? (
-    <div className="require-auth-container">
-      <Outlet
-        context={{
-          socketUrl,
-          users,
-          setUsers,
-        }}
-      />
-      <Chat className="chat-sidebar" chatlist={users} />
-    </div>
+    <Container fluid>
+      <Row>
+        <Col className="sidebar" id="group-sidebar" xs="3">
+          <GroupSidebar />
+        </Col>
+        <Col xs={{ span: "7", offset: "3" }}>
+          <Outlet
+            context={{
+              socketUrl,
+              users,
+              setUsers,
+            }}
+          />
+        </Col>
+        <Col id="chat-sidebar" xs="2" className="sidebar p-0">
+          <Chat chatlist={users} />
+        </Col>
+      </Row>
+    </Container>
   ) : (
     <>
       {from && <Navigate to="/login" state={{ from: location }} replace />}

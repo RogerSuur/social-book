@@ -9,6 +9,8 @@ import {
 } from "../utils/routes";
 import { SearchResults } from "./SearchResults";
 import CreateGroup from "./CreateGroup";
+import Container from "react-bootstrap/Container";
+import Offcanvas from "react-bootstrap/Offcanvas";
 
 const GroupSidebar = () => {
   const [searchResults, setSearchResults] = useState([]);
@@ -20,30 +22,32 @@ const GroupSidebar = () => {
 
   const sidebarItems = (
     <>
-      <SearchBar setSearchResults={setSearchResults} />
-      <SearchResults searchResults={searchResults} />
-      <ul className="group-sidebar">
-        <h1>Groups</h1>
-        <li className="pepe">
-          <GenericGroupList url={USER_GROUPS_URL} />
-        </li>
-        <h1>My groups</h1>
-        <CreateGroup onGroupCreated={handleGroupUpdate} />
-        <li className="pepe">
-          <GenericGroupList
-            url={USER_CREATED_GROUPS_URL}
-            loadNewGroups={loadNewGroups}
-          />
-        </li>
-        <h1>Events</h1>
-        <li className="pepe">
-          <GenericEventList url={ACCEPTED_EVENTS_URL} />
-        </li>
-      </ul>
+      <Container>
+        <SearchBar setSearchResults={setSearchResults} />
+        <SearchResults searchResults={searchResults} />
+        <ul className="group-sidebar">
+          <h1>Groups</h1>
+          <li className="pepe">
+            <GenericGroupList url={USER_GROUPS_URL} />
+          </li>
+          <h1>My groups</h1>
+          <CreateGroup onGroupCreated={handleGroupUpdate} />
+          <li className="pepe">
+            <GenericGroupList
+              url={USER_CREATED_GROUPS_URL}
+              loadNewGroups={loadNewGroups}
+            />
+          </li>
+          <h1>Events</h1>
+          <li className="pepe">
+            <GenericEventList url={ACCEPTED_EVENTS_URL} />
+          </li>
+        </ul>
+      </Container>
     </>
   );
 
-  return <div className="group-extra">{sidebarItems} </div>;
+  return <>{sidebarItems}</>;
 };
 
 export default GroupSidebar;

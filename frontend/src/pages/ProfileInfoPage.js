@@ -165,15 +165,18 @@ const ProfileInfo = () => {
     ));
   };
 
-  const image = () =>
-    ImageHandler(user?.avatarImage, "defaultuser.jpg", "profile-image");
+  const image = ImageHandler(
+    user?.avatarImage,
+    "defaultuser.jpg",
+    "profile-image"
+  );
 
   return (
     <>
       {user && (
         <div className="profile-area1">
           <div className="row">
-            <div>{image()}</div>
+            <div>{image}</div>
             <h1 className="column-title">{user.firstName}'s profile</h1>
           </div>
           <Modal open={modalOpen} onClose={handleModalClose}>
