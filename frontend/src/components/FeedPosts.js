@@ -2,6 +2,11 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import Comments from "./Comments";
 import { makeRequest } from "../services/makeRequest";
 import { Link } from "react-router-dom";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Image from "react-bootstrap/Image";
+import { LinkContainer } from "react-router-bootstrap";
 
 const FeedPosts = ({ url, reload }) => {
   const observer = useRef();
@@ -9,7 +14,6 @@ const FeedPosts = ({ url, reload }) => {
   const [error, setError] = useState(null);
   const [isPostsLoading, setPostsLoading] = useState(false);
   const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
 
   const handlePageChange = (postId) => {
     setOffset(postId);
@@ -30,7 +34,6 @@ const FeedPosts = ({ url, reload }) => {
         setPosts((prevPosts) => {
           return [...prevPosts, ...response];
         });
-        setHasMore(response.length > 0);
       } catch (error) {
         setError(error.message);
       }
@@ -82,42 +85,45 @@ const FeedPosts = ({ url, reload }) => {
     const isLastPost = index === posts.length - 1;
 
     return (
-      <div
-        className="content-area"
+      <Container
+        fluid
+        className="content-area border"
         key={id}
         ref={isLastPost ? lastPostElementRef : null}
         data-post-id={id}
       >
-        <div>
-          <Link to={`/groups/${groupId}`}>{groupName}</Link>
-        </div>
-        <div className="row3">
-          <Link to={`/profile/${userId}`}>{userName}</Link>
+        <div className="d-flex justify-content-between">
+          <LinkContainer to={`/profile/${userId}`}>
+            <span>{userName}</span>
+          </LinkContainer>
+          {groupId > 0 && (
+            <LinkContainer to={`/groups/${groupId}`}>
+              <span>Posted in {groupName}</span>
+            </LinkContainer>
+          )}
         </div>
         {imagePath && (
-          <img
-            className="profile-pic"
+          <Image
+            fluid
+            className="post-img"
             src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
           />
         )}
-        <div className="row2">{content}</div>;
-        <div className="row">{new Date(createdAt).toLocaleString("et-EE")}</div>
-        <div className="comment-section">
+        <div>{content}</div>
+        <Col>{new Date(createdAt).toLocaleString("et-EE")}</Col>
+        <Col className="comment-section">
           <Comments postId={id} commentCount={commentCount} />
-        </div>
-      </div>
+        </Col>
+      </Container>
     );
   };
 
   const renderedPosts = posts?.map(renderPost);
   return (
-    <>
-      <div>
-        {isPostsLoading && <div className="spinner" />}
-        {renderedPosts}
-        {!hasMore && "No more posts to show"}
-      </div>
-    </>
+    <Container fluid>
+      {isPostsLoading && <div className="spinner" />}
+      {renderedPosts}
+    </Container>
   );
 };
 

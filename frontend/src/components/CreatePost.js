@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Select from "react-select";
 import ImageUploadModal from "./ImageUploadModal";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import PostButton from "../components/PostButton.js";
 
 const CreatePost = ({ onPostsUpdate }) => {
   const initialFormData = {
@@ -120,7 +124,7 @@ const CreatePost = ({ onPostsUpdate }) => {
   }));
 
   return (
-    <>
+    <Container>
       <div className="post-area">
         {errMsg && <h2>{errMsg}</h2>}
 
@@ -128,45 +132,45 @@ const CreatePost = ({ onPostsUpdate }) => {
         {selectedImage && (
           <img src={URL.createObjectURL(selectedImage)} alt="Selected" />
         )}
-
-        <form onSubmit={handleSubmit}>
-          <textarea
-            className="area-text"
-            type="text"
+        <Form onSubmit={handleSubmit}>
+          <Form.Control
+            className="post-textarea"
+            type="textarea"
             placeholder="Write what's on your mind"
             onChange={handleChange}
             value={formData.content}
             name="content"
             required
           />
-          <legend>Choose privacy type</legend>
-
-          <input
-            type="radio"
-            id="public"
-            name="privacyType"
-            value={1}
-            onChange={handleChange}
-          />
-          <label htmlFor="public">Public</label>
-
-          <input
-            type="radio"
-            id="private"
-            name="privacyType"
-            value={2}
-            onChange={handleChange}
-          />
-          <label htmlFor="private">Private</label>
-
-          <input
-            type="radio"
-            id="subPrivate"
-            name="privacyType"
-            value={3}
-            onChange={handleChange}
-          />
-          <label htmlFor="subPrivate">subPrivate</label>
+          <div key={"inline-radio"} className="mb-3">
+            <Form.Check
+              inline
+              label="Public"
+              name="privacyType"
+              type="radio"
+              id="public"
+              value={1}
+              onChange={handleChange}
+            />
+            <Form.Check
+              inline
+              label="Private"
+              name="privacyType"
+              type="radio"
+              id="private"
+              value={2}
+              onChange={handleChange}
+            />
+            <Form.Check
+              inline
+              label="Sub-private"
+              name="privacyType"
+              type="radio"
+              id="subPrivate"
+              value={3}
+              onChange={handleChange}
+            />
+          </div>
 
           {formData.privacyType === 3 && (
             <>
@@ -178,17 +182,18 @@ const CreatePost = ({ onPostsUpdate }) => {
               />
             </>
           )}
-          <button className="post-button">Post</button>
-        </form>
-
-        <button onClick={handleModalClick}>Add an image</button>
-        <ImageUploadModal
-          open={showModal}
-          onClose={handleModalClose}
-          onImageUpload={handleImageUpload}
-        />
+          <PostButton />
+          <Button className="float-end" onClick={handleModalClick}>
+            Add an image
+          </Button>
+          <ImageUploadModal
+            open={showModal}
+            onClose={handleModalClose}
+            onImageUpload={handleImageUpload}
+          />
+        </Form>
       </div>
-    </>
+    </Container>
   );
 };
 

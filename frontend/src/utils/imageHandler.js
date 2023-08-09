@@ -8,6 +8,7 @@ const ImageSource = (path, defaultImage) =>
 const ImageHandler = (path, defaultImage, className) => {
   return (
     <Image
+      fluid
       thumbnail
       className={`${className} p-0 m-0`}
       src={ImageSource(path, defaultImage)}

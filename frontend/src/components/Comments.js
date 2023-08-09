@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CreateComment from "./CreateComment";
 import { Link } from "react-router-dom";
+import Container from "react-bootstrap/Container";
+import Image from "react-bootstrap/Image";
 
-const Comments = ({ postId, commentCount, showCreateComment }) => {
+const Comments = ({ postId, commentCount }) => {
   const [comments, setComments] = useState([]);
   const [error, setError] = useState(null);
   const [commentCountUpdate, setCommentsCountUpdate] = useState(commentCount);
@@ -66,7 +68,7 @@ const Comments = ({ postId, commentCount, showCreateComment }) => {
   }
 
   return (
-    <>
+    <Container xs="5">
       {error ? (
         <div className="error">{error}</div>
       ) : (
@@ -77,7 +79,8 @@ const Comments = ({ postId, commentCount, showCreateComment }) => {
                 {comments.map((comment, index) => (
                   <div key={index}>
                     {comment.imagePath && (
-                      <img
+                      <Image
+                        fluid
                         className="profile-pic"
                         src={`${process.env.PUBLIC_URL}/images/${comment.imagePath}`}
                       />
@@ -122,7 +125,7 @@ const Comments = ({ postId, commentCount, showCreateComment }) => {
           }
         </div>
       )}
-    </>
+    </Container>
   );
 };
 

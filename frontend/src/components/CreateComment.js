@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 import ImageUploadModal from "./ImageUploadModal";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import Image from "react-bootstrap/Image";
 
 const CreateComment = ({ postId, onCommentsUpdate }) => {
   const [showModal, setShowModal] = useState(false);
@@ -84,8 +90,8 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
   };
 
   return (
-    <>
-      <div
+    <Container>
+      <Row
         style={{
           maxWidth: "100%",
           width: "100%",
@@ -96,27 +102,51 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
 
         {/* Display selected image(s) */}
         {selectedImage && (
-          <img src={URL.createObjectURL(selectedImage)} alt="Selected" />
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <textarea
-            style={{ width: "90%", height: "100%", resize: "none" }}
-            placeholder="Your comment goes here"
-            onChange={handleChange}
-            value={formData.content}
-            name="content"
+          <Image
+            fluid
+            src={URL.createObjectURL(selectedImage)}
+            alt="Selected"
           />
-          <button>Post</button>
-        </form>
-        <button onClick={handleModalClick}>Add an image</button>
-        <ImageUploadModal
-          open={showModal}
-          onClose={handleModalClose}
-          onImageUpload={handleImageUpload}
-        />
-      </div>
-    </>
+        )}
+      </Row>
+      <Row>
+        <Col>
+          <Form onSubmit={handleSubmit}>
+            <Form.Control
+              className="post-textarea"
+              type="textarea"
+              placeholder="Your comment goes here"
+              onChange={handleChange}
+              value={formData.content}
+              name="content"
+              required
+            />
+            <Button
+              className="float-start"
+              type="submit"
+              disabled={formData.content === "" || formData.image === null}
+              variant="primary"
+            >
+              Post
+            </Button>
+            <Button
+              className="float-end"
+              onClick={handleModalClick}
+              variant="secondary"
+            >
+              Add an image
+            </Button>
+            {showModal && (
+              <ImageUploadModal
+                open={showModal}
+                onClose={handleModalClose}
+                onImageUpload={handleImageUpload}
+              />
+            )}
+          </Form>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
