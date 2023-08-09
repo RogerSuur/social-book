@@ -24,6 +24,11 @@
   width: 30px;
   height: auto;
 }
+
+.profile-img {
+  width: 300px;
+  height: auto;
+}
 /*
 body {
   min-width: 320px;

@@ -81,7 +81,7 @@ const RequireAuth = () => {
         <Col className="sidebar d-none d-sm-flex" id="group-sidebar" xs="3">
           <GroupSidebar />
         </Col>
-        <Col xs="12" sm={{ span: "7", offset: "3" }}>
+        <Col className="p-3" xs="12" sm={{ span: "7", offset: "3" }}>
           <Outlet
             context={{
               socketUrl,

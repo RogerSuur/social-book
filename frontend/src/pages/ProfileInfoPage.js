@@ -16,6 +16,10 @@ import {
 import ImageHandler from "../utils/imageHandler.js";
 import Modal from "../components/Modal.js";
 import FeedPosts from "../components/FeedPosts.js";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
 
 const ProfileInfo = () => {
   const [user, setUser] = useState({});
@@ -168,85 +172,112 @@ const ProfileInfo = () => {
   const image = ImageHandler(
     user?.avatarImage,
     "defaultuser.jpg",
-    "profile-image"
+    "profile-img"
   );
 
   return (
-    <>
+    <Container fluid>
       {user && (
-        <div className="profile-area1">
-          <div className="row">
-            <div>{image}</div>
-            <h1 className="column-title">{user.firstName}'s profile</h1>
-          </div>
-          <Modal open={modalOpen} onClose={handleModalClose}>
-            <ul>
-              <li onClick={() => setActiveTab(true)}>Following</li>
-              <li onClick={() => setActiveTab(false)}>Followers</li>
-            </ul>
-            <ul>{userList(activeTab)}</ul>
-          </Modal>
-          <button onClick={() => handleModalClick(true)}>Following</button>
-          <button onClick={() => handleModalClick(false)}>Followers</button>
-          <Modal open={postsModalOpen} onClose={handlePostsModalClose}>
-            <FeedPosts url={USER_POSTS_URL + id} />
-          </Modal>
-          <button onClick={() => handlePostsModalClick()}>Posts</button>
+        <>
+          <Row className="gap-2">
+            <Col sm>
+              <div className="profile-img">{image}</div>
+            </Col>
+            <Col sm>
+              <Row className="d-grid gap-2">
+                <Col xs="12">
+                  <h1>
+                    {user.firstName} {user.lastName}
+                  </h1>
+                </Col>
+                <Col xs="12">
+                  <div>also known as </div>
+                  <h1 className="display-5">{user.nickname}</h1>
+                </Col>
+                <Row className="gap-2">
+                  <Col
+                    lg="5"
+                    as={Button}
+                    disabled={isFollowed}
+                    onClick={handleFollow}
+                  >
+                    Follow
+                  </Col>
 
-          <div className="row">
-            <div className="column-title">First Name</div>
-            <div className="column">{user.firstName}</div>
-          </div>
-          <div className="row">
-            <div className="column-title">Last Name</div>
-            <div className="column">{user.lastName}</div>
-          </div>
-          <div className="row">
-            <div className="column-title">Nickname</div>
-            <div className="column">{user.nickname}</div>
-          </div>
-          {(user?.isPublic || user?.isFollowed) && (
-            <>
-              <div className="row">
-                <div className="column-title">Email</div>
-                <div className="column">{user.email}</div>
-              </div>
-              <div className="row">
-                <div className="column-title">Birthday</div>
-                <div className="column">
-                  {birthdayConverter(user?.birthday)}
-                </div>
-              </div>
-              <div className="row">
-                <div className="column-title">About Me</div>
-                <div className="column">{user.about}</div>
-              </div>
-              <div className="row">
-                <div className="column-title">User Joined</div>
-                <div className="column">
-                  {new Date(user.createdAt).toLocaleDateString("en-UK", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </div>
-              </div>
-            </>
-          )}
+                  <Col
+                    lg="5"
+                    as={Button}
+                    disabled={!isFollowed}
+                    onClick={handleUnfollow}
+                  >
+                    Unfollow
+                  </Col>
+                </Row>
+              </Row>
+            </Col>
+          </Row>
 
-          <div className="row">
-            <div className="column-title">Profile Type</div>
-            <div className="column">{user.isPublic ? "Public" : "Private"}</div>
-          </div>
-          <button disabled={isFollowed} onClick={handleFollow}>
-            Follow
-          </button>
-          <button disabled={!isFollowed} onClick={handleUnfollow}>
-            Unfollow
-          </button>
-        </div>
+          <Row>
+            {(user?.isPublic || user?.isFollowed) && (
+              <>
+                <Row>
+                  <Col>
+                    <div>{user.about}</div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <p>Email address</p>
+                    <p>{user.email}</p>
+                  </Col>
+                  <Col>
+                    <p>Profile Type</p>
+                    <p>{user.isPublic ? "Public" : "Private"}</p>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <p>Born</p>
+                    <p>{birthdayConverter(user?.birthday)}</p>
+                  </Col>
+                  <Col>
+                    <p>Joined</p>
+                    <p>
+                      {new Date(user.createdAt).toLocaleDateString("en-UK", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </Col>
+                </Row>
+              </>
+            )}
+          </Row>
+          <Row className="d-grip gap-2">
+            <Modal open={modalOpen} onClose={handleModalClose}>
+              <ul>
+                <li onClick={() => setActiveTab(true)}>Following</li>
+                <li onClick={() => setActiveTab(false)}>Followers</li>
+              </ul>
+              <ul>{userList(activeTab)}</ul>
+            </Modal>
+            <Col md as={Button} onClick={() => handleModalClick(true)}>
+              Following
+            </Col>
+            <Col md as={Button} onClick={() => handleModalClick(false)}>
+              Followers
+            </Col>
+            <Modal open={postsModalOpen} onClose={handlePostsModalClose}>
+              <FeedPosts url={USER_POSTS_URL + id} />
+            </Modal>
+            <Col md as={Button} onClick={() => handlePostsModalClick()}>
+              Posts
+            </Col>
+          </Row>
+        </>
       )}
-    </>
+    </Container>
   );
 };
 

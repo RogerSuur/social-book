@@ -9,6 +9,7 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
+import Alert from "react-bootstrap/Alert";
 
 const LOGIN_URL = "http://localhost:8000/login";
 
@@ -66,7 +67,7 @@ const Login = () => {
       if (!err?.response) {
         setErrMsg("No Server Response");
       } else if (err.response?.status === 400) {
-        setErrMsg("Missing Username or Password");
+        setErrMsg("Missing username or password");
       } else if (err.response?.status === 401) {
         setErrMsg("Wrong username or password");
       } else {
@@ -76,8 +77,13 @@ const Login = () => {
   };
 
   return (
-    <>
-      {errMsg && <h2 className="log-center">{errMsg}</h2>}
+    <Container>
+      <Row className="justify-content-center">
+        <Col sm="5" className="text-center">
+          {errMsg && <Alert variant="primary">{errMsg}</Alert>}
+        </Col>
+      </Row>
+
       {/* <Row className="justify-content-md-center">
         <Col xs lg="2">
           1 of 3
@@ -87,37 +93,51 @@ const Login = () => {
           3 of 3
         </Col>
       </Row> */}
-      <Form onSubmit={handleSubmit}>
-        <FloatingLabel
-          controlId="floatingEmail"
-          label="Email address or username"
-        >
-          <Form.Control
-            type="email"
-            placeholder="Email address"
-            onChange={handleChange}
-            name="username"
-            value={formData.username}
-            required
-            autoFocus
-          />
-        </FloatingLabel>
-        <FloatingLabel controlId="floatingPassword" label="Password">
-          <Form.Control
-            type="password"
-            placeholder="Password"
-            onChange={handleChange}
-            name="password"
-            value={formData.password}
-            required
-          />
-        </FloatingLabel>
-        <Button type="submit">Sign In</Button>
-      </Form>
-      <div style={{ marginTop: "10px", textAlign: "center" }}>
-        Do not have an account? <Link to={`/signup`}>Sign up</Link>
-      </div>
-    </>
+      <Row className="justify-content-center">
+        <Col sm="5" className="border rounded p-3">
+          <Form onSubmit={handleSubmit}>
+            <FloatingLabel
+              className="mb-3"
+              controlId="floatingEmail"
+              label="Email address or username"
+            >
+              <Form.Control
+                type="email"
+                placeholder="Email address"
+                onChange={handleChange}
+                name="username"
+                value={formData.username}
+                required
+                autoFocus
+              />
+            </FloatingLabel>
+            <FloatingLabel
+              controlId="floatingPassword"
+              className="mb-3"
+              label="Password"
+            >
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                onChange={handleChange}
+                name="password"
+                value={formData.password}
+                required
+              />
+            </FloatingLabel>
+            <Button type="submit">Sign In</Button>
+          </Form>
+        </Col>
+      </Row>
+
+      <Row className="justify-content-center">
+        <Col>
+          <span>
+            Do not have an account? <Link to={`/signup`}>Sign up</Link>
+          </span>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
