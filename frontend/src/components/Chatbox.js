@@ -4,8 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroller";
 import ImageHandler from "../utils/imageHandler";
-import { Picker } from "emoji-mart";
-import { Data } from "emoji-mart";
+import Picker from "emoji-picker-react";
 
 const Chatbox = ({
   toggleChat,
@@ -27,7 +26,18 @@ const Chatbox = ({
     },
   });
 
-  console.log(messageHistory);
+  const [showPicker, setShowPicker] = useState(false);
+  const onEmojiClick = (event) => {
+    const emoji = event.emoji;
+    setMessage((prevMessage) => ({
+      ...prevMessage,
+      data: {
+        body: prevMessage.data.body + emoji,
+      },
+    }));
+    setShowPicker(false);
+  };
+
   useEffect(() => {
     setMessageHistory([]);
     setHasMoreMessages(true);
@@ -36,19 +46,7 @@ const Chatbox = ({
   const messageboxRef = useRef(null);
 
   const handleScrolling = () => {
-    console.log("SCROLLING");
-    console.log("SCROLLTOP: ", messageboxRef?.current?.scrollTop);
-    console.log("SCROLLHEIGHT: ", messageboxRef?.current?.scrollHeight);
-    console.log("CLIENTHEIGHT: ", messageboxRef?.current?.clientHeight);
-
     const lastMessage = messageHistory?.[messageHistory.length - 1]?.message_id;
-    console.log(
-      "MESSAGE HUISTORY: ",
-      messageHistory?.[messageHistory.length - 1]
-    );
-
-    console.log("LAST MESSAGE: ", lastMessage);
-    console.log("lastReadMessage: ", lastMessageRead);
 
     if (lastMessage && lastMessage !== lastMessageRead) {
       setLastMessageRead(lastMessage);
@@ -127,12 +125,12 @@ const Chatbox = ({
   const handleChange = (event) => {
     const { value } = event.target;
 
-    setMessage((prevMessage) => {
-      return {
-        ...prevMessage,
-        data: { body: value },
-      };
-    });
+    setMessage((prevMessage) => ({
+      ...prevMessage,
+      data: {
+        body: showPicker ? prevMessage.data.body : value,
+      },
+    }));
   };
 
   const getTime = (datetime) =>
@@ -206,15 +204,6 @@ const Chatbox = ({
       <Link to={`/groups/${chat.group_id}`}>{chat.name}</Link>
     );
 
-  // const handleEmojiClick = (emojiData) => {
-  //   const { emoji } = emojiData;
-
-  //   setMessage((prevMessage) => ({
-  //     ...prevMessage,
-  //     data: { ...prevMessage.data, body: prevMessage.data.body + emoji },
-  //   }));
-  // };
-
   const scrollToBottom = () => {
     messageboxRef.current.scrollTop = messageboxRef.current.scrollHeight;
   };
@@ -246,25 +235,11 @@ const Chatbox = ({
         </InfiniteScroll>
       </div>
       <div className="message-box">
-        <div className="emoji-picker">
-          <h2 className="select-emoji">{currentEmoji || "select emoji"}</h2>
-          <button onClick={() => setPickerVIsible(!isPickerVisible)}>
-            open emoji picker
-          </button>
-          <div className={isPickerVisible ? "d-block" : "d-none"}>
-            <Picker
-              data={Data}
-              previewPosition="none"
-              onEmojiSelect={(e) => {
-                setCurrentEmoji(e.native);
-                setPickerVIsible(!isPickerVisible);
-              }}
-            />
-          </div>
-        </div>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="flex-container">
+          {/* <div className="chat-container"> */}
           <input
             type="text"
+            className="input-message"
             placeholder="Message"
             onChange={handleChange}
             name="message"
@@ -273,7 +248,22 @@ const Chatbox = ({
             required
           />
 
-          <button>
+          <div className="picker-container">
+            <i
+              className="iconoir-add-circle"
+              onClick={() => setShowPicker((val) => !val)}
+            ></i>
+
+            {showPicker && (
+              <Picker
+                pickerStyle={{ width: "100%" }}
+                onEmojiClick={onEmojiClick}
+              />
+            )}
+          </div>
+          {/* </div> */}
+
+          <button className="send-button">
             <img
               className="send-icon"
               src={`${process.env.PUBLIC_URL}/send-icon.png`}
