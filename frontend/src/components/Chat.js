@@ -142,14 +142,40 @@ const Chat = () => {
       </div>
     ));
 
+    const [sidebarVisible, setSidebarVisible] = useState(false);
+
+    const toggleSidebar = () => {
+      setSidebarVisible(!sidebarVisible);
+    };
+  
+    useEffect(() => {
+      const handleWindowResize = () => {
+        if (window.innerWidth <= 800) {
+          setSidebarVisible(false);
+        }
+      };
+  
+      window.addEventListener("resize", handleWindowResize);
+      handleWindowResize();
+  
+      return () => {
+        window.removeEventListener("resize", handleWindowResize);
+      };
+    }, []);
+
   return (
     <>
       <MessageNotification />
-      <div className="chat-sidebar">
+      <div className="chat-wrapper">
+      <button className="toggle-sidebar-button" onClick={toggleSidebar}>
+        Toggle Chat
+      </button>
+      <div className={`chat-sidebar ${sidebarVisible ? "show" : ""}`}>
         <p>Private Chats</p>
         <ul className="pepe">{renderedChats(userChatlist)}</ul>
         <p>Group Chats</p>
         <ul className="pepe">{renderedChats(groupChatlist)}</ul>
+      </div>
       </div>
       {openChat && openedChatbox}
     </>

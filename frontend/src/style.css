@@ -170,15 +170,76 @@ nav {
 
 .chatbox {
   position: fixed;
-  bottom:20px;
+  bottom:0;
   right: 23vw;
-  width: 200px; 
+  width: 210px; 
   background-color: #fff;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 99999; 
   box-shadow: 0 0 8px black; 
+}		
+
+.chat-sidebar {
+  position: sticky;
+  top: 15vh;
+  right: 40vw;
+  width: 20vw;
+  margin-right: 2vw;
+  max-height: 78vh;
+  min-width: 200px;
+  max-width: 18vw;
+  overflow: auto;
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 20px;
+  box-shadow: 0 0 8px black;
+  margin-top: 5vh;
+  z-index: 9999;
+  display: none;
 }
+.chat-sidebar.show {
+  margin-right: 0vw;
+  display: block;
+}
+.toggle-sidebar-button {
+  position: fixed;
+  right: 0;
+  top: 15vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #5f5f5f;
+  font-family: Open Sans;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: bold;
+  line-height: normal;
+  border-radius: 5px;
+}
+
+.toggle-sidebar-button:hover {
+  background-color: #c2c2c2;
+  border-radius: 10px;
+}
+
+@media only screen and (min-width: 801px) {
+  .chat-sidebar {
+    display: block;
+  }
+  
+}
+.chat-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.toggle-sidebar-button {
+  align-self: flex-start;
+}
+
+
 
 .notification-list {
   position: fixed;
@@ -1052,6 +1113,19 @@ hr {
 .text-link:hover {
   text-shadow: 0 0 5px rgb(255, 255, 255);
 }
+@media only screen and (min-width: 801px){
+  .toggle-sidebar-button{
+    display: none;
+  }
+  
+  }
+  @media only screen and (max-width: 801px){
+  .chat-sidebar {
+    position:fixed;
+    right:0;
+  }
+  }
+
 @media only screen and (max-width: 800px){
   .chat-sidebar{
     display: none;
