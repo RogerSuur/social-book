@@ -135,7 +135,12 @@ const Chat = () => {
 
   const renderedChats = (chatlist) =>
     chatlist.map((chat, index) => (
-      <ListGroup.Item key={index} action onClick={() => toggleChat(chat)}>
+      <ListGroup.Item
+        key={index}
+        action
+        variant="light"
+        onClick={() => toggleChat(chat)}
+      >
         <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
         {chat?.user_id > 0 && chat.unread_count > 0 && (
           <Badge bg="danger">{chat.unread_count}</Badge>
@@ -145,9 +150,13 @@ const Chat = () => {
 
   return (
     <>
-      <Container fluid className="bg-danger p-0">
-        <ListGroup>Private Chats{renderedChats(userChatlist)}</ListGroup>
-        <ListGroup>Group Chats{renderedChats(groupChatlist)}</ListGroup>
+      <Container fluid className="p-0">
+        <ListGroup variant="flush">
+          Private Chats{renderedChats(userChatlist)}
+        </ListGroup>
+        <ListGroup variant="flush">
+          Group Chats{renderedChats(groupChatlist)}
+        </ListGroup>
       </Container>
       {openChat && openedChatbox}
     </>

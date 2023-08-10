@@ -80,8 +80,8 @@ const Login = () => {
   return (
     <Container>
       <Row className="justify-content-center">
-        <Col sm="5" className="text-center">
-          {errMsg && <Alert variant="primary">{errMsg}</Alert>}
+        <Col sm="6" className="text-center">
+          {errMsg && <Alert variant="danger">{errMsg}</Alert>}
         </Col>
       </Row>
 

@@ -4,6 +4,11 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { WS_URL, NOTIFICATIONS_URL } from "../utils/routes";
 import NotificationPopup from "../components/NotificationPopup";
+import Container from "react-bootstrap/Container";
+import Badge from "react-bootstrap/Badge";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Image from "react-bootstrap/Image";
 
 const NotificationNavbarItem = () => {
   const [toggle, setToggle] = useState(false);
@@ -70,15 +75,22 @@ const NotificationNavbarItem = () => {
 
   return (
     <>
-      <li onClick={handleToggle}>
-        <img
-          className="text-link"
-          src={`${process.env.PUBLIC_URL}/notification_bell.png`}
-        />
-        {notificationCount > 0 && (
-          <div className="notification-count">{notificationCount}</div>
-        )}
-      </li>
+      <Row>
+        <Col>
+          <Image
+            onClick={handleToggle}
+            src={`${process.env.PUBLIC_URL}/notification_bell.png`}
+          />
+        </Col>
+        <Col className="d-flex align-items-center">
+          {notificationCount > 0 && (
+            <Badge pill bg="danger">
+              {notificationCount}
+            </Badge>
+          )}
+        </Col>
+      </Row>
+
       {notificationTimer && newNotification && (
         <div className="notification-popup">
           <NotificationPopup

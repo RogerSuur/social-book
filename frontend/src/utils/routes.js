@@ -1,5 +1,4 @@
 export const WS_URL = `ws://localhost:8000/ws`;
-export const PROFILE_URL = "http://localhost:8000/profile/";
 export const NOTIFICATIONS_URL = "http://localhost:8000/notifications";
 //--------------------------Groups-----------------------//
 export const USER_GROUPS_URL = "http://localhost:8000/usergroups";
@@ -28,3 +27,9 @@ export const SEARCH_URL = "http://localhost:8000/search";
 //--------------------------Posts---------------------//
 export const USER_POSTS_URL = "/userposts/";
 export const FEEDPOSTS_URL = "/feedposts";
+
+//--------------------------Profile---------------------//
+export const AVATAR_UPDATER_URL = "http://localhost:8000/profile/update/avatar";
+export const PROFILE_POSTS_URL = "/profileposts";
+export const PROFILE_URL = "http://localhost:8000/profile";
+export const PROFILE_UPDATE_URL = "http://localhost:8000/profile/update";
