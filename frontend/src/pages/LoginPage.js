@@ -10,6 +10,7 @@ import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Alert from "react-bootstrap/Alert";
+import { LinkContainer } from "react-router-bootstrap";
 
 const LOGIN_URL = "http://localhost:8000/login";
 
@@ -94,7 +95,7 @@ const Login = () => {
         </Col>
       </Row> */}
       <Row className="justify-content-center">
-        <Col sm="5" className="border rounded p-3">
+        <Col sm="6" className="border rounded p-3">
           <Form onSubmit={handleSubmit}>
             <FloatingLabel
               className="mb-3"
@@ -125,16 +126,20 @@ const Login = () => {
                 required
               />
             </FloatingLabel>
-            <Button type="submit">Sign In</Button>
+            <Col as={Button} xs="12" type="submit">
+              Sign In
+            </Col>
           </Form>
         </Col>
       </Row>
 
       <Row className="justify-content-center">
-        <Col>
-          <span>
-            Do not have an account? <Link to={`/signup`}>Sign up</Link>
-          </span>
+        <Col sm="6" className="text-center mt-3">
+          <LinkContainer className="mx-auto" to={`/signup`}>
+            <Col as={Button} xs="12" variant="success">
+              Create new account
+            </Col>
+          </LinkContainer>
         </Col>
       </Row>
     </Container>
