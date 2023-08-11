@@ -105,7 +105,6 @@ const GroupPage = () => {
 
   return (
     <>
-      <GroupSidebar />
       <div style={{ "max-width": `100px` }}>
         <Events groupId={+id} />
       </div>

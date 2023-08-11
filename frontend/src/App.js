@@ -1,6 +1,6 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import NavigationBar from "./components/NavigationBar";
-import Profile from "./pages/ProfilePage";
+import ProfileEditorPage from "./pages/ProfileEditorPage";
 import PostsPage from "./pages/PostsPage";
 import Post from "./components/Post";
 import Signup from "./pages/SignupPage";
@@ -25,7 +25,7 @@ function App() {
             <Route path="signup" element={<Signup />} />
 
             <Route element={<RequireAuth />}>
-              <Route path="profile" element={<Profile />} />
+              <Route path="profile" element={<ProfileEditorPage />} />
               <Route path="profile/:id" element={<ProfileInfoPage />} />
               <Route path="groups/:id" element={<GroupPage />} />
               <Route path="event/:id" element={<EventPage />} />

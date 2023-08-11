@@ -15,8 +15,9 @@ const List = ({ url, mapFunction, loadNewGroups }) => {
     };
     fetchData();
   }, [url, loadNewGroups]);
+  console.log("LIST DATA: ", listData);
   const renderedList = listData?.map(mapFunction);
-  return <div>{renderedList}</div>;
+  return <>{renderedList}</>;
 };
 
 export default List;

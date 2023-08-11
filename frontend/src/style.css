@@ -2,6 +2,10 @@
   box-sizing: border-box; 
 }
 
+body {
+  min-width: 320px;
+}
+
 .sidebar {
   position: fixed;
   height: 100vh;
@@ -27,6 +31,11 @@
 
 .profile-img {
   width: 300px;
+  height: auto;
+}
+
+.userlist-img {
+  width: 100px;
   height: auto;
 }
 /*

@@ -1,21 +1,24 @@
 import List from "../components/List.js";
-import { Link } from "react-router-dom";
 import ImageHandler from "../utils/imageHandler.js";
+import { ListGroup } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 
 const image = (user) =>
-  ImageHandler(user?.avatarImage, "defaultuser.jpg", "profile-image");
+  ImageHandler(user?.avatarImage, "defaultuser.jpg", "userlist-img");
 
 const GenericUserList = ({ url }) => {
   const mapUsers = (user, index) => {
     return (
-      <li className="follower pepe" key={index}>
-        {image(user)}
-        <Link to={`/profile/${user.id}`}>
-          {user?.username
-            ? `${user.username}`
-            : `${user.firstName} ${user.lastName}`}
-        </Link>
-      </li>
+      <ListGroup.Item action key={index}>
+        <LinkContainer to={`/profile/${user.id}`}>
+          <div>
+            {image(user)}
+            {user?.nickname
+              ? `${user.nickname}`
+              : `${user.firstName} ${user.lastName}`}
+          </div>
+        </LinkContainer>
+      </ListGroup.Item>
     );
   };
 
