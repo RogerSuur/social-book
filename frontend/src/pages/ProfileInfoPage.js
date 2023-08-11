@@ -71,7 +71,7 @@ const ProfileInfo = () => {
     const loadUser = async () => {
       try {
         await axios
-          .get(PROFILE_URL + id, {
+          .get(PROFILE_URL + `/${id}`, {
             withCredentials: true,
           })
           .then((response) => {

@@ -159,7 +159,7 @@ const ProfileEditor = () => {
                   </Col>
                   <div className="mb-3">
                     <Form.Check
-                      type="default-checkbox"
+                      type="checkbox"
                       label="Profile is public"
                       {...register("isPublic")}
                     />
@@ -232,7 +232,9 @@ const ProfileEditor = () => {
                 Posts
               </Col>
             </Row>
-            <Button disabled={!isDirty}>Save changes</Button>
+            <Button type="submit" disabled={!isDirty}>
+              Save changes
+            </Button>
           </Form>
         </>
       )}
