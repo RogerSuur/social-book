@@ -101,7 +101,7 @@ const GroupPage = () => {
   return (
     <>
       <GroupSidebar />
-      <div>
+      <div className="group-wrap">
       {error ? (
         <div className="error">{error}</div>
       ) : (
