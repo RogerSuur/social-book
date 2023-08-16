@@ -8,7 +8,7 @@ body {
 
 .sidebar {
   position: fixed;
-  height: 100vh;
+  height: 93vh;
   overflow-y: auto;
 }
 

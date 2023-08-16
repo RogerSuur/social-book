@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import GroupSidebar from "../components/GroupSidebar";
 import { GROUP_PAGE_URL, ADD_GROUP_MEMBERS_URL } from "../utils/routes";
 import axios from "axios";
 import { useParams } from "react-router-dom";

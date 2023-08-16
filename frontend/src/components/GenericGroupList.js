@@ -1,11 +1,14 @@
 import List from "./List.js";
-import { Link } from "react-router-dom";
+import { ListGroup } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 
 const GenericGroupList = ({ url, loadNewGroups }) => {
   const mapGenericGroupList = (group, index) => (
-    <li className="link" key={index}>
-      <Link to={`/groups/${group.groupId}`}>{group.groupName}</Link>
-    </li>
+    <LinkContainer action to={`/groups/${group.groupId}`}>
+      <ListGroup.Item key={index}>
+        <>{group.groupName}</>
+      </ListGroup.Item>
+    </LinkContainer>
   );
 
   return (

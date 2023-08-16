@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import GenericGroupList from "../components/GenericGroupList";
 import GenericEventList from "../components/GenericEventList";
-import SearchBar from "./SearchBar";
+import SearchBar from "../components/SearchBar";
 import {
   USER_CREATED_GROUPS_URL,
   USER_GROUPS_URL,
   ACCEPTED_EVENTS_URL,
 } from "../utils/routes";
-import { SearchResults } from "./SearchResults";
-import CreateGroup from "./CreateGroup";
-import Container from "react-bootstrap/Container";
+import { SearchResults } from "../components/SearchResults";
+import CreateGroup from "../components/CreateGroup";
+import { Container, ListGroup, Row, Col } from "react-bootstrap";
 
 const GroupSidebar = () => {
   const [searchResults, setSearchResults] = useState([]);
@@ -23,24 +23,30 @@ const GroupSidebar = () => {
     <Container>
       <SearchBar setSearchResults={setSearchResults} />
       <SearchResults searchResults={searchResults} />
-      <ul className="group-sidebar">
-        <h1>Groups</h1>
-        <li className="pepe">
-          <GenericGroupList url={USER_GROUPS_URL} />
-        </li>
-        <h1>My groups</h1>
-        <CreateGroup onGroupCreated={handleGroupUpdate} />
-        <li className="pepe">
-          <GenericGroupList
-            url={USER_CREATED_GROUPS_URL}
-            loadNewGroups={loadNewGroups}
-          />
-        </li>
-        <h1>Events</h1>
-        <li className="pepe">
-          <GenericEventList url={ACCEPTED_EVENTS_URL} />
-        </li>
-      </ul>
+      <h1>Groups</h1>
+      <ListGroup variant="flush">
+        <GenericGroupList url={USER_GROUPS_URL} />
+      </ListGroup>
+      <Row>
+        <Col>
+          <h1>My groups</h1>
+        </Col>
+        <Col xs="3" className="m-auto">
+          <CreateGroup onGroupCreated={handleGroupUpdate} />
+        </Col>
+      </Row>
+
+      <ListGroup variant="flush">
+        <GenericGroupList
+          url={USER_CREATED_GROUPS_URL}
+          loadNewGroups={loadNewGroups}
+        />
+      </ListGroup>
+
+      <h1>Events</h1>
+      <ListGroup variant="flush">
+        <GenericEventList url={ACCEPTED_EVENTS_URL} />
+      </ListGroup>
     </Container>
   );
 

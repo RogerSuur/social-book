@@ -121,12 +121,7 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
               name="content"
               required
             />
-            <Button
-              className="float-start"
-              type="submit"
-              disabled={formData.content === "" || formData.image === null}
-              variant="primary"
-            >
+            <Button className="float-start" type="submit" variant="primary">
               Post
             </Button>
             <Button

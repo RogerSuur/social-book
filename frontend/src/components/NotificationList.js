@@ -44,11 +44,9 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
 
   return (
     <>
-      {notifications.length === 0 ? (
-        "You have no notifications"
-      ) : (
-        <ListGroup className="position-absolute top-100 start-0" ref={ref}>
-          <Col sm="7">{renderedNotifications}</Col>
+      {notifications.length > 0 && (
+        <ListGroup ref={ref} className="position-absolute top-100 w-25 start-0">
+          <Col>{renderedNotifications}</Col>
         </ListGroup>
       )}
     </>

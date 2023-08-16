@@ -3,15 +3,14 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { EVENT_URL, EVENT_ATTENDANCE_URL } from "../utils/routes";
 import axios from "axios";
 import ImageHandler from "../utils/imageHandler";
-import GroupSidebar from "../components/GroupSidebar";
-import Modal from "../components/Modal.js";
+import { Container, Row, Col, Button, Stack, ListGroup } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
+import GenericModal from "../components/GenericModal";
 
 const EventPage = () => {
   const [event, setEvent] = useState({});
   const [error, setError] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
   const [response, setResponse] = useState(false);
-  const [activeTab, setActiveTab] = useState(true);
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -39,18 +38,25 @@ const EventPage = () => {
     loadEvent();
   }, [id, response]);
 
+  const image = (user) =>
+    ImageHandler(user?.imagePath, "defaultuser.jpg", "userlist-img");
+
   const userList = (attendance) => {
     const users = event?.members?.filter(
       (member) => member.isAttending === attendance
     );
 
     return users?.map((member, index) => (
-      <li key={index}>
-        <Link to={`/profile/${member.userId}`}>
-          {ImageHandler(member.imagePath, "defaultuser.jpg", "profile-image")}
-          <p>{member.name}</p>
-        </Link>
-      </li>
+      <ListGroup.Item action key={index}>
+        <LinkContainer to={`/profile/${member.id}`}>
+          <div>
+            {image(member)}
+            {member?.nickname
+              ? `${member.nickname}`
+              : `${member.firstName} ${member.lastName}`}
+          </div>
+        </LinkContainer>
+      </ListGroup.Item>
     ));
   };
 
@@ -62,10 +68,6 @@ const EventPage = () => {
       hour: "numeric",
       minute: "2-digit",
     });
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
 
   const handleResponse = async (isAttending) => {
     console.log("IS ATTENDING: ", isAttending);
@@ -90,11 +92,6 @@ const EventPage = () => {
     }
   };
 
-  const handleModalClick = (attending) => {
-    setActiveTab(attending);
-    setModalOpen(true);
-  };
-
   const countUsers = (attending) => {
     const userArray = event?.members?.map((member) => member.isAttending);
 
@@ -104,52 +101,46 @@ const EventPage = () => {
     );
   };
 
-  console.log("ACTIVE", activeTab);
-  console.log("EVENT: ", event);
-
   const renderedEvent = (
-    <div className="event-mid">
-      {/* <div className="event-stuff"> 
-     {/* event img here 
-    </div>*/}
-      <button className="event-but" onClick={() => handleResponse(true)}>
-        I'm going
-      </button>
-      <button className="event-but" onClick={() => handleResponse(false)}>
-        I'm not going
-      </button>
-      <div className="event-stuff">
-        <p>{event?.title}</p>
-        <p>{event?.description}</p>
-        <p>Start: {timeConverter(event?.eventTime)}</p>
-        <p>End: {timeConverter(event?.eventEndTime)}</p>
-        <Modal open={modalOpen} onClose={handleModalClose}>
-          <ul>
-            <li className="pepe" onClick={() => setActiveTab(true)}>
-              Going
-            </li>
-            <li className="pepe" onClick={() => setActiveTab(false)}>
-              Not Going
-            </li>
-          </ul>
-          <div className="pepe">{userList(activeTab)}</div>
-        </Modal>
-        <button className="event-but" onClick={() => handleModalClick(true)}>
-          Going {countUsers(true)}
-        </button>
-        <button className="event-but" onClick={() => handleModalClick(false)}>
-          Not going {countUsers(false)}
-        </button>
-      </div>
-    </div>
+    <Container>
+      <Row>
+        <Col className="m-auto text-center">
+          <h1>{event?.title}</h1>
+        </Col>
+        <Col md="3" className="m-auto">
+          <Stack gap={2}>
+            <Button onClick={() => handleResponse(true)}>Attend</Button>
+            <Button onClick={() => handleResponse(false)}>Skip</Button>
+          </Stack>
+        </Col>
+      </Row>
+      <p>{event?.description}</p>
+      <p>Start: {timeConverter(event?.eventTime)}</p>
+      <p>End: {timeConverter(event?.eventEndTime)}</p>
+      <Row className="gap-2">
+        <Col xs="12" md>
+          <GenericModal
+            buttonText={`Going ${countUsers(true) > 0 ? countUsers(true) : ""}`}
+            headerText="Going"
+          >
+            {userList(true)}
+          </GenericModal>
+        </Col>
+        <Col xs="12" md>
+          <GenericModal
+            buttonText={`Not going ${
+              countUsers(false) > 0 ? countUsers(false) : ""
+            }`}
+            headerText="Not Going"
+          >
+            {userList(false)}
+          </GenericModal>
+        </Col>
+      </Row>
+    </Container>
   );
 
-  return (
-    <>
-      <GroupSidebar />
-      {error ? <div>{error}</div> : <div>{renderedEvent}</div>}
-    </>
-  );
+  return <>{error ? <div>{error}</div> : <div>{renderedEvent}</div>}</>;
 };
 
 export default EventPage;

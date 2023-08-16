@@ -1,11 +1,14 @@
 import List from "./List.js";
-import { Link } from "react-router-dom";
+import { ListGroup } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 
 const GenericEventList = ({ url }) => {
   const mapGenericEventList = (event, index) => (
-    <li className="link" key={index}>
-      <Link to={`/event/${event.id}`}>{event.title}</Link>
-    </li>
+    <LinkContainer action to={`/event/${event.id}`}>
+      <ListGroup.Item key={index}>
+        <>{event.title}</>
+      </ListGroup.Item>
+    </LinkContainer>
   );
 
   return <List url={url} mapFunction={mapGenericEventList} />;

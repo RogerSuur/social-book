@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  useParams,
-  useOutletContext,
-  useNavigate,
-  Link,
-} from "react-router-dom";
+import { useParams, useOutletContext, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import {
@@ -14,21 +9,14 @@ import {
   USER_POSTS_URL,
 } from "../utils/routes";
 import ImageHandler from "../utils/imageHandler.js";
-import Modal from "../components/Modal.js";
 import FeedPosts from "../components/FeedPosts.js";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
+import { Container, Row, Col, Button } from "react-bootstrap";
+import GenericUserList from "../components/GenericUserList";
+import GenericModal from "../components/GenericModal";
 
 const ProfileInfo = () => {
   const [user, setUser] = useState({});
-  const [followers, setFollowers] = useState([]);
-  const [following, setFollowing] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
   const [isFollowed, setIsFollowed] = useState(false);
-  const [postsModalOpen, setPostsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState(true);
   const { id } = useParams();
   const { socketUrl } = useOutletContext();
   const { sendJsonMessage } = useWebSocketConnection(socketUrl);
@@ -48,23 +36,6 @@ const ProfileInfo = () => {
       data: { id: user.id },
     });
     setIsFollowed(false);
-  };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
-
-  const handleModalClick = (follow) => {
-    setActiveTab(follow);
-    setModalOpen(true);
-  };
-
-  const handlePostsModalClose = () => {
-    setPostsModalOpen(false);
-  };
-
-  const handlePostsModalClick = () => {
-    setPostsModalOpen(true);
   };
 
   useEffect(() => {
@@ -94,50 +65,6 @@ const ProfileInfo = () => {
     loadUser();
   }, [id, isFollowed]);
 
-  useEffect(() => {
-    const loadFollowers = async () => {
-      try {
-        await axios
-          .get(USER_FOLLOWERS_URL + id, {
-            withCredentials: true,
-          })
-          .then((response) => {
-            console.log("FOLLOWERS: ", response?.data);
-            setFollowers(response?.data);
-          });
-      } catch (err) {
-        if (!err?.response) {
-          setErrMsg("No Server Response");
-        } else {
-          setErrMsg("Internal Server Error");
-        }
-      }
-    };
-    loadFollowers();
-  }, [id]);
-
-  useEffect(() => {
-    const loadFollowing = async () => {
-      try {
-        await axios
-          .get(USER_FOLLOWING_URL + id, {
-            withCredentials: true,
-          })
-          .then((response) => {
-            console.log("FOLLOWING: ", response?.data);
-            setFollowing(response?.data);
-          });
-      } catch (err) {
-        if (!err?.response) {
-          setErrMsg("No Server Response");
-        } else {
-          setErrMsg("Internal Server Error");
-        }
-      }
-    };
-    loadFollowing();
-  }, [id]);
-
   const birthdayConverter = (date) => {
     if (!date) {
       return;
@@ -150,24 +77,12 @@ const ProfileInfo = () => {
     });
   };
 
-  const userList = (follow) => {
-    const users = follow ? [...following] : [...followers];
-
-    return users?.map((user, index) => (
-      <li key={index}>
-        <Link to={`/profile/${user.userId}`}>
-          {ImageHandler(user.imagePath, "defaultuser.jpg", "profile-image")}
-          {user?.nickname ? (
-            <p>{user.nickname}</p>
-          ) : (
-            <p>
-              {user.firstName} {user.lastName}
-            </p>
-          )}
-        </Link>
-      </li>
-    ));
-  };
+  const userList = (following) =>
+    following ? (
+      <GenericUserList url={USER_FOLLOWING_URL + id} />
+    ) : (
+      <GenericUserList url={USER_FOLLOWERS_URL + id} />
+    );
 
   const image = ImageHandler(
     user?.avatarImage,
@@ -251,29 +166,25 @@ const ProfileInfo = () => {
                     </p>
                   </Col>
                 </Row>
+                <Row className="d-grip gap-2">
+                  <Col>
+                    <GenericModal buttonText="Following">
+                      {userList(true)}
+                    </GenericModal>
+                  </Col>
+                  <Col>
+                    <GenericModal buttonText="Followers">
+                      {userList(false)}
+                    </GenericModal>
+                  </Col>
+                  <Col>
+                    <GenericModal buttonText="User's posts">
+                      <FeedPosts url={USER_POSTS_URL + id} />
+                    </GenericModal>
+                  </Col>
+                </Row>
               </>
             )}
-          </Row>
-          <Row className="d-grip gap-2">
-            <Modal open={modalOpen} onClose={handleModalClose}>
-              <ul>
-                <li onClick={() => setActiveTab(true)}>Following</li>
-                <li onClick={() => setActiveTab(false)}>Followers</li>
-              </ul>
-              <ul>{userList(activeTab)}</ul>
-            </Modal>
-            <Col md as={Button} onClick={() => handleModalClick(true)}>
-              Following
-            </Col>
-            <Col md as={Button} onClick={() => handleModalClick(false)}>
-              Followers
-            </Col>
-            <Modal open={postsModalOpen} onClose={handlePostsModalClose}>
-              <FeedPosts url={USER_POSTS_URL + id} />
-            </Modal>
-            <Col md as={Button} onClick={() => handlePostsModalClick()}>
-              Posts
-            </Col>
           </Row>
         </>
       )}

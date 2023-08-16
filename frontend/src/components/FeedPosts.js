@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Comments from "./Comments";
 import { makeRequest } from "../services/makeRequest";
-import { Link } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -87,33 +86,41 @@ const FeedPosts = ({ url, reload }) => {
     return (
       <Container
         fluid
-        className="content-area border"
+        className="mt-3 mb-3"
         key={id}
         ref={isLastPost ? lastPostElementRef : null}
         data-post-id={id}
       >
-        <div className="d-flex justify-content-between">
-          <LinkContainer to={`/profile/${userId}`}>
-            <span>{userName}</span>
+        {groupId > 0 && (
+          <LinkContainer className="float-end" to={`/groups/${groupId}`}>
+            <>{groupName}</>
           </LinkContainer>
-          {groupId > 0 && (
-            <LinkContainer to={`/groups/${groupId}`}>
-              <span>Posted in {groupName}</span>
-            </LinkContainer>
-          )}
-        </div>
-        {imagePath && (
-          <Image
-            fluid
-            className="post-img"
-            src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
-          />
         )}
-        <div>{content}</div>
-        <Col>{new Date(createdAt).toLocaleString("et-EE")}</Col>
-        <Col className="comment-section">
+        <Row>
+          {imagePath && (
+            <Image
+              fluid
+              className="post-img"
+              src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
+            />
+          )}
+        </Row>
+        <Row>
+          <Col>{content}</Col>
+        </Row>
+        <Row>
+          <Col xs="4">{new Date(createdAt).toLocaleString("et-EE")}</Col>
+          <Col className="text-end">
+            <LinkContainer to={`/profile/${userId}`}>
+              <span>{userName}</span>
+            </LinkContainer>
+          </Col>{" "}
+        </Row>
+        <hr />
+
+        <Row>
           <Comments postId={id} commentCount={commentCount} />
-        </Col>
+        </Row>
       </Container>
     );
   };
