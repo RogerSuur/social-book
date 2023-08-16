@@ -102,7 +102,7 @@ const EventPage = () => {
   };
 
   const renderedEvent = (
-    <Container>
+    <Container fluid>
       <Row>
         <Col className="m-auto text-center">
           <h1>{event?.title}</h1>

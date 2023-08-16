@@ -1,6 +1,7 @@
 import React from "react";
 import { useOutletContext } from "react-router-dom";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
+import Button from "react-bootstrap/Button";
 
 const GroupRequestButton = ({ groupid }) => {
   const { socketUrl } = useOutletContext();
@@ -13,7 +14,7 @@ const GroupRequestButton = ({ groupid }) => {
     });
   };
 
-  return <button onClick={handleGroupRequest}>Join Group</button>;
+  return <Button onClick={handleGroupRequest}>Join Group</Button>;
 };
 
 export default GroupRequestButton;

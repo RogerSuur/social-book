@@ -78,10 +78,14 @@ const RequireAuth = () => {
   return auth ? (
     <Container fluid className="bg-light">
       <Row>
-        <Col className="sidebar d-none d-sm-flex" id="group-sidebar" xs="3">
+        <Col className="sidebar p-0 d-none d-md-flex" id="group-sidebar" xs="3">
           <GroupSidebar />
         </Col>
-        <Col xs="12" sm={{ span: "7", offset: "3" }} className="mt-3 mb-3">
+        <Col
+          xs="12"
+          md={{ span: "6", offset: "3" }}
+          className="mt-3 mb-3 justify-content-end"
+        >
           <Outlet
             context={{
               socketUrl,
@@ -90,7 +94,7 @@ const RequireAuth = () => {
             }}
           />
         </Col>
-        <Col id="chat-sidebar" xs="2" className="sidebar p-0 d-none d-sm-flex">
+        <Col id="chat-sidebar" xs="3" className="sidebar p-0 d-none d-md-flex">
           <Chat chatlist={users} />
         </Col>
       </Row>

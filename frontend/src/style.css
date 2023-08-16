@@ -10,6 +10,8 @@ body {
   position: fixed;
   height: 93vh;
   overflow-y: auto;
+  min-width: 240px;
+  max-width: 320px;
 }
 
 .content-wrapper {
@@ -18,10 +20,14 @@ body {
 
 #group-sidebar {
   left: 0;
+  min-width: 240px;
+  max-width: 380px;
 }
 
 #chat-sidebar {
   right: 0;
+  min-width: 240px;
+  max-width: 380px;
 }
 
 .chatbox-img {
@@ -41,7 +47,7 @@ body {
 
 .avatar-editor {
   width: 400px;
-  height: 400px
+  height: 400px;
 }
 
 /*
