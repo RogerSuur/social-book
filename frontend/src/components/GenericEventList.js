@@ -4,7 +4,7 @@ import { LinkContainer } from "react-router-bootstrap";
 
 const GenericEventList = ({ url }) => {
   const mapGenericEventList = (event, index) => (
-    <LinkContainer action to={`/event/${event.id}`}>
+    <LinkContainer action active={false} to={`/event/${event.id}`}>
       <ListGroup.Item key={index}>
         <>{event.title}</>
       </ListGroup.Item>

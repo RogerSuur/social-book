@@ -2,6 +2,7 @@ import AvatarEditor from "react-avatar-editor";
 import { useState, useRef } from "react";
 import FileUploader from "./FileUploader";
 import axios from "axios";
+import { Button, Stack, Alert } from "react-bootstrap";
 
 const AvatarUpdater = ({ url, onUploadSuccess }) => {
   const editorRef = useRef();
@@ -9,6 +10,10 @@ const AvatarUpdater = ({ url, onUploadSuccess }) => {
   const [errMsg, setErrMsg] = useState("");
 
   const handleClick = async () => {
+    if (!selectedImage) {
+      setErrMsg("You have to select an image first");
+      return;
+    }
     const canvas = editorRef.current.getImage();
 
     canvas.toBlob(async (blob) => {
@@ -30,8 +35,10 @@ const AvatarUpdater = ({ url, onUploadSuccess }) => {
     }, "image/jpeg");
   };
 
+  console.log("ERROR: ", errMsg);
+
   return (
-    <>
+    <Stack gap={2}>
       <AvatarEditor
         ref={editorRef}
         image={
@@ -39,14 +46,14 @@ const AvatarUpdater = ({ url, onUploadSuccess }) => {
             ? selectedImage
             : `${process.env.PUBLIC_URL}/defaultuser.jpg`
         }
+        className="mx-auto"
         width={250}
         height={250}
-        color={[255, 255, 255, 0.6]} // RGBA
+        color={[255, 255, 255, 0.6]}
         scale={1.2}
         rotate={0}
       />
-      <button onClick={handleClick}>Save image</button>
-      {errMsg && <h3>{errMsg}</h3>}
+
       <FileUploader
         onFileSelectSuccess={(file) => {
           setSelectedImage(file);
@@ -54,7 +61,15 @@ const AvatarUpdater = ({ url, onUploadSuccess }) => {
         }}
         onFileSelectError={({ error }) => setErrMsg(error)}
       />
-    </>
+      <Button onClick={handleClick} disabled={!selectedImage || errMsg}>
+        Save image
+      </Button>
+      {errMsg && (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      )}
+    </Stack>
   );
 };
 

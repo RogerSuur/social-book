@@ -86,7 +86,7 @@ const FeedPosts = ({ url, reload }) => {
     return (
       <Container
         fluid
-        className="mt-3 mb-3"
+        className="mt-3 mb-5"
         key={id}
         ref={isLastPost ? lastPostElementRef : null}
         data-post-id={id}

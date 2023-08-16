@@ -86,11 +86,6 @@ const ProfileEditorPage = () => {
     setModalOpen("");
   };
 
-  const handleModalClick = (follow) => {
-    setModalOpen("follow");
-    setActiveTab(follow);
-  };
-
   const birthdayConverter = (date) => {
     if (!date) {
       return;

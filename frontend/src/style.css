@@ -38,6 +38,12 @@ body {
   width: 100px;
   height: auto;
 }
+
+.avatar-editor {
+  width: 400px;
+  height: 400px
+}
+
 /*
 body {
   min-width: 320px;

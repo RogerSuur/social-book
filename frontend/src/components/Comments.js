@@ -68,7 +68,7 @@ const Comments = ({ postId, commentCount }) => {
   }
 
   return (
-    <Container>
+    <Container className="bg-secondary">
       {error ? (
         <div className="error">{error}</div>
       ) : (
