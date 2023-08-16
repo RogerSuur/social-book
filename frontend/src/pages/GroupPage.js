@@ -105,9 +105,9 @@ const GroupPage = () => {
 
   return (
     <>
-      <div style={{ "max-width": `100px` }}>
+      {/* <div style={{ "max-width": `100px` }}>
         <Events groupId={+id} />
-      </div>
+      </div> */}
       {error ? (
         <div className="error">{error}</div>
       ) : (

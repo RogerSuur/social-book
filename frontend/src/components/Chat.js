@@ -164,3 +164,20 @@ const Chat = () => {
 };
 
 export default Chat;
+
+{
+  /* <Dropdown>
+            <Dropdown.Toggle
+              id="dropdown-basic"
+              as={Image}
+              src={`${process.env.PUBLIC_URL}/notification_bell.png`}
+            >
+              <Badge className="position-absolute top-0 start-100 translate-middle"></Badge>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item>Action</Dropdown.Item>
+              <Dropdown.Item>Another action</Dropdown.Item>
+              <Dropdown.Item>Something else</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown> */
+}

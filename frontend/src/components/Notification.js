@@ -1,6 +1,7 @@
 import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import { Link } from "react-router-dom";
+import { Button } from "react-bootstrap";
 
 const Notification = ({ notification, onClose, popup }) => {
   const { sendJsonMessage } = useWebSocketConnection(WS_URL);
@@ -29,11 +30,11 @@ const Notification = ({ notification, onClose, popup }) => {
   };
 
   const acceptButton = (text = "Accept") => (
-    <button onClick={handleAccept}>{text}</button>
+    <Button onClick={handleAccept}>{text}</Button>
   );
 
   const rejectButton = (text = "Reject") => (
-    <button onClick={handleReject}>{text}</button>
+    <Button onClick={handleReject}>{text}</Button>
   );
 
   const followRequestNotification = () => {
@@ -126,7 +127,7 @@ const Notification = ({ notification, onClose, popup }) => {
     }
   };
 
-  return <div>{notificationMessage()}</div>;
+  return notificationMessage();
 };
 
 export default Notification;

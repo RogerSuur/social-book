@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Notification from "../components/Notification";
+import { Dropdown, ListGroup, Col, Row, Container } from "react-bootstrap";
 
 const NotificationList = ({ notifications, setToggle, setNotifications }) => {
   const ref = useRef(null);
@@ -31,22 +32,26 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
   }, [ref]);
 
   const renderedNotifications = notifications.map((notification, index) => (
-    <div key={index} className="notification">
-      <li className="dif-link">
+    <Container>
+      <ListGroup.Item variant="success" action key={index}>
         <Notification
           notification={notification}
           onClose={handleNotificationClose}
         />
-      </li>
-    </div>
+      </ListGroup.Item>
+    </Container>
   ));
 
   return (
-    <div className="notification-list" ref={ref}>
-      {notifications.length === 0
-        ? "You have no notifications"
-        : renderedNotifications}
-    </div>
+    <>
+      {notifications.length === 0 ? (
+        "You have no notifications"
+      ) : (
+        <ListGroup className="position-absolute top-100 start-0" ref={ref}>
+          <Col sm="7">{renderedNotifications}</Col>
+        </ListGroup>
+      )}
+    </>
   );
 };
 

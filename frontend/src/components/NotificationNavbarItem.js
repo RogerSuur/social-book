@@ -5,15 +5,11 @@ import { useState, useEffect } from "react";
 import { WS_URL, NOTIFICATIONS_URL } from "../utils/routes";
 import NotificationPopup from "../components/NotificationPopup";
 import Container from "react-bootstrap/Container";
-import Badge from "react-bootstrap/Badge";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Image from "react-bootstrap/Image";
+import { Badge, Row, Col, Image, Dropdown } from "react-bootstrap";
 
 const NotificationNavbarItem = () => {
   const [toggle, setToggle] = useState(false);
-  const [newNotification, setNewNotification] = useState();
-  const [notificationTimer, setNotificationTimer] = useState(false);
+  const [newNotification, setNewNotification] = useState(null);
   const { lastJsonMessage } = useWebSocketConnection(WS_URL);
   const [notifications, setNotifications] = useState([]);
 
@@ -45,30 +41,21 @@ const NotificationNavbarItem = () => {
     loadNotifications();
   }, []);
 
-  const onPopupClose = () => {
-    setNewNotification([]);
-    setNotificationTimer(false);
-  };
-
   console.log(notifications, "NOTLIST");
   useEffect(() => {
     const exceptions = ["message", "chatlist", "message_history"];
 
     if (!exceptions.includes(lastJsonMessage?.type)) {
       setNewNotification(lastJsonMessage?.data);
-      setNotificationTimer(true);
-
-      const timer = setTimeout(() => {
-        setNotificationTimer(false);
-        setNewNotification();
-      }, 5000);
-
-      return () => clearTimeout(timer);
     }
   }, [lastJsonMessage]);
 
   const handleToggle = () => {
     setToggle(!toggle);
+  };
+
+  const onPopupClose = () => {
+    setNewNotification(null);
   };
 
   const notificationCount = notifications.length;
@@ -78,26 +65,24 @@ const NotificationNavbarItem = () => {
       <Row>
         <Col>
           <Image
-            onClick={handleToggle}
             src={`${process.env.PUBLIC_URL}/notification_bell.png`}
+            onClick={handleToggle}
           />
-        </Col>
-        <Col className="d-flex align-items-center">
           {notificationCount > 0 && (
-            <Badge pill bg="danger">
-              {notificationCount}
-            </Badge>
+            <span className="position-absolute">
+              <Badge pill bg="danger">
+                {notificationCount}
+              </Badge>
+            </span>
           )}
         </Col>
       </Row>
 
-      {notificationTimer && newNotification && (
-        <div className="notification-popup">
-          <NotificationPopup
-            notification={newNotification}
-            onPopupClose={onPopupClose}
-          />
-        </div>
+      {newNotification && (
+        <NotificationPopup
+          notification={newNotification}
+          onPopupClose={onPopupClose}
+        />
       )}
       {toggle && (
         <NotificationList
