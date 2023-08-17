@@ -85,15 +85,6 @@ const Login = () => {
         </Col>
       </Row>
 
-      {/* <Row className="justify-content-md-center">
-        <Col xs lg="2">
-          1 of 3
-        </Col>
-        <Col md="1">Variable width content</Col>
-        <Col xs lg="2">
-          3 of 3
-        </Col>
-      </Row> */}
       <Row className="justify-content-center">
         <Col sm="6" className="border rounded p-3">
           <Form onSubmit={handleSubmit}>

@@ -1,16 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import Comments from "./Comments";
 import { makeRequest } from "../services/makeRequest";
 import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Image from "react-bootstrap/Image";
-import { LinkContainer } from "react-router-bootstrap";
+import Post from "../components/Post.js";
+import Alert from "react-bootstrap/Alert";
 
 const FeedPosts = ({ url, reload }) => {
   const observer = useRef();
   const [posts, setPosts] = useState([]);
-  const [error, setError] = useState(null);
+  const [errMsg, setErrMsg] = useState(null);
   const [offset, setOffset] = useState(0);
 
   const handlePageChange = (postId) => {
@@ -33,7 +30,7 @@ const FeedPosts = ({ url, reload }) => {
           return [...prevPosts, ...response];
         });
       } catch (error) {
-        setError(error.message);
+        setErrMsg(error.message);
       }
     };
     loadPosts();
@@ -61,62 +58,25 @@ const FeedPosts = ({ url, reload }) => {
   }, []);
 
   const renderedPosts = posts?.map((post, index) => {
-    const {
-      id,
-      userId,
-      imagePath,
-      userName,
-      content,
-      createdAt,
-      commentCount,
-      groupId,
-      groupName,
-    } = post;
     const isLastPost = index === posts.length - 1;
 
-    return (
-      <Container
-        fluid
-        className="mt-3 mb-5"
-        key={id}
-        ref={isLastPost ? lastPostElementRef : null}
-        data-post-id={id}
-      >
-        {groupId > 0 && (
-          <LinkContainer className="float-end" to={`/groups/${groupId}`}>
-            <>{groupName}</>
-          </LinkContainer>
-        )}
-        <Row>
-          {imagePath && (
-            <Image
-              fluid
-              className="post-img"
-              src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
-            />
-          )}
-        </Row>
-        <Row>
-          <Col>{content}</Col>
-        </Row>
-        <Row>
-          <Col xs="4">{new Date(createdAt).toLocaleString("et-EE")}</Col>
-          <Col className="text-end">
-            <LinkContainer to={`/profile/${userId}`}>
-              <span>{userName}</span>
-            </LinkContainer>
-          </Col>{" "}
-        </Row>
-        <hr />
+    console.log("POST: ", post);
 
-        <Row>
-          <Comments postId={id} commentCount={commentCount} />
-        </Row>
-      </Container>
+    return (
+      <Post
+        post={post}
+        isLastPost={isLastPost}
+        lastPostElementRef={lastPostElementRef}
+      />
     );
   });
 
-  return <Container fluid>{renderedPosts}</Container>;
+  return (
+    <Container fluid>
+      {errMsg && <Alert variant="danger">{errMsg}</Alert>}
+      {renderedPosts}
+    </Container>
+  );
 };
 
 export default FeedPosts;

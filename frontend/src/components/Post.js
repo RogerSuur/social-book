@@ -1,36 +1,60 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import Comments from "./Comments";
-import axios from "axios";
+import React, { useState } from "react";
+import Comments from "../components/Comments";
+import { Container, Row, Col, Image } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 
-const Post = () => {
-  const [post, setPost] = useState({ categories: [] });
-  const { id } = useParams();
-
-  useEffect(() => {
-    const loadPost = async () => {
-      // console.log("loadPost ComponentPost");
-      await axios
-        .get(`http://localhost:8000/posts/${id}`, {
-          withCredentials: true,
-        })
-        .then((response) => setPost(response.data));
-    };
-
-    loadPost();
-  }, []);
+const Post = ({ post, isLastPost, lastPostElementRef }) => {
+  const {
+    id,
+    userId,
+    imagePath,
+    userName,
+    content,
+    createdAt,
+    commentCount,
+    groupId,
+    groupName,
+  } = post;
 
   return (
-    <>
-      <div className="content-area">
-        <div className="column-title">
-          <h2>{post.body}</h2>
-          <sub>{post.username}</sub>
-          <sub>{new Date(post.post_datetime).toLocaleString("et-EE")}</sub>
-        </div>
-      </div>
-      <Comments />
-    </>
+    <Container
+      fluid
+      className="mt-3 mb-5"
+      key={id}
+      ref={isLastPost ? lastPostElementRef : null}
+      data-post-id={id}
+    >
+      {groupId > 0 && (
+        <LinkContainer className="float-end" to={`/groups/${groupId}`}>
+          <>{groupName}</>
+        </LinkContainer>
+      )}
+      <Row>
+        {imagePath && (
+          <Image
+            fluid
+            className="post-img"
+            src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
+          />
+        )}
+      </Row>
+      <Row>
+        <Col>{content}</Col>
+      </Row>
+      <Row>
+        <Col xs="4">{new Date(createdAt).toLocaleString("et-EE")}</Col>
+        <Col className="text-end">
+          <LinkContainer to={`/profile/${userId}`}>
+            <span>{userName}</span>
+          </LinkContainer>
+        </Col>{" "}
+      </Row>
+      <hr />
+
+      <Row>
+        <Comments postId={id} commentCount={commentCount} />
+      </Row>
+    </Container>
   );
 };
 

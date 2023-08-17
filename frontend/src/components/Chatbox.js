@@ -1,9 +1,19 @@
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Link } from "react-router-dom";
+import { LinkContainer } from "react-router-bootstrap";
 import InfiniteScroll from "react-infinite-scroller";
 import ImageHandler from "../utils/imageHandler";
+import {
+  Row,
+  CloseButton,
+  Form,
+  Button,
+  Image,
+  Col,
+  Container,
+  Stack,
+} from "react-bootstrap";
 
 const Chatbox = ({
   toggleChat,
@@ -14,6 +24,7 @@ const Chatbox = ({
 }) => {
   const [messageHistory, setMessageHistory] = useState([]);
   const { sendJsonMessage, lastJsonMessage } = useWebSocketConnection(WS_URL);
+  const messageboxRef = useRef(null);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [lastMessageRead, setLastMessageRead] = useState(0);
   const [scrollToBottomNeeded, setScrollToBottomNeeded] = useState(false);
@@ -31,8 +42,6 @@ const Chatbox = ({
     setHasMoreMessages(true);
   }, [chat]);
 
-  const messageboxRef = useRef(null);
-
   const handleScrolling = () => {
     console.log("SCROLLING");
     console.log("SCROLLTOP: ", messageboxRef?.current?.scrollTop);
@@ -41,7 +50,7 @@ const Chatbox = ({
 
     const lastMessage = messageHistory?.[messageHistory.length - 1]?.message_id;
     console.log(
-      "MESSAGE HUISTORY: ",
+      "MESSAGE HISTORY: ",
       messageHistory?.[messageHistory.length - 1]
     );
 
@@ -64,7 +73,7 @@ const Chatbox = ({
     }
   };
 
-  const image = () =>
+  const image =
     chat?.user_id > 0
       ? ImageHandler(chat?.avatar_image, "defaultuser.jpg", "chatbox-img")
       : ImageHandler("", "defaultgroup.png", "chatbox-img");
@@ -199,19 +208,14 @@ const Chatbox = ({
 
   const chatName =
     chat?.user_id > 0 ? (
-      <Link to={`/profile/${chat.user_id}`}>{chat.name}</Link>
+      <LinkContainer to={`/profile/${chat.user_id}`}>
+        <>{chat.name}</>
+      </LinkContainer>
     ) : (
-      <Link to={`/groups/${chat.group_id}`}>{chat.name}</Link>
+      <LinkContainer to={`/groups/${chat.group_id}`}>
+        <>{chat.name}</>
+      </LinkContainer>
     );
-
-  // const handleEmojiClick = (emojiData) => {
-  //   const { emoji } = emojiData;
-
-  //   setMessage((prevMessage) => ({
-  //     ...prevMessage,
-  //     data: { ...prevMessage.data, body: prevMessage.data.body + emoji },
-  //   }));
-  // };
 
   const scrollToBottom = () => {
     messageboxRef.current.scrollTop = messageboxRef.current.scrollHeight;
@@ -219,49 +223,50 @@ const Chatbox = ({
 
   const chatbox = (
     <div className="chatbox">
-      <div className="chat-title">
-        {image()}
-        {chatName}
-        <img
-          className="exit-but"
-          src={`${process.env.PUBLIC_URL}/Vectorexit.png`}
-          onClick={closeChat}
-        />
-      </div>
-      <div
-        className="message-history"
-        ref={messageboxRef}
-        onScroll={handleScrolling}
-      >
-        <InfiniteScroll
-          pageStart={0}
-          isReverse={true}
-          loadMore={loadMessages}
-          hasMore={hasMoreMessages}
-          useWindow={false}
+      <Container fluid>
+        <Row>
+          <Col>
+            <div>{image}</div>
+          </Col>
+          <Col>
+            {chatName}
+            <CloseButton onClick={closeChat} />
+          </Col>
+        </Row>
+        <Row
+          className="message-history h-25"
+          ref={messageboxRef}
+          onScroll={handleScrolling}
         >
-          {renderedMessages}
-        </InfiniteScroll>
-      </div>
-      <div className="message-box">
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Message"
-            onChange={handleChange}
-            name="message"
-            value={message.data.body}
-            autoFocus
-            required
-          />
-          <button>
-            <img
-              className="send-icon"
-              src={`${process.env.PUBLIC_URL}/send-icon.png`}
-            />
-          </button>
-        </form>
-      </div>
+          <InfiniteScroll
+            pageStart={0}
+            isReverse={true}
+            loadMore={loadMessages}
+            hasMore={hasMoreMessages}
+            useWindow={false}
+          >
+            {renderedMessages}
+          </InfiniteScroll>
+        </Row>
+        <Row className="message-box">
+          <Form onSubmit={handleSubmit}>
+            <Stack direction="horizontal">
+              <Form.Control
+                type="text"
+                placeholder="Message"
+                onChange={handleChange}
+                name="message"
+                value={message.data.body}
+                autoFocus
+                required
+              />
+              <Button type="submit" variant="flush">
+                <Image src={`${process.env.PUBLIC_URL}/send-icon.png`} />
+              </Button>{" "}
+            </Stack>
+          </Form>
+        </Row>
+      </Container>
     </div>
   );
 
