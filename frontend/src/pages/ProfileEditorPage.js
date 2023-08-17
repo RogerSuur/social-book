@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import Modal from "../components/Modal.js";
 import AvatarUpdater from "../components/AvatarUpdater.js";
 import ImageHandler from "../utils/imageHandler.js";
 import {
@@ -12,10 +11,6 @@ import {
   Form,
   FloatingLabel,
   Alert,
-  Stack,
-  Tabs,
-  Tab,
-  ListGroup,
 } from "react-bootstrap";
 import FeedPosts from "../components/FeedPosts.js";
 import {
@@ -33,7 +28,6 @@ const ProfileEditorPage = () => {
   const [user, setUser] = useState({});
   const [errMsg, setErrMsg] = useState("");
   const [modalOpen, setModalOpen] = useState("");
-  const [activeTab, setActiveTab] = useState(true);
 
   const values = user;
   const {
@@ -48,11 +42,7 @@ const ProfileEditorPage = () => {
 
   console.log("EDITOR PROFILE: ", user);
 
-  const image = ImageHandler(
-    user?.avatarImage,
-    "defaultuser.jpg",
-    "profile-img"
-  );
+  const image = ImageHandler(user?.imagePath, "defaultuser.jpg", "profile-img");
 
   useEffect(() => {
     const loadUser = async () => {
@@ -105,10 +95,13 @@ const ProfileEditorPage = () => {
       <GenericUserList url={FOLLOWERS_URL} />
     );
 
-  console.log("ACTIVE TAB: ", activeTab);
-
   return (
     <Container fluid>
+      {errMsg && (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      )}
       {user && (
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Row className="gap-2">

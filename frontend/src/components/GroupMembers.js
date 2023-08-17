@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { makeRequest } from "../services/makeRequest";
-import Modal from "./Modal";
+import GenericModal from "../components/GenericModal";
+import GenericUserList from "../components/GenericUserList";
 import { Link } from "react-router-dom";
 import ImageHandler from "../utils/imageHandler";
+import { GROUP_MEMBERS_URL } from "../utils/routes";
+import { ListGroup } from "react-bootstrap";
 
 const GroupMembers = ({ groupId }) => {
   const [groupMembers, setGroupMembers] = useState([]);
   const [error, setError] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-
-  console.log(groupMembers, "MEMBERS");
 
   useEffect(() => {
     const loadMembers = async () => {
@@ -25,37 +25,15 @@ const GroupMembers = ({ groupId }) => {
     loadMembers();
   }, [groupId]);
 
-  const groupMembersMap = groupMembers.map((member, index) => (
-    <div key={index}>
-      <Link to={`/profile/${member.id}`}>
-        {ImageHandler(member.imagePath, "defaultuser.jpg", "profile-image")}
-        <p>{member.nickname}</p>
-      </Link>
-    </div>
-  ));
-
-  const openModal = () => {
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-  };
-
   return (
-    <>
-      {groupMembers.length > 0 ? (
-        <button onClick={openModal}>
-          <p>{groupMembers.length} members</p>
-
-          <Modal className="modal" open={modalOpen} onClose={closeModal}>
-            {groupMembersMap}
-          </Modal>
-        </button>
-      ) : (
-        <p>Apply to become a member of this group</p>
-      )}
-    </>
+    <GenericModal
+      buttonText={`${groupMembers?.length} members`}
+      headerText={"Group members"}
+    >
+      <ListGroup>
+        <GenericUserList variant="flush" url={GROUP_MEMBERS_URL + groupId} />
+      </ListGroup>
+    </GenericModal>
   );
 };
 

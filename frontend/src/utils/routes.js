@@ -6,6 +6,7 @@ export const USER_CREATED_GROUPS_URL = "http://localhost:8000/mygroups";
 export const GROUP_PAGE_URL = "http://localhost:8000/groups/";
 export const CREATE_GROUP_URL = "http://localhost:8000/creategroup";
 export const GROUP_FEED_URL = "http://localhost:8000/groupfeed/";
+export const GROUP_MEMBERS_URL = "http://localhost:8000/groupmembers/";
 export const ADD_GROUP_MEMBERS_URL = "http://localhost:8000/addmembers";
 
 //-------------------Followers/following ----------------//
@@ -27,6 +28,7 @@ export const SEARCH_URL = "http://localhost:8000/search";
 //--------------------------Posts---------------------//
 export const USER_POSTS_URL = "/userposts/";
 export const FEEDPOSTS_URL = "/feedposts";
+export const GROUPFEED_URL = "/groupfeed/";
 
 //--------------------------Profile---------------------//
 export const AVATAR_UPDATER_URL = "http://localhost:8000/profile/update/avatar";

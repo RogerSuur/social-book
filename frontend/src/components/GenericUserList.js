@@ -4,21 +4,21 @@ import { ListGroup } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
 const image = (user) =>
-  ImageHandler(user?.avatarImage, "defaultuser.jpg", "userlist-img");
+  ImageHandler(user?.imagePath, "defaultuser.jpg", "userlist-img");
 
 const GenericUserList = ({ url }) => {
   const mapUsers = (user, index) => {
     return (
-      <ListGroup.Item action key={index}>
-        <LinkContainer to={`/profile/${user.id}`}>
-          <div>
+      <LinkContainer to={`/profile/${user.id}`}>
+        <ListGroup.Item action key={index}>
+          <>
             {image(user)}
             {user?.nickname
               ? `${user.nickname}`
               : `${user.firstName} ${user.lastName}`}
-          </div>
-        </LinkContainer>
-      </ListGroup.Item>
+          </>
+        </ListGroup.Item>
+      </LinkContainer>
     );
   };
 

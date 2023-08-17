@@ -84,11 +84,7 @@ const ProfileInfo = () => {
       <GenericUserList url={USER_FOLLOWERS_URL + id} />
     );
 
-  const image = ImageHandler(
-    user?.avatarImage,
-    "defaultuser.jpg",
-    "profile-img"
-  );
+  const image = ImageHandler(user?.imagePath, "defaultuser.jpg", "profile-img");
 
   return (
     <Container fluid>

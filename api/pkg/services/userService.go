@@ -21,7 +21,7 @@ type ProfileJSON struct {
 	Birthday     string    `json:"birthday"`
 	Nickname     string    `json:"nickname"`
 	About        string    `json:"about"`
-	AvatarImage  string    `json:"avatarImage"`
+	AvatarImage  string    `json:"imagePath"`
 	CreatedAt    time.Time `json:"createdAt"`
 	IsPublic     bool      `json:"isPublic"`
 	IsFollowed   bool      `json:"isFollowed"`
@@ -33,7 +33,7 @@ type FollowerData struct {
 	FirstName   string `json:"firstName"`
 	LastName    string `json:"lastName"`
 	Nickname    string `json:"nickname"`
-	AvatarImage string `json:"avatarImage"`
+	AvatarImage string `json:"imagePath"`
 	Accepted    bool   `json:"accepted"`
 }
 

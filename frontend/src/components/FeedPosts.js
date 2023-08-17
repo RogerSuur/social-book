@@ -11,7 +11,6 @@ const FeedPosts = ({ url, reload }) => {
   const observer = useRef();
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
-  const [isPostsLoading, setPostsLoading] = useState(false);
   const [offset, setOffset] = useState(0);
 
   const handlePageChange = (postId) => {
@@ -44,13 +43,6 @@ const FeedPosts = ({ url, reload }) => {
     };
   }, [offset, reload]);
 
-  async function toggleSpinner() {
-    setPostsLoading((prev) => !prev);
-    setTimeout(function () {
-      setPostsLoading((prev) => !prev);
-    }, 800);
-  }
-
   const lastPostElementRef = useCallback((node) => {
     if (observer.current) {
       observer.current.disconnect();
@@ -58,7 +50,6 @@ const FeedPosts = ({ url, reload }) => {
 
     observer.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        toggleSpinner();
         const postId = node.getAttribute("data-post-id"); // Get the post ID from the element attribute
         handlePageChange(postId);
       }
@@ -69,7 +60,7 @@ const FeedPosts = ({ url, reload }) => {
     }
   }, []);
 
-  const renderPost = (post, index) => {
+  const renderedPosts = posts?.map((post, index) => {
     const {
       id,
       userId,
@@ -123,15 +114,9 @@ const FeedPosts = ({ url, reload }) => {
         </Row>
       </Container>
     );
-  };
+  });
 
-  const renderedPosts = posts?.map(renderPost);
-  return (
-    <Container fluid>
-      {isPostsLoading && <div className="spinner" />}
-      {renderedPosts}
-    </Container>
-  );
+  return <Container fluid>{renderedPosts}</Container>;
 };
 
 export default FeedPosts;
