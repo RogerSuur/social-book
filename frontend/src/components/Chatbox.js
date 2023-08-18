@@ -225,7 +225,7 @@ const Chatbox = ({
     <div className="chatbox">
       <Container fluid>
         <Row>
-          <Col>
+          <Col className="m-2">
             <div>{image}</div>
           </Col>
           <Col>
