@@ -55,6 +55,7 @@ body {
 .profile-img {
   width: 300px;
   height: auto;
+  margin: auto;
 }
 
 .post-img {

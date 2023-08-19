@@ -106,13 +106,16 @@ const ProfileEditorPage = () => {
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Row className="gap-2">
             <Col sm>
-              <div className="profile-img">{image}</div>
-              <GenericModal buttonText="Upload new image">
-                <AvatarUpdater
-                  url={AVATAR_UPDATER_URL}
-                  onUploadSuccess={handleAvatarUpdate}
-                />
-              </GenericModal>
+              <div className="profile-img">
+                {image}
+                <GenericModal buttonText="Upload new image">
+                  <AvatarUpdater
+                    url={AVATAR_UPDATER_URL}
+                    onUploadSuccess={handleAvatarUpdate}
+                  />
+                </GenericModal>
+              </div>
+
               {/* <Modal open={modalOpen === "avatar"} onClose={handleModalClose}>
                 <AvatarUpdater
                   url={AVATAR_UPDATER_URL}

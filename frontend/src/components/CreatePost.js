@@ -2,10 +2,18 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Select from "react-select";
 import ImageUploadModal from "./ImageUploadModal";
-import { Form, Image, InputGroup, Button, Container } from "react-bootstrap";
+import {
+  Form,
+  Image,
+  InputGroup,
+  Alert,
+  Button,
+  Container,
+} from "react-bootstrap";
 import PostButton from "../components/PostButton.js";
 import { FOLLOWERS_URL } from "../utils/routes";
 import GenericModal from "../components/GenericModal";
+import { ImageFill } from "react-bootstrap-icons";
 
 const CreatePost = ({ onPostsUpdate }) => {
   const initialFormData = {
@@ -17,7 +25,6 @@ const CreatePost = ({ onPostsUpdate }) => {
 
   const [formData, setFormData] = useState(initialFormData);
   const [followers, setFollowers] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [errMsg, setErrMsg] = useState("");
 
   const handleImageUpload = (image) => {
@@ -94,7 +101,6 @@ const CreatePost = ({ onPostsUpdate }) => {
     }
 
     setFormData(initialFormData);
-    setSelectedImage(null);
   };
 
   const handleSelectChange = (selectedOptions) => {
@@ -114,7 +120,11 @@ const CreatePost = ({ onPostsUpdate }) => {
 
   return (
     <>
-      {errMsg && <h2>{errMsg}</h2>}
+      {errMsg && (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      )}
       {formData?.image && (
         <div className="post-img">
           <Image
@@ -136,7 +146,7 @@ const CreatePost = ({ onPostsUpdate }) => {
             name="content"
             required
           />
-          <GenericModal buttonText="Add">
+          <GenericModal as={ImageFill} buttonText="Add">
             <ImageUploadModal onUploadSuccess={handleImageUpload} />
           </GenericModal>
           <div className="mb-3">
