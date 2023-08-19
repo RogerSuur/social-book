@@ -163,12 +163,14 @@ const Chatbox = ({
                 md={{ span: 9, offset: 3 }}
                 variant="success"
                 key={index}
-                className="own-message text-end"
+                className="own-message text-end p-1"
               >
                 <span className="p-1 bg-success">{msg.body}</span>
               </Col>
               <p className="own-time text-secondary text-muted text-end p-0 m-0">
-                {getTime(msg.timestamp)}
+                {getTime(msg.timestamp) !==
+                  getTime(messageHistory[index - 1]?.timestamp) &&
+                  getTime(msg.timestamp)}
               </p>
             </>
           );

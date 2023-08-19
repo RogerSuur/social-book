@@ -2,9 +2,9 @@ import AvatarEditor from "react-avatar-editor";
 import { useState, useRef } from "react";
 import FileUploader from "./FileUploader";
 import axios from "axios";
-import { Button, Stack, Alert } from "react-bootstrap";
+import { Button, Stack, Alert, InputGroup } from "react-bootstrap";
 
-const AvatarUpdater = ({ url, onUploadSuccess }) => {
+const AvatarUpdater = ({ url, handleClose, onUploadSuccess }) => {
   const editorRef = useRef();
   const [selectedImage, setSelectedImage] = useState(null);
   const [errMsg, setErrMsg] = useState("");
@@ -22,6 +22,7 @@ const AvatarUpdater = ({ url, onUploadSuccess }) => {
 
       try {
         await axios.post(url, formData, { withCredentials: true });
+        handleClose();
         onUploadSuccess();
         console.log("Image uploaded successfully!");
       } catch (err) {
@@ -53,17 +54,19 @@ const AvatarUpdater = ({ url, onUploadSuccess }) => {
         scale={1.2}
         rotate={0}
       />
+      <InputGroup>
+        <FileUploader
+          onFileSelectSuccess={(file) => {
+            setSelectedImage(file);
+            setErrMsg("");
+          }}
+          onFileSelectError={({ error }) => setErrMsg(error)}
+        />
+        <Button onClick={handleClick} disabled={!selectedImage || errMsg}>
+          Save image
+        </Button>
+      </InputGroup>
 
-      <FileUploader
-        onFileSelectSuccess={(file) => {
-          setSelectedImage(file);
-          setErrMsg("");
-        }}
-        onFileSelectError={({ error }) => setErrMsg(error)}
-      />
-      <Button onClick={handleClick} disabled={!selectedImage || errMsg}>
-        Save image
-      </Button>
       {errMsg && (
         <Alert variant="danger" className="text-center">
           {errMsg}

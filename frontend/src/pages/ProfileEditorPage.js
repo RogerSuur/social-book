@@ -27,7 +27,6 @@ import GenericModal from "../components/GenericModal.js";
 const ProfileEditorPage = () => {
   const [user, setUser] = useState({});
   const [errMsg, setErrMsg] = useState("");
-  const [modalOpen, setModalOpen] = useState("");
 
   const values = user;
   const {
@@ -44,18 +43,19 @@ const ProfileEditorPage = () => {
 
   const image = ImageHandler(user?.imagePath, "defaultuser.jpg", "profile-img");
 
+  const loadUser = async () => {
+    await axios
+      .get(PROFILE_URL, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setUser(response.data.user);
+      });
+  };
+
   useEffect(() => {
-    const loadUser = async () => {
-      await axios
-        .get(PROFILE_URL, {
-          withCredentials: true,
-        })
-        .then((response) => {
-          setUser(response.data.user);
-        });
-    };
     loadUser();
-  }, [modalOpen]);
+  }, []);
 
   const onSubmit = async (data) => {
     try {
@@ -72,8 +72,8 @@ const ProfileEditorPage = () => {
     }
   };
 
-  const handleModalClose = () => {
-    setModalOpen("");
+  const handleAvatarUpdate = () => {
+    loadUser();
   };
 
   const birthdayConverter = (date) => {
@@ -110,7 +110,7 @@ const ProfileEditorPage = () => {
               <GenericModal buttonText="Upload new image">
                 <AvatarUpdater
                   url={AVATAR_UPDATER_URL}
-                  onUploadSuccess={handleModalClose}
+                  onUploadSuccess={handleAvatarUpdate}
                 />
               </GenericModal>
               {/* <Modal open={modalOpen === "avatar"} onClose={handleModalClose}>

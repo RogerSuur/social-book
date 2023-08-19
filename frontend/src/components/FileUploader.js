@@ -17,7 +17,11 @@ const FileUploader = ({ onFileSelectSuccess, onFileSelectError }) => {
 
   return (
     <Form.Group controlId="formFile">
-      <Form.Control type="file" onChange={handleFileInput} />
+      <Form.Control
+        type="file"
+        accept="image/gif,image/jpeg,image/png"
+        onChange={handleFileInput}
+      />
     </Form.Group>
   );
 };

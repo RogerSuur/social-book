@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Select from "react-select";
 import ImageUploadModal from "./ImageUploadModal";
-import { Form, Button, Container } from "react-bootstrap";
+import { Form, Image, InputGroup, Button, Container } from "react-bootstrap";
 import PostButton from "../components/PostButton.js";
+import { FOLLOWERS_URL } from "../utils/routes";
+import GenericModal from "../components/GenericModal";
 
 const CreatePost = ({ onPostsUpdate }) => {
   const initialFormData = {
@@ -16,7 +18,6 @@ const CreatePost = ({ onPostsUpdate }) => {
   const [formData, setFormData] = useState(initialFormData);
   const [followers, setFollowers] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [errMsg, setErrMsg] = useState("");
 
   const handleImageUpload = (image) => {
@@ -24,16 +25,6 @@ const CreatePost = ({ onPostsUpdate }) => {
       ...prevFormData,
       image: image,
     }));
-    setSelectedImage(image);
-    setShowModal(false);
-  };
-
-  const handleModalClose = () => {
-    setShowModal(false);
-  };
-
-  const handleModalClick = () => {
-    setShowModal(true);
   };
 
   // errordata state
@@ -50,7 +41,7 @@ const CreatePost = ({ onPostsUpdate }) => {
   useEffect(() => {
     const fetchFollowers = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/followers", {
+        const response = await axios.get(FOLLOWERS_URL, {
           withCredentials: true,
         });
         setFollowers(response.data);
@@ -74,8 +65,8 @@ const CreatePost = ({ onPostsUpdate }) => {
       JSON.stringify(formData.selectedReceivers)
     );
 
-    if (selectedImage) {
-      formDataWithImage.append("image", selectedImage); // Append the image file if it exists
+    if (formData?.image) {
+      formDataWithImage.append("image", formData?.image); // Append the image file if it exists
     }
 
     console.log("data when submitted", formDataWithImage);
@@ -122,72 +113,77 @@ const CreatePost = ({ onPostsUpdate }) => {
   }));
 
   return (
-    <Container>
+    <>
       {errMsg && <h2>{errMsg}</h2>}
-      {selectedImage && (
-        <img src={URL.createObjectURL(selectedImage)} alt="Selected" />
-      )}
-      <Form onSubmit={handleSubmit}>
-        <Form.Control
-          className="post-textarea"
-          type="textarea"
-          placeholder="Write what's on your mind"
-          onChange={handleChange}
-          value={formData.content}
-          name="content"
-          required
-        />
-        <div key={"inline-radio"} className="mb-3">
-          <Form.Check
-            inline
-            label="Public"
-            name="privacyType"
-            type="radio"
-            id="public"
-            value={1}
-            onChange={handleChange}
-          />
-          <Form.Check
-            inline
-            label="Private"
-            name="privacyType"
-            type="radio"
-            id="private"
-            value={2}
-            onChange={handleChange}
-          />
-          <Form.Check
-            inline
-            label="Sub-private"
-            name="privacyType"
-            type="radio"
-            id="subPrivate"
-            value={3}
-            onChange={handleChange}
+      {formData?.image && (
+        <div className="post-img">
+          <Image
+            src={URL.createObjectURL(formData?.image)}
+            fluid
+            alt="Selected"
           />
         </div>
+      )}
 
-        {formData.privacyType === 3 && (
-          <>
-            <legend>Choose receiver(s)</legend>
-            <Select
-              options={followersOptions}
-              isMulti
-              onChange={handleSelectChange}
+      <Form onSubmit={handleSubmit}>
+        <InputGroup>
+          <Form.Control
+            className="post-textarea"
+            type="textarea"
+            placeholder="Write what's on your mind"
+            onChange={handleChange}
+            value={formData.content}
+            name="content"
+            required
+          />
+          <GenericModal buttonText="Add">
+            <ImageUploadModal onUploadSuccess={handleImageUpload} />
+          </GenericModal>
+          <div className="mb-3">
+            <Form.Check
+              inline
+              label="Public"
+              name="privacyType"
+              type="radio"
+              id="public"
+              value={1}
+              onChange={handleChange}
             />
-          </>
-        )}
-        <PostButton />
-        <Button className="float-end" onClick={handleModalClick}>
-          Add an image
-        </Button>
-        <ImageUploadModal
-          open={showModal}
-          onClose={handleModalClose}
-          onImageUpload={handleImageUpload}
-        />
+            <Form.Check
+              inline
+              label="Private"
+              name="privacyType"
+              type="radio"
+              id="private"
+              value={2}
+              onChange={handleChange}
+            />
+            <Form.Check
+              inline
+              label="Sub-private"
+              name="privacyType"
+              type="radio"
+              id="subPrivate"
+              value={3}
+              onChange={handleChange}
+            />
+          </div>
+
+          {formData.privacyType === 3 && (
+            <>
+              <legend>Choose receiver(s)</legend>
+              <Select
+                options={followersOptions}
+                isMulti
+                onChange={handleSelectChange}
+              />
+            </>
+          )}
+
+          <PostButton />
+        </InputGroup>
       </Form>
-    </Container>
+    </>
   );
 };
 

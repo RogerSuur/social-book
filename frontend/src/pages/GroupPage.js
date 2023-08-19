@@ -16,40 +16,34 @@ const GroupPage = () => {
   const [group, setGroup] = useState({});
   const { id } = useParams();
   const [error, setError] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [open, setOpen] = useState(false);
   const [reload, setReload] = useState(false);
 
   const handlePostUpdate = () => {
     setReload(!reload);
   };
 
-  const handleOpen = () => {
-    setOpen(!open);
+  const loadGroup = async () => {
+    try {
+      await axios
+        .get(GROUP_PAGE_URL + id, {
+          withCredentials: true,
+        })
+        .then((response) => {
+          console.log("RESP: ", response.data);
+          setGroup(response.data);
+        });
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  const handleModalClose = () => {
-    setModalOpen(false);
+  const handleAvatarUpdate = () => {
+    loadGroup();
   };
 
   useEffect(() => {
-    setOpen(false);
-    const loadGroup = async () => {
-      try {
-        await axios
-          .get(GROUP_PAGE_URL + id, {
-            withCredentials: true,
-          })
-          .then((response) => {
-            console.log("RESP: ", response.data);
-            setGroup(response.data);
-          });
-      } catch (err) {
-        setError(err.message);
-      }
-    };
     loadGroup();
-  }, [id, modalOpen]);
+  }, [id]);
 
   const image = () =>
     ImageHandler(group.imagePath, "defaultgroup.png", "group-image");
@@ -73,7 +67,7 @@ const GroupPage = () => {
               <GenericModal buttonText="Upload new image">
                 <AvatarUpdater
                   url={`${GROUP_PAGE_URL}${id}/avatar`}
-                  onUploadSuccess={handleModalClose}
+                  onUploadSuccess={handleAvatarUpdate}
                 />
               </GenericModal>
               <CreateGroupPosts groupId={id} onPostsUpdate={handlePostUpdate} />

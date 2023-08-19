@@ -47,7 +47,7 @@ body {
 
 .message-history {
   max-height: 300px;
-  min-height: 200px;
+  min-height: 300px;
   overflow-y: auto;
   overflow-wrap: anywhere;
 }
@@ -55,6 +55,12 @@ body {
 .profile-img {
   width: 300px;
   height: auto;
+}
+
+.post-img {
+  width: 300px;
+  height: auto;
+  margin: auto;
 }
 
 .userlist-img {

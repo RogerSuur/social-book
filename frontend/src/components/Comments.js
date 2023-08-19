@@ -116,7 +116,6 @@ const Comments = ({ postId, commentCount }) => {
               </button>
             </p>
           )}
-          {!commentCountUpdate && <p>Be the first to leave a comment</p>}
           {
             <CreateComment
               postId={postId}

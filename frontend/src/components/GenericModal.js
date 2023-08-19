@@ -17,7 +17,11 @@ const GenericModal = ({ buttonText, headerText, children }) => {
         <Modal.Header closeButton>
           <h3>{headerText ? headerText : buttonText}</h3>
         </Modal.Header>
-        <Modal.Body>{children}</Modal.Body>
+        <Modal.Body>
+          {React.Children.map(children, (child) =>
+            React.cloneElement(child, { handleClose })
+          )}
+        </Modal.Body>
       </Modal>
     </>
   );
