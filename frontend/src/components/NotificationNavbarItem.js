@@ -1,11 +1,10 @@
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import NotificationList from "../components/NotificationList.js";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { WS_URL, NOTIFICATIONS_URL } from "../utils/routes";
 import NotificationPopup from "../components/NotificationPopup";
-import Container from "react-bootstrap/Container";
-import { Badge, Row, Col, Image, Dropdown } from "react-bootstrap";
+import { Badge, Row, Col, Image } from "react-bootstrap";
 
 const NotificationNavbarItem = () => {
   const [toggle, setToggle] = useState(false);

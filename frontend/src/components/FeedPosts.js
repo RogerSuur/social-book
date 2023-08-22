@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { makeRequest } from "../services/makeRequest";
-import Container from "react-bootstrap/Container";
+import { Container, Alert } from "react-bootstrap";
 import Post from "../components/Post.js";
-import Alert from "react-bootstrap/Alert";
 
 const FeedPosts = ({ url, reload }) => {
   const observer = useRef();

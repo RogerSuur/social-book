@@ -11,11 +11,12 @@ import GroupRequestButton from "../components/GroupRequestButton.js";
 import CreateGroupPosts from "../components/CreateGroupPosts.js";
 import GenericModal from "../components/GenericModal";
 import AddGroupMembers from "../components/AddGroupMembers";
+import { Alert } from "react-bootstrap";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
   const { id } = useParams();
-  const [error, setError] = useState(null);
+  const [errMsg, setErrMsg] = useState(null);
   const [reload, setReload] = useState(false);
 
   const handlePostUpdate = () => {
@@ -33,7 +34,7 @@ const GroupPage = () => {
           setGroup(response.data);
         });
     } catch (err) {
-      setError(err.message);
+      setErrMsg(err.message);
     }
   };
 
@@ -45,16 +46,21 @@ const GroupPage = () => {
     loadGroup();
   }, [id]);
 
-  const image = () =>
-    ImageHandler(group.imagePath, "defaultgroup.png", "group-image");
+  const image = ImageHandler(
+    group.imagePath,
+    "defaultgroup.png",
+    "group-image"
+  );
 
   return (
     <>
       {/* <div style={{ "max-width": `100px` }}>
         <Events groupId={+id} />
       </div> */}
-      {error ? (
-        <div className="error">{error}</div>
+      {errMsg ? (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
       ) : (
         <div className="group-page">
           {image()}

@@ -9,11 +9,15 @@ import {
   Button,
   Image,
   InputGroup,
+  Stack,
+  Alert,
 } from "react-bootstrap";
 import { ImageFill } from "react-bootstrap-icons";
+import GenericModal from "../components/GenericModal";
+import PostButton from "../components/PostButton";
+import { LinkContainer } from "react-router-bootstrap";
 
 const CreateComment = ({ postId, onCommentsUpdate }) => {
-  const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [formData, setFormData] = useState({
     postId: postId,
@@ -28,18 +32,11 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
       image: image,
     }));
     setSelectedImage(image);
-    setShowModal(false);
-  };
-
-  const handleModalClose = () => {
-    setShowModal(false);
-  };
-
-  const handleModalClick = () => {
-    setShowModal(true);
+    setErrMsg("");
   };
 
   const handleChange = (event) => {
+    setErrMsg("");
     const { name, value } = event.target;
 
     setFormData((prevFormData) => {
@@ -98,15 +95,13 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
   };
 
   return (
-    <Container>
-      <Row
-        style={{
-          maxWidth: "100%",
-          width: "100%",
-          overflow: "hidden",
-        }}
-      >
-        {errMsg && <h3>{errMsg}</h3>}
+    <Container className="pt-3 pb-3">
+      <Row>
+        {errMsg && (
+          <Alert variant="danger" className="text-center">
+            {errMsg}
+          </Alert>
+        )}
 
         {/* Display selected image(s) */}
         {selectedImage && (
@@ -118,9 +113,9 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
         )}
       </Row>
       <Row>
-        <Col>
-          <Form onSubmit={handleSubmit}>
-            <InputGroup>
+        <Form onSubmit={handleSubmit}>
+          <Stack direction="horizontal">
+            <InputGroup className="me-2">
               <Form.Control
                 className="post-textarea"
                 type="textarea"
@@ -129,24 +124,21 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
                 value={formData.content}
                 name="content"
               />
-              <Button className="float-end" onClick={handleModalClick}>
-                <ImageFill />
-              </Button>
+              <div>
+                <GenericModal
+                  variant="success"
+                  img={<ImageFill />}
+                  buttonText="Add an image"
+                >
+                  <ImageUploadModal onUploadSuccess={handleImageUpload} />
+                </GenericModal>
+              </div>
             </InputGroup>
-
-            <Button className="float-start" type="submit">
-              Post
-            </Button>
-
-            {showModal && (
-              <ImageUploadModal
-                open={showModal}
-                onClose={handleModalClose}
-                onImageUpload={handleImageUpload}
-              />
-            )}
-          </Form>
-        </Col>
+            <div>
+              <Button type="submit">Post</Button>
+            </div>
+          </Stack>
+        </Form>
       </Row>
     </Container>
   );

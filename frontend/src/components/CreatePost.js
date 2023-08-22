@@ -9,6 +9,9 @@ import {
   Alert,
   Button,
   Container,
+  Col,
+  Stack,
+  Badge,
 } from "react-bootstrap";
 import PostButton from "../components/PostButton.js";
 import { FOLLOWERS_URL } from "../utils/routes";
@@ -63,6 +66,10 @@ const CreatePost = ({ onPostsUpdate }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (formData?.content === "" && formData?.image === null) {
+      return;
+    }
 
     const formDataWithImage = new FormData();
     formDataWithImage.append("content", formData.content);
@@ -125,74 +132,87 @@ const CreatePost = ({ onPostsUpdate }) => {
           {errMsg}
         </Alert>
       )}
-      {formData?.image && (
-        <div className="post-img">
-          <Image
-            src={URL.createObjectURL(formData?.image)}
-            fluid
-            alt="Selected"
-          />
-        </div>
-      )}
 
-      <Form onSubmit={handleSubmit}>
-        <InputGroup>
-          <Form.Control
-            className="post-textarea"
-            type="textarea"
-            placeholder="Write what's on your mind"
-            onChange={handleChange}
-            value={formData.content}
-            name="content"
-            required
-          />
-          <GenericModal as={ImageFill} buttonText="Add">
-            <ImageUploadModal onUploadSuccess={handleImageUpload} />
-          </GenericModal>
-          <div className="mb-3">
-            <Form.Check
-              inline
-              label="Public"
-              name="privacyType"
-              type="radio"
-              id="public"
-              value={1}
-              onChange={handleChange}
-            />
-            <Form.Check
-              inline
-              label="Private"
-              name="privacyType"
-              type="radio"
-              id="private"
-              value={2}
-              onChange={handleChange}
-            />
-            <Form.Check
-              inline
-              label="Sub-private"
-              name="privacyType"
-              type="radio"
-              id="subPrivate"
-              value={3}
-              onChange={handleChange}
-            />
+      <Col md="8 mx-auto">
+        <GenericModal
+          buttonText="Write what's on your mind"
+          headerText="Make a post"
+        >
+          <div className="post-img mb-3">
+            {formData?.image && (
+              <Image
+                src={URL.createObjectURL(formData?.image)}
+                fluid
+                alt="Selected"
+              />
+            )}
           </div>
 
-          {formData.privacyType === 3 && (
-            <>
-              <legend>Choose receiver(s)</legend>
-              <Select
-                options={followersOptions}
-                isMulti
-                onChange={handleSelectChange}
-              />
-            </>
-          )}
+          <Form onSubmit={handleSubmit}>
+            <Stack direction="horizontal">
+              <Col>
+                <Stack direction="horizontal" gap="2">
+                  <InputGroup>
+                    <Form.Control
+                      className="post-textarea"
+                      type="textarea"
+                      placeholder="Write what's on your mind"
+                      onChange={handleChange}
+                      value={formData.content}
+                      name="content"
+                    />
+                    <div>
+                      <GenericModal img={<ImageFill />} buttonText="Add image">
+                        <ImageUploadModal onUploadSuccess={handleImageUpload} />
+                      </GenericModal>
+                    </div>
+                  </InputGroup>
+                  <Col as={PostButton} className="text-center" />
+                </Stack>
 
-          <PostButton />
-        </InputGroup>
-      </Form>
+                <Col className="mb-3">
+                  <Form.Check
+                    inline
+                    label="Public"
+                    name="privacyType"
+                    type="radio"
+                    id="public"
+                    value={1}
+                    onChange={handleChange}
+                  />
+                  <Form.Check
+                    inline
+                    label="Private"
+                    name="privacyType"
+                    type="radio"
+                    id="private"
+                    value={2}
+                    onChange={handleChange}
+                  />
+                  <Form.Check
+                    inline
+                    label="Sub-private"
+                    name="privacyType"
+                    type="radio"
+                    id="subPrivate"
+                    value={3}
+                    onChange={handleChange}
+                  />
+                </Col>
+                <Col>
+                  {formData.privacyType === 3 && (
+                    <Select
+                      options={followersOptions}
+                      isMulti
+                      onChange={handleSelectChange}
+                    />
+                  )}
+                </Col>
+              </Col>
+            </Stack>
+          </Form>
+        </GenericModal>
+      </Col>
     </>
   );
 };

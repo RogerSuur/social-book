@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 
-const GenericModal = ({ buttonText, headerText, children }) => {
+const GenericModal = ({
+  img,
+  variant,
+  linkText,
+  buttonText,
+  headerText,
+  children,
+}) => {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -9,9 +16,17 @@ const GenericModal = ({ buttonText, headerText, children }) => {
 
   return (
     <>
-      <Button className="w-100" variant="primary" onClick={handleShow}>
-        {buttonText}
-      </Button>
+      {linkText ? (
+        <p onClick={handleShow}>{linkText}</p>
+      ) : (
+        <Button
+          className="w-100"
+          variant={variant ? variant : "primary"}
+          onClick={handleShow}
+        >
+          {img ? img : buttonText}
+        </Button>
+      )}
 
       <Modal centered show={show} onHide={handleClose}>
         <Modal.Header closeButton>

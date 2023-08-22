@@ -2,11 +2,8 @@ import SingleChatlistItem from "./SingleChatlistItem";
 import React, { useState, useEffect } from "react";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import Chatbox from "./Chatbox";
-import MessageNotification from "./MessageNotification";
 import { WS_URL } from "../utils/routes";
-import Container from "react-bootstrap/Container";
-import ListGroup from "react-bootstrap/ListGroup";
-import Badge from "react-bootstrap/Badge";
+import { Container, ListGroup, Badge } from "react-bootstrap";
 
 const Chat = () => {
   const [openChat, setOpenChat] = useState(null);

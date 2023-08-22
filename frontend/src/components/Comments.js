@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CreateComment from "./CreateComment";
-import { Link } from "react-router-dom";
-import Container from "react-bootstrap/Container";
-import Image from "react-bootstrap/Image";
+import { Container, Image, Alert, Col, Button } from "react-bootstrap";
+import GenericModal from "../components/GenericModal";
+import Comment from "../components/Comment";
 
 const Comments = ({ postId, commentCount }) => {
   const [comments, setComments] = useState([]);
-  const [error, setError] = useState(null);
+  const [errMsg, setErrMsg] = useState(null);
   const [commentCountUpdate, setCommentsCountUpdate] = useState(commentCount);
   const [commentsToShow, setCommentsToShow] = useState(
     commentCount > 5 ? commentCount : 0
@@ -48,7 +48,7 @@ const Comments = ({ postId, commentCount }) => {
           });
       } catch (err) {
         if (err.response?.status === 404) {
-          setError(err.message);
+          setErrMsg(err.message);
         }
       }
     };
@@ -60,69 +60,41 @@ const Comments = ({ postId, commentCount }) => {
     };
   }, [offset, loading]);
 
-  function showMoreComments() {
+  const showMoreComments = () => {
     if (commentCountUpdate > 4) {
       setOffset(offset + 1);
       setCommentsToShow(commentsToShow - 5);
     }
-  }
+  };
+
+  const renderedComments = comments.map((comment, index) => (
+    <Comment comment={comment} key={index} />
+  ));
 
   return (
-    <Container className="bg-secondary">
-      {error ? (
-        <div className="error">{error}</div>
+    <Container className="bg-secondary border rounded">
+      {errMsg ? (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
       ) : (
-        <div className="content-area">
+        <>
+          <CreateComment
+            postId={postId}
+            onCommentsUpdate={handleCommentsUpdate}
+          />
           {commentCountUpdate > 0 && (
             <div className="row">
-              <div className="column">
-                {comments.map((comment, index) => (
-                  <div key={index}>
-                    {comment.imagePath && (
-                      <Image
-                        fluid
-                        className="profile-pic"
-                        src={`${process.env.PUBLIC_URL}/images/${comment.imagePath}`}
-                      />
-                    )}
-                    <div key={comment.id}>{comment.content}</div>
-                    <div className="row">
-                      <div className="column">
-                        <p>
-                          <small>
-                            {new Date(comment.createdAt).toLocaleString(
-                              "et-EE"
-                            )}
-                          </small>
-                        </p>
-                      </div>
-                      <div className="column">
-                        <Link to={`/profile/${comment?.userId}`}>
-                          {comment?.userName}
-                        </Link>
-                      </div>
-                    </div>
-                    <hr />
-                  </div>
-                ))}
-              </div>
+              <div className="column">{renderedComments}</div>
             </div>
           )}
           {commentsToShow > 5 && (
-            <p>
-              <button onClick={showMoreComments}>
-                {commentsToShow - 5} more comment
-                {commentsToShow - 5 === 1 ? "" : "s"}
-              </button>
-            </p>
+            <Button onClick={showMoreComments}>
+              {commentsToShow - 5} more comment
+              {commentsToShow - 5 === 1 ? "" : "s"}
+            </Button>
           )}
-          {
-            <CreateComment
-              postId={postId}
-              onCommentsUpdate={handleCommentsUpdate}
-            />
-          }
-        </div>
+        </>
       )}
     </Container>
   );

@@ -1,8 +1,6 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import Container from "react-bootstrap/Container";
+import { Nav, Navbar } from "react-bootstrap";
 import NotificationNavbarItem from "./NotificationNavbarItem";
 import { LinkContainer } from "react-router-bootstrap";
 
