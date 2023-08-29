@@ -14,8 +14,6 @@ import {
 } from "react-bootstrap";
 import { ImageFill } from "react-bootstrap-icons";
 import GenericModal from "../components/GenericModal";
-import PostButton from "../components/PostButton";
-import { LinkContainer } from "react-router-bootstrap";
 
 const CreateComment = ({ postId, onCommentsUpdate }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -124,16 +122,16 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
                 value={formData.content}
                 name="content"
               />
-              <div>
-                <GenericModal
-                  variant="success"
-                  img={<ImageFill />}
-                  buttonText="Add an image"
-                >
-                  <ImageUploadModal onUploadSuccess={handleImageUpload} />
-                </GenericModal>
-              </div>
             </InputGroup>
+            <div>
+              <GenericModal
+                variant="success"
+                img={<ImageFill />}
+                buttonText="Add an image"
+              >
+                <ImageUploadModal onUploadSuccess={handleImageUpload} />
+              </GenericModal>
+            </div>
             <div>
               <Button type="submit">Post</Button>
             </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { LinkContainer } from "react-router-bootstrap";
-import { Container, ListGroup, ListGroupItem } from "react-bootstrap";
+import { ListGroup, ListGroupItem } from "react-bootstrap";
 
 const SearchResults = ({ searchResults, setSearchResults }) => {
   const searchResultsMap = searchResults.map((result, index) => (
@@ -22,8 +22,6 @@ const SearchResults = ({ searchResults, setSearchResults }) => {
       </ListGroupItem>
     </LinkContainer>
   ));
-
-  const hasResults = searchResultsMap.length > 0;
 
   return <ListGroup className="position-fixed">{searchResultsMap}</ListGroup>;
 };
