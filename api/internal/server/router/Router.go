@@ -22,7 +22,7 @@ func New(app *handlers.Application) *mux.Router {
 	//Profile
 	r.HandleFunc("/profile", app.UserService.Authenticate(app.Profile)).Methods("GET")
 	r.HandleFunc("/profile/{id:[0-9]+?}", app.UserService.Authenticate(app.Profile)).Methods("GET")
-	r.HandleFunc("/profile/update", app.UserService.Authenticate(app.UpdateProfile)).Methods("POST")
+	r.HandleFunc("/profile/update", app.UserService.Authenticate(app.UpdateProfile)).Methods("POST", "OPTIONS")
 	r.HandleFunc("/profile/update/avatar", app.UserService.Authenticate(app.UpdateUserImage)).Methods("POST")
 	r.HandleFunc("/following", app.UserService.Authenticate(app.Following)).Methods("GET")
 	r.HandleFunc("/following/{id:[0-9]+?}", app.UserService.Authenticate(app.OtherFollowing)).Methods("GET")
