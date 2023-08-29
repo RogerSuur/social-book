@@ -18,11 +18,11 @@ import { FOLLOWERS_URL } from "../utils/routes";
 import GenericModal from "../components/GenericModal";
 import { ImageFill } from "react-bootstrap-icons";
 
-const CreatePost = ({ onPostsUpdate }) => {
+const CreatePost = ({ onPostsUpdate, handleClose }) => {
   const initialFormData = {
     content: "",
     image: null,
-    privacyType: 1,
+    privacyType: 0,
     selectedReceivers: [],
   };
 
@@ -36,7 +36,7 @@ const CreatePost = ({ onPostsUpdate }) => {
       image: image,
     }));
   };
-
+  console.log(formData);
   // errordata state
 
   const handleChange = (event) => {
@@ -67,7 +67,10 @@ const CreatePost = ({ onPostsUpdate }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (formData?.content === "" && formData?.image === null) {
+    if (
+      formData?.privacyType === 0 ||
+      (formData?.content === "" && formData?.image === null)
+    ) {
       return;
     }
 
@@ -99,6 +102,7 @@ const CreatePost = ({ onPostsUpdate }) => {
       setErrMsg(response.data?.message);
 
       onPostsUpdate();
+      handleClose();
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -133,86 +137,79 @@ const CreatePost = ({ onPostsUpdate }) => {
         </Alert>
       )}
 
-      <Col md="8 mx-auto">
-        <GenericModal
-          buttonText="Write what's on your mind"
-          headerText="Make a post"
-        >
-          <div className="post-img mb-3">
-            {formData?.image && (
-              <Image
-                src={URL.createObjectURL(formData?.image)}
-                fluid
-                alt="Selected"
-              />
-            )}
-          </div>
+      <div className="post-img mb-3">
+        {formData?.image && (
+          <Image
+            src={URL.createObjectURL(formData?.image)}
+            fluid
+            alt="Selected"
+          />
+        )}
+      </div>
 
-          <Form onSubmit={handleSubmit}>
-            <Stack direction="horizontal">
-              <Col>
-                <Stack direction="horizontal" gap="2">
-                  <InputGroup>
-                    <Form.Control
-                      className="post-textarea"
-                      type="textarea"
-                      placeholder="Write what's on your mind"
-                      onChange={handleChange}
-                      value={formData.content}
-                      name="content"
-                    />
-                    <div>
-                      <GenericModal img={<ImageFill />} buttonText="Add image">
-                        <ImageUploadModal onUploadSuccess={handleImageUpload} />
-                      </GenericModal>
-                    </div>
-                  </InputGroup>
-                  <Col as={PostButton} className="text-center" />
-                </Stack>
-
-                <Col className="mb-3">
-                  <Form.Check
-                    inline
-                    label="Public"
-                    name="privacyType"
-                    type="radio"
-                    id="public"
-                    value={1}
-                    onChange={handleChange}
-                  />
-                  <Form.Check
-                    inline
-                    label="Private"
-                    name="privacyType"
-                    type="radio"
-                    id="private"
-                    value={2}
-                    onChange={handleChange}
-                  />
-                  <Form.Check
-                    inline
-                    label="Sub-private"
-                    name="privacyType"
-                    type="radio"
-                    id="subPrivate"
-                    value={3}
-                    onChange={handleChange}
-                  />
-                </Col>
-                <Col>
-                  {formData.privacyType === 3 && (
-                    <Select
-                      options={followersOptions}
-                      isMulti
-                      onChange={handleSelectChange}
-                    />
-                  )}
-                </Col>
-              </Col>
+      <Form onSubmit={handleSubmit}>
+        <Stack direction="horizontal">
+          <Col>
+            <Stack direction="horizontal" gap="2">
+              <InputGroup>
+                <Form.Control
+                  className="post-textarea"
+                  type="textarea"
+                  placeholder="Write what's on your mind"
+                  onChange={handleChange}
+                  value={formData.content}
+                  name="content"
+                />
+                <div>
+                  <GenericModal img={<ImageFill />} buttonText="Add image">
+                    <ImageUploadModal onUploadSuccess={handleImageUpload} />
+                  </GenericModal>
+                </div>
+              </InputGroup>
+              <Col as={PostButton} className="text-center" />
             </Stack>
-          </Form>
-        </GenericModal>
-      </Col>
+
+            <Col className="mb-3">
+              <Form.Check
+                inline
+                label="Public"
+                name="privacyType"
+                type="radio"
+                id="public"
+                value={1}
+                onChange={handleChange}
+              />
+              <Form.Check
+                inline
+                label="Private"
+                name="privacyType"
+                type="radio"
+                id="private"
+                value={2}
+                onChange={handleChange}
+              />
+              <Form.Check
+                inline
+                label="Sub-private"
+                name="privacyType"
+                type="radio"
+                id="subPrivate"
+                value={3}
+                onChange={handleChange}
+              />
+            </Col>
+            <Col>
+              {formData.privacyType === 3 && (
+                <Select
+                  options={followersOptions}
+                  isMulti
+                  onChange={handleSelectChange}
+                />
+              )}
+            </Col>
+          </Col>
+        </Stack>
+      </Form>
     </>
   );
 };

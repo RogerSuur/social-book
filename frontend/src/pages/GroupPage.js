@@ -63,7 +63,7 @@ const GroupPage = () => {
         </Alert>
       ) : (
         <div className="group-page">
-          {image()}
+          {image}
           <h1>{group.title}</h1>
           <p>{group.description}</p>
           {group.isMember ? (

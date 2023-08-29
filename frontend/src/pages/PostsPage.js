@@ -5,6 +5,7 @@ import { FEEDPOSTS_URL } from "../utils/routes";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Container from "react-bootstrap/esm/Container";
+import GenericModal from "../components/GenericModal";
 
 const PostsPage = () => {
   const [reload, setReload] = useState(false);
@@ -16,8 +17,13 @@ const PostsPage = () => {
   return (
     <Container fluid>
       <Row>
-        <Col>
-          <CreatePost onPostsUpdate={handlePostUpdate} />
+        <Col md="8 mx-auto">
+          <GenericModal
+            buttonText="Write what's on your mind"
+            headerText="Make a post"
+          >
+            <CreatePost onPostsUpdate={handlePostUpdate} />
+          </GenericModal>
         </Col>
       </Row>
       <Row>
