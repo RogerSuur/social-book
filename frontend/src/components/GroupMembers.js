@@ -2,14 +2,12 @@ import { useState, useEffect } from "react";
 import { makeRequest } from "../services/makeRequest";
 import GenericModal from "../components/GenericModal";
 import GenericUserList from "../components/GenericUserList";
-import { Link } from "react-router-dom";
-import ImageHandler from "../utils/imageHandler";
 import { GROUP_MEMBERS_URL } from "../utils/routes";
 import { ListGroup } from "react-bootstrap";
 
 const GroupMembers = ({ groupId }) => {
   const [groupMembers, setGroupMembers] = useState([]);
-  const [error, setError] = useState(null);
+  const [errMsg, setErrMsg] = useState(null);
 
   useEffect(() => {
     const loadMembers = async () => {
@@ -18,8 +16,8 @@ const GroupMembers = ({ groupId }) => {
         if (response !== null) {
           setGroupMembers(response);
         }
-      } catch (error) {
-        setError(error);
+      } catch (err) {
+        setErrMsg(err);
       }
     };
     loadMembers();
@@ -27,8 +25,9 @@ const GroupMembers = ({ groupId }) => {
 
   return (
     <GenericModal
-      buttonText={`${groupMembers?.length} members`}
+      linkText={`${groupMembers?.length} members`}
       headerText={"Group members"}
+      variant="flush"
     >
       <ListGroup>
         <GenericUserList variant="flush" url={GROUP_MEMBERS_URL + groupId} />

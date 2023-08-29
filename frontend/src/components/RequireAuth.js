@@ -6,10 +6,8 @@ import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import Chat from "./Chat";
 import { WS_URL } from "../utils/routes";
 import Login from "../pages/LoginPage";
-import Container from "react-bootstrap/Container";
+import { Container, Row, Col } from "react-bootstrap";
 import GroupSidebar from "../components/GroupSidebar";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 
 const AUTH_URL = "http://localhost:8000/auth";
 
@@ -52,8 +50,6 @@ const RequireAuth = () => {
         await axios.get(AUTH_URL, {
           withCredentials: true,
         });
-
-        // console.log(JSON.stringify(response), "RESPONSE!!!!!!!!!!!!!!!!!!!");
         setAuth(true);
       } catch (err) {
         if (!err?.response) {

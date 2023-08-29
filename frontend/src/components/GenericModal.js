@@ -28,10 +28,11 @@ const GenericModal = ({
         </Button>
       )}
 
-      <Modal centered show={show} onHide={handleClose}>
+      <Modal centered scrollable show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <h3>{headerText ? headerText : buttonText}</h3>
         </Modal.Header>
+
         <Modal.Body>
           {React.Children.map(children, (child) =>
             React.cloneElement(child, { handleClose })

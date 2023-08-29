@@ -1,26 +1,18 @@
-import Modal from "./Modal";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Container, Form, Button, FloatingLabel, Alert } from "react-bootstrap";
 
-const CreateGroup = ({ onGroupCreated }) => {
+const CreateGroup = ({ onGroupCreated, handleClose }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
-  const [groupCreateForm, setGroupCreateForm] = useState({
+  const [formData, setFormData] = useState({
     title: "",
     description: "",
   });
 
-  const openModal = () => {
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-  };
-
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setGroupCreateForm((prevState) => ({
+    setFormData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
@@ -28,11 +20,15 @@ const CreateGroup = ({ onGroupCreated }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Send the groupCreateForm data to the backend handler
+
+    if (formData?.title === "" || formData?.description === "") {
+      return;
+    }
+    // Send the formData data to the backend handler
     try {
       const response = await axios.post(
         "http://localhost:8000/creategroup",
-        JSON.stringify(groupCreateForm),
+        JSON.stringify(formData),
         { withCredentials: true },
         {
           headers: { "Content-Type": "application/json" },
@@ -42,6 +38,7 @@ const CreateGroup = ({ onGroupCreated }) => {
       // props.onPostsUpdate();
       //ACtion for creating new group
       onGroupCreated();
+      handleClose();
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -49,44 +46,45 @@ const CreateGroup = ({ onGroupCreated }) => {
         setErrMsg("Internal Server Error");
       }
     }
-
-    closeModal();
   };
 
   return (
     <>
-      <div className="newModal">
-        <i className="iconoir-add-circle" onClick={openModal} />
-        <Modal open={modalOpen} onClose={closeModal}>
-          <form className="pop-form" onSubmit={handleSubmit}>
-            Title:
-            <label className="input-big">
-              <input
-                type="text"
-                name="title"
-                value={groupCreateForm.title}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <br />
-            Description:
-            <label>
-              <textarea
-                className="text-big"
-                name="description"
-                value={groupCreateForm.description}
-                onChange={handleChange}
-                required
-              ></textarea>
-            </label>
-            <br />
-
-            <button className="create-but" type="submit">Create</button>
-          </form>
-        </Modal>
-      </div>
-      {/* <button onClick={openModal}>Upload New Image</button> */}
+      {errMsg && (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      )}
+      <Form onSubmit={handleSubmit}>
+        <FloatingLabel
+          className="mb-3"
+          controlId="floatingTitle"
+          label="Group name"
+        >
+          <Form.Control
+            placeholder="Description"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            autoFocus
+          />
+        </FloatingLabel>
+        <FloatingLabel
+          className="mb-3"
+          controlId="floatingDescription"
+          label="Description"
+        >
+          <Form.Control
+            type="textarea"
+            className="post-textarea"
+            placeholder="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+          />
+        </FloatingLabel>
+        <Button type="submit">Create</Button>
+      </Form>
     </>
   );
 };

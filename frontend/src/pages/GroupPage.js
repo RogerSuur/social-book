@@ -11,7 +11,8 @@ import GroupRequestButton from "../components/GroupRequestButton.js";
 import CreateGroupPosts from "../components/CreateGroupPosts.js";
 import GenericModal from "../components/GenericModal";
 import AddGroupMembers from "../components/AddGroupMembers";
-import { Alert } from "react-bootstrap";
+import { Alert, Container, Stack, Col, Row, Badge } from "react-bootstrap";
+import { PlusCircle } from "react-bootstrap-icons";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -46,11 +47,7 @@ const GroupPage = () => {
     loadGroup();
   }, [id]);
 
-  const image = ImageHandler(
-    group.imagePath,
-    "defaultgroup.png",
-    "group-image"
-  );
+  const image = ImageHandler(group.imagePath, "defaultgroup.png", "group-img");
 
   return (
     <>
@@ -62,27 +59,48 @@ const GroupPage = () => {
           {errMsg}
         </Alert>
       ) : (
-        <div className="group-page">
+        <Container fluid>
           {image}
-          <h1>{group.title}</h1>
+          <Stack direction="horizontal" gap="2">
+            <Col xs="auto">
+              <h1>{group.title}</h1>
+            </Col>
+            <Col xs="auto">
+              {group?.isMember ? (
+                <Stack direction="horizontal">
+                  <div>
+                    <GroupMembers groupId={+id} />
+                  </div>
+                  <div>
+                    <GenericModal
+                      img={<PlusCircle />}
+                      variant="flush"
+                      headerText="Add members"
+                    >
+                      <AddGroupMembers id={+id} />
+                    </GenericModal>
+                  </div>
+                </Stack>
+              ) : (
+                <GroupRequestButton groupid={+id} />
+              )}
+            </Col>
+          </Stack>
+
           <p>{group.description}</p>
-          {group.isMember ? (
+          {group.isMember && (
             <>
-              <AddGroupMembers id={+id} />
-              <GroupMembers groupId={+id} />
-              <GenericModal buttonText="Upload new image">
+              {/* <GenericModal buttonText="Upload new image">
                 <AvatarUpdater
                   url={`${GROUP_PAGE_URL}${id}/avatar`}
                   onUploadSuccess={handleAvatarUpdate}
                 />
-              </GenericModal>
+              </GenericModal> */}
               <CreateGroupPosts groupId={id} onPostsUpdate={handlePostUpdate} />
               <FeedPosts url={GROUPFEED_URL + id} key={id} reload={reload} />
             </>
-          ) : (
-            <GroupRequestButton groupid={+id} />
           )}
-        </div>
+        </Container>
       )}
     </>
   );

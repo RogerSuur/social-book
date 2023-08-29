@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Form, Stack, Col, InputGroup } from "react-bootstrap";
+import PostButton from "../components/PostButton";
 
-const CreateGroupPost = ({ groupId, onPostsUpdate }) => {
+const CreateGroupPost = ({ groupId, onPostsUpdate, handleClose }) => {
   const initialFormData = {
     content: "",
     imagePath: "",
@@ -10,8 +12,6 @@ const CreateGroupPost = ({ groupId, onPostsUpdate }) => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
-
-  // errordata state
   const [errMsg, setErrMsg] = useState("");
 
   const handleChange = (event) => {
@@ -55,19 +55,23 @@ const CreateGroupPost = ({ groupId, onPostsUpdate }) => {
     <>
       <div className="group-post-area">
         {errMsg && <h2>{errMsg}</h2>}
-        <form onSubmit={handleSubmit}>
-          <textarea
-            className="area-text"
-            type="text"
-            placeholder="Write what's on your mind"
-            onChange={handleChange}
-            value={formData.content}
-            name="content"
-            required
-          />
-
-          <button className="post-button">Post</button>
-        </form>
+        <Form onSubmit={handleSubmit}>
+          <Col>
+            <Stack direction="horizontal" gap="2">
+              <InputGroup>
+                <Form.Control
+                  className="post-textarea"
+                  type="textarea"
+                  placeholder="Write what's on your mind"
+                  onChange={handleChange}
+                  value={formData.content}
+                  name="content"
+                />
+              </InputGroup>
+              <Col as={PostButton} className="text-center" />
+            </Stack>
+          </Col>
+        </Form>
       </div>
     </>
   );

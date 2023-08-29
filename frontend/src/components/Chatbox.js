@@ -274,7 +274,6 @@ const Chatbox = ({
         <Form onSubmit={handleSubmit}>
           <Stack direction="horizontal" gap={2}>
             <Form.Control
-              type="text"
               placeholder="Message"
               onChange={handleChange}
               name="message"

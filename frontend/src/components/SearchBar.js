@@ -1,42 +1,41 @@
 import { useEffect, useState } from "react";
 import { makeRequest } from "../services/makeRequest.js";
+import { Form, Alert } from "react-bootstrap";
 
 const SearchBar = ({ setSearchResults }) => {
-  const [searchString, setSearchString] = useState("");
-  const [error, setError] = useState(null);
+  const [errMsg, setErrMsg] = useState(null);
 
   const fetchData = async (value) => {
     try {
       const response = await makeRequest(`search/${value}`, {});
       setSearchResults(response);
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      setErrMsg(err.message);
     }
   };
 
-  const handleChange = (e) => {
-    const value = e.target.value;
+  const handleChange = (event) => {
+    const value = event.target.value;
     if (!value) {
       setSearchResults([]);
     } else {
       fetchData(value);
-      setSearchString(value);
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
   };
 
   return (
     <>
-      {error && <div>Error: {error}</div>}
-      <form id="form" onSubmit={handleSubmit} onChange={handleChange}>
-        <input
-          className="search-it" type="text" placeholder="Search here"
+      {errMsg && (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      )}
+      <Form>
+        <Form.Control
+          placeholder="Search for users and groups"
           onChange={handleChange}
         />
-      </form>
+      </Form>
     </>
   );
 };

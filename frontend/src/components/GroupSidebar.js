@@ -1,56 +1,60 @@
 import React, { useState } from "react";
 import GenericGroupList from "../components/GenericGroupList";
 import GenericEventList from "../components/GenericEventList";
-import SearchBar from "../components/SearchBar";
 import {
   USER_CREATED_GROUPS_URL,
   USER_GROUPS_URL,
   ACCEPTED_EVENTS_URL,
 } from "../utils/routes";
-import { SearchResults } from "../components/SearchResults";
 import CreateGroup from "../components/CreateGroup";
-import { Container, ListGroup, Row, Col } from "react-bootstrap";
+import { Container, ListGroup, Row, Col, Stack } from "react-bootstrap";
+import { Scrollbars } from "react-custom-scrollbars-2";
+import { PlusCircle } from "react-bootstrap-icons";
+import GenericModal from "../components/GenericModal";
 
 const GroupSidebar = () => {
-  const [searchResults, setSearchResults] = useState([]);
   const [loadNewGroups, setLoadNewGroups] = useState(0);
 
   const handleGroupUpdate = () => {
     setLoadNewGroups((prevCount) => prevCount + 1);
   };
 
-  const sidebarItems = (
-    <Container>
-      <SearchBar setSearchResults={setSearchResults} />
-      <SearchResults searchResults={searchResults} />
-      <h1>Groups</h1>
-      <ListGroup variant="flush">
-        <GenericGroupList url={USER_GROUPS_URL} />
-      </ListGroup>
-      <Row>
-        <Col>
-          <h1>My groups</h1>
-        </Col>
-        <Col xs="3" className="m-auto">
-          <CreateGroup onGroupCreated={handleGroupUpdate} />
-        </Col>
-      </Row>
+  return (
+    <Scrollbars autoHide>
+      <Container>
+        <h1>Groups</h1>
+        <ListGroup variant="flush">
+          <GenericGroupList url={USER_GROUPS_URL} />
+        </ListGroup>
+        <Row>
+          <Stack direction="horizontal">
+            <h1>My groups</h1>
+            <div>
+              <GenericModal
+                img={<PlusCircle />}
+                variant="flush"
+                headerText="Create a group"
+              >
+                <CreateGroup onGroupCreated={handleGroupUpdate} />
+              </GenericModal>
+            </div>
+          </Stack>
+        </Row>
 
-      <ListGroup variant="flush">
-        <GenericGroupList
-          url={USER_CREATED_GROUPS_URL}
-          loadNewGroups={loadNewGroups}
-        />
-      </ListGroup>
+        <ListGroup variant="flush">
+          <GenericGroupList
+            url={USER_CREATED_GROUPS_URL}
+            loadNewGroups={loadNewGroups}
+          />
+        </ListGroup>
 
-      <h1>Events</h1>
-      <ListGroup variant="flush">
-        <GenericEventList url={ACCEPTED_EVENTS_URL} />
-      </ListGroup>
-    </Container>
+        <h1>Events</h1>
+        <ListGroup variant="flush">
+          <GenericEventList url={ACCEPTED_EVENTS_URL} />
+        </ListGroup>
+      </Container>
+    </Scrollbars>
   );
-
-  return <>{sidebarItems}</>;
 };
 
 export default GroupSidebar;

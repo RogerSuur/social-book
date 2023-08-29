@@ -4,11 +4,12 @@
 
 body {
   min-width: 320px;
+  overflow-y: scroll;
 }
 
 .sidebar {
   position: fixed;
-  height: 93vh;
+  height: 90vh;
   overflow-y: auto;
   min-width: 240px;
   max-width: 320px;
@@ -52,13 +53,7 @@ body {
   overflow-wrap: anywhere;
 }
 
-.profile-img {
-  width: 300px;
-  height: auto;
-  margin: auto;
-}
-
-.post-img {
+.profile-img, .post-img, .group-img {
   width: 300px;
   height: auto;
   margin: auto;
@@ -73,6 +68,8 @@ body {
   width: 400px;
   height: 400px;
 }
+
+
 
 /*
 body {

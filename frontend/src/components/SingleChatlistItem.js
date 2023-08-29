@@ -1,5 +1,4 @@
 import ImageHandler from "../utils/imageHandler";
-import Container from "react-bootstrap/Container";
 
 const SingleChatlistItem = ({ chat }) => {
   const image =

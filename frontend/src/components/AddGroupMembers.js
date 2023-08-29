@@ -55,15 +55,10 @@ const AddGroupMembers = ({ id }) => {
   };
 
   return (
-    <>
-      <Button onClick={handleOpen}>Add members</Button>
-      {open && (
-        <Stack direction="horizontal">
-          <Select options={userOptions} isMulti onChange={handleSelectChange} />
-          <Button onClick={handleSubmit}>Invite</Button>
-        </Stack>
-      )}
-    </>
+    <Stack direction="horizontal">
+      <Select options={userOptions} isMulti onChange={handleSelectChange} />
+      <Button onClick={handleSubmit}>Invite</Button>
+    </Stack>
   );
 };
 

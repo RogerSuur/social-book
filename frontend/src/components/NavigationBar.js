@@ -3,6 +3,7 @@ import useAuth from "../hooks/useAuth";
 import { Nav, Navbar } from "react-bootstrap";
 import NotificationNavbarItem from "./NotificationNavbarItem";
 import { LinkContainer } from "react-router-bootstrap";
+import SearchUtility from "../components/SearchUtility";
 
 const NavigationBar = () => {
   const { auth } = useAuth();
@@ -25,6 +26,7 @@ const NavigationBar = () => {
           </>
         )}
         {auth && <NotificationNavbarItem />}
+        {auth && <SearchUtility />}
         <LinkContainer to="/profile">
           <Nav.Link>Profile</Nav.Link>
         </LinkContainer>

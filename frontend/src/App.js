@@ -9,7 +9,6 @@ import NoPage from "./pages/NoPage";
 import RequireAuth from "./components/RequireAuth";
 import ProfileInfoPage from "./pages/ProfileInfoPage";
 import GroupPage from "./pages/GroupPage";
-//import RequireGuest from "./components/RequireGuest";
 import Logout from "./components/Logout";
 import EventPage from "./pages/EventPage.js";
 
