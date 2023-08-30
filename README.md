@@ -11,6 +11,9 @@
 - [Service pattern (project structure)](https://www.alexedwards.net/blog/the-fat-service-pattern)
 - [Websocket architecture](https://programmingpercy.tech/blog/mastering-websockets-with-go/)
 
+## Run Docker scripts
+`docker compose up -d`
+
 ## Running frontend server
 
 - Option for development: `cd frontend` -> `npm start`
