@@ -318,6 +318,9 @@ func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) 
 		} else if member.Accepted {
 			s.Logger.Printf("User %d is already a member of this group", senderId)
 			return -1, errors.New("already a member of this group")
+		} else if !member.Accepted {
+			s.Logger.Printf("User %d already has a pending request for this group", senderId)
+			return -1, errors.New("already has a pending request for this group")
 		}
 	}
 
