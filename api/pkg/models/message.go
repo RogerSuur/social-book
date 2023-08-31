@@ -196,7 +196,9 @@ func (repo MessageRepository) GetChatUsers(id int64) ([]*User, error) {
 func (repo MessageRepository) GetChatGroups(id int64) ([]*Group, error) {
 	//get all groups from user_groups where user is member and title and image_path from groups
 
-	query := `SELECT g.id, g.title, g.created_at, g.image_path FROM groups g JOIN user_groups ug ON g.id = ug.group_id WHERE ug.user_id = ?`
+	query := `SELECT g.id, g.title, g.created_at, g.image_path FROM groups g 
+	JOIN user_groups ug ON g.id = ug.group_id 
+	WHERE ug.user_id = ? AND ug.accepted = 1`
 
 	rows, err := repo.DB.Query(query, id)
 	if err != nil {
