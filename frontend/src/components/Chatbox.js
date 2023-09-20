@@ -61,7 +61,7 @@ const Chatbox = ({
     console.log("LAST MESSAGE: ", lastMessage);
     console.log("lastReadMessage: ", lastMessageRead);
 
-    if (lastMessage && lastMessage !== lastMessageRead) {
+    // if (lastMessage && lastMessage !== lastMessageRead) {
       setLastMessageRead(lastMessage);
       if (
         messageboxRef?.current?.scrollHeight -
@@ -73,7 +73,7 @@ const Chatbox = ({
           data: { message_id: lastMessage },
         });
         resetUnreadCount([chat.user_id, chat.group_id]);
-      }
+      // }
     }
   };
 
@@ -187,6 +187,8 @@ const Chatbox = ({
           );
       }
     }
+
+
   });
 
   const handleSubmit = (event) => {
@@ -290,6 +292,8 @@ const Chatbox = ({
   );
 
   return <div className="chatbox">{chatbox}</div>;
+
+
 };
 
 export default Chatbox;
