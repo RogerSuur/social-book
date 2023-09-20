@@ -60,7 +60,7 @@ func (s *CommentService) GetPostComments(postId int64, offset int64) ([]*Comment
 
 func (s *CommentService) CreateComment(comment *models.Comment) error {
 
-	if len(comment.Content) == 0 {
+	if len(comment.Content) == 0 && len(comment.ImagePath) == 0 {
 		err := errors.New("comment content too short")
 		s.Logger.Printf("CreateComment error: %s", err)
 		return err
