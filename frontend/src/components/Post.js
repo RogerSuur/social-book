@@ -30,7 +30,7 @@ const Post = ({ post, isLastPost, lastPostElementRef }) => {
         <Stack>
           <div>
             <LinkContainer to={`/profile/${userId}`}>
-              <span>{userName}</span>
+              <strong>{userName}</strong>
             </LinkContainer>
           </div>
           <div>{ShortDate(createdAt)}</div>
@@ -41,20 +41,18 @@ const Post = ({ post, isLastPost, lastPostElementRef }) => {
           </LinkContainer>
         )}
       </Stack>
-      <Row className="mb-3 mt-3">
-        {imagePath && (
-          <Row>
-            <Image
-              fluid
-              className="post-img"
-              src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
-            />
-          </Row>
-        )}
-        <Row>
-          <Col>{content}</Col>
-        </Row>
+      <Row className="pt-3">
+        <Col>{content}</Col>
       </Row>
+      {imagePath && (
+        <Row className="border-top border-bottom">
+          <Image
+            fluid
+            className="post-img"
+            src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
+          />
+        </Row>
+      )}
 
       <Row>
         <Col>

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Form, Stack, Col, InputGroup } from "react-bootstrap";
+import { Form, Stack, Col, InputGroup, Alert } from "react-bootstrap";
 import PostButton from "../components/PostButton";
 
-const CreateGroupPost = ({ groupId, onPostsUpdate, handleClose }) => {
+const CreateGroupPost = ({ groupId, onPostsUpdate }) => {
   const initialFormData = {
     content: "",
     imagePath: "",
@@ -15,11 +15,12 @@ const CreateGroupPost = ({ groupId, onPostsUpdate, handleClose }) => {
   const [errMsg, setErrMsg] = useState("");
 
   const handleChange = (event) => {
-    const { name, value, type } = event.target;
+    setErrMsg("");
+    const { name, value } = event.target;
 
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: type === "radio" ? parseInt(value) : value,
+      [name]: value,
     }));
   };
 
@@ -37,7 +38,6 @@ const CreateGroupPost = ({ groupId, onPostsUpdate, handleClose }) => {
       );
 
       setErrMsg(response.data?.message);
-
       onPostsUpdate();
     } catch (err) {
       if (!err?.response) {
@@ -53,25 +53,27 @@ const CreateGroupPost = ({ groupId, onPostsUpdate, handleClose }) => {
 
   return (
     <>
-      <div className="group-post-area">
-        {errMsg && <h2>{errMsg}</h2>}
-        <Form onSubmit={handleSubmit}>
-          <Col>
-            <Stack direction="horizontal" gap="2">
-              <InputGroup>
-                <Form.Control
-                  as="textarea"
-                  placeholder="Write what's on your mind"
-                  onChange={handleChange}
-                  value={formData.content}
-                  name="content"
-                />
-              </InputGroup>
-              <Col as={PostButton} className="text-center" />
-            </Stack>
-          </Col>
-        </Form>
-      </div>
+      {errMsg && (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      )}
+      <Form onSubmit={handleSubmit}>
+        <Col>
+          <Stack direction="horizontal" gap="2">
+            <InputGroup>
+              <Form.Control
+                as="textarea"
+                placeholder="Write what's on your mind"
+                onChange={handleChange}
+                value={formData.content}
+                name="content"
+              />
+            </InputGroup>
+            <Col as={PostButton} className="text-center" />
+          </Stack>
+        </Col>
+      </Form>
     </>
   );
 };

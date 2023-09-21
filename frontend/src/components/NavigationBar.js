@@ -11,33 +11,42 @@ const NavigationBar = () => {
   return (
     <>
       <Navbar
-        as={Nav}
-        className="bg-warning flex-sm-row justify-content-evenly"
+        className="bg-secondary-subtle border-bottom"
         fixed="top"
+        expand="md"
+        collapseOnSelect
       >
-        {!auth && (
-          <>
-            <LinkContainer to="/login">
-              <Nav.Link>Sign In</Nav.Link>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav>
+            {!auth && (
+              <>
+                <LinkContainer to="/login">
+                  <Nav.Link>Sign In</Nav.Link>
+                </LinkContainer>
+                <LinkContainer to="/signup">
+                  <Nav.Link>Sign Up</Nav.Link>
+                </LinkContainer>
+              </>
+            )}
+            {auth && <NotificationNavbarItem />}
+            {auth && <SearchUtility />}
+            <LinkContainer to="/profile">
+              <Nav.Link>Profile</Nav.Link>
             </LinkContainer>
-            <LinkContainer to="/signup">
-              <Nav.Link>Sign Up</Nav.Link>
+            <LinkContainer to="/posts">
+              <Nav.Link>Posts</Nav.Link>
             </LinkContainer>
-          </>
-        )}
-        {auth && <NotificationNavbarItem />}
-        {auth && <SearchUtility />}
-        <LinkContainer to="/profile">
-          <Nav.Link>Profile</Nav.Link>
-        </LinkContainer>
-        <LinkContainer to="/posts">
-          <Nav.Link>Posts</Nav.Link>
-        </LinkContainer>
-        <LinkContainer to="/logout">
-          <Nav.Link>
-            <img src={`${process.env.PUBLIC_URL}/logout.png`} alt="Logout" />
-          </Nav.Link>
-        </LinkContainer>
+            <LinkContainer to="/logout">
+              <Nav.Link>
+                <img
+                  src={`${process.env.PUBLIC_URL}/logout.png`}
+                  alt="Logout"
+                />
+              </Nav.Link>
+            </LinkContainer>
+          </Nav>
+        </Navbar.Collapse>
       </Navbar>
       <div className="content-wrapper">
         <Outlet />

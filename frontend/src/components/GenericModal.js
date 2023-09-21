@@ -9,6 +9,7 @@ const GenericModal = ({
   headerText,
   headerButton,
   children,
+  scrollable,
 }) => {
   const [show, setShow] = useState(false);
 
@@ -31,7 +32,8 @@ const GenericModal = ({
 
       <Modal
         centered
-        scrollable
+        scrollable={!scrollable}
+        animation={false}
         show={show}
         fullscreen="md-down"
         onHide={handleClose}

@@ -10,9 +10,7 @@ import Events from "../components/Events";
 import GroupRequestButton from "../components/GroupRequestButton.js";
 import CreateGroupPosts from "../components/CreateGroupPosts.js";
 import GenericModal from "../components/GenericModal";
-import AddGroupMembers from "../components/AddGroupMembers";
 import { Alert, Container, Stack, Col, Row, Badge } from "react-bootstrap";
-import { PlusCircle } from "react-bootstrap-icons";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -51,9 +49,6 @@ const GroupPage = () => {
 
   return (
     <>
-      {/* <div style={{ "max-width": `100px` }}>
-        <Events groupId={+id} />
-      </div> */}
       {errMsg ? (
         <Alert variant="danger" className="text-center">
           {errMsg}
@@ -85,7 +80,9 @@ const GroupPage = () => {
             </Col>
           </Row>
 
-          <p>{group.description}</p>
+          <Row className="mt-3 mb-3">
+            <Col>{group.description}</Col>
+          </Row>
           {group.isMember && (
             <>
               {/* <GenericModal buttonText="Upload new image">

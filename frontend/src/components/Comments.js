@@ -72,29 +72,27 @@ const Comments = ({ postId, commentCount }) => {
   ));
 
   return (
-    <Container className="bg-secondary border rounded">
+    <Container>
       {errMsg ? (
         <Alert variant="danger" className="text-center">
           {errMsg}
         </Alert>
       ) : (
-        <>
+        <div className="my-auto">
           <CreateComment
             postId={postId}
             onCommentsUpdate={handleCommentsUpdate}
           />
-          {commentCountUpdate > 0 && (
-            <div className="row">
-              <div className="column">{renderedComments}</div>
+          {commentCountUpdate > 0 && <>{renderedComments}</>}
+          {commentsToShow > 5 && (
+            <div className="d-flex justify-content-center">
+              <Button onClick={showMoreComments}>
+                {commentsToShow - 5} more comment
+                {commentsToShow - 5 === 1 ? "" : "s"}
+              </Button>
             </div>
           )}
-          {commentsToShow > 5 && (
-            <Button onClick={showMoreComments}>
-              {commentsToShow - 5} more comment
-              {commentsToShow - 5 === 1 ? "" : "s"}
-            </Button>
-          )}
-        </>
+        </div>
       )}
     </Container>
   );

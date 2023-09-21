@@ -137,15 +137,15 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
         </Alert>
       )}
 
-      <div className="post-img mb-3">
-        {formData?.image && (
+      {formData?.image && (
+        <div className="post-img mb-3">
           <Image
             src={URL.createObjectURL(formData?.image)}
             fluid
             alt="Selected"
           />
-        )}
-      </div>
+        </div>
+      )}
 
       <Form onSubmit={handleSubmit}>
         <Stack direction="horizontal">

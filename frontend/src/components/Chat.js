@@ -135,12 +135,7 @@ const Chat = () => {
 
   const renderedChats = (chatlist) =>
     chatlist.map((chat, index) => (
-      <ListGroup.Item
-        key={index}
-        action
-        variant="light"
-        onClick={() => toggleChat(chat)}
-      >
+      <ListGroup.Item key={index} action onClick={() => toggleChat(chat)}>
         <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
         {chat?.user_id > 0 && chat.unread_count > 0 && (
           <Badge bg="danger">{chat.unread_count}</Badge>
@@ -150,16 +145,14 @@ const Chat = () => {
 
   return (
     <Scrollbars>
-      <>
-        <Container className="">
-          <ListGroup variant="flush">
-            Private Chats{renderedChats(userChatlist)}
-          </ListGroup>
-          <ListGroup variant="flush">
-            Group Chats{renderedChats(groupChatlist)}
-          </ListGroup>
-        </Container>
-      </>
+      <Container className="">
+        <ListGroup variant="flush">
+          Private Chats{renderedChats(userChatlist)}
+        </ListGroup>
+        <ListGroup variant="flush">
+          Group Chats{renderedChats(groupChatlist)}
+        </ListGroup>
+      </Container>
       {openChat && openedChatbox}
     </Scrollbars>
   );
