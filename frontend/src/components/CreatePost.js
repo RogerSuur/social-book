@@ -159,12 +159,12 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
                   value={formData.content}
                   name="content"
                 />
-                <div>
-                  <GenericModal img={<ImageFill />} buttonText="Add image">
-                    <ImageUploadModal onUploadSuccess={handleImageUpload} />
-                  </GenericModal>
-                </div>
               </InputGroup>
+              <div>
+                <GenericModal img={<ImageFill />} buttonText="Add image">
+                  <ImageUploadModal onUploadSuccess={handleImageUpload} />
+                </GenericModal>
+              </div>
               <Col as={PostButton} className="text-center" />
             </Stack>
 
