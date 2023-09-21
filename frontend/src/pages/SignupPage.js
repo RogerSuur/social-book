@@ -247,7 +247,7 @@ const Signup = () => {
               label="About you (optional)"
             >
               <Form.Control
-                type="textarea"
+                as="textarea"
                 placeholder="Write something about yourself"
                 {...register("about")}
               />

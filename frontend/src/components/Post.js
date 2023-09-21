@@ -20,7 +20,7 @@ const Post = ({ post, isLastPost, lastPostElementRef }) => {
   return (
     <Container
       fluid
-      className="p-3 mt-3 mb-3 bg-white border rounded"
+      className="p-3 mt-3 mb-3 border rounded shadow"
       key={id}
       ref={isLastPost ? lastPostElementRef : null}
       data-post-id={id}

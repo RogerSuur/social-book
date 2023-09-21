@@ -10,10 +10,8 @@ body {
   overflow-y: scroll;
 }
 
-
 textarea {
   resize: none;
-  min-height: 15rem;
 }
 
 code {

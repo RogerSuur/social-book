@@ -150,7 +150,7 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
       <Form onSubmit={handleSubmit}>
         <Stack direction="horizontal">
           <Col>
-            <Stack direction="horizontal" gap="2">
+            <Stack direction="horizontal">
               <InputGroup>
                 <Form.Control
                   as="textarea"
@@ -161,11 +161,17 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
                 />
               </InputGroup>
               <div>
-                <GenericModal img={<ImageFill />} buttonText="Add image">
+                <GenericModal
+                  variant="success"
+                  img={<ImageFill />}
+                  buttonText="Add an image"
+                >
                   <ImageUploadModal onUploadSuccess={handleImageUpload} />
                 </GenericModal>
               </div>
-              <Col as={PostButton} className="text-center" />
+              <div>
+                <Button type="submit">Post</Button>
+              </div>
             </Stack>
 
             <Col className="mb-3">

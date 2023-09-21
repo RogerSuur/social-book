@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
+import { Link } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
 import InfiniteScroll from "react-infinite-scroller";
 import ImageHandler from "../utils/imageHandler";
@@ -218,7 +219,7 @@ const Chatbox = ({
       <Card.Header>
         <Stack direction="horizontal">
           <div className="me-auto">{image}</div>
-          <div className="text-center">{chatName}</div>
+          {chatName}
           <CloseButton
             className="ms-auto align-self-center"
             onClick={closeChat}
