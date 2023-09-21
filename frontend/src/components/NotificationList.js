@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Notification from "../components/Notification";
 import { Dropdown, ListGroup, Col, Row, Container } from "react-bootstrap";
+import Scrollbars from "react-custom-scrollbars-2";
 
 const NotificationList = ({ notifications, setToggle, setNotifications }) => {
   const ref = useRef(null);
@@ -32,21 +33,22 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
   }, [ref]);
 
   const renderedNotifications = notifications.map((notification, index) => (
-    <Container>
-      <ListGroup.Item variant="success" action key={index}>
-        <Notification
-          notification={notification}
-          onClose={handleNotificationClose}
-        />
-      </ListGroup.Item>
-    </Container>
+    <ListGroup.Item variant="success" action key={index}>
+      <Notification
+        notification={notification}
+        onClose={handleNotificationClose}
+      />
+    </ListGroup.Item>
   ));
 
   return (
     <>
       {notifications.length > 0 && (
-        <ListGroup ref={ref} className="position-absolute top-100 w-25 start-0">
-          <Col>{renderedNotifications}</Col>
+        <ListGroup
+          ref={ref}
+          className="scroll position-absolute top-0 w-25 start-0"
+        >
+          {renderedNotifications}
         </ListGroup>
       )}
     </>

@@ -17,21 +17,20 @@ import "./style.css";
 function App() {
   return (
     <BrowserRouter>
+      <NavigationBar />
       <Routes>
-        <Route path="/" element={<NavigationBar />}>
-          <Route path="login" element={<Login />} />
-          <Route path="signup" element={<Signup />} />
+        <Route path="login" element={<Login />} />
+        <Route path="signup" element={<Signup />} />
 
-          <Route element={<RequireAuth />}>
-            <Route path="profile" element={<ProfileEditorPage />} />
-            <Route path="profile/:id" element={<ProfileInfoPage />} />
-            <Route path="groups/:id" element={<GroupPage />} />
-            <Route path="event/:id" element={<EventPage />} />
-            <Route path="posts" element={<PostsPage />} />
-            <Route path="posts/:id" element={<Post />} />
-            <Route path="logout" element={<Logout />} />
-            <Route path="*" element={<NoPage />} />
-          </Route>
+        <Route element={<RequireAuth />}>
+          <Route path="profile" element={<ProfileEditorPage />} />
+          <Route path="profile/:id" element={<ProfileInfoPage />} />
+          <Route path="groups/:id" element={<GroupPage />} />
+          <Route path="event/:id" element={<EventPage />} />
+          <Route path="posts" element={<PostsPage />} />
+          <Route path="posts/:id" element={<Post />} />
+          <Route path="logout" element={<Logout />} />
+          <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

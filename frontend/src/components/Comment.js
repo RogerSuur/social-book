@@ -6,7 +6,7 @@ import { Container, Row, Col, Stack } from "react-bootstrap";
 
 const Comment = ({ comment }) => {
   return (
-    <Container fluid>
+    <>
       <Container fluid className="bg-light p-3 mt-3 border rounded">
         <Stack>
           <Row>
@@ -31,7 +31,7 @@ const Comment = ({ comment }) => {
       <p>
         <small className="text-muted">{ShortDatetime(comment.createdAt)}</small>
       </p>
-    </Container>
+    </>
   );
 };
 

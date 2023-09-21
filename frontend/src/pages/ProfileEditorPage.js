@@ -154,7 +154,7 @@ const ProfileEditorPage = () => {
             <Row>
               <Col>
                 <FloatingLabel
-                  className="mb-3"
+                  className="mt-3 mb-3"
                   controlId="about"
                   label="About you (optional)"
                 >
@@ -168,26 +168,26 @@ const ProfileEditorPage = () => {
             </Row>
             <Row>
               <Col>
-                <p>Email address</p>
+                <strong>Email address</strong>
                 <p>{user.email}</p>
               </Col>
               <Col>
-                <p>Profile Type</p>
+                <strong>Profile Type</strong>
                 <p>{user.isPublic ? "Public" : "Private"}</p>
               </Col>
             </Row>
             <Row>
               <Col>
-                <p>Born</p>
+                <strong>Born</strong>
                 <p>{BirthdayConverter(user?.birthday)}</p>
               </Col>
               <Col>
-                <p>Joined</p>
+                <strong>Joined</strong>
                 <p>{LongDate(user.createdAt)}</p>
               </Col>
             </Row>
           </Row>
-          <Row className="d-grip gap-2">
+          <Row className="gap-2">
             <Col>
               <GenericModal buttonText="Following">
                 {userList(true)}
@@ -204,9 +204,11 @@ const ProfileEditorPage = () => {
               </GenericModal>
             </Col>
           </Row>
-          <Button type="submit" disabled={!isDirty}>
-            Save changes
-          </Button>
+          <div className="d-flex justify-content-center mb-3 mt-3">
+            <Button type="submit" disabled={!isDirty}>
+              Save changes
+            </Button>
+          </div>
         </Form>
       )}
     </Container>
