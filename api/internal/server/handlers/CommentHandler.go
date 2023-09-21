@@ -9,12 +9,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type insertCommentJSON struct {
-	PostId    int64  `json:"postId"`
-	Content   string `json:"content"`
-	ImagePath string `json:"imagePath"`
-}
-
 func (app *Application) Comments(rw http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
@@ -72,19 +66,12 @@ func (app *Application) Comment(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "Parsing form error", http.StatusRequestEntityTooLarge)
 		}
 
-		/* decoder := json.NewDecoder(r.Body)
-		decoder.DisallowUnknownFields()
-
-		JSONdata := &insertCommentJSON{}
-		err = decoder.Decode(&JSONdata)
-
-		if err != nil {
-			app.Logger.Printf("JSON error: %v", err)
-			http.Error(rw, "JSON error", http.StatusBadRequest)
-		} */
-
 		postIdStr := r.FormValue("postId")
 		postId, err := strconv.ParseInt(postIdStr, 10, 64)
+		if err != nil {
+			app.Logger.Printf("DATA PARSE error: %v", err)
+			http.Error(rw, "DATA PARSE error", http.StatusBadRequest)
+		}
 
 		content := r.FormValue("content")
 

@@ -53,7 +53,7 @@ type feedPostJSON struct {
 
 func (s *PostService) CreatePost(post *models.Post) error {
 
-	if len(post.Content) == 0 {
+	if len(post.Content) == 0 && len(post.ImagePath) == 0 {
 		err := errors.New("content too short")
 		log.Printf("CreatePost error: %s", err)
 		return err
@@ -188,7 +188,6 @@ func (s *PostService) GetProfilePosts(userId int64, offset int64) ([]*feedPostJS
 			}
 		}
 
-
 		if p.Nickname == "" {
 			p.Nickname = p.FirstName + " " + p.LastName
 		}
@@ -285,7 +284,6 @@ func (s *PostService) GetUserPosts(userId int64, offset int64, requestingUserId 
 				s.Logger.Printf("GetFeedPosts error: %s", err)
 			}
 		}
-
 
 		if p.Nickname == "" {
 			p.Nickname = p.FirstName + " " + p.LastName
