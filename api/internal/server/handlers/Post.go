@@ -14,7 +14,7 @@ import (
 type createPostJSON struct {
 	UserId      int      `json:"userId"`
 	Content     string   `json:"content"`
-	ImagePath   string   `json:"image"`
+	ImagePath   string   `json:"imagePath"`
 	PrivacyType int      `json:"privacyType"`
 	Receivers   []string `json:"selectedReceivers"`
 }

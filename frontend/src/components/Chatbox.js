@@ -18,6 +18,8 @@ import {
   Badge,
 } from "react-bootstrap";
 import { Send } from "react-bootstrap-icons";
+import Scrollbars from "react-custom-scrollbars-2";
+import ChatMessage from "../components/ChatMessage";
 
 const Chatbox = ({
   toggleChat,
@@ -146,46 +148,14 @@ const Chatbox = ({
     });
   };
 
-  const getTime = (datetime) =>
-    new Date(datetime).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
+  console.log("MESSAGE HISTORY: ", messageHistory);
 
-  const renderedMessages = messageHistory.map((msg, index) => {
-    if (msg) {
-      switch (msg.sender_id) {
-        case user:
-          return (
-            <>
-              <Col
-                md={{ span: 9, offset: 3 }}
-                variant="success"
-                key={index}
-                className="own-message text-end p-1"
-              >
-                <span className="p-1 bg-success">{msg.body}</span>
-              </Col>
-              <p className="own-time text-secondary text-muted text-end p-0 m-0">
-                {getTime(msg.timestamp) !==
-                  getTime(messageHistory[index - 1]?.timestamp) &&
-                  getTime(msg.timestamp)}
-              </p>
-            </>
-          );
-        default:
-          return (
-            <Col md="9" key={index} className="message text-start">
-              <span className="p-1 bg-primary">
-                {msg.group_id > 0 && msg.sender_name} {msg.body}
-              </span>
-              <p className="message-time text-secondary text-muted">
-                {getTime(msg.timestamp)}
-              </p>
-            </Col>
-          );
-      }
+  const renderedMessages = messageHistory?.map((msg, index) => {
+    switch (msg.sender_id) {
+      case user:
+        return <ChatMessage key={index} msg={msg} own={true} />;
+      default:
+        return <ChatMessage key={index} msg={msg} />;
     }
   });
 
@@ -255,6 +225,7 @@ const Chatbox = ({
           />
         </Stack>
       </Card.Header>
+
       <Card.Body
         className="message-history h-25"
         ref={messageboxRef}
@@ -270,6 +241,7 @@ const Chatbox = ({
           {renderedMessages}
         </InfiniteScroll>
       </Card.Body>
+
       <Card.Footer>
         <Form onSubmit={handleSubmit}>
           <Stack direction="horizontal" gap={2}>
@@ -293,52 +265,3 @@ const Chatbox = ({
 };
 
 export default Chatbox;
-
-{
-  /* <div className="chatbox">
-        <Container fluid>
-          <Row>
-            <Col className="m-2">
-              <div>{image}</div>
-            </Col>
-            <Col>
-              {chatName}
-              <CloseButton onClick={closeChat} />
-            </Col>
-          </Row>
-          <Row
-            className="message-history h-25"
-            ref={messageboxRef}
-            onScroll={handleScrolling}
-          >
-            <InfiniteScroll
-              pageStart={0}
-              isReverse={true}
-              loadMore={loadMessages}
-              hasMore={hasMoreMessages}
-              useWindow={false}
-            >
-              {renderedMessages}
-            </InfiniteScroll>
-          </Row>
-          <Row className="message-box">
-            <Form onSubmit={handleSubmit}>
-              <Stack direction="horizontal">
-                <Form.Control
-                  type="text"
-                  placeholder="Message"
-                  onChange={handleChange}
-                  name="message"
-                  value={message.data.body}
-                  autoFocus
-                  required
-                />
-                <Button type="submit" variant="flush">
-                  <Image src={`${process.env.PUBLIC_URL}/send-icon.png`} />
-                </Button>{" "}
-              </Stack>
-            </Form>
-          </Row>
-        </Container>
-      </div> */
-}

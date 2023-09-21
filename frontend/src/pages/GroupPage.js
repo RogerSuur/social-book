@@ -61,31 +61,29 @@ const GroupPage = () => {
       ) : (
         <Container fluid>
           {image}
-          <Stack direction="horizontal" gap="2">
-            <Col xs="auto">
-              <h1>{group.title}</h1>
-            </Col>
+          <Row>
+            <h1>{group.title}</h1>
+          </Row>
+          <Row>
             <Col xs="auto">
               {group?.isMember ? (
-                <Stack direction="horizontal">
-                  <div>
-                    <GroupMembers groupId={+id} />
-                  </div>
-                  <div>
-                    <GenericModal
-                      img={<PlusCircle />}
-                      variant="flush"
-                      headerText="Add members"
-                    >
-                      <AddGroupMembers id={+id} />
+                <Row>
+                  <Col>
+                    <GenericModal buttonText="Events">
+                      <Events groupId={+id} />
                     </GenericModal>
-                  </div>
-                </Stack>
+                  </Col>
+                  <Col>
+                    <Stack direction="horizontal">
+                      <GroupMembers groupId={+id} />
+                    </Stack>
+                  </Col>
+                </Row>
               ) : (
                 <GroupRequestButton groupid={+id} />
               )}
             </Col>
-          </Stack>
+          </Row>
 
           <p>{group.description}</p>
           {group.isMember && (

@@ -7,6 +7,7 @@ const GenericModal = ({
   linkText,
   buttonText,
   headerText,
+  headerButton,
   children,
 }) => {
   const [show, setShow] = useState(false);
@@ -36,7 +37,8 @@ const GenericModal = ({
         onHide={handleClose}
       >
         <Modal.Header closeButton>
-          <h3>{headerText ? headerText : buttonText}</h3>
+          <h3 className="my-auto">{headerText ? headerText : buttonText}</h3>
+          <div>{headerButton && headerButton}</div>
         </Modal.Header>
         <Modal.Body>
           {React.Children.map(children, (child) =>

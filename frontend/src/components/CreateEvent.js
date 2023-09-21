@@ -1,11 +1,10 @@
-import Modal from "./Modal";
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import { Form, Button, Alert, FloatingLabel } from "react-bootstrap";
 
-const CreateEvent = ({ onEventCreated, id }) => {
-  const [modalOpen, setModalOpen] = useState(false);
+const CreateEvent = ({ onEventCreated, id, handleClose }) => {
   const [errMsg, setErrMsg] = useState("");
-  const [createEventForm, setCreateEventForm] = useState({
+  const [formData, setFormData] = useState({
     title: "",
     description: "",
     startTime: "",
@@ -13,17 +12,9 @@ const CreateEvent = ({ onEventCreated, id }) => {
     group_id: +id,
   });
 
-  const openModal = () => {
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-  };
-
   const handleChange = (event) => {
     const { name, value } = event?.target;
-    setCreateEventForm((prevState) => ({
+    setFormData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
@@ -31,14 +22,14 @@ const CreateEvent = ({ onEventCreated, id }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Send the createEventForm data to the backend handler
+    // Send the formData data to the backend handler
     try {
       const response = await axios.post(
         "http://localhost:8000/creategroupevent",
         JSON.stringify({
-          ...createEventForm,
-          startTime: new Date(createEventForm.startTime).toISOString(),
-          endTime: new Date(createEventForm.endTime).toISOString(),
+          ...formData,
+          startTime: new Date(formData.startTime).toISOString(),
+          endTime: new Date(formData.endTime).toISOString(),
         }),
         { withCredentials: true },
         {
@@ -47,6 +38,7 @@ const CreateEvent = ({ onEventCreated, id }) => {
       );
       setErrMsg(response.data?.message);
       onEventCreated();
+      handleClose();
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -54,67 +46,70 @@ const CreateEvent = ({ onEventCreated, id }) => {
         setErrMsg("Internal Server Error");
       }
     }
-
-    closeModal();
   };
 
   return (
     <>
-      <div className="newModal">
-        <i className="iconoir-add-circle" onClick={openModal} />
-        <Modal open={modalOpen} onClose={closeModal}>
-          {errMsg && <p className="error">{errMsg}</p>}
-          <form className="pop-form" onSubmit={handleSubmit}>
-            Title:
-            <label className="input-big">
-              <input
-                type="text"
-                name="title"
-                value={createEventForm.title}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <br />
-            Description:
-            <label>
-              <textarea
-                className="text-big"
-                name="description"
-                value={createEventForm.description}
-                onChange={handleChange}
-                required
-              ></textarea>
-            </label>
-            <br />
-            Start Time:
-            <label>
-              <input
-                type="datetime-local"
-                name="startTime"
-                value={createEventForm.startTime}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <br />
-            End Time:
-            <label>
-              <input
-                type="datetime-local"
-                name="endTime"
-                value={createEventForm.endTime}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <br />
-            <button className="create-but" type="submit">
-              Create
-            </button>
-          </form>
-        </Modal>
-      </div>
+      {errMsg && (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      )}
+      <Form onSubmit={handleSubmit}>
+        <FloatingLabel className="mb-3" controlId="floatingTitle" label="Name">
+          <Form.Control
+            placeholder="Event name"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            autoFocus
+            required
+          />
+        </FloatingLabel>
+        <FloatingLabel
+          className="mb-3"
+          controlId="floatingDescription"
+          label="Description"
+        >
+          <Form.Control
+            as="textarea"
+            placeholder="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            required
+          />
+        </FloatingLabel>
+        <FloatingLabel
+          className="mb-3"
+          controlId="floatingStartTime"
+          label="Start time"
+        >
+          <Form.Control
+            type="datetime-local"
+            placeholder="Start time"
+            name="startTime"
+            value={formData.startTime}
+            onChange={handleChange}
+            required
+          />
+        </FloatingLabel>
+        <FloatingLabel
+          className="mb-3"
+          controlId="floatingEndTime"
+          label="End time"
+        >
+          <Form.Control
+            type="datetime-local"
+            placeholder="End time"
+            name="endTime"
+            value={formData.endTime}
+            onChange={handleChange}
+            required
+          />
+        </FloatingLabel>
+        <Button type="submit">Create</Button>
+      </Form>
     </>
   );
 };

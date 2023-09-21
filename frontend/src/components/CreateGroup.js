@@ -75,8 +75,7 @@ const CreateGroup = ({ onGroupCreated, handleClose }) => {
           label="Description"
         >
           <Form.Control
-            type="textarea"
-            className="post-textarea"
+            as="textarea"
             placeholder="Description"
             name="description"
             value={formData.description}

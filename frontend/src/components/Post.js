@@ -20,13 +20,12 @@ const Post = ({ post, isLastPost, lastPostElementRef }) => {
   return (
     <Container
       fluid
-      className="mt-3 mb-5"
+      className="p-3 mt-3 mb-3 bg-white border rounded"
       key={id}
       ref={isLastPost ? lastPostElementRef : null}
       data-post-id={id}
     >
       <Stack direction="horizontal">
-        <div></div>
         <Stack>
           <div>
             {new Date(createdAt).toLocaleDateString("en-UK", {

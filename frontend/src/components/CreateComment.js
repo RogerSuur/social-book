@@ -115,8 +115,7 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
           <Stack direction="horizontal">
             <InputGroup className="me-2">
               <Form.Control
-                className="post-textarea"
-                type="textarea"
+                as="textarea"
                 placeholder="Write a comment"
                 onChange={handleChange}
                 value={formData.content}

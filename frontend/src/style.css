@@ -2,17 +2,16 @@
   box-sizing: border-box; 
 }
 
-body {
-  min-width: 320px;
-  overflow-y: scroll;
-}
-
 .sidebar {
   position: fixed;
   height: 90vh;
   overflow-y: auto;
   min-width: 240px;
   max-width: 320px;
+}
+
+.post-textarea {
+  min-height: 10rem;
 }
 
 .content-wrapper {
@@ -67,6 +66,10 @@ body {
 .avatar-editor {
   width: 400px;
   height: 400px;
+}
+
+.search-results {
+  overflow-y: hidden;
 }
 
 

@@ -3,9 +3,12 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { GROUP_EVENTS_URL } from "../utils/routes";
 import CreateEvent from "./CreateEvent";
+import GenericEventList from "./GenericEventList";
+import { ListGroup } from "react-bootstrap";
+import GenericModal from "./GenericModal";
 
 const Events = ({ groupId }) => {
-  const [eventsData, setEventsData] = useState([]);
+  const [events, setEvents] = useState([]);
 
   const [loadNewEvents, setLoadNewEvents] = useState(0);
 
@@ -19,15 +22,13 @@ const Events = ({ groupId }) => {
         const response = await axios.get(GROUP_EVENTS_URL + groupId, {
           withCredentials: true,
         });
-        setEventsData(response.data);
+        setEvents(response.data);
       } catch (err) {
         console.error(err);
       }
     };
     fetchEvents();
   }, [groupId, loadNewEvents]);
-
-  console.log("GROUPEVENTS: ", eventsData);
 
   const timeConverter = (datetime) =>
     new Date(datetime).toLocaleTimeString("en-UK", {
@@ -38,7 +39,7 @@ const Events = ({ groupId }) => {
       minute: "2-digit",
     });
 
-  const eventsDataMap = eventsData?.map((event, index) => (
+  const eventsMap = events?.map((event, index) => (
     <li key={index}>
       <Link to={`/event/${event.id}`}>
         <h1>{event.title}</h1>
@@ -50,10 +51,12 @@ const Events = ({ groupId }) => {
 
   return (
     <>
-      <p>Here comes the events of the group</p>
-      <ul>{eventsDataMap}</ul>
-      <p>Here comes creating an event</p>
-      <CreateEvent onEventCreated={handleEventUpdate} id={groupId} />
+      <ListGroup>
+        <GenericEventList url={GROUP_EVENTS_URL + groupId} />
+      </ListGroup>
+      <GenericModal buttonText="Create an event">
+        <CreateEvent onEventCreated={handleEventUpdate} id={groupId} />
+      </GenericModal>
     </>
   );
 };

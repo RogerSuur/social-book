@@ -60,8 +60,7 @@ const CreateGroupPost = ({ groupId, onPostsUpdate, handleClose }) => {
             <Stack direction="horizontal" gap="2">
               <InputGroup>
                 <Form.Control
-                  className="post-textarea"
-                  type="textarea"
+                  as="textarea"
                   placeholder="Write what's on your mind"
                   onChange={handleChange}
                   value={formData.content}

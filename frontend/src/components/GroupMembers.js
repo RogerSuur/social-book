@@ -3,7 +3,9 @@ import { makeRequest } from "../services/makeRequest";
 import GenericModal from "../components/GenericModal";
 import GenericUserList from "../components/GenericUserList";
 import { GROUP_MEMBERS_URL } from "../utils/routes";
-import { ListGroup } from "react-bootstrap";
+import { ListGroup, Col } from "react-bootstrap";
+import AddGroupMembers from "./AddGroupMembers";
+import { PlusCircle } from "react-bootstrap-icons";
 
 const GroupMembers = ({ groupId }) => {
   const [groupMembers, setGroupMembers] = useState([]);
@@ -23,16 +25,24 @@ const GroupMembers = ({ groupId }) => {
     loadMembers();
   }, [groupId]);
 
-  return (
-    <GenericModal
-      linkText={`${groupMembers?.length} members`}
-      headerText={"Group members"}
-      variant="flush"
-    >
-      <ListGroup>
-        <GenericUserList variant="flush" url={GROUP_MEMBERS_URL + groupId} />
-      </ListGroup>
+  const inviteMembers = (
+    <GenericModal img={<PlusCircle />} variant="flush" headerText="Add members">
+      <AddGroupMembers id={groupId} />
     </GenericModal>
+  );
+
+  return (
+    <Col xs="auto">
+      <GenericModal
+        buttonText={`${groupMembers?.length} members`}
+        headerText={"Group members"}
+        headerButton={inviteMembers}
+      >
+        <ListGroup>
+          <GenericUserList variant="flush" url={GROUP_MEMBERS_URL + groupId} />
+        </ListGroup>
+      </GenericModal>
+    </Col>
   );
 };
 

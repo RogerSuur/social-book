@@ -7,7 +7,7 @@ import {
   ACCEPTED_EVENTS_URL,
 } from "../utils/routes";
 import CreateGroup from "../components/CreateGroup";
-import { Container, ListGroup, Row, Col, Stack } from "react-bootstrap";
+import { Container, ListGroup, Row, Stack } from "react-bootstrap";
 import { Scrollbars } from "react-custom-scrollbars-2";
 import { PlusCircle } from "react-bootstrap-icons";
 import GenericModal from "../components/GenericModal";
