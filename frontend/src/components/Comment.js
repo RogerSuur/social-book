@@ -1,6 +1,7 @@
 import React from "react";
 import { Image } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
+import { ShortDatetime } from "../utils/datetimeConverters";
 
 const Comment = ({ comment }) => {
   return (
@@ -16,14 +17,12 @@ const Comment = ({ comment }) => {
       <div className="row">
         <div className="column">
           <p>
-            <small>{new Date(comment.createdAt).toLocaleString("et-EE")}</small>
+            <small>{ShortDatetime(comment.createdAt)}</small>
           </p>
         </div>
-        <div className="column">
-          <LinkContainer to={`/profile/${comment?.userId}`}>
-            <>{comment?.userName}</>
-          </LinkContainer>
-        </div>
+        <LinkContainer to={`/profile/${comment?.userId}`}>
+          <>{comment?.userName}</>
+        </LinkContainer>
       </div>
       <hr />
     </>

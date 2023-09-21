@@ -13,6 +13,7 @@ import FeedPosts from "../components/FeedPosts.js";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import GenericUserList from "../components/GenericUserList";
 import GenericModal from "../components/GenericModal";
+import { BirthdayConverter, LongDate } from "../utils/datetimeConverters";
 
 const ProfileInfo = () => {
   const [user, setUser] = useState({});
@@ -64,18 +65,6 @@ const ProfileInfo = () => {
     };
     loadUser();
   }, [id, isFollowed]);
-
-  const birthdayConverter = (date) => {
-    if (!date) {
-      return;
-    }
-    const [day, month, year] = date?.split("/");
-    return new Date(year, month - 1, day).toLocaleDateString("en-UK", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
 
   const userList = (following) =>
     following ? (
@@ -149,17 +138,11 @@ const ProfileInfo = () => {
                 <Row>
                   <Col>
                     <p>Born</p>
-                    <p>{birthdayConverter(user?.birthday)}</p>
+                    <p>{BirthdayConverter(user?.birthday)}</p>
                   </Col>
                   <Col>
                     <p>Joined</p>
-                    <p>
-                      {new Date(user.createdAt).toLocaleDateString("en-UK", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </p>
+                    <p>{LongDate(user.createdAt)}</p>
                   </Col>
                 </Row>
                 <Row className="d-grip gap-2">

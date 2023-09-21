@@ -6,6 +6,7 @@ import ImageHandler from "../utils/imageHandler";
 import { Container, Row, Col, Button, Stack, ListGroup } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import GenericModal from "../components/GenericModal";
+import { ShortDatetime } from "../utils/datetimeConverters";
 
 const EventPage = () => {
   const [event, setEvent] = useState({});
@@ -60,15 +61,6 @@ const EventPage = () => {
     ));
   };
 
-  const timeConverter = (datetime) =>
-    new Date(datetime).toLocaleTimeString("en-UK", {
-      month: "short",
-      day: "2-digit",
-      year: "2-digit",
-      hour: "numeric",
-      minute: "2-digit",
-    });
-
   const handleResponse = async (isAttending) => {
     console.log("IS ATTENDING: ", isAttending);
     const data = { eventId: +id, isAttending };
@@ -115,8 +107,8 @@ const EventPage = () => {
         </Col>
       </Row>
       <p>{event?.description}</p>
-      <p>Start: {timeConverter(event?.eventTime)}</p>
-      <p>End: {timeConverter(event?.eventEndTime)}</p>
+      <p>Start: {ShortDatetime(event?.eventTime)}</p>
+      <p>End: {ShortDatetime(event?.eventEndTime)}</p>
       <Row className="gap-2">
         <Col xs="12" md>
           <GenericModal

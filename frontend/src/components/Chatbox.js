@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import { Link } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
 import InfiniteScroll from "react-infinite-scroller";
 import ImageHandler from "../utils/imageHandler";
@@ -19,7 +18,6 @@ import {
   Badge,
 } from "react-bootstrap";
 import { Send } from "react-bootstrap-icons";
-import Scrollbars from "react-custom-scrollbars-2";
 import ChatMessage from "../components/ChatMessage";
 
 const Chatbox = ({

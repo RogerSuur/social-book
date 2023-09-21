@@ -2,6 +2,7 @@ import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
+import { ShortDatetime } from "../utils/datetimeConverters";
 
 const Notification = ({ notification, onClose, popup }) => {
   const { sendJsonMessage } = useWebSocketConnection(WS_URL);
@@ -100,8 +101,7 @@ const Notification = ({ notification, onClose, popup }) => {
         <Link to={`/event/${notification?.event_id}`}>
           {notification?.event_name}
         </Link>{" "}
-        is going to take place at{" "}
-        {new Date(notification?.event_datetime).toLocaleString("et-EE")}
+        is going to take place at {ShortDatetime(notification?.event_datetime)}
         {!popup && (
           <>
             {acceptButton("Going")}

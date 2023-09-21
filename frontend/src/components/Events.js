@@ -6,6 +6,7 @@ import CreateEvent from "./CreateEvent";
 import GenericEventList from "./GenericEventList";
 import { ListGroup } from "react-bootstrap";
 import GenericModal from "./GenericModal";
+import { ShortDatetime } from "../utils/datetimeConverters";
 
 const Events = ({ groupId }) => {
   const [events, setEvents] = useState([]);
@@ -30,22 +31,13 @@ const Events = ({ groupId }) => {
     fetchEvents();
   }, [groupId, loadNewEvents]);
 
-  const timeConverter = (datetime) =>
-    new Date(datetime).toLocaleTimeString("en-UK", {
-      month: "short",
-      day: "2-digit",
-      year: "2-digit",
-      hour: "numeric",
-      minute: "2-digit",
-    });
-
   const eventsMap = events?.map((event, index) => (
     <li key={index}>
       <Link to={`/event/${event.id}`}>
         <h1>{event.title}</h1>
       </Link>
       <p>{event.description}</p>
-      <p>Begins {timeConverter(event.eventTime)}</p>
+      <p>Begins {ShortDatetime(event.eventTime)}</p>
     </li>
   ));
 

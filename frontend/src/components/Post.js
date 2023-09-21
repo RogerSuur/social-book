@@ -3,6 +3,7 @@ import Comments from "../components/Comments";
 import { Container, Row, Col, Image, Stack } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import GenericModal from "../components/GenericModal";
+import { ShortDate } from "../utils/datetimeConverters";
 
 const Post = ({ post, isLastPost, lastPostElementRef }) => {
   const {
@@ -28,17 +29,11 @@ const Post = ({ post, isLastPost, lastPostElementRef }) => {
       <Stack direction="horizontal">
         <Stack>
           <div>
-            {new Date(createdAt).toLocaleDateString("en-UK", {
-              month: "short",
-              year: "2-digit",
-              day: "numeric",
-            })}
-          </div>
-          <div>
             <LinkContainer to={`/profile/${userId}`}>
               <span>{userName}</span>
             </LinkContainer>
           </div>
+          <div>{ShortDate(createdAt)}</div>
         </Stack>
         {groupId > 0 && (
           <LinkContainer to={`/groups/${groupId}`}>
@@ -46,18 +41,19 @@ const Post = ({ post, isLastPost, lastPostElementRef }) => {
           </LinkContainer>
         )}
       </Stack>
-
-      <Row>
+      <Row className="mb-3 mt-3">
         {imagePath && (
-          <Image
-            fluid
-            className="post-img"
-            src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
-          />
+          <Row>
+            <Image
+              fluid
+              className="post-img"
+              src={`${process.env.PUBLIC_URL}/images/${imagePath}`}
+            />
+          </Row>
         )}
-      </Row>
-      <Row>
-        <Col>{content}</Col>
+        <Row>
+          <Col>{content}</Col>
+        </Row>
       </Row>
 
       <Row>

@@ -23,6 +23,7 @@ import {
 } from "../utils/routes.js";
 import GenericUserList from "../components/GenericUserList.js";
 import GenericModal from "../components/GenericModal.js";
+import { LongDate, BirthdayConverter } from "../utils/datetimeConverters.js";
 
 const ProfileEditorPage = () => {
   const [user, setUser] = useState({});
@@ -76,18 +77,6 @@ const ProfileEditorPage = () => {
     loadUser();
   };
 
-  const birthdayConverter = (date) => {
-    if (!date) {
-      return;
-    }
-    const [day, month, year] = date?.split("/");
-    return new Date(year, month - 1, day).toLocaleDateString("en-UK", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
   const userList = (following) =>
     following ? (
       <GenericUserList url={FOLLOWING_URL} />
@@ -115,16 +104,6 @@ const ProfileEditorPage = () => {
                   />
                 </GenericModal>
               </div>
-
-              {/* <Modal open={modalOpen === "avatar"} onClose={handleModalClose}>
-                <AvatarUpdater
-                  url={AVATAR_UPDATER_URL}
-                  onUploadSuccess={handleModalClose}
-                />
-              </Modal>
-              <Button onClick={() => setModalOpen("avatar")}>
-                Upload New Image
-              </Button> */}
             </Col>
             <Col sm>
               <Row className="d-grid gap-2">
@@ -200,17 +179,11 @@ const ProfileEditorPage = () => {
             <Row>
               <Col>
                 <p>Born</p>
-                <p>{birthdayConverter(user?.birthday)}</p>
+                <p>{BirthdayConverter(user?.birthday)}</p>
               </Col>
               <Col>
                 <p>Joined</p>
-                <p>
-                  {new Date(user.createdAt).toLocaleDateString("en-UK", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </p>
+                <p>{LongDate(user.createdAt)}</p>
               </Col>
             </Row>
           </Row>
