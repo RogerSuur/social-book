@@ -63,17 +63,17 @@ const Chatbox = ({
     console.log("lastReadMessage: ", lastMessageRead);
 
     // if (lastMessage && lastMessage !== lastMessageRead) {
-      setLastMessageRead(lastMessage);
-      if (
-        messageboxRef?.current?.scrollHeight -
-          messageboxRef?.current?.clientHeight <=
-        messageboxRef?.current?.scrollTop + 1
-      ) {
-        sendJsonMessage({
-          type: "messages_read",
-          data: { message_id: lastMessage },
-        });
-        resetUnreadCount([chat.user_id, chat.group_id]);
+    setLastMessageRead(lastMessage);
+    if (
+      messageboxRef?.current?.scrollHeight -
+        messageboxRef?.current?.clientHeight <=
+      messageboxRef?.current?.scrollTop + 1
+    ) {
+      sendJsonMessage({
+        type: "messages_read",
+        data: { message_id: lastMessage },
+      });
+      resetUnreadCount([chat.user_id, chat.group_id]);
       // }
     }
   };
@@ -156,8 +156,6 @@ const Chatbox = ({
       default:
         return <ChatMessage key={index} msg={msg} />;
     }
-
-
   });
 
   const handleSubmit = (event) => {
@@ -202,11 +200,11 @@ const Chatbox = ({
   const chatName =
     chat?.user_id > 0 ? (
       <LinkContainer to={`/profile/${chat.user_id}`}>
-        <>{chat.name}</>
+        <p>{chat.name}</p>
       </LinkContainer>
     ) : (
       <LinkContainer to={`/groups/${chat.group_id}`}>
-        <>{chat.name}</>
+        <p>{chat.name}</p>
       </LinkContainer>
     );
 
@@ -263,8 +261,6 @@ const Chatbox = ({
   );
 
   return <div className="chatbox">{chatbox}</div>;
-
-
 };
 
 export default Chatbox;

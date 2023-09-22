@@ -16,33 +16,11 @@ const RequireAuth = () => {
   const [socketUrl] = useState(WS_URL);
   const { lastJsonMessage } = useWebSocketConnection(socketUrl);
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const location = useLocation();
 
   const from = location.state?.from?.pathname;
-
-  // const updateUsers = (message) => {
-  //   const { user_id, username, online, datetime } = message;
-
-  //   setUsers((prevUsers) =>
-  //     [
-  //       ...prevUsers.filter(
-  //         (user) => user.user_id !== user_id && user.user_id !== sender_id
-  //       ),
-  //       { user_id, username, online, datetime },
-  //     ].sort((a, b) =>
-  //       a.datetime < b.datetime
-  //         ? 1
-  //         : b.datetime < a.datetime
-  //         ? -1
-  //         : a.username.toLowerCase() > b.username.toLowerCase()
-  //         ? 1
-  //         : a.username.toLowerCase() < b.username.toLowerCase()
-  //         ? -1
-  //         : 0
-  //     )
-  //   );
-  // };
 
   useEffect(() => {
     const authorisation = async () => {
@@ -50,6 +28,7 @@ const RequireAuth = () => {
         await axios.get(AUTH_URL, {
           withCredentials: true,
         });
+        console.log("AUTHENTICATION");
         setAuth(true);
       } catch (err) {
         if (!err?.response) {
@@ -60,6 +39,7 @@ const RequireAuth = () => {
           setAuth(false);
         }
       }
+      setLoading(false);
     };
 
     authorisation();
@@ -71,7 +51,7 @@ const RequireAuth = () => {
     }
   }, [lastJsonMessage]);
 
-  return auth ? (
+  return loading ? null : auth ? (
     <Container fluid className="bg-light">
       <Row>
         <Col className="sidebar p-0 d-none d-md-flex" id="group-sidebar" xs="3">
