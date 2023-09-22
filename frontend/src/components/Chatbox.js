@@ -200,11 +200,11 @@ const Chatbox = ({
   const chatName =
     chat?.user_id > 0 ? (
       <LinkContainer to={`/profile/${chat.user_id}`}>
-        <p>{chat.name}</p>
+        <p className="my-auto">{chat.name}</p>
       </LinkContainer>
     ) : (
       <LinkContainer to={`/groups/${chat.group_id}`}>
-        <p>{chat.name}</p>
+        <p className="my-auto">{chat.name}</p>
       </LinkContainer>
     );
 

@@ -78,7 +78,7 @@ const Comments = ({ postId, commentCount }) => {
           {errMsg}
         </Alert>
       ) : (
-        <div className="my-auto">
+        <div className="my-auto mt-2">
           <CreateComment
             postId={postId}
             onCommentsUpdate={handleCommentsUpdate}

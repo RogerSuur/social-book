@@ -1,53 +1,34 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { GROUP_EVENTS_URL } from "../utils/routes";
 import CreateEvent from "./CreateEvent";
 import GenericEventList from "./GenericEventList";
 import { ListGroup } from "react-bootstrap";
 import GenericModal from "./GenericModal";
-import { ShortDatetime } from "../utils/datetimeConverters";
+import { PlusCircle } from "react-bootstrap-icons";
 
 const Events = ({ groupId }) => {
-  const [events, setEvents] = useState([]);
-
-  const [loadNewEvents, setLoadNewEvents] = useState(0);
+  const [reload, setReload] = useState(false);
 
   const handleEventUpdate = () => {
-    setLoadNewEvents((prevCount) => prevCount + 1);
+    setReload(!reload);
   };
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await axios.get(GROUP_EVENTS_URL + groupId, {
-          withCredentials: true,
-        });
-        setEvents(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchEvents();
-  }, [groupId, loadNewEvents]);
-
-  const eventsMap = events?.map((event, index) => (
-    <li key={index}>
-      <Link to={`/event/${event.id}`}>
-        <h1>{event.title}</h1>
-      </Link>
-      <p>{event.description}</p>
-      <p>Begins {ShortDatetime(event.eventTime)}</p>
-    </li>
-  ));
+  const createEvent = (
+    <GenericModal
+      img={<PlusCircle />}
+      variant="flush"
+      headerText="Create an event"
+    >
+      <CreateEvent onEventCreated={handleEventUpdate} id={groupId} />
+    </GenericModal>
+  );
 
   return (
     <>
-      <ListGroup>
-        <GenericEventList url={GROUP_EVENTS_URL + groupId} />
-      </ListGroup>
-      <GenericModal buttonText="Create an event">
-        <CreateEvent onEventCreated={handleEventUpdate} id={groupId} />
+      <GenericModal buttonText="Events" headerButton={createEvent}>
+        <ListGroup>
+          <GenericEventList key={reload} url={GROUP_EVENTS_URL + groupId} />
+        </ListGroup>
       </GenericModal>
     </>
   );

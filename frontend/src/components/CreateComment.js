@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import ImageUploadModal from "./ImageUploadModal";
 import {
-  Container,
   Row,
-  Col,
   Form,
   Button,
   Image,
@@ -14,7 +12,6 @@ import {
 } from "react-bootstrap";
 import { ImageFill } from "react-bootstrap-icons";
 import GenericModal from "../components/GenericModal";
-import Scrollbars from "react-custom-scrollbars-2";
 
 const CreateComment = ({ postId, onCommentsUpdate }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -58,7 +55,7 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
     formDataWithImage.append("postId", formData.postId);
 
     if (selectedImage) {
-      formDataWithImage.append("image", selectedImage); // Append the image file if it exists
+      formDataWithImage.append("image", selectedImage);
     }
 
     try {
@@ -94,7 +91,7 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
   };
 
   return (
-    <Container className="mt-3 pt-3 pb-3 bg-light border rounded">
+    <>
       <Row>
         {errMsg && (
           <Alert variant="danger" className="text-center">
@@ -109,32 +106,30 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
           />
         )}
       </Row>
-      <Row>
-        <Form onSubmit={handleSubmit}>
-          <Stack direction="horizontal">
-            <InputGroup className="me-2">
-              <Form.Control
-                as="textarea"
-                placeholder="Write a comment"
-                onChange={handleChange}
-                value={formData.content}
-                name="content"
-              />
-            </InputGroup>
-            <div>
-              <GenericModal
-                variant="flush"
-                img={<ImageFill />}
-                buttonText="Add an image"
-              >
-                <ImageUploadModal onUploadSuccess={handleImageUpload} />
-              </GenericModal>
-            </div>
-            <Button type="submit">Post</Button>
-          </Stack>
-        </Form>
-      </Row>
-    </Container>
+      <Form onSubmit={handleSubmit}>
+        <Stack direction="horizontal">
+          <InputGroup className="me-2">
+            <Form.Control
+              as="textarea"
+              placeholder="Write a comment"
+              onChange={handleChange}
+              value={formData.content}
+              name="content"
+            />
+          </InputGroup>
+          <div>
+            <GenericModal
+              variant="flush"
+              img={<ImageFill />}
+              buttonText="Add an image"
+            >
+              <ImageUploadModal onUploadSuccess={handleImageUpload} />
+            </GenericModal>
+          </div>
+          <Button type="submit">Post</Button>
+        </Stack>
+      </Form>
+    </>
   );
 };
 

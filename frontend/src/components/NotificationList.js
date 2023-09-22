@@ -46,7 +46,7 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
       {notifications.length > 0 && (
         <ListGroup
           ref={ref}
-          className="scroll position-absolute top-0 w-25 start-0"
+          className="scroll position-absolute top-100 w-100 vh-100 start-0"
         >
           {renderedNotifications}
         </ListGroup>

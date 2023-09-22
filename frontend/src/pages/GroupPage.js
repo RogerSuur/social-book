@@ -55,29 +55,26 @@ const GroupPage = () => {
         </Alert>
       ) : (
         <Container fluid>
-          {image}
-          <Row>
-            <h1>{group.title}</h1>
-          </Row>
-          <Row>
-            <Col xs="auto">
-              {group?.isMember ? (
-                <Row>
-                  <Col>
-                    <GenericModal buttonText="Events">
-                      <Events groupId={+id} />
-                    </GenericModal>
-                  </Col>
-                  <Col>
-                    <Stack direction="horizontal">
-                      <GroupMembers groupId={+id} />
-                    </Stack>
-                  </Col>
-                </Row>
-              ) : (
-                <GroupRequestButton groupid={+id} />
-              )}
-            </Col>
+          <Col className="text-center">
+            <div className="profile-img">{image}</div>
+            <Row>
+              <h1>{group.title}</h1>
+            </Row>
+          </Col>
+
+          <Row xs="auto" className="justify-content-center">
+            {group?.isMember ? (
+              <>
+                <Col>
+                  <Events groupId={+id} />
+                </Col>
+                <Col>
+                  <GroupMembers groupId={+id} />
+                </Col>
+              </>
+            ) : (
+              <GroupRequestButton groupid={+id} />
+            )}
           </Row>
 
           <Row className="mt-3 mb-3">

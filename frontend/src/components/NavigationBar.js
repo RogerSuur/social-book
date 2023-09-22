@@ -5,6 +5,8 @@ import NotificationNavbarItem from "./NotificationNavbarItem";
 import { LinkContainer } from "react-router-bootstrap";
 import SearchUtility from "../components/SearchUtility";
 import { BoxArrowRight } from "react-bootstrap-icons";
+import NavbarChat from "../components/NavbarChat";
+import NavbarGroupSidebar from "./NavbarGroupSidebar";
 import SmallNotificationNavbarItem from "../components/SmallNotificationNavbarItem";
 import SearchSmallUtility from "../components/SearchSmallUtility";
 
@@ -13,17 +15,19 @@ const NavigationBar = () => {
 
   return (
     <>
-      <Navbar
-        collapseOnSelect
-        expand="md"
-        className="bg-body-tertiary"
-        fixed="top"
-      >
+      <Navbar expand="md" className="bg-body-tertiary" fixed="top">
         <Container>
           <LinkContainer to="/profile">
-            <Navbar.Brand>React-Bootstrap</Navbar.Brand>
+            <Navbar.Brand>Social Network</Navbar.Brand>
           </LinkContainer>
-          {auth && <NotificationNavbarItem />}
+          {auth && (
+            <>
+              <NotificationNavbarItem />
+              <div className="d-md-none">
+                <NavbarChat />
+              </div>
+            </>
+          )}
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
 
           <Navbar.Collapse id="responsive-navbar-nav">
@@ -37,6 +41,12 @@ const NavigationBar = () => {
             </Nav>
             <Nav>
               {auth && <SearchUtility />}
+              {auth && (
+                <div className="d-md-none">
+                  <NavbarGroupSidebar />
+                </div>
+              )}
+
               {!auth && (
                 <>
                   <LinkContainer to="/login">

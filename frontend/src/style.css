@@ -4,7 +4,7 @@
 
 .sidebar {
   position: fixed;
-  height: 93vh;
+  height: calc(100vh - 56px);
   overflow-y: auto;
   min-width: 215px;
   max-width: 320px;
@@ -12,6 +12,11 @@
 
 .content-wrapper {
   margin-top: 72px;
+}
+
+.scroll {
+  max-width: 768px;
+  max-height: calc(100vh - 56px);
 }
 
 #group-sidebar {
@@ -25,11 +30,6 @@
 .chatbox-img {
   width: 30px;
   height: auto;
-}
-
-.scroll {
-  max-height: 300px;
-  overflow-y: auto;
 }
 
 .chatbox {
@@ -68,7 +68,6 @@
 .search-results {
   overflow-y: hidden;
 }
-
 
 
 /*

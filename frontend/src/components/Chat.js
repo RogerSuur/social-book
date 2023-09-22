@@ -145,7 +145,7 @@ const Chat = () => {
 
   return (
     <Scrollbars>
-      <Container className="">
+      <Container fluid>
         <ListGroup variant="flush">
           Private Chats{renderedChats(userChatlist)}
         </ListGroup>

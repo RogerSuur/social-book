@@ -151,41 +151,41 @@ const ProfileEditorPage = () => {
           </Row>
 
           <Row>
-            <Row>
-              <Col>
-                <FloatingLabel
-                  className="mt-3 mb-3"
-                  controlId="about"
-                  label="About you (optional)"
-                >
-                  <Form.Control
-                    as="textarea"
-                    placeholder="Write something about yourself"
-                    {...register("about")}
-                  />
-                </FloatingLabel>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <strong>Email address</strong>
-                <p>{user.email}</p>
-              </Col>
-              <Col>
-                <strong>Profile Type</strong>
-                <p>{user.isPublic ? "Public" : "Private"}</p>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <strong>Born</strong>
-                <p>{BirthdayConverter(user?.birthday)}</p>
-              </Col>
-              <Col>
-                <strong>Joined</strong>
-                <p>{LongDate(user.createdAt)}</p>
-              </Col>
-            </Row>
+            <Col>
+              <FloatingLabel
+                className="mt-3 mb-3"
+                controlId="about"
+                label="About you (optional)"
+              >
+                <Form.Control
+                  as="textarea"
+                  placeholder="Write something about yourself"
+                  {...register("about")}
+                />
+              </FloatingLabel>
+            </Col>
+            <div className="text-center">
+              <Row>
+                <Col>
+                  <strong>Email address</strong>
+                  <p>{user.email}</p>
+                </Col>
+                <Col>
+                  <strong>Profile Type</strong>
+                  <p>{user.isPublic ? "Public" : "Private"}</p>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <strong>Born</strong>
+                  <p>{BirthdayConverter(user?.birthday)}</p>
+                </Col>
+                <Col>
+                  <strong>Joined</strong>
+                  <p>{LongDate(user.createdAt)}</p>
+                </Col>
+              </Row>
+            </div>
           </Row>
           <Row className="gap-2">
             <Col>

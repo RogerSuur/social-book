@@ -55,25 +55,23 @@ const Post = ({ post, isLastPost, lastPostElementRef }) => {
       )}
 
       <Row>
-        <Col>
-          {commentCount === 0 ? (
-            <Comments postId={id} commentCount={commentCount} />
-          ) : (
-            lastPostElementRef !== undefined && (
-              <div className="text-end">
-                <GenericModal
-                  linkText={`${commentCount} ${
-                    commentCount > 1 ? "comments" : "comment"
-                  }`}
-                  buttonText={`${userName}'s post`}
-                >
-                  <Post post={post} />
-                  <Comments postId={id} commentCount={commentCount} />
-                </GenericModal>
-              </div>
-            )
-          )}
-        </Col>
+        {commentCount === 0 ? (
+          <Comments postId={id} commentCount={commentCount} />
+        ) : (
+          lastPostElementRef !== undefined && (
+            <div className="text-end">
+              <GenericModal
+                linkText={`${commentCount} ${
+                  commentCount > 1 ? "comments" : "comment"
+                }`}
+                buttonText={`${userName}'s post`}
+              >
+                <Post post={post} />
+                <Comments postId={id} commentCount={commentCount} />
+              </GenericModal>
+            </div>
+          )
+        )}
       </Row>
     </Container>
   );
