@@ -1,4 +1,4 @@
-import { useLocation, Navigate, Outlet } from "react-router-dom";
+import { useLocation, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
@@ -8,8 +8,7 @@ import { WS_URL } from "../utils/routes";
 import Login from "../pages/LoginPage";
 import { Container, Row, Col } from "react-bootstrap";
 import GroupSidebar from "../components/GroupSidebar";
-
-const AUTH_URL = "http://localhost:8000/auth";
+import { AUTH_URL } from "../utils/routes";
 
 const RequireAuth = () => {
   const { auth, setAuth } = useAuth();
@@ -19,8 +18,6 @@ const RequireAuth = () => {
   const [loading, setLoading] = useState(true);
 
   const location = useLocation();
-
-  const from = location.state?.from?.pathname;
 
   useEffect(() => {
     const authorisation = async () => {
@@ -62,13 +59,7 @@ const RequireAuth = () => {
           md={{ span: "6", offset: "3" }}
           className="mt-3 mb-3 justify-content-end"
         >
-          <Outlet
-            context={{
-              socketUrl,
-              users,
-              setUsers,
-            }}
-          />
+          <Outlet context={{ socketUrl }} />
         </Col>
         <Col id="chat-sidebar" xs="3" className="sidebar p-0 d-none d-md-flex">
           <Chat chatlist={users} />
@@ -77,7 +68,6 @@ const RequireAuth = () => {
     </Container>
   ) : (
     <>
-      {from && <Navigate to="/login" state={{ from: location }} replace />}
       <Login />
     </>
   );

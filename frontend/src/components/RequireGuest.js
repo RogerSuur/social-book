@@ -4,8 +4,7 @@ import Login from "../pages/LoginPage";
 import Signup from "../pages/SignupPage";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
-
-const AUTH_URL = "http://localhost:8000/auth";
+import { AUTH_URL } from "../utils/routes";
 
 const RequireGuest = () => {
   const { auth, setAuth } = useAuth();

@@ -15,8 +15,7 @@ import { LinkContainer } from "react-router-bootstrap";
 const LOGIN_URL = "http://localhost:8000/login";
 
 const Login = () => {
-  const { setAuth } = useAuth();
-
+  const { auth, setAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from =
@@ -30,7 +29,11 @@ const Login = () => {
   });
   const [errMsg, setErrMsg] = useState("");
 
-  console.log(from, "FROM LOGIN");
+  useEffect(() => {
+    if (auth) {
+      navigate("/profile", { replace: true });
+    }
+  }, [auth, navigate]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;

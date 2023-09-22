@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import Container from "react-bootstrap/Container";
@@ -10,11 +10,14 @@ import Form from "react-bootstrap/Form";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Alert from "react-bootstrap/Alert";
 import { LinkContainer } from "react-router-bootstrap";
+import useAuth from "../hooks/useAuth";
 
 const SIGNUP_URL = "http://localhost:8000/signup";
 
 const Signup = () => {
+  const { auth } = useAuth;
   const [errMsg, setErrMsg] = useState("");
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -34,7 +37,11 @@ const Signup = () => {
     criteriaMode: "all",
   });
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (auth) {
+      navigate("/profile", { replace: true });
+    }
+  }, [auth, navigate]);
 
   const onSubmit = async (data) => {
     try {
