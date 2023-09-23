@@ -1,8 +1,9 @@
 import { WS_URL } from "../utils/routes";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
-import { Link } from "react-router-dom";
-import { Button } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
+import { Button, Col, Row, Stack } from "react-bootstrap";
 import { ShortDatetime } from "../utils/datetimeConverters";
+import { CheckLg, XLg } from "react-bootstrap-icons";
 
 const Notification = ({ notification, onClose, popup }) => {
   const { sendJsonMessage } = useWebSocketConnection(WS_URL);
@@ -30,98 +31,88 @@ const Notification = ({ notification, onClose, popup }) => {
     onClose(notification?.notification_id);
   };
 
-  const acceptButton = (text = "Accept") => (
-    <Button onClick={handleAccept}>{text}</Button>
+  const acceptButton = (
+    <CheckLg as={Button} size={23} color="green" onClick={handleAccept} />
   );
 
-  const rejectButton = (text = "Reject") => (
-    <Button onClick={handleReject}>{text}</Button>
+  const rejectButton = (
+    <XLg as={Button} size={23} color="red" onClick={handleReject} />
   );
 
-  const followRequestNotification = () => {
-    return (
-      <>
-        <Link to={`/profile/${notification?.sender_id}`}>
-          {notification?.sender_name}
-        </Link>{" "}
-        wants to follow you
-        {!popup && (
-          <>
-            {acceptButton()}
-            {rejectButton()}
-          </>
-        )}
-      </>
-    );
-  };
+  const buttons = !popup && (
+    <>
+      <Col xs="auto" className="d-flex align-items-center">
+        <Stack direction="horizontal" gap="2">
+          {acceptButton}
+          {rejectButton}
+        </Stack>
+      </Col>
+    </>
+  );
 
-  const groupInviteNotification = () => {
-    return (
-      <>
-        <Link to={`/profile/${notification?.sender_id}`}>
-          {notification?.sender_name}
-        </Link>{" "}
-        invites you to join the group{" "}
-        <Link to={`/groups/${notification?.group_id}`}>
-          {notification?.group_name}
-        </Link>
-        {!popup && (
-          <>
-            {acceptButton()}
-            {rejectButton()}
-          </>
-        )}
-      </>
-    );
-  };
+  const followRequestNotification = (
+    <>
+      <LinkContainer to={`/profile/${notification?.sender_id}`}>
+        <>{notification?.sender_name}</>
+      </LinkContainer>{" "}
+      wants to follow you
+      {buttons}
+    </>
+  );
 
-  const groupRequestNotification = () => {
-    return (
-      <>
-        <Link to={`/profile/${notification?.sender_id}`}>
-          {notification?.sender_name}
-        </Link>{" "}
-        wants to join your group{" "}
-        <Link to={`/groups/${notification?.group_id}`}>
-          {notification?.group_name}
-        </Link>
-        {!popup && (
-          <>
-            {acceptButton()}
-            {rejectButton()}
-          </>
-        )}
-      </>
-    );
-  };
+  const groupInviteNotification = (
+    <>
+      <LinkContainer to={`/profile/${notification?.sender_id}`}>
+        <>{notification?.sender_name}</>
+      </LinkContainer>{" "}
+      invites you to join the group{" "}
+      <LinkContainer to={`/groups/${notification?.group_id}`}>
+        <>{notification?.group_name}</>
+      </LinkContainer>
+      {buttons}
+    </>
+  );
 
-  const eventNotification = () => {
+  const groupRequestNotification = (
+    <>
+      <LinkContainer to={`/profile/${notification?.sender_id}`}>
+        {notification?.sender_name}
+      </LinkContainer>{" "}
+      wants to join your group{" "}
+      <LinkContainer to={`/groups/${notification?.group_id}`}>
+        <>{notification?.group_name}</>
+      </LinkContainer>
+    </>
+  );
+
+  const eventNotification = (
+    <>
+      <LinkContainer to={`/event/${notification?.event_id}`}>
+        <span>{notification?.event_name}</span>
+      </LinkContainer>{" "}
+      is going to take place on {ShortDatetime(notification?.event_datetime)}
+    </>
+  );
+
+  const notificationTemplate = (content) => {
     return (
-      <>
-        <Link to={`/event/${notification?.event_id}`}>
-          {notification?.event_name}
-        </Link>{" "}
-        is going to take place at {ShortDatetime(notification?.event_datetime)}
-        {!popup && (
-          <>
-            {acceptButton("Going")}
-            {rejectButton("Not going")}
-          </>
-        )}
-      </>
+      <Row>
+        <Col>{content}</Col>
+        {buttons}
+      </Row>
     );
   };
 
   const notificationMessage = () => {
     switch (notification?.notification_type) {
       case "follow_request":
-        return followRequestNotification();
+        return notificationTemplate(followRequestNotification);
       case "group_invite":
-        return groupInviteNotification();
+        return notificationTemplate(groupInviteNotification);
       case "group_request":
-        return groupRequestNotification();
+        return notificationTemplate(groupRequestNotification);
       case "event_invite":
-        return eventNotification();
+        return notificationTemplate(eventNotification);
       default:
         break;
     }

@@ -151,7 +151,7 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
         <Stack direction="horizontal">
           <Col>
             <Stack direction="horizontal">
-              <InputGroup>
+              <InputGroup className="me-2">
                 <Form.Control
                   as="textarea"
                   placeholder="Write what's on your mind"
@@ -162,7 +162,7 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
               </InputGroup>
               <div>
                 <GenericModal
-                  variant="success"
+                  variant="flush"
                   img={<ImageFill />}
                   buttonText="Add an image"
                 >

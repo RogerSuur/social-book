@@ -20,14 +20,17 @@ export const BirthdayConverter = (date) => {
   return LongDate(year, month - 1, day);
 };
 
-export const ShortDatetime = (datetime) =>
-  new Date(datetime).toLocaleTimeString("en-UK", {
-    year: "2-digit",
-    month: "short",
-    day: "2-digit",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+export const ShortDatetime = (datetime) => (
+  <span className="text-nowrap">
+    {new Date(datetime).toLocaleTimeString("en-UK", {
+      year: "2-digit",
+      month: "short",
+      day: "2-digit",
+      hour: "numeric",
+      minute: "2-digit",
+    })}
+  </span>
+);
 
 export const ShortTime = (time) =>
   new Date(time).toLocaleTimeString([], {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "react-bootstrap";
-import { Messenger, XLg } from "react-bootstrap-icons";
+import { Messenger } from "react-bootstrap-icons";
 import Chat from "../components/Chat";
 import { Offcanvas } from "react-bootstrap";
 
@@ -12,7 +12,7 @@ const NavbarChat = () => {
 
   return (
     <>
-      <Messenger as={Button} onClick={handleShow} />
+      <Messenger size={30} onClick={handleShow} />
       {show && (
         <>
           <Offcanvas show={show} onHide={handleClose}>

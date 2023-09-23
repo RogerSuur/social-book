@@ -15,7 +15,10 @@
 }
 
 .scroll {
-  max-width: 768px;
+  left: 0;
+  top: 56px;
+  overflow-y: auto;
+  width: 100vw;
   max-height: calc(100vh - 56px);
 }
 
@@ -67,6 +70,17 @@
 
 .search-results {
   overflow-y: hidden;
+}
+
+@media only screen and (min-width: 768px){
+  .scroll{
+    display: none;
+    left:auto;
+    width: auto;
+    max-width: 40vw;
+    max-height: calc(50vh - 56px);
+  }
+
 }
 
 

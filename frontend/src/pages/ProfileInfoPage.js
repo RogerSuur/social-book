@@ -10,7 +10,7 @@ import {
 } from "../utils/routes";
 import ImageHandler from "../utils/imageHandler.js";
 import FeedPosts from "../components/FeedPosts.js";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row, Col, Button, Alert } from "react-bootstrap";
 import GenericUserList from "../components/GenericUserList";
 import GenericModal from "../components/GenericModal";
 import { BirthdayConverter, LongDate } from "../utils/datetimeConverters";
@@ -77,6 +77,11 @@ const ProfileInfo = () => {
 
   return (
     <Container fluid>
+      {errMsg && (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      )}
       {user && (
         <>
           <Row className="gap-2">
@@ -95,76 +100,78 @@ const ProfileInfo = () => {
                   <h1 className="display-5">{user.nickname}</h1>
                 </Col>
                 <Row className="gap-2">
-                  <Col
-                    lg="5"
-                    as={Button}
-                    disabled={isFollowed}
-                    onClick={handleFollow}
-                  >
-                    Follow
-                  </Col>
+                  <div className="d-flex gap-2 justify-content-center">
+                    <Col
+                      lg="5"
+                      as={Button}
+                      disabled={isFollowed}
+                      onClick={handleFollow}
+                    >
+                      Follow
+                    </Col>
 
-                  <Col
-                    lg="5"
-                    as={Button}
-                    disabled={!isFollowed}
-                    onClick={handleUnfollow}
-                  >
-                    Unfollow
-                  </Col>
+                    <Col
+                      lg="5"
+                      as={Button}
+                      disabled={!isFollowed}
+                      onClick={handleUnfollow}
+                    >
+                      Unfollow
+                    </Col>
+                  </div>
                 </Row>
               </Row>
             </Col>
           </Row>
 
-          <Row>
-            {(user?.isPublic || user?.isFollowed) && (
-              <>
+          {(user?.isPublic || user?.isFollowed) && (
+            <>
+              <Row>
+                <Col>
+                  <div className="mt-3 mb-3">{user.about}</div>
+                </Col>
+              </Row>
+              <div className="text-center">
                 <Row>
                   <Col>
-                    <div>{user.about}</div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <p>Email address</p>
+                    <strong>Email address</strong>
                     <p>{user.email}</p>
                   </Col>
                   <Col>
-                    <p>Profile Type</p>
+                    <strong>Profile Type</strong>
                     <p>{user.isPublic ? "Public" : "Private"}</p>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <p>Born</p>
+                    <strong>Born</strong>
                     <p>{BirthdayConverter(user?.birthday)}</p>
                   </Col>
                   <Col>
-                    <p>Joined</p>
+                    <strong>Joined</strong>
                     <p>{LongDate(user.createdAt)}</p>
                   </Col>
                 </Row>
-                <Row className="d-grip gap-2">
-                  <Col>
-                    <GenericModal buttonText="Following">
-                      {userList(true)}
-                    </GenericModal>
-                  </Col>
-                  <Col>
-                    <GenericModal buttonText="Followers">
-                      {userList(false)}
-                    </GenericModal>
-                  </Col>
-                  <Col>
-                    <GenericModal buttonText="User's posts">
-                      <FeedPosts url={USER_POSTS_URL + id} />
-                    </GenericModal>
-                  </Col>
-                </Row>
-              </>
-            )}
-          </Row>
+              </div>
+              <Row className="d-grip gap-2">
+                <Col>
+                  <GenericModal buttonText="Following">
+                    {userList(true)}
+                  </GenericModal>
+                </Col>
+                <Col>
+                  <GenericModal buttonText="Followers">
+                    {userList(false)}
+                  </GenericModal>
+                </Col>
+                <Col>
+                  <GenericModal buttonText="User's posts">
+                    <FeedPosts url={USER_POSTS_URL + id} />
+                  </GenericModal>
+                </Col>
+              </Row>
+            </>
+          )}
         </>
       )}
     </Container>

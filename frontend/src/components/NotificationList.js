@@ -33,7 +33,7 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
   }, [ref]);
 
   const renderedNotifications = notifications.map((notification, index) => (
-    <ListGroup.Item variant="success" action key={index}>
+    <ListGroup.Item variant="flush" action key={index}>
       <Notification
         notification={notification}
         onClose={handleNotificationClose}
@@ -43,13 +43,12 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
 
   return (
     <>
-      {notifications.length > 0 && (
-        <ListGroup
-          ref={ref}
-          className="scroll position-absolute top-100 w-100 vh-100 start-0"
-        >
+      {notifications.length > 0 ? (
+        <ListGroup ref={ref} className="scroll position-fixed">
           {renderedNotifications}
         </ListGroup>
+      ) : (
+        <p>No new notifications</p>
       )}
     </>
   );

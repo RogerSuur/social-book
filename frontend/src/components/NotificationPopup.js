@@ -7,31 +7,24 @@ const NotificationPopup = ({ notification, onPopupClose }) => {
 
   return (
     <Toast
-      className="d-none d-md-block position-absolute"
-      bg="info"
+      className="d-none d-md-flex my-auto position-absolute justify-content-center mx-auto top-100"
+      bg="info-subtle"
       show={show}
-      autohide
       onClose={() => {
         setShow(false);
         onPopupClose();
       }}
     >
       <Toast.Body>
-        <Container>
-          <Row>
-            <Col>
-              <Notification notification={notification} popup={true} />
-            </Col>
-            <Col md="1">
-              <CloseButton
-                onClick={() => {
-                  setShow(false);
-                  onPopupClose();
-                }}
-              />
-            </Col>
-          </Row>
-        </Container>
+        <Notification notification={notification} popup={true} />
+        <span className="end-0 top-0 me-1 mt-1 position-absolute">
+          <CloseButton
+            onClick={() => {
+              setShow(false);
+              onPopupClose();
+            }}
+          />
+        </span>
       </Toast.Body>
     </Toast>
   );

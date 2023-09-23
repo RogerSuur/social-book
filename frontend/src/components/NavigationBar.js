@@ -15,7 +15,12 @@ const NavigationBar = () => {
 
   return (
     <>
-      <Navbar expand="md" className="bg-body-tertiary" fixed="top">
+      <Navbar
+        collapseOnSelect
+        expand="md"
+        className="bg-body-tertiary"
+        fixed="top"
+      >
         <Container>
           <LinkContainer to="/profile">
             <Navbar.Brand>Social Network</Navbar.Brand>
@@ -31,15 +36,13 @@ const NavigationBar = () => {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
 
           <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="me-auto">
-              <LinkContainer to="/profile">
+            <Nav className="ms-auto">
+              {/* <LinkContainer to="/profile">
                 <Nav.Link>Profile</Nav.Link>
-              </LinkContainer>
+              </LinkContainer> */}
               <LinkContainer to="/posts">
                 <Nav.Link>Posts</Nav.Link>
               </LinkContainer>
-            </Nav>
-            <Nav>
               {auth && <SearchUtility />}
               {auth && (
                 <div className="d-md-none">
@@ -60,54 +63,16 @@ const NavigationBar = () => {
 
               <LinkContainer to="/logout">
                 <Nav.Link>
-                  <BoxArrowRight />
+                  <BoxArrowRight
+                    className="d-flex align-self-center"
+                    size={20}
+                  />
                 </Nav.Link>
               </LinkContainer>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      {/* <Navbar
-        className="bg-secondary-subtle border-bottom"
-        fixed="top"
-        expand="md"
-        collapseOnSelect
-      >
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse
-          className="justify-content-around"
-          id="responsive-navbar-nav"
-        >
-          <Nav>
-            {!auth && (
-              <>
-                <LinkContainer to="/login">
-                  <Nav.Link>Sign In</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/signup">
-                  <Nav.Link>Sign Up</Nav.Link>
-                </LinkContainer>
-              </>
-            )}
-            {auth && <NotificationNavbarItem />}
-            {auth && <SearchUtility />}
-            <LinkContainer to="/profile">
-              <Nav.Link>Profile</Nav.Link>
-            </LinkContainer>
-            <LinkContainer to="/posts">
-              <Nav.Link>Posts</Nav.Link>
-            </LinkContainer>
-            <LinkContainer to="/logout">
-              <Nav.Link>
-                <BoxArrowRight />
-              </Nav.Link>
-            </LinkContainer>
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
-      <div className="content-wrapper">
-        <Outlet />
-      </div> */}
     </>
   );
 };

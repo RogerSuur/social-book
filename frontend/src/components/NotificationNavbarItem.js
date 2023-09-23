@@ -4,7 +4,8 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { WS_URL, NOTIFICATIONS_URL } from "../utils/routes";
 import NotificationPopup from "../components/NotificationPopup";
-import { Badge, Row, Col, Image } from "react-bootstrap";
+import { Badge, Row, Col, Image, Button } from "react-bootstrap";
+import { BellFill } from "react-bootstrap-icons";
 
 const NotificationNavbarItem = () => {
   const [toggle, setToggle] = useState(false);
@@ -63,9 +64,10 @@ const NotificationNavbarItem = () => {
     <>
       <Row>
         <Col>
-          <Image
-            src={`${process.env.PUBLIC_URL}/notification_bell.png`}
+          <BellFill
+            size={30}
             onClick={handleToggle}
+            color={notificationCount > 0 && "red"}
           />
           {notificationCount > 0 && (
             <span className="position-absolute">
