@@ -9,6 +9,7 @@ const NotificationPopup = ({ notification, onPopupClose }) => {
     <Toast
       className="d-none d-md-flex my-auto position-absolute justify-content-center mx-auto top-100"
       bg="info-subtle"
+      autohide
       show={show}
       onClose={() => {
         setShow(false);
