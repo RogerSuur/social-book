@@ -19,7 +19,18 @@ const SearchResults = ({ searchResults, setSearchResults }) => {
         }}
         key={index}
       >
-        <>{result.name}</>
+        <>
+          <div>{result.name}</div>
+          {result.userId === 0 ? (
+            <small className="text-muted">
+              <i>group</i>
+            </small>
+          ) : (
+            <small className="text-muted">
+              <i>user</i>
+            </small>
+          )}
+        </>
       </ListGroupItem>
     </LinkContainer>
   ));

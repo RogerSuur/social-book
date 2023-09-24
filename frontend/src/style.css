@@ -88,11 +88,9 @@
     max-height: calc(50vh - 56px);
   }
 
-  #search-bar {
-    width: auto;
-    top: auto;
-    left: auto;
-    position: relative;
+  .navbar-nav {
+    width: 65%;
+    max-width: 500px;
   }
 
   .search-results {

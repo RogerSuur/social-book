@@ -25,11 +25,12 @@ function App() {
         </Route>
 
         <Route element={<RequireAuth />}>
+          <Route path="/" element={<PostsPage />} />
           <Route path="profile" element={<ProfileEditorPage />} />
           <Route path="profile/:id" element={<ProfileInfoPage />} />
           <Route path="groups/:id" element={<GroupPage />} />
           <Route path="event/:id" element={<EventPage />} />
-          <Route path="posts" element={<PostsPage />} />
+
           <Route path="logout" element={<Logout />} />
           <Route path="*" element={<NoPage />} />
         </Route>
