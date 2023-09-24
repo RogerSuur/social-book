@@ -94,6 +94,10 @@ const GroupPage = () => {
           )}
         </Container>
       )}
+       <div className="group-page">
+        <Events groupId={+id} />
+      </div>
+      </div>
     </>
   );
 };

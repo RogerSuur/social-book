@@ -19,6 +19,7 @@ import {
 } from "react-bootstrap";
 import { Send } from "react-bootstrap-icons";
 import ChatMessage from "../components/ChatMessage";
+import Picker from "emoji-picker-react";
 
 const Chatbox = ({
   toggleChat,
@@ -41,18 +42,24 @@ const Chatbox = ({
     },
   });
 
-  console.log(messageHistory);
+  const [showPicker, setShowPicker] = useState(false);
+  const onEmojiClick = (event) => {
+    const emoji = event.emoji;
+    setMessage((prevMessage) => ({
+      ...prevMessage,
+      data: {
+        body: prevMessage.data.body + emoji,
+      },
+    }));
+    setShowPicker(false);
+  };
+
   useEffect(() => {
     setMessageHistory([]);
     setHasMoreMessages(true);
   }, [chat]);
 
   const handleScrolling = () => {
-    console.log("SCROLLING");
-    console.log("SCROLLTOP: ", messageboxRef?.current?.scrollTop);
-    console.log("SCROLLHEIGHT: ", messageboxRef?.current?.scrollHeight);
-    console.log("CLIENTHEIGHT: ", messageboxRef?.current?.clientHeight);
-
     const lastMessage = messageHistory?.[messageHistory.length - 1]?.message_id;
     console.log(
       "MESSAGE HISTORY: ",
@@ -139,12 +146,12 @@ const Chatbox = ({
   const handleChange = (event) => {
     const { value } = event.target;
 
-    setMessage((prevMessage) => {
-      return {
-        ...prevMessage,
-        data: { body: value },
-      };
-    });
+    setMessage((prevMessage) => ({
+      ...prevMessage,
+      data: {
+        body: showPicker ? prevMessage.data.body : value,
+      },
+    }));
   };
 
   console.log("MESSAGE HISTORY: ", messageHistory);
@@ -251,6 +258,19 @@ const Chatbox = ({
               value={message.data.body}
               autoFocus
             />
+            <div className="picker-container">
+            <i
+              className="iconoir-add-circle"
+              onClick={() => setShowPicker((val) => !val)}
+            ></i>
+
+            {showPicker && (
+              <Picker
+                pickerStyle={{ width: "100%" }}
+                onEmojiClick={onEmojiClick}
+              />
+            )}
+          </div>
             <Button type="submit">
               <Send />
             </Button>

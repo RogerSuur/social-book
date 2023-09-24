@@ -135,12 +135,14 @@ const Chat = () => {
 
   const renderedChats = (chatlist) =>
     chatlist.map((chat, index) => (
-      <ListGroup.Item key={index} action onClick={() => toggleChat(chat)}>
-        <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
-        {chat?.user_id > 0 && chat.unread_count > 0 && (
-          <Badge bg="danger">{chat.unread_count}</Badge>
-        )}
-      </ListGroup.Item>
+      <div className="hov" key={index}>
+        <li>
+          <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
+          {chat?.user_id > 0 && chat.unread_count > 0 && (
+            <span className="chat-unread-count">{chat.unread_count}</span>
+          )}
+        </li>
+      </div>
     ));
 
   return (

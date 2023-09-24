@@ -113,7 +113,6 @@ nav {
   margin-top: 4vh;
   margin-left: auto;
   margin-right: auto;
-  min-width: 400px;
   max-width: 50vw;
   list-style-type: none;
   flex-direction: column;
@@ -280,6 +279,44 @@ nav {
 .message-box {
   border: 1px solid black;
   height: 50px; 
+  /* align-items: center; */
+  /* flex-direction: column; */
+  display: flex;
+}
+
+
+.flex-container {
+  width: 165px;
+  display: flex;
+  align-items: center; 
+  flex: 1;
+}
+
+.input-message {
+  flex: 1;
+  width: 150px;
+}
+
+.picker-container {
+  cursor: pointer;
+  /* margin-left: 5px; */
+}
+
+.picker-container .iconoir-add-circle{
+  color: #333;
+}
+
+.picker-container aside {
+  width: 350px;
+  height: 450px;
+  background-color: white; 
+  bottom: 200px;
+}
+
+.send-button {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .require-auth-container {
@@ -358,11 +395,42 @@ nav {
   margin-left: 1vw;
   margin-right: 1vw;
 }
+.event-down {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.event-but2 {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgb(190, 190, 190);
+  border-radius: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.event-but2:hover {
+  transform: scale(1.1);
+}
+
+.event-but2:active {
+  box-shadow: 0 0 8px rgb(201, 201, 250), 0 0 20px rgb(201, 201, 250);
+}
+
+.event-but2 img {
+  margin-right: 5px;
+}
 
 .group-page{
   box-shadow: 5px 5px 5px rgb(184, 184, 184);
   background-color: #ffffff;
-  margin-top: 40px;
+  margin-top: 5vh;
   margin-right: 30px;
   margin-left: 30px;
   width: 50vw;
@@ -372,11 +440,17 @@ nav {
   max-height: 600px;
   overflow: auto;
   box-shadow: 0 0 8px black;
-  min-width: 300px;
+  
   display: flex;
   justify-items: center;
   flex-direction: column;
   align-items: center;
+}
+
+.group-wrap{
+  
+ width: 53vw;
+  
 }
 
 .group-extra {
@@ -419,6 +493,11 @@ nav {
 }
 
 .dif-link a:hover{
+  background-color: #ececec;
+  cursor: pointer;
+  border-radius: 1px;
+}
+.dif-link h1:hover{
   background-color: #ececec;
   cursor: pointer;
   border-radius: 1px;
@@ -521,11 +600,11 @@ height: 7vh;
 
 .top-part {
   width: 50vw;
-  height: 424px;
+  height: 380px;
   flex-shrink: 0;
   border-radius: 10px;
   border: 1px solid rgba(199, 199, 199, 0.25);
-  margin: 5px;
+  margin-top: 5px;
 }
 
 .umber{
@@ -753,6 +832,25 @@ line-height: normal;
   height: 10vh;
   resize: none;
   padding: 10px;
+}
+
+.group-add-img{
+ margin: 5px;
+}
+.group-add-img button {
+  width: 10vw;
+  height: 5vh;
+  color: #A9A9A9;
+  font-family: Open Sans;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  cursor: pointer;
+}
+
+.group-add-img button:hover {
+  background-color: #3b5998;
 }
 
 .profile-image {
@@ -1032,21 +1130,33 @@ justify-content: flex-end;
 .text-link:hover {
   text-shadow: 0 0 5px rgb(255, 255, 255);
 }
+@media only screen and (min-width: 801px){
+  .toggle-sidebar-button{
+    display: none;
+  }
+  
+  }
+  @media only screen and (max-width: 801px){
+  .chat-sidebar {
+    position:fixed;
+    right:0;
+  }
+  }
+
 @media only screen and (max-width: 800px){
   .chat-sidebar{
     display: none;
   }
 
 }
-@media only screen and (max-width: 570px){
-  .content-as{
-    display: none;
+
+@media only screen and (max-width: 635px){
+  .event-but2{
+    display:grid;
   }
-  .profile-content{
-    display: none;
+  
   }
 
-}
 
 @media only screen and (min-width: 600px) {
 
