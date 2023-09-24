@@ -3,6 +3,7 @@ package services
 import (
 	"SocialNetworkRestApi/api/pkg/models"
 	"database/sql"
+	"errors"
 	"log"
 	"time"
 )
@@ -85,14 +86,23 @@ func (s *GroupEventService) CreateGroupEvent(formData *models.CreateGroupEventFo
 
 	s.Logger.Printf("Event timestring: %s", formData.EventTime)
 	sTime, err := time.Parse(time.RFC3339, formData.EventTime)
-
 	if err != nil {
 		s.Logger.Printf("Failed parsing event start time: %s", err)
+	}
+
+	if sTime.Before(time.Now()) {
+		s.Logger.Printf("Event start time is before current time")
+		return nil, errors.New("event start time cannot be before current time")
 	}
 
 	eTime, err := time.Parse(time.RFC3339, formData.EventEndTime)
 	if err != nil {
 		s.Logger.Printf("Failed parsing event start time: %s", err)
+	}
+
+	if eTime.Before(sTime) {
+		s.Logger.Printf("Event end time is before start time")
+		return nil, errors.New("event end time cannot be before start time")
 	}
 
 	event := &models.Event{
