@@ -25,8 +25,10 @@ const SearchResults = ({ searchResults, setSearchResults }) => {
   ));
 
   return (
-    <ListGroup className="search-results position-fixed w-25 h-50">
-      <Scrollbars autoHide>{searchResultsMap}</Scrollbars>
+    <ListGroup className="search-results position-fixed">
+      <Scrollbars autoHide autoHeight>
+        {searchResultsMap}
+      </Scrollbars>
     </ListGroup>
   );
 };

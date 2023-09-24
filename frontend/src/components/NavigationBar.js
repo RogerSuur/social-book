@@ -43,7 +43,12 @@ const NavigationBar = () => {
               <LinkContainer to="/posts">
                 <Nav.Link>Posts</Nav.Link>
               </LinkContainer>
-              {auth && <SearchUtility />}
+              {auth && (
+                <div className="d-none d-md-block">
+                  <SearchUtility />
+                </div>
+              )}
+              {auth && <SearchSmallUtility />}
               {auth && (
                 <div className="d-md-none">
                   <NavbarGroupSidebar />

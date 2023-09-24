@@ -43,12 +43,10 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
 
   return (
     <>
-      {notifications.length > 0 ? (
+      {notifications.length > 0 && (
         <ListGroup ref={ref} className="scroll position-fixed">
           {renderedNotifications}
         </ListGroup>
-      ) : (
-        <p>No new notifications</p>
       )}
     </>
   );
