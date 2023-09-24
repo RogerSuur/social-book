@@ -4,6 +4,7 @@ import (
 	"SocialNetworkRestApi/api/pkg/enums"
 	"SocialNetworkRestApi/api/pkg/models"
 	"SocialNetworkRestApi/api/pkg/services"
+	"database/sql"
 	"log"
 	"math/rand"
 	"os"
@@ -12,13 +13,48 @@ import (
 	"github.com/bxcodec/faker/v3"
 )
 
-func Seed(repos *models.Repositories) {
+func Seed(db *sql.DB, logger *log.Logger, repos *models.Repositories) {
+	seedStatus, err := CheckSeed(db)
+
+	if err != nil {
+		logger.Println("Database seed failed.")
+		return
+	}
+
+	if seedStatus {
+		logger.Println("Database already seeded")
+		return
+	}
 
 	SeedUsers(repos.UserRepo)
 	SeedFollowers(repos)
-
 	SeedPosts(repos)
 	SeedGroups(repos)
+
+	err = UpdateStatus(db)
+
+	if err != nil {
+		logger.Println("Database seed status update failed.")
+		return
+	}
+
+}
+
+func CheckSeed(db *sql.DB) (bool, error) {
+	query := `SELECT * FROM seed LIMIT 1`
+	row := db.QueryRow(query)
+	status := false
+
+	err := row.Scan(&status)
+
+	return status, err
+}
+
+func UpdateStatus(db *sql.DB) error {
+	query := `UPDATE seed SET is_seeded = true;`
+	_, err := db.Exec(query)
+
+	return err
 }
 
 // Seed database users from predefined dataset

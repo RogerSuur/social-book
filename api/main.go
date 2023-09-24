@@ -33,7 +33,6 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-
 	logger.Println("successfully migrated DB..")
 
 	repos := models.InitRepositories(db)
@@ -45,7 +44,7 @@ func main() {
 	if len(args) > 1 {
 		switch args[1] {
 		case "seed":
-			seed.Seed(repos)
+			seed.Seed(db, logger, repos)
 		default:
 			break
 		}
