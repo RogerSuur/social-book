@@ -1,5 +1,7 @@
 FROM node:19.7.0
 
+COPY images ./app/images
+
 WORKDIR /app/frontend
 
 COPY frontend/package*.json ./
