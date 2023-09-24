@@ -276,17 +276,17 @@ const Chatbox = ({
                             value={message.data.body}
                             autoFocus
                         />
-                        <div className="picker-container position-relative">
-                            <i
-                                className="iconoir-add-circle"
-                                onClick={() => setShowPicker((val) => !val)}
-                            ></i>
-
+                        <i
+                            className="iconoir-add-circle"
+                            onClick={() => setShowPicker((val) => !val)}
+                        ></i>
+                        <div className="picker-container">
                             {showPicker && (
                                 <Picker
-                                    pickerStyle={{
-                                        width: "100%",
-                                    }}
+                                    //lazyLoad={true}
+                                    className="EmojiPicker"
+                                    searchDisabled={true}
+                                    skinTonesDisabled={true}
                                     onEmojiClick={onEmojiClick}
                                 />
                             )}
