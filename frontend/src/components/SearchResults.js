@@ -19,14 +19,27 @@ const SearchResults = ({ searchResults, setSearchResults }) => {
         }}
         key={index}
       >
-        <>{result.name}</>
+        <>
+          <div>{result.name}</div>
+          {result.userId === 0 ? (
+            <small className="text-muted">
+              <i>group</i>
+            </small>
+          ) : (
+            <small className="text-muted">
+              <i>user</i>
+            </small>
+          )}
+        </>
       </ListGroupItem>
     </LinkContainer>
   ));
 
   return (
-    <ListGroup className="search-results position-fixed w-25 h-50">
-      <Scrollbars autoHide>{searchResultsMap}</Scrollbars>
+    <ListGroup className="search-results position-fixed">
+      <Scrollbars autoHide autoHeight>
+        {searchResultsMap}
+      </Scrollbars>
     </ListGroup>
   );
 };

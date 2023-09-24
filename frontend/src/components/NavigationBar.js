@@ -22,7 +22,7 @@ const NavigationBar = () => {
         fixed="top"
       >
         <Container>
-          <LinkContainer to="/profile">
+          <LinkContainer to="/">
             <Navbar.Brand>Social Network</Navbar.Brand>
           </LinkContainer>
           {auth && (
@@ -36,39 +36,47 @@ const NavigationBar = () => {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
 
           <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="ms-auto">
+            <Nav className="d-flex justify-content-between ms-auto">
               {/* <LinkContainer to="/profile">
                 <Nav.Link>Profile</Nav.Link>
               </LinkContainer> */}
-              <LinkContainer to="/posts">
-                <Nav.Link>Posts</Nav.Link>
-              </LinkContainer>
-              {auth && <SearchUtility />}
               {auth && (
-                <div className="d-md-none">
-                  <NavbarGroupSidebar />
-                </div>
+                <>
+                  <LinkContainer to="/profile">
+                    <Nav.Link>Profile</Nav.Link>
+                  </LinkContainer>
+
+                  <div className="d-none d-md-block">
+                    <SearchUtility />
+                  </div>
+
+                  <SearchSmallUtility />
+
+                  <div className="d-md-none">
+                    <NavbarGroupSidebar />
+                  </div>
+                </>
               )}
 
-              {!auth && (
-                <>
+              {!auth ? (
+                <span>
                   <LinkContainer to="/login">
                     <Nav.Link>Sign In</Nav.Link>
                   </LinkContainer>
                   <LinkContainer to="/signup">
                     <Nav.Link>Sign Up</Nav.Link>
                   </LinkContainer>
-                </>
+                </span>
+              ) : (
+                <LinkContainer to="/logout">
+                  <Nav.Link>
+                    <BoxArrowRight
+                      className="d-flex align-self-center"
+                      size={20}
+                    />
+                  </Nav.Link>
+                </LinkContainer>
               )}
-
-              <LinkContainer to="/logout">
-                <Nav.Link>
-                  <BoxArrowRight
-                    className="d-flex align-self-center"
-                    size={20}
-                  />
-                </Nav.Link>
-              </LinkContainer>
             </Nav>
           </Navbar.Collapse>
         </Container>

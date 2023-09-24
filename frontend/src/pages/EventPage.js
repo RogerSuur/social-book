@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { EVENT_URL, EVENT_ATTENDANCE_URL } from "../utils/routes";
 import axios from "axios";
 import ImageHandler from "../utils/imageHandler";
-import { Container, Row, Col, Button, Stack, ListGroup } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Stack,
+  ListGroup,
+  Alert,
+} from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import GenericModal from "../components/GenericModal";
 import { ShortDatetime } from "../utils/datetimeConverters";
 
 const EventPage = () => {
   const [event, setEvent] = useState({});
-  const [error, setError] = useState("");
+  const [errMsg, setErrMsg] = useState("");
   const [response, setResponse] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -23,16 +31,15 @@ const EventPage = () => {
             withCredentials: true,
           })
           .then((response) => {
-            console.log("RESP: ", response.data);
             setEvent(response.data);
           });
       } catch (err) {
         if (!err?.response) {
-          setError("No Server Response");
+          setErrMsg("No Server Response");
         } else if (err.response?.status === 404) {
           navigate("404", { replace: true });
         } else if (err.response?.status > 200) {
-          setError("Internal Server Error");
+          setErrMsg("Internal Server Error");
         }
       }
     };
@@ -62,7 +69,6 @@ const EventPage = () => {
   };
 
   const handleResponse = async (isAttending) => {
-    console.log("IS ATTENDING: ", isAttending);
     const data = { eventId: +id, isAttending };
     try {
       await axios.post(
@@ -77,9 +83,9 @@ const EventPage = () => {
       setResponse(!response);
     } catch (err) {
       if (!err?.response) {
-        setError("No Server Response");
+        setErrMsg("No Server Response");
       } else if (err.response?.status > 200) {
-        setError("Internal Server Error");
+        setErrMsg("Internal Server Error");
       }
     }
   };
@@ -96,8 +102,15 @@ const EventPage = () => {
   const renderedEvent = (
     <Container fluid>
       <Row>
-        <Col className="m-auto text-center">
+        <Col className="m-auto mb-3 text-center">
           <h1>{event?.title}</h1>
+          {event?.groupId > 0 && (
+            <LinkContainer to={`/groups/${event?.groupId}`}>
+              <div>
+                Event by <strong>{event?.groupName}</strong>
+              </div>
+            </LinkContainer>
+          )}
         </Col>
         <Col md="3" className="m-auto">
           <Stack gap={2}>
@@ -106,9 +119,20 @@ const EventPage = () => {
           </Stack>
         </Col>
       </Row>
-      <p>{event?.description}</p>
-      <p>Start: {ShortDatetime(event?.eventTime)}</p>
-      <p>End: {ShortDatetime(event?.eventEndTime)}</p>
+      <Row className="mt-3">
+        <Col>{event?.description}</Col>
+      </Row>
+      <Row className="mt-3 mb-3 text-center">
+        <Col>
+          <strong>Start: </strong>
+          {ShortDatetime(event?.eventTime)}
+        </Col>
+        <Col>
+          <strong>End: </strong>
+          {ShortDatetime(event?.eventEndTime)}
+        </Col>
+      </Row>
+
       <Row className="gap-2">
         <Col xs="12" md>
           <GenericModal
@@ -132,7 +156,11 @@ const EventPage = () => {
     </Container>
   );
 
-  return <>{error ? <div>{error}</div> : <div>{renderedEvent}</div>}</>;
+  return (
+    <>
+      {errMsg ? <Alert variant="danger">{errMsg}</Alert> : <>{renderedEvent}</>}
+    </>
+  );
 };
 
 export default EventPage;
