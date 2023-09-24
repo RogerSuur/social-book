@@ -59,14 +59,14 @@ const NavigationBar = () => {
               )}
 
               {!auth ? (
-                <span>
+                <>
                   <LinkContainer to="/login">
                     <Nav.Link>Sign In</Nav.Link>
                   </LinkContainer>
                   <LinkContainer to="/signup">
                     <Nav.Link>Sign Up</Nav.Link>
                   </LinkContainer>
-                </span>
+                </>
               ) : (
                 <LinkContainer to="/logout">
                   <Nav.Link>
