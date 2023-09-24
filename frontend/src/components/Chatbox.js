@@ -85,7 +85,11 @@ const Chatbox = ({
         ) {
             sendJsonMessage({
                 type: "messages_read",
-                data: { message_id: lastMessage },
+                data: { 
+                    id: chat.user_id,
+                    group_id: chat.group_id,
+                    last_message: lastMessage 
+                },
             });
             resetUnreadCount([chat.user_id, chat.group_id]);
             // }
