@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Form, Button, Alert, FloatingLabel } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { CREATE_GROUP_EVENT_URL } from "../utils/routes";
 
 const CreateEvent = ({ onEventCreated, id, handleClose }) => {
   const [errMsg, setErrMsg] = useState("");
@@ -16,10 +17,9 @@ const CreateEvent = ({ onEventCreated, id, handleClose }) => {
   });
 
   const onSubmit = async (data) => {
-    console.log("DATA: ", data);
     try {
-      const response = await axios.post(
-        "http://localhost:8000/creategroupevent",
+      await axios.post(
+        CREATE_GROUP_EVENT_URL,
         JSON.stringify({
           ...data,
           startTime: new Date(data.startTime).toISOString(),
@@ -31,7 +31,6 @@ const CreateEvent = ({ onEventCreated, id, handleClose }) => {
           headers: { "Content-Type": "application/json" },
         }
       );
-      setErrMsg(response.data?.message);
       onEventCreated();
       handleClose();
     } catch (err) {
@@ -42,8 +41,6 @@ const CreateEvent = ({ onEventCreated, id, handleClose }) => {
       }
     }
   };
-
-  console.log("TODAY: ", new Date());
 
   return (
     <>
