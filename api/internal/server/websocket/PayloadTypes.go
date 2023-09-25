@@ -31,7 +31,7 @@ type NotificationPayload struct {
 }
 
 type MessagePayload struct {
-	MessageID     int       `json:"message_id"`
+	MessageID     int       `json:"id"`
 	SenderID      int       `json:"sender_id"`
 	SenderName    string    `json:"sender_name"`
 	SenderImage   string    `json:"avatar_image"`

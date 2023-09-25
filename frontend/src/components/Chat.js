@@ -5,6 +5,7 @@ import Chatbox from "./Chatbox";
 import { WS_URL } from "../utils/routes";
 import { Container, ListGroup, Badge } from "react-bootstrap";
 import Scrollbars from "react-custom-scrollbars-2";
+import { EnvelopeFill } from "react-bootstrap-icons";
 
 const Chat = ({ newMessages, setNewMessages }) => {
   const [openChat, setOpenChat] = useState(null);
@@ -40,12 +41,16 @@ const Chat = ({ newMessages, setNewMessages }) => {
       openChat?.user_id !== chat.user_id ||
       openChat?.group_id !== chat.group_id
     ) {
+      console.log("OPENING");
       setOpenChat(chat);
     }
   };
 
-  const checkChat = (open, checker) =>
-    open.every((value, index) => value === checker[index]);
+  const checkChat = (open, checker) => {
+    console.log("OPEN", open, checker);
+    return open.every((value, index) => value === checker[index]);
+  };
+  console.log("OPENCHAT", openChat);
 
   const updateChatlist = (chatToFind) => {
     const chatlist = chatToFind?.[0] > 0 ? userChatlist : groupChatlist;
@@ -93,8 +98,10 @@ const Chat = ({ newMessages, setNewMessages }) => {
             chatToFind
           )
       );
+      console.log("USERCHAT BEFORE: ", userChat);
 
       userChat.unread_count += 1;
+      console.log("USERCHAT: ", userChat);
       chatToFind?.[1] > 0
         ? setGroupChatlist([userChat, ...filteredChatlist])
         : setUserChatlist([userChat, ...filteredChatlist]);
@@ -138,11 +145,16 @@ const Chat = ({ newMessages, setNewMessages }) => {
   const renderedChats = (chatlist) =>
     chatlist.map((chat, index) => {
       navbarNotification(chat?.unread_count);
+      console.log("Group id", chat?.group_id, chat?.unread_count);
+      console.log("Group id", chat?.group_id);
       return (
         <ListGroup.Item key={index} action onClick={() => toggleChat(chat)}>
-          <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
-          {chat?.user_id > 0 && chat.unread_count > 0 && (
-            <Badge bg="danger">{chat.unread_count}</Badge>
+          <SingleChatlistItem chat={chat} />
+          {chat.unread_count > 0 && (
+            <>
+              {chat.unread_count}
+              <EnvelopeFill color="red" />
+            </>
           )}
         </ListGroup.Item>
       );
