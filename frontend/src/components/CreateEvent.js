@@ -1,42 +1,36 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Form, Button, Alert, FloatingLabel } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import { CREATE_GROUP_EVENT_URL } from "../utils/routes";
 
 const CreateEvent = ({ onEventCreated, id, handleClose }) => {
   const [errMsg, setErrMsg] = useState("");
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    startTime: "",
-    endTime: "",
-    group_id: +id,
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    mode: "onBlur",
+    criteriaMode: "all",
   });
 
-  const handleChange = (event) => {
-    const { name, value } = event?.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    // Send the formData data to the backend handler
+  const onSubmit = async (data) => {
     try {
-      const response = await axios.post(
-        "http://localhost:8000/creategroupevent",
+      await axios.post(
+        CREATE_GROUP_EVENT_URL,
         JSON.stringify({
-          ...formData,
-          startTime: new Date(formData.startTime).toISOString(),
-          endTime: new Date(formData.endTime).toISOString(),
+          ...data,
+          startTime: new Date(data.startTime).toISOString(),
+          endTime: new Date(data.endTime).toISOString(),
+          group_id: +id,
         }),
         { withCredentials: true },
         {
           headers: { "Content-Type": "application/json" },
         }
       );
-      setErrMsg(response.data?.message);
       onEventCreated();
       handleClose();
     } catch (err) {
@@ -55,16 +49,18 @@ const CreateEvent = ({ onEventCreated, id, handleClose }) => {
           {errMsg}
         </Alert>
       )}
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <FloatingLabel className="mb-3" controlId="floatingTitle" label="Name">
           <Form.Control
             placeholder="Event name"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
             autoFocus
-            required
+            {...register("title", {
+              required: "Please enter a name for the event",
+            })}
           />
+          {errors.title && (
+            <Alert variant="danger">{errors.title.message}</Alert>
+          )}
         </FloatingLabel>
         <FloatingLabel
           className="mb-3"
@@ -74,11 +70,13 @@ const CreateEvent = ({ onEventCreated, id, handleClose }) => {
           <Form.Control
             as="textarea"
             placeholder="Description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
+            {...register("description", {
+              required: "Please enter a description for the event",
+            })}
           />
+          {errors.description && (
+            <Alert variant="danger">{errors.description.message}</Alert>
+          )}
         </FloatingLabel>
         <FloatingLabel
           className="mb-3"
@@ -88,11 +86,16 @@ const CreateEvent = ({ onEventCreated, id, handleClose }) => {
           <Form.Control
             type="datetime-local"
             placeholder="Start time"
-            name="startTime"
-            value={formData.startTime}
-            onChange={handleChange}
-            required
+            {...register("startTime", {
+              required: "Please choose a start time",
+              validate: (value) =>
+                new Date(value) > new Date() ||
+                "Event's start cannot be in the past",
+            })}
           />
+          {errors.startTime && (
+            <Alert variant="danger">{errors.startTime.message}</Alert>
+          )}
         </FloatingLabel>
         <FloatingLabel
           className="mb-3"
@@ -102,11 +105,16 @@ const CreateEvent = ({ onEventCreated, id, handleClose }) => {
           <Form.Control
             type="datetime-local"
             placeholder="End time"
-            name="endTime"
-            value={formData.endTime}
-            onChange={handleChange}
-            required
+            {...register("endTime", {
+              required: "Please choose a start time",
+              validate: (value) =>
+                new Date(value) > new Date(watch("startTime")) ||
+                "Event cannot end before it starts",
+            })}
           />
+          {errors.endTime && (
+            <Alert variant="danger">{errors.endTime.message}</Alert>
+          )}
         </FloatingLabel>
         <Button type="submit">Create</Button>
       </Form>

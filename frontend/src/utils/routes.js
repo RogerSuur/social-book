@@ -20,7 +20,7 @@ export const USER_FOLLOWERS_URL = "http://localhost:8000/followers/";
 export const EVENT_URL = "http://localhost:8000/event/";
 export const ACCEPTED_EVENTS_URL = "http://localhost:8000/userevents";
 export const GROUP_EVENTS_URL = "http://localhost:8000/groupevents/";
-export const CREATE_GROUP_EVENT_URL = "/creategroupevent";
+export const CREATE_GROUP_EVENT_URL = "http://localhost:8000/creategroupevent";
 export const EVENT_ATTENDANCE_URL = "http://localhost:8000/eventreaction";
 
 //--------------------------Search---------------------//
