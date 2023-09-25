@@ -56,7 +56,6 @@ const Notification = ({ notification, onClose, popup }) => {
         <>{notification?.sender_name}</>
       </LinkContainer>{" "}
       wants to follow you
-      {buttons}
     </>
   );
 
@@ -69,7 +68,6 @@ const Notification = ({ notification, onClose, popup }) => {
       <LinkContainer to={`/groups/${notification?.group_id}`}>
         <>{notification?.group_name}</>
       </LinkContainer>
-      {buttons}
     </>
   );
 
