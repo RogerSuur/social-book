@@ -75,7 +75,11 @@ const Signup = () => {
 
   return (
     <Container fluid="md">
-      {errMsg && <h3>{errMsg}</h3>}
+      {errMsg && (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      )}
       <Form onSubmit={handleSubmit(onSubmit)}>
         <h1 className="text-center">Sign up for FREE to start networking</h1>
         <Row>
