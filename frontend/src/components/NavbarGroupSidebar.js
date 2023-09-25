@@ -13,7 +13,7 @@ const NavbarGroupSidebar = () => {
       <Nav.Link onClick={handleShow}>Groups and events</Nav.Link>
       {show && (
         <>
-          <Offcanvas show={show} onHide={handleClose}>
+          <Offcanvas show={show} onHide={handleClose} responsive="md">
             <Offcanvas.Header className="ms-auto" closeButton />
             <Offcanvas.Body onClick={handleClose}>
               <GroupSidebar />

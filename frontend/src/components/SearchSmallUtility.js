@@ -14,20 +14,21 @@ const SearchSmallUtility = () => {
 
   return (
     <div className="d-md-none">
-      <GenericModal
-        linkText={"Search"}
-        small={"small"}
-        headerButton={<SearchBar setSearchResults={setSearchResults} />}
-      >
-        <>
-          {searchResults.length > 0 && (
-            <SearchResults
-              searchResults={searchResults}
-              setSearchResults={setSearchResults}
-            />
-          )}
-        </>
-      </GenericModal>
+      <Nav.Link>
+        <GenericModal
+          linkText={"Search"}
+          headerButton={<SearchBar setSearchResults={setSearchResults} />}
+        >
+          <>
+            {searchResults.length > 0 && (
+              <SearchResults
+                searchResults={searchResults}
+                setSearchResults={setSearchResults}
+              />
+            )}
+          </>
+        </GenericModal>
+      </Nav.Link>
     </div>
   );
 };

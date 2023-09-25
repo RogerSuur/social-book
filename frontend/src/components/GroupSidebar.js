@@ -22,13 +22,13 @@ const GroupSidebar = () => {
   return (
     <Scrollbars autoHide>
       <Container>
-        <h1>Groups</h1>
+        <h4>Groups</h4>
         <ListGroup variant="flush">
           <GenericGroupList url={USER_GROUPS_URL} />
         </ListGroup>
         <Row>
           <Stack direction="horizontal">
-            <h1>My groups</h1>
+            <h4>My groups</h4>
             <div>
               <GenericModal
                 img={<PlusCircle />}
@@ -48,7 +48,7 @@ const GroupSidebar = () => {
           />
         </ListGroup>
 
-        <h1>Events</h1>
+        <h4>Events</h4>
         <ListGroup variant="flush">
           <GenericEventList url={ACCEPTED_EVENTS_URL} />
         </ListGroup>

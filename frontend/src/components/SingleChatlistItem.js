@@ -7,9 +7,9 @@ const SingleChatlistItem = ({ chat }) => {
       : ImageHandler("", "defaultgroup.png", "chatbox-img");
 
   const listItem = (
-    <>
+    <span className="me-1">
       {image} {chat.name}
-    </>
+    </span>
   );
 
   return listItem;

@@ -2,7 +2,6 @@ import { useLocation, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
-import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import Chat from "./Chat";
 import { WS_URL } from "../utils/routes";
 import Login from "../pages/LoginPage";
@@ -13,9 +12,9 @@ import { AUTH_URL } from "../utils/routes";
 const RequireAuth = () => {
   const { auth, setAuth } = useAuth();
   const [socketUrl] = useState(WS_URL);
-  const { lastJsonMessage } = useWebSocketConnection(socketUrl);
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [width, setWidth] = useState(window.innerWidth);
+  const breakpoint = 768;
 
   const location = useLocation();
 
@@ -43,10 +42,12 @@ const RequireAuth = () => {
   }, [location]);
 
   useEffect(() => {
-    if (lastJsonMessage && lastJsonMessage.type === "chatlist") {
-      setUsers(lastJsonMessage.data);
-    }
-  }, [lastJsonMessage]);
+    const handleWindowResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handleWindowResize);
+
+    // Return a function from the effect that removes the event listener
+    return () => window.removeEventListener("resize", handleWindowResize);
+  }, []);
 
   return loading ? null : auth ? (
     <Container fluid className="bg-light">
@@ -61,9 +62,11 @@ const RequireAuth = () => {
         >
           <Outlet context={{ socketUrl }} />
         </Col>
-        <Col id="chat-sidebar" xs="3" className="sidebar p-0 d-none d-md-flex">
-          <Chat chatlist={users} />
-        </Col>
+        {width >= breakpoint && (
+          <Col id="chat-sidebar" xs="3" className="sidebar p-0">
+            <Chat />
+          </Col>
+        )}
       </Row>
     </Container>
   ) : (

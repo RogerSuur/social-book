@@ -6,7 +6,7 @@ import { WS_URL } from "../utils/routes";
 import { Container, ListGroup, Badge } from "react-bootstrap";
 import Scrollbars from "react-custom-scrollbars-2";
 
-const Chat = () => {
+const Chat = ({ newMessages, setNewMessages }) => {
   const [openChat, setOpenChat] = useState(null);
   const [userChatlist, setUserChatlist] = useState([]);
   const [groupChatlist, setGroupChatlist] = useState([]);
@@ -22,8 +22,6 @@ const Chat = () => {
   useEffect(() => {
     loadChatlist();
   }, []);
-
-  console.log("GROUPCHATLIST: ", groupChatlist);
 
   const resetUnreadCount = (openChatbox) => {
     setUserChatlist((prevChatlist) =>
@@ -117,6 +115,7 @@ const Chat = () => {
             : lastJsonMessage?.data?.sender_id,
           lastJsonMessage?.data?.group_id,
         ]);
+        setNewMessages && setNewMessages(true);
         break;
       default:
         break;
@@ -133,25 +132,37 @@ const Chat = () => {
     />
   );
 
+  const navbarNotification = (unread) =>
+    setNewMessages && unread > 0 && !newMessages && setNewMessages(true);
+
   const renderedChats = (chatlist) =>
-    chatlist.map((chat, index) => (
-      <ListGroup.Item key={index} action onClick={() => toggleChat(chat)}>
-        <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
-        {chat?.user_id > 0 && chat.unread_count > 0 && (
-          <Badge bg="danger">{chat.unread_count}</Badge>
-        )}
-      </ListGroup.Item>
-    ));
+    chatlist.map((chat, index) => {
+      navbarNotification(chat?.unread_count);
+      return (
+        <ListGroup.Item key={index} action onClick={() => toggleChat(chat)}>
+          <SingleChatlistItem chat={chat} toggleChat={toggleChat} />
+          {chat?.user_id > 0 && chat.unread_count > 0 && (
+            <Badge bg="danger">{chat.unread_count}</Badge>
+          )}
+        </ListGroup.Item>
+      );
+    });
 
   return (
     <Scrollbars>
       <Container fluid>
-        <ListGroup variant="flush">
-          Private Chats{renderedChats(userChatlist)}
-        </ListGroup>
-        <ListGroup variant="flush">
-          Group Chats{renderedChats(groupChatlist)}
-        </ListGroup>
+        {userChatlist?.length > 0 && (
+          <ListGroup variant="flush">
+            <h4>Private Chats</h4>
+            {renderedChats(userChatlist)}
+          </ListGroup>
+        )}
+        {groupChatlist?.length > 0 && (
+          <ListGroup variant="flush">
+            <h4>Group Chats</h4>
+            {renderedChats(groupChatlist)}
+          </ListGroup>
+        )}
       </Container>
       {openChat && openedChatbox}
     </Scrollbars>

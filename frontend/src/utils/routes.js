@@ -30,9 +30,8 @@ export const SEARCH_URL = "http://localhost:8000/search";
 export const USER_POSTS_URL = "/userposts/";
 export const FEEDPOSTS_URL = "/feedposts";
 export const GROUPFEED_URL = "/groupfeed/";
-
+export const PROFILE_POSTS_URL = "/profileposts";
 //--------------------------Profile---------------------//
 export const AVATAR_UPDATER_URL = "http://localhost:8000/profile/update/avatar";
-export const PROFILE_POSTS_URL = "/profileposts";
 export const PROFILE_URL = "http://localhost:8000/profile";
 export const PROFILE_UPDATE_URL = "http://localhost:8000/profile/update";

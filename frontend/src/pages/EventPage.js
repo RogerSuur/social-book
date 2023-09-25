@@ -105,11 +105,12 @@ const EventPage = () => {
         <Col className="m-auto mb-3 text-center">
           <h1>{event?.title}</h1>
           {event?.groupId > 0 && (
-            <LinkContainer to={`/groups/${event?.groupId}`}>
-              <div>
-                Event by <strong>{event?.groupName}</strong>
-              </div>
-            </LinkContainer>
+            <div>
+              Event by{" "}
+              <LinkContainer to={`/groups/${event?.groupId}`}>
+                <strong>{event?.groupName}</strong>
+              </LinkContainer>
+            </div>
           )}
         </Col>
         <Col md="3" className="m-auto">

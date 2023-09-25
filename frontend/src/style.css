@@ -10,8 +10,16 @@
   max-width: 320px;
 }
 
+[href] {
+  cursor: pointer;
+}
+
 .content-wrapper {
   margin-top: 72px;
+}
+
+textarea#about {
+  height: 120px;
 }
 
 #search-bar {
@@ -32,6 +40,7 @@
 
 #chat-sidebar {
   right: 0;
+  position: absolute;
 }
 
 .chatbox-img {
@@ -75,9 +84,8 @@
 .search-results {
   overflow-y: hidden;
   max-height: calc(100vh - 56px);
-  width: 100%;
+  width: calc(100%);
 }
-
 
 @media only screen and (min-width: 768px){
   .scroll{
