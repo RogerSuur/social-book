@@ -56,7 +56,9 @@ const AddGroupMembers = ({ id }) => {
 
   return (
     <Stack direction="horizontal">
-      <Select options={userOptions} isMulti onChange={handleSelectChange} />
+      <div className="add-members">
+        <Select options={userOptions} isMulti onChange={handleSelectChange} />
+      </div>
       <Button onClick={handleSubmit}>Invite</Button>
     </Stack>
   );

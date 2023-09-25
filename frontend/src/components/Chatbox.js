@@ -5,6 +5,7 @@ import { LinkContainer } from "react-router-bootstrap";
 import InfiniteScroll from "react-infinite-scroller";
 import ImageHandler from "../utils/imageHandler";
 import Picker from "emoji-picker-react";
+import { EmojiSmileFill } from "react-bootstrap-icons";
 
 import {
   Row,
@@ -289,10 +290,11 @@ const Chatbox = ({
               value={message.data.body}
               autoFocus
             />
-            <i
-              className="iconoir-add-circle"
-              onClick={() => setShowPicker((val) => !val)}
-            ></i>
+            <EmojiSmileFill
+              color="blue"
+              size={38}
+              onClick={() => setShowPicker(true)}
+            />
             <div className="picker-container">
               {showPicker && (
                 <Picker
