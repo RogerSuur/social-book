@@ -14,7 +14,7 @@ import {
   Badge,
 } from "react-bootstrap";
 import PostButton from "../components/PostButton.js";
-import { FOLLOWERS_URL } from "../utils/routes";
+import { FOLLOWERS_URL, CREATE_POST_URL } from "../utils/routes";
 import GenericModal from "../components/GenericModal";
 import { ImageFill } from "react-bootstrap-icons";
 
@@ -36,8 +36,6 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
       image: image,
     }));
   };
-  console.log(formData);
-  // errordata state
 
   const handleChange = (event) => {
     const { name, value, type } = event.target;
@@ -56,7 +54,11 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
         });
         setFollowers(response.data);
       } catch (err) {
-        console.error(err);
+        if (!err?.response) {
+          setErrMsg("No Server Response");
+        } else {
+          setErrMsg("Internal Server Error");
+        }
       }
     };
     if (formData.privacyType === 3) {
@@ -74,8 +76,6 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
       return;
     }
 
-    console.log("FORMDAT: ", formData);
-
     const formDataWithImage = new FormData();
     formDataWithImage.append("content", formData.content);
     formDataWithImage.append("privacyType", formData.privacyType);
@@ -85,21 +85,14 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
     );
 
     if (formData?.image) {
-      formDataWithImage.append("image", formData?.image); // Append the image file if it exists
+      formDataWithImage.append("image", formData?.image);
     }
 
-    console.log("data when submitted", formDataWithImage);
-
     try {
-      const response = await axios.post(
-        "http://localhost:8000/post",
-        formDataWithImage,
-        // JSON.stringify(formData),
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const response = await axios.post(CREATE_POST_URL, formDataWithImage, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       setErrMsg(response.data?.message);
 

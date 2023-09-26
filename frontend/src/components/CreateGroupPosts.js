@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Form, Stack, Col, InputGroup, Alert } from "react-bootstrap";
 import PostButton from "../components/PostButton";
+import { GROUP_PAGE_URL } from "../utils/routes";
 
 const CreateGroupPost = ({ groupId, onPostsUpdate }) => {
   const initialFormData = {
@@ -29,7 +30,7 @@ const CreateGroupPost = ({ groupId, onPostsUpdate }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8000/groups/${groupId}/post`,
+        `${GROUP_PAGE_URL}${groupId}/post`,
         JSON.stringify(formData),
         { withCredentials: true },
         {
@@ -41,7 +42,6 @@ const CreateGroupPost = ({ groupId, onPostsUpdate }) => {
       onPostsUpdate();
     } catch (err) {
       if (!err?.response) {
-        console.log("ERROR: ", err);
         setErrMsg("No Server Response");
       } else {
         setErrMsg("Internal Server Error");

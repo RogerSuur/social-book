@@ -56,23 +56,13 @@ const Chatbox = ({
     setShowPicker(false);
   };
 
-  console.log(messageHistory);
   useEffect(() => {
     setMessageHistory([]);
     setHasMoreMessages(true);
   }, [chat]);
 
   const handleScrolling = () => {
-    console.log("SCROLLING");
-    console.log("SCROLLTOP: ", messageboxRef?.current?.scrollTop);
-    console.log("SCROLLHEIGHT: ", messageboxRef?.current?.scrollHeight);
-    console.log("CLIENTHEIGHT: ", messageboxRef?.current?.clientHeight);
-
     const lastMessage = messageHistory[messageHistory.length - 1]?.id;
-    console.log(
-      "MESSAGE HISTORY: ",
-      messageHistory?.[messageHistory.length - 1]
-    );
 
     setLastMessageRead(lastMessage);
     if (
@@ -80,14 +70,6 @@ const Chatbox = ({
         messageboxRef?.current?.clientHeight <=
       messageboxRef?.current?.scrollTop + 1
     ) {
-      console.log(
-        "SENDING USER: ",
-        chat.user_id,
-        "GROUP : ",
-        chat.group_id,
-        "LASTREAD: ",
-        lastMessage
-      );
       sendJsonMessage({
         type: "messages_read",
         data: {
@@ -96,7 +78,7 @@ const Chatbox = ({
           last_message: lastMessage,
         },
       });
-      console.log("SCROLLBERG");
+
       resetUnreadCount([chat.user_id, chat.group_id]);
     }
   };
@@ -114,8 +96,6 @@ const Chatbox = ({
     setLoading(true);
 
     const offset = messageHistory.length > 0 ? messageHistory[0].id : 0;
-
-    console.log("OFFSET: ", chat.user_id, chat.group_id, offset);
 
     sendJsonMessage({
       type: "request_message_history",
@@ -175,8 +155,6 @@ const Chatbox = ({
       };
     });
   };
-
-  console.log("MESSAGE HISTORY: ", messageHistory);
 
   const renderedMessages = messageHistory?.map((msg, index) => {
     switch (msg.sender_id) {
@@ -244,8 +222,7 @@ const Chatbox = ({
 
     setMessage({ ...message, data: { body: "" } });
     setScrollToBottomNeeded(true);
-    console.log("RESETTING", [chat.user_id ? chat.user_id : 0, chat.group_id]);
-    console.log("SUBMIT");
+
     resetUnreadCount([chat.user_id, chat.group_id]);
   };
 

@@ -4,10 +4,11 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { WS_URL, NOTIFICATIONS_URL } from "../utils/routes";
 import NotificationPopup from "../components/NotificationPopup";
-import { Badge, Row, Col, Image, Button } from "react-bootstrap";
+import { Badge, Row, Col, Alert } from "react-bootstrap";
 import { BellFill } from "react-bootstrap-icons";
 
 const NotificationNavbarItem = () => {
+  const [errMsg, setErrMsg] = useState("");
   const [toggle, setToggle] = useState(false);
   const [newNotification, setNewNotification] = useState(null);
   const { lastJsonMessage } = useWebSocketConnection(WS_URL);
@@ -32,8 +33,10 @@ const NotificationNavbarItem = () => {
             setNotifications(response.data);
           });
       } catch (err) {
-        if (err.response?.status > 200) {
-          console.log(err);
+        if (!err?.response) {
+          setErrMsg("No Server Response");
+        } else {
+          setErrMsg("Internal Server Error");
         }
       }
     };
@@ -41,7 +44,6 @@ const NotificationNavbarItem = () => {
     loadNotifications();
   }, []);
 
-  console.log(notifications, "NOTLIST");
   useEffect(() => {
     const exceptions = ["message", "chatlist", "message_history"];
 
@@ -85,12 +87,18 @@ const NotificationNavbarItem = () => {
           onPopupClose={onPopupClose}
         />
       )}
-      {toggle && (
-        <NotificationList
-          notifications={notifications}
-          setNotifications={setNotifications}
-          setToggle={setToggle}
-        />
+      {errMsg ? (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      ) : (
+        toggle && (
+          <NotificationList
+            notifications={notifications}
+            setNotifications={setNotifications}
+            setToggle={setToggle}
+          />
+        )
       )}
     </>
   );

@@ -4,6 +4,7 @@ import CreateComment from "./CreateComment";
 import { Container, Image, Alert, Col, Button } from "react-bootstrap";
 import GenericModal from "../components/GenericModal";
 import Comment from "../components/Comment";
+import { COMMENTS_URL } from "../utils/routes";
 
 const Comments = ({ postId, commentCount }) => {
   const [comments, setComments] = useState([]);
@@ -27,7 +28,7 @@ const Comments = ({ postId, commentCount }) => {
     const loadComments = async () => {
       try {
         await axios
-          .get(`http://localhost:8000/comments/${postId}/${offset}`, {
+          .get(`${COMMENTS_URL}${postId}/${offset}`, {
             withCredentials: true,
             signal: abortController.signal,
           })

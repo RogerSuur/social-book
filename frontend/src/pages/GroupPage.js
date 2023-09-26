@@ -29,7 +29,6 @@ const GroupPage = () => {
           withCredentials: true,
         })
         .then((response) => {
-          console.log("RESP: ", response.data);
           setGroup(response.data);
         });
     } catch (err) {

@@ -50,7 +50,6 @@ const ProfileInfo = () => {
             if (response?.data?.user?.isOwnProfile === true) {
               navigate("/profile", { replace: true });
             } else {
-              console.log("PROFILE INFO RESPONSE: ", response?.data);
               setUser(response?.data?.user);
               setIsFollowed(response?.data?.user?.isFollowed);
             }
