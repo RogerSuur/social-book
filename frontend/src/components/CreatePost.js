@@ -74,6 +74,8 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
       return;
     }
 
+    console.log("FORMDAT: ", formData);
+
     const formDataWithImage = new FormData();
     formDataWithImage.append("content", formData.content);
     formDataWithImage.append("privacyType", formData.privacyType);

@@ -25,13 +25,22 @@ const Chat = ({ newMessages, setNewMessages }) => {
   }, []);
 
   const resetUnreadCount = (openChatbox) => {
-    setUserChatlist((prevChatlist) =>
-      prevChatlist.map((chat) =>
-        checkChat([chat.user_id, chat.group_id], openChatbox)
-          ? { ...chat, unread_count: 0 }
-          : chat
-      )
-    );
+    openChatbox[0]
+      ? setUserChatlist((prevChatlist) =>
+          prevChatlist.map((chat) =>
+            checkChat([chat.user_id, chat.group_id], openChatbox)
+              ? { ...chat, unread_count: 0 }
+              : chat
+          )
+        )
+      : openChatbox[1] &&
+        setGroupChatlist((prevChatlist) =>
+          prevChatlist.map((chat) =>
+            checkChat([chat.user_id, chat.group_id], openChatbox)
+              ? { ...chat, unread_count: 0 }
+              : chat
+          )
+        );
   };
 
   const toggleChat = (chat) => {
@@ -64,6 +73,8 @@ const Chat = ({ newMessages, setNewMessages }) => {
         chatToFind
       )
     );
+
+    console.log("USERCHAT", userChat);
 
     if (!userChat) {
       const {

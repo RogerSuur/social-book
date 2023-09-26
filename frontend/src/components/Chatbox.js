@@ -74,12 +74,6 @@ const Chatbox = ({
       messageHistory?.[messageHistory.length - 1]
     );
 
-    console.log("NUMBER: ", messageHistory.length - 1);
-    console.log("SOME MESSAGE: ", messageHistory[0]);
-    console.log("LAST MESSAGE: ", lastMessage);
-    console.log("lastReadMessage: ", lastMessageRead);
-
-    // if (lastMessage && lastMessage !== lastMessageRead) {
     setLastMessageRead(lastMessage);
     if (
       messageboxRef?.current?.scrollHeight -
@@ -102,8 +96,8 @@ const Chatbox = ({
           last_message: lastMessage,
         },
       });
+      console.log("SCROLLBERG");
       resetUnreadCount([chat.user_id, chat.group_id]);
-      // }
     }
   };
 
@@ -251,7 +245,8 @@ const Chatbox = ({
     setMessage({ ...message, data: { body: "" } });
     setScrollToBottomNeeded(true);
     console.log("RESETTING", [chat.user_id ? chat.user_id : 0, chat.group_id]);
-    resetUnreadCount([chat.user_id ? chat.user_id : 0, chat.group_id]);
+    console.log("SUBMIT");
+    resetUnreadCount([chat.user_id, chat.group_id]);
   };
 
   useEffect(() => {
