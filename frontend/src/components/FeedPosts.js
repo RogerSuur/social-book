@@ -37,6 +37,7 @@ const FeedPosts = ({ url, reload }) => {
     return () => {
       abortController.abort();
     };
+    // eslint-disable-next-line
   }, [offset, reload]);
 
   const lastPostElementRef = useCallback((node) => {

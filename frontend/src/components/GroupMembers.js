@@ -3,7 +3,7 @@ import { makeRequest } from "../services/makeRequest";
 import GenericModal from "../components/GenericModal";
 import GenericUserList from "../components/GenericUserList";
 import { GROUP_MEMBERS_URL } from "../utils/routes";
-import { ListGroup, Col } from "react-bootstrap";
+import { ListGroup, Col, Alert } from "react-bootstrap";
 import AddGroupMembers from "./AddGroupMembers";
 import { PlusCircle } from "react-bootstrap-icons";
 
@@ -32,17 +32,28 @@ const GroupMembers = ({ groupId }) => {
   );
 
   return (
-    <Col xs="auto">
-      <GenericModal
-        buttonText={`${groupMembers?.length} members`}
-        headerText={"Group members"}
-        headerButton={inviteMembers}
-      >
-        <ListGroup>
-          <GenericUserList variant="flush" url={GROUP_MEMBERS_URL + groupId} />
-        </ListGroup>
-      </GenericModal>
-    </Col>
+    <>
+      {errMsg ? (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      ) : (
+        <Col xs="auto">
+          <GenericModal
+            buttonText={`${groupMembers?.length} members`}
+            headerText={"Group members"}
+            headerButton={inviteMembers}
+          >
+            <ListGroup>
+              <GenericUserList
+                variant="flush"
+                url={GROUP_MEMBERS_URL + groupId}
+              />
+            </ListGroup>
+          </GenericModal>
+        </Col>
+      )}
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { makeRequest } from "../services/makeRequest.js";
 import { Form, Alert } from "react-bootstrap";
 
@@ -10,7 +10,11 @@ const SearchBar = ({ setSearchResults }) => {
       const response = await makeRequest(`search/${value}`, {});
       setSearchResults(response);
     } catch (err) {
-      setErrMsg(err.message);
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg("Internal Server Error");
+      }
     }
   };
 

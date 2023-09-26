@@ -69,7 +69,7 @@ const NotificationNavbarItem = () => {
           <BellFill
             size={30}
             onClick={handleToggle}
-            color={notificationCount > 0 && "red"}
+            color={notificationCount > 0 ? "red" : "black"}
           />
           {notificationCount > 0 && (
             <span className="position-absolute">

@@ -28,7 +28,6 @@ import { LongDate, BirthdayConverter } from "../utils/datetimeConverters.js";
 const ProfileEditorPage = () => {
   const [user, setUser] = useState({});
   const [errMsg, setErrMsg] = useState("");
-
   const values = user;
   const {
     register,

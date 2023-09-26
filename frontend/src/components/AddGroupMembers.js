@@ -25,6 +25,7 @@ const AddGroupMembers = ({ id, handleClose }) => {
       }
     };
     fetchFollowers();
+    // eslint-disable-next-line
   }, []);
 
   const handleSelectChange = (selectedOptions) => {

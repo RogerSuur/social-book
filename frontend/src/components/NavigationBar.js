@@ -1,13 +1,11 @@
-import { Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import { Nav, Navbar, Container, Row, Col } from "react-bootstrap";
+import { Nav, Navbar, Container } from "react-bootstrap";
 import NotificationNavbarItem from "./NotificationNavbarItem";
 import { LinkContainer } from "react-router-bootstrap";
 import SearchUtility from "../components/SearchUtility";
 import { BoxArrowRight } from "react-bootstrap-icons";
 import NavbarChat from "../components/NavbarChat";
 import NavbarGroupSidebar from "./NavbarGroupSidebar";
-import SmallNotificationNavbarItem from "../components/SmallNotificationNavbarItem";
 import SearchSmallUtility from "../components/SearchSmallUtility";
 
 const NavigationBar = () => {
@@ -38,9 +36,6 @@ const NavigationBar = () => {
 
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="d-flex justify-content-between ms-auto">
-              {/* <LinkContainer to="/profile">
-                <Nav.Link>Profile</Nav.Link>
-              </LinkContainer> */}
               {auth && (
                 <>
                   <LinkContainer to="/profile">

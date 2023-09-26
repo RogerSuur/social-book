@@ -110,15 +110,6 @@ textarea#about {
   white-space: nowrap;
 }
 
-/* .group-chatlist-item {
-  animation: groupchatunread 3s;
-  animation-fill-mode: forwards;
-} */
-
-@keyframes groupchatunread {
-  to {background-color: red;}
-}
-
 .picker-container {
   max-height: calc(50vh - 56px);
   z-index: 1000;
@@ -139,8 +130,6 @@ textarea#about {
   }
 
   .search-results {
-    overflow-y: hidden;
     width: auto;
   }
-
 }

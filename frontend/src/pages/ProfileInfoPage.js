@@ -63,6 +63,7 @@ const ProfileInfo = () => {
       }
     };
     loadUser();
+    // eslint-disable-next-line
   }, [id, isFollowed]);
 
   const userList = (following) =>

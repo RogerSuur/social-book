@@ -8,43 +8,23 @@ import {
   InputGroup,
   Alert,
   Button,
-  Container,
   Col,
   Stack,
-  Badge,
 } from "react-bootstrap";
-import PostButton from "../components/PostButton.js";
 import { FOLLOWERS_URL, CREATE_POST_URL } from "../utils/routes";
 import GenericModal from "../components/GenericModal";
 import { ImageFill } from "react-bootstrap-icons";
 
 const CreatePost = ({ onPostsUpdate, handleClose }) => {
+  const [followers, setFollowers] = useState([]);
+  const [errMsg, setErrMsg] = useState("");
   const initialFormData = {
     content: "",
     image: null,
     privacyType: 0,
     selectedReceivers: [],
   };
-
   const [formData, setFormData] = useState(initialFormData);
-  const [followers, setFollowers] = useState([]);
-  const [errMsg, setErrMsg] = useState("");
-
-  const handleImageUpload = (image) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      image: image,
-    }));
-  };
-
-  const handleChange = (event) => {
-    const { name, value, type } = event.target;
-
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: type === "radio" ? parseInt(value) : value,
-    }));
-  };
 
   useEffect(() => {
     const fetchFollowers = async () => {
@@ -65,6 +45,22 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
       fetchFollowers();
     }
   }, [formData.privacyType]);
+
+  const handleImageUpload = (image) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      image: image,
+    }));
+  };
+
+  const handleChange = (event) => {
+    const { name, value, type } = event.target;
+
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: type === "radio" ? parseInt(value) : value,
+    }));
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();

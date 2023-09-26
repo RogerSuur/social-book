@@ -5,16 +5,6 @@ const useWebSocketConnection = (socketUrl) => {
     share: true,
   });
 
-  // useEffect(() => {
-  //   sendJsonMessage(message);
-  // }, [sendJsonMessage]);
-
-  // useEffect(() => {
-  //   if (onMessage && typeof onMessage === "function") {
-  //     onMessage(lastJsonMessage);
-  //   }
-  // }, [lastJsonMessage, onMessage]);
-
   return { sendJsonMessage, lastJsonMessage };
 };
 

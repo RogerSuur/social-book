@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CreateComment from "./CreateComment";
-import { Container, Image, Alert, Col, Button } from "react-bootstrap";
-import GenericModal from "../components/GenericModal";
 import Comment from "../components/Comment";
 import { COMMENTS_URL } from "../utils/routes";
+import { Container, Alert, Button } from "react-bootstrap";
 
 const Comments = ({ postId, commentCount }) => {
   const [comments, setComments] = useState([]);
   const [errMsg, setErrMsg] = useState(null);
   const [commentCountUpdate, setCommentsCountUpdate] = useState(commentCount);
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [commentsToShow, setCommentsToShow] = useState(
     commentCount > 5 ? commentCount : 0
   );
-
-  const [offset, setOffset] = useState(0);
-  const [loading, setLoading] = useState(true);
 
   const handleCommentsUpdate = () => {
     setCommentsCountUpdate((prev) => prev + 1);
@@ -59,6 +57,7 @@ const Comments = ({ postId, commentCount }) => {
     return () => {
       abortController.abort();
     };
+    // eslint-disable-next-line
   }, [offset, loading]);
 
   const showMoreComments = () => {

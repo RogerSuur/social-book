@@ -44,6 +44,7 @@ const EventPage = () => {
       }
     };
     loadEvent();
+    //eslint-disable-next-line
   }, [id, response]);
 
   const image = (user) =>

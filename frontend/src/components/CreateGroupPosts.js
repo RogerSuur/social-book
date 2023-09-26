@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Form, Stack, Col, InputGroup, Alert } from "react-bootstrap";
-import PostButton from "../components/PostButton";
 import { GROUP_PAGE_URL } from "../utils/routes";
+import PostButton from "./PostButton";
 
 const CreateGroupPost = ({ groupId, onPostsUpdate }) => {
   const initialFormData = {

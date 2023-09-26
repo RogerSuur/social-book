@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Notification from "../components/Notification";
-import { Dropdown, ListGroup, Col, Row, Container } from "react-bootstrap";
-import Scrollbars from "react-custom-scrollbars-2";
+import { ListGroup } from "react-bootstrap";
 
 const NotificationList = ({ notifications, setToggle, setNotifications }) => {
   const ref = useRef(null);
@@ -26,6 +25,7 @@ const NotificationList = ({ notifications, setToggle, setNotifications }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+    // eslint-disable-next-line
   }, [ref]);
 
   const renderedNotifications = notifications.map((notification, index) => (
