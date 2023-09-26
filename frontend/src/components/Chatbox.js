@@ -85,7 +85,14 @@ const Chatbox = ({
         messageboxRef?.current?.clientHeight <=
       messageboxRef?.current?.scrollTop + 1
     ) {
-      console.log("SENDING");
+      console.log(
+        "SENDING USER: ",
+        chat.user_id,
+        "GROUP : ",
+        chat.group_id,
+        "LASTREAD: ",
+        lastMessage
+      );
       sendJsonMessage({
         type: "messages_read",
         data: {
@@ -123,7 +130,7 @@ const Chatbox = ({
         last_message: offset,
       },
     });
-  }, [loading, hasMoreMessages]);
+  }, [loading, hasMoreMessages, chat]);
 
   useEffect(() => {
     switch (lastJsonMessage?.type) {
@@ -181,7 +188,18 @@ const Chatbox = ({
       case user:
         return <ChatMessage key={index} msg={msg} own={true} />;
       default:
-        return <ChatMessage key={index} msg={msg} />;
+        return (
+          <ChatMessage
+            key={index}
+            msg={{
+              ...msg,
+              sender_name:
+                messageHistory[index - 1]?.sender_id === msg.sender_id
+                  ? ""
+                  : msg.sender_name,
+            }}
+          />
+        );
     }
   });
 
