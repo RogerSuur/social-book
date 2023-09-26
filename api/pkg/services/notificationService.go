@@ -11,6 +11,7 @@ import (
 type INotificationService interface {
 	GetById(notificationId int64) (*models.Notification, error)
 	GetDetailsById(notificationId int64) (*models.NotificationDetails, error)
+	GetByEventAndUserId(eventId int64, userId int64) (*models.Notification, error)
 	GetUserNotifications(userId int64) ([]*models.NotificationJSON, error)
 	CreateFollowRequest(followerId int64, followingId int64) (int64, error)
 	HandleFollowRequest(notificationId int64, accepted bool) error
@@ -67,6 +68,18 @@ func (s *NotificationService) GetById(notificationId int64) (*models.Notificatio
 	return notification, nil
 }
 
+func (s *NotificationService) GetByEventAndUserId(eventId int64, userId int64) (*models.Notification, error) {
+
+	notification, err := s.NotificationRepository.GetByEventAndUserId(eventId, userId)
+	if err != nil {
+		s.Logger.Printf("Cannot get notification: %s", err)
+		return nil, err
+	}
+
+	return notification, nil
+
+}
+
 func (s *NotificationService) GetDetailsById(notificationId int64) (*models.NotificationDetails, error) {
 
 	notificationDetails, err := s.NotificationRepository.GetDetailsById(notificationId)
@@ -92,7 +105,8 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 
 	for _, notification := range notifications {
 
-		if notification.Reaction {
+		if notification.Reaction.Valid {
+			s.Logger.Printf("Notification already processed: %d", notification.Id)
 			continue
 		}
 
@@ -119,7 +133,7 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 			singleNotification.SenderName = sender.Nickname
 		}
 
-		if notificationDetails.NotificationType == "group_invite" || notificationDetails.NotificationType == "event_invite" {
+		if notificationDetails.NotificationType == "group_invite" {
 			group, err := s.GroupRepo.GetById(notificationDetails.EntityId)
 			if err != nil {
 				s.Logger.Printf("Cannot get group: %s", err)
@@ -153,6 +167,13 @@ func (s *NotificationService) GetUserNotifications(userId int64) ([]*models.Noti
 				s.Logger.Printf("Cannot get event: %s", err)
 				return nil, err
 			}
+			singleNotification.GroupId = event.GroupId
+			group, err := s.GroupRepo.GetById(event.GroupId)
+			if err != nil {
+				s.Logger.Printf("Cannot get group: %s", err)
+				return nil, err
+			}
+			singleNotification.GroupName = group.Title
 			singleNotification.EventId = event.Id
 			singleNotification.EventName = event.Title
 			singleNotification.EventDate = event.EventTime
@@ -222,7 +243,7 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 	notification := models.Notification{
 		ReceiverId:            followingId,
 		NotificationDetailsId: notificationDetailsId,
-		Reaction:              false,
+		Reaction:              sql.NullBool{Bool: false, Valid: true},
 	}
 
 	notificationId, err := s.NotificationRepository.InsertNotification(&notification)
@@ -248,7 +269,7 @@ func (s *NotificationService) HandleFollowRequest(notificationId int64, accepted
 	}
 
 	// check if follow request already handled
-	if notification.Reaction {
+	if notification.Reaction.Valid {
 		return errors.New("follow request already handled")
 	}
 
@@ -283,7 +304,7 @@ func (s *NotificationService) HandleFollowRequest(notificationId int64, accepted
 	s.Logger.Printf("Follow request updated: %d", follower.Id)
 
 	// update notification
-	notification.Reaction = true
+	notification.Reaction = sql.NullBool{Bool: true, Valid: true}
 	err = s.NotificationRepository.Update(notification)
 	if err != nil {
 		s.Logger.Printf("Cannot update notification: %s", err)
@@ -355,7 +376,7 @@ func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) 
 	notification := models.Notification{
 		ReceiverId:            groupData.CreatorId,
 		NotificationDetailsId: notifcationDetailsId,
-		Reaction:              false,
+		Reaction:              sql.NullBool{Bool: false, Valid: true},
 	}
 
 	notificationId, err := s.NotificationRepository.InsertNotification(&notification)
@@ -375,7 +396,7 @@ func (s *NotificationService) HandleGroupRequest(creatorID int64, notificationID
 	}
 
 	// check if group request already handled
-	if notification.Reaction {
+	if notification.Reaction.Valid {
 		return errors.New("group request already handled")
 	}
 
@@ -433,7 +454,7 @@ func (s *NotificationService) HandleGroupRequest(creatorID int64, notificationID
 	s.Logger.Printf("Group request updated: %d", notificationDetails.EntityId)
 
 	// update notification
-	notification.Reaction = true
+	notification.Reaction = sql.NullBool{Bool: true, Valid: true}
 	err = s.NotificationRepository.Update(notification)
 	if err != nil {
 		s.Logger.Printf("Cannot update notification: %s", err)
@@ -455,7 +476,7 @@ func (s *NotificationService) HandleEventInvite(notificationID int64, accepted b
 	}
 
 	// check if event invite already handled
-	if notification.Reaction {
+	if notification.Reaction.Valid {
 		return errors.New("event invite already handled")
 	}
 
@@ -498,7 +519,7 @@ func (s *NotificationService) HandleEventInvite(notificationID int64, accepted b
 	}
 
 	// update notification
-	notification.Reaction = true
+	notification.Reaction = sql.NullBool{Bool: true, Valid: true}
 	err = s.NotificationRepository.Update(notification)
 	if err != nil {
 		s.Logger.Printf("Cannot update notification: %s", err)
@@ -591,7 +612,7 @@ func (s *NotificationService) HandleGroupInvite(notificationID int64, accepted b
 	}
 
 	// check if group invite already handled
-	if notification.Reaction {
+	if notification.Reaction.Valid {
 		return errors.New("group invite already handled")
 	}
 
@@ -633,7 +654,7 @@ func (s *NotificationService) HandleGroupInvite(notificationID int64, accepted b
 	s.Logger.Printf("Group invite updated: %d", notificationDetails.EntityId)
 
 	// update notification
-	notification.Reaction = true
+	notification.Reaction = sql.NullBool{Bool: true, Valid: true}
 	err = s.NotificationRepository.Update(notification)
 	if err != nil {
 		s.Logger.Printf("Cannot update notification: %s", err)
