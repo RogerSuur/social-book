@@ -286,7 +286,7 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 
 	if data.GroupID == 0 && data.RecipientID > 0 {
 
-		w.Logger.Printf("User %v sent message to user %v", c.clientID, data.RecipientID)
+		w.Logger.Printf("User %v sent message %v to user %v", c.clientID, data.MessageID, data.RecipientID)
 		defer func() {
 			err = w.BroadcastSingleMessage(c, messageData)
 			if err != nil {
@@ -296,7 +296,7 @@ func (w *WebsocketServer) NewMessageHandler(p Payload, c *Client) error {
 
 	} else if data.RecipientID == 0 && data.GroupID > 0 {
 
-		w.Logger.Printf("User %v sent message to group %v", c.clientID, data.GroupID)
+		w.Logger.Printf("User %v sent message %v to group %v", c.clientID, data.MessageID, data.GroupID)
 		defer func() {
 			err = w.BroadcastGroupMessage(c, messageData)
 			if err != nil {
@@ -351,13 +351,19 @@ func (w *WebsocketServer) MessagesReadHandler(p Payload, c *Client) error {
 	if err != nil {
 		return err
 	}
-	w.Logger.Printf("User %v has read messages from user %v", c.clientID, data.ID)
 
-	err = w.chatService.HandleMessagesRead(c.clientID, int64(data.ID))
+	w.Logger.Printf("Payload: %+v", *data)
+
+	err = w.chatService.HandleMessagesRead(c.clientID, int64(data.LastMessage))
 	if err != nil {
+		if err.Error() == "not recipient" {
+			// do not mark messages as read if user is not recipient
+			return nil
+		}
 		return err
 	}
-	w.Logger.Printf("Messages successfully marked as read")
+
+	w.Logger.Printf("User %v has read message %v from user %v", c.clientID, data.LastMessage, data.ID)
 
 	return nil
 }
