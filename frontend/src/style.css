@@ -106,6 +106,10 @@ textarea#about {
   justify-content: flex-end;
 }
 
+.message-time {
+  white-space: nowrap;
+}
+
 /* .group-chatlist-item {
   animation: groupchatunread 3s;
   animation-fill-mode: forwards;

@@ -130,7 +130,7 @@ const Chatbox = ({
         last_message: offset,
       },
     });
-  }, [loading, hasMoreMessages, chat]);
+  }, [loading, hasMoreMessages, messageHistory]);
 
   useEffect(() => {
     switch (lastJsonMessage?.type) {
