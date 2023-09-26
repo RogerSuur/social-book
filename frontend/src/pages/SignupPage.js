@@ -75,7 +75,11 @@ const Signup = () => {
 
   return (
     <Container fluid="md">
-      {errMsg && <h3>{errMsg}</h3>}
+      {errMsg && (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      )}
       <Form onSubmit={handleSubmit(onSubmit)}>
         <h1 className="text-center">Sign up for FREE to start networking</h1>
         <Row>
@@ -273,7 +277,7 @@ const Signup = () => {
       <Row className="justify-content-center">
         <Col xs="12" md="3" className="text-center mt-3">
           Already have an account?
-          <LinkContainer className="mx-auto" to={`/signup`}>
+          <LinkContainer className="mx-auto" to={`/login`}>
             <Col as={Button} xs="12" variant="success">
               Sign in
             </Col>

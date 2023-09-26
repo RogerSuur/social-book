@@ -49,6 +49,7 @@ type GroupChatList struct {
 	Name        string    `json:"name"`
 	Timestamp   time.Time `json:"timestamp"`
 	AvatarImage string    `json:"avatar_image"`
+	UnreadCount int       `json:"unread_count"`
 }
 
 type MessageJSON struct {

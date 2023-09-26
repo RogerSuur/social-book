@@ -6,10 +6,12 @@ const SingleChatlistItem = ({ chat }) => {
       ? ImageHandler(chat?.avatar_image, "defaultuser.jpg", "chatbox-img")
       : ImageHandler("", "defaultgroup.png", "chatbox-img");
 
+  const styles = chat?.user_id > 0 ? "" : "group-chatlist-item";
+
   const listItem = (
-    <>
+    <span className={`me-1 ${styles}`}>
       {image} {chat.name}
-    </>
+    </span>
   );
 
   return listItem;

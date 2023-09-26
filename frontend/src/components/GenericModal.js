@@ -19,7 +19,9 @@ const GenericModal = ({
   return (
     <>
       {linkText ? (
-        <p onClick={handleShow}>{linkText}</p>
+        <div href="" onClick={handleShow}>
+          {linkText}
+        </div>
       ) : (
         <Button
           className="w-100"

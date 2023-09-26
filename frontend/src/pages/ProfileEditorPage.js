@@ -117,7 +117,7 @@ const ProfileEditorPage = () => {
                   <FloatingLabel
                     className="mb-3"
                     controlId="floatingNickname"
-                    label="Nickname (optional)"
+                    label="Nickname"
                   >
                     <Form.Control
                       placeholder="Enter your nickname"
@@ -155,10 +155,11 @@ const ProfileEditorPage = () => {
               <FloatingLabel
                 className="mt-3 mb-3"
                 controlId="about"
-                label="About you (optional)"
+                label="About you"
               >
                 <Form.Control
                   as="textarea"
+                  className="profile-textarea"
                   placeholder="Write something about yourself"
                   {...register("about")}
                 />
