@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS followers(
 	id INTEGER PRIMARY KEY,
 	following_id INTEGER NOT NULL,
 	follower_id INTEGER NOT NULL,
-	accepted bool NOT NULL,
+	accepted bool,
 	active bool NOT NULL,
 		FOREIGN KEY (following_id)
 			REFERENCES users(id)	

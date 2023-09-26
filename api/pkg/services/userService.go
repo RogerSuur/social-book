@@ -3,6 +3,7 @@ package services
 import (
 	"SocialNetworkRestApi/api/internal/server/utils"
 	"SocialNetworkRestApi/api/pkg/models"
+	"database/sql"
 	"errors"
 	"log"
 	"mime/multipart"
@@ -14,18 +15,19 @@ import (
 )
 
 type ProfileJSON struct {
-	UserID       int       `json:"id"`
-	FirstName    string    `json:"firstName"`
-	LastName     string    `json:"lastName"`
-	Email        string    `json:"email"`
-	Birthday     string    `json:"birthday"`
-	Nickname     string    `json:"nickname"`
-	About        string    `json:"about"`
-	AvatarImage  string    `json:"imagePath"`
-	CreatedAt    time.Time `json:"createdAt"`
-	IsPublic     bool      `json:"isPublic"`
-	IsFollowed   bool      `json:"isFollowed"`
-	IsOwnProfile bool      `json:"isOwnProfile"`
+	UserID      int       `json:"id"`
+	FirstName   string    `json:"firstName"`
+	LastName    string    `json:"lastName"`
+	Email       string    `json:"email"`
+	Birthday    string    `json:"birthday"`
+	Nickname    string    `json:"nickname"`
+	About       string    `json:"about"`
+	AvatarImage string    `json:"imagePath"`
+	CreatedAt   time.Time `json:"createdAt"`
+	IsPublic    bool      `json:"isPublic"`
+	IsFollowed  bool      `json:"isFollowed"`
+	//IsPending    bool      `json:"isPending"`
+	IsOwnProfile bool `json:"isOwnProfile"`
 }
 
 type FollowerData struct {
@@ -51,7 +53,7 @@ type IUserService interface {
 	GetUserFollowers(userID int64) ([]*FollowerData, error)
 	GetUserFollowing(userID int64) ([]*FollowerData, error)
 	GetPublicUsers(userID int64) ([]*models.SimpleUserJSON, error)
-	IsFollowed(followerID int64, followingID int64) bool
+	IsFollowed(followerID int64, followingID int64) sql.NullBool
 	Unfollow(followerID int64, followingID int64) error
 	UpdateUserImage(userID int64, file multipart.File, fileHeader *multipart.FileHeader) error
 }
@@ -130,30 +132,32 @@ func (s *UserService) GetUserData(requestingUserId int64, profileId int64) (*Pro
 
 	IsFollowed := s.IsFollowed(profileId, requestingUserId)
 
-	if !user.IsPublic && !IsFollowed && requestingUserId != profileId {
+	if !user.IsPublic && !IsFollowed.Bool && requestingUserId != profileId {
 		userJSON = &ProfileJSON{
-			UserID:       int(profileId),
-			FirstName:    user.FirstName,
-			LastName:     user.LastName,
-			Nickname:     user.Nickname,
-			AvatarImage:  user.ImagePath,
-			IsPublic:     user.IsPublic,
-			IsFollowed:   IsFollowed,
+			UserID:      int(profileId),
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			Nickname:    user.Nickname,
+			AvatarImage: user.ImagePath,
+			IsPublic:    user.IsPublic,
+			IsFollowed:  IsFollowed.Bool,
+			//IsPending:    IsFollowed.Valid && !IsFollowed.Bool,
 			IsOwnProfile: requestingUserId == profileId,
 		}
 	} else {
 		userJSON = &ProfileJSON{
-			UserID:       int(profileId),
-			FirstName:    user.FirstName,
-			LastName:     user.LastName,
-			Email:        user.Email,
-			Birthday:     user.Birthday.Format("02/01/2006"),
-			Nickname:     user.Nickname,
-			About:        user.About,
-			AvatarImage:  user.ImagePath,
-			CreatedAt:    user.CreatedAt,
-			IsPublic:     user.IsPublic,
-			IsFollowed:   IsFollowed,
+			UserID:      int(profileId),
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			Email:       user.Email,
+			Birthday:    user.Birthday.Format("02/01/2006"),
+			Nickname:    user.Nickname,
+			About:       user.About,
+			AvatarImage: user.ImagePath,
+			CreatedAt:   user.CreatedAt,
+			IsPublic:    user.IsPublic,
+			IsFollowed:  IsFollowed.Bool,
+			//IsPending:    IsFollowed.Valid && !IsFollowed.Bool,
 			IsOwnProfile: requestingUserId == profileId,
 		}
 	}
@@ -345,13 +349,18 @@ func (s *UserService) GetUserFollowers(userID int64) ([]*FollowerData, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		if !follower.Accepted.Valid {
+			continue
+		}
+
 		follower := &FollowerData{
 			UserID:      int(user.Id),
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
 			Nickname:    user.Nickname,
 			AvatarImage: user.ImagePath,
-			Accepted:    follower.Accepted,
+			Accepted:    follower.Accepted.Bool,
 		}
 		followersData = append(followersData, follower)
 	}
@@ -373,13 +382,18 @@ func (s *UserService) GetUserFollowing(userID int64) ([]*FollowerData, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		if !follower.Accepted.Valid {
+			continue
+		}
+
 		following := &FollowerData{
 			UserID:      int(user.Id),
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
 			Nickname:    user.Nickname,
 			AvatarImage: user.ImagePath,
-			Accepted:    follower.Accepted,
+			Accepted:    follower.Accepted.Bool,
 		}
 		followingData = append(followingData, following)
 	}
@@ -418,12 +432,12 @@ func (s *UserService) GetPublicUsers(userID int64) ([]*models.SimpleUserJSON, er
 	return usersJSON, nil
 }
 
-func (s *UserService) IsFollowed(userID int64, followerID int64) bool {
+func (s *UserService) IsFollowed(userID int64, followerID int64) sql.NullBool {
 
 	follower, err := s.FollowerRepo.GetByFollowerAndFollowing(followerID, userID)
 
 	if err != nil {
-		return false
+		return sql.NullBool{Bool: false, Valid: false}
 	}
 
 	return follower.Accepted

@@ -182,12 +182,12 @@ func SeedFollowers(repos *models.Repositories) {
 				tempFollowing := &models.Follower{
 					FollowingId: followedUser.Id,
 					FollowerId:  seedUser.Id,
-					Accepted:    true,
+					Accepted:    sql.NullBool{Bool: true, Valid: true},
 				}
 
 				_, err = repos.FollowerRepo.Insert(tempFollowing)
 
-				logger.Printf("%+v\n", tempFollowing)
+				//logger.Printf("%+v\n", tempFollowing)
 
 				if err != nil {
 					logger.Printf("%+v\n", err)

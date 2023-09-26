@@ -207,10 +207,14 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 		return -1, errors.New("follow request already exists")
 	}
 
+	accepted := sql.NullBool{Bool: false, Valid: false}
+	if following.IsPublic {
+		accepted = sql.NullBool{Bool: true, Valid: true}
+	}
 	follower := &models.Follower{
 		FollowerId:  followerId,
 		FollowingId: followingId,
-		Accepted:    following.IsPublic,
+		Accepted:    accepted,
 	}
 
 	// create follow request
@@ -243,7 +247,7 @@ func (s *NotificationService) CreateFollowRequest(followerId int64, followingId 
 	notification := models.Notification{
 		ReceiverId:            followingId,
 		NotificationDetailsId: notificationDetailsId,
-		Reaction:              sql.NullBool{Bool: false, Valid: true},
+		Reaction:              sql.NullBool{Bool: false, Valid: false},
 	}
 
 	notificationId, err := s.NotificationRepository.InsertNotification(&notification)
@@ -281,13 +285,13 @@ func (s *NotificationService) HandleFollowRequest(notificationId int64, accepted
 	}
 
 	// check if follow request is accepted
-	if follower.Accepted {
+	if follower.Accepted.Valid {
 		return errors.New("follow request already accepted")
 	}
 
 	// update follow request
 	if accepted {
-		follower.Accepted = true
+		follower.Accepted = sql.NullBool{Bool: true, Valid: true}
 		err = s.FollowerRepo.Update(follower)
 		if err != nil {
 			s.Logger.Printf("Cannot update follow request: %s", err)
@@ -376,7 +380,7 @@ func (s *NotificationService) CreateGroupRequest(senderId int64, groupId int64) 
 	notification := models.Notification{
 		ReceiverId:            groupData.CreatorId,
 		NotificationDetailsId: notifcationDetailsId,
-		Reaction:              sql.NullBool{Bool: false, Valid: true},
+		Reaction:              sql.NullBool{Bool: false, Valid: false},
 	}
 
 	notificationId, err := s.NotificationRepository.InsertNotification(&notification)
