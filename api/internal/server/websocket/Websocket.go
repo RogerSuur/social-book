@@ -25,6 +25,7 @@ type WebsocketServer struct {
 	chatService         services.IChatService
 	groupService        services.IGroupService
 	groupMemberService  services.IGroupMemberService
+	groupEventService   services.IGroupEventService
 	sync.RWMutex
 }
 
@@ -61,6 +62,7 @@ func InitWebsocket(
 	chatService *services.ChatService,
 	groupService *services.GroupService,
 	groupMemberService *services.GroupMemberService,
+	groupEventService *services.GroupEventService,
 ) *WebsocketServer {
 	w := &WebsocketServer{
 		Logger: logger,
@@ -76,6 +78,7 @@ func InitWebsocket(
 		chatService:         chatService,
 		groupService:        groupService,
 		groupMemberService:  groupMemberService,
+		groupEventService:   groupEventService,
 	}
 	w.setupHandlers()
 	return w

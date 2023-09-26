@@ -77,6 +77,7 @@ func InitApp(repositories *models.Repositories, logger *log.Logger) *Application
 				repositories.NotificationRepo,
 				repositories.GroupRepo,
 				repositories.GroupMemberRepo),
+			groupEventServices,
 		),
 		UserService:         userServices,
 		NotificationService: notificationServices,
