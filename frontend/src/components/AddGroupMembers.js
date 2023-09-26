@@ -15,7 +15,6 @@ const AddGroupMembers = ({ id }) => {
         const response = await axios.get(ADD_GROUP_MEMBERS_URL + `/${id}`, {
           withCredentials: true,
         });
-        console.log("ADD GROUP MEMBERS: ", response?.data);
         setFollowers(response.data);
       } catch (err) {
         console.error(err);

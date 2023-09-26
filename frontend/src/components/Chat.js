@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import useWebSocketConnection from "../hooks/useWebSocketConnection";
 import Chatbox from "./Chatbox";
 import { WS_URL } from "../utils/routes";
-import { Container, ListGroup, Badge } from "react-bootstrap";
+import { Container, ListGroup } from "react-bootstrap";
 import Scrollbars from "react-custom-scrollbars-2";
 import { EnvelopeFill } from "react-bootstrap-icons";
 

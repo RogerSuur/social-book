@@ -56,7 +56,17 @@ const GroupPage = () => {
       ) : (
         <Container fluid>
           <Col className="text-center">
-            <div className="profile-img">{image}</div>
+            <div className="profile-img">
+              {image}
+              {group?.isCreator && (
+                <GenericModal buttonText="Upload new image">
+                  <AvatarUpdater
+                    url={`${GROUP_PAGE_URL}${id}/avatar`}
+                    onUploadSuccess={handleAvatarUpdate}
+                  />
+                </GenericModal>
+              )}
+            </div>
             <Row>
               <h1>{group.title}</h1>
             </Row>
@@ -82,12 +92,6 @@ const GroupPage = () => {
           </Row>
           {group.isMember && (
             <>
-              {/* <GenericModal buttonText="Upload new image">
-                <AvatarUpdater
-                  url={`${GROUP_PAGE_URL}${id}/avatar`}
-                  onUploadSuccess={handleAvatarUpdate}
-                />
-              </GenericModal> */}
               <CreateGroupPosts groupId={id} onPostsUpdate={handlePostUpdate} />
               <FeedPosts url={GROUPFEED_URL + id} key={id} reload={reload} />
             </>

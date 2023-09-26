@@ -37,6 +37,7 @@ const Chatbox = ({
   const [lastMessageRead, setLastMessageRead] = useState(0);
   const [scrollToBottomNeeded, setScrollToBottomNeeded] = useState(false);
   const [loading, setLoading] = useState(false);
+  const ref = useRef(null);
   const [message, setMessage] = useState({
     type: "message",
     data: {
@@ -85,7 +86,14 @@ const Chatbox = ({
         messageboxRef?.current?.clientHeight <=
       messageboxRef?.current?.scrollTop + 1
     ) {
-      console.log("SENDING");
+      console.log(
+        "SENDING USER: ",
+        chat.user_id,
+        "GROUP : ",
+        chat.group_id,
+        "LASTREAD: ",
+        lastMessage
+      );
       sendJsonMessage({
         type: "messages_read",
         data: {
@@ -102,7 +110,7 @@ const Chatbox = ({
   const image =
     chat?.user_id > 0
       ? ImageHandler(chat?.avatar_image, "defaultuser.jpg", "chatbox-img")
-      : ImageHandler("", "defaultgroup.png", "chatbox-img");
+      : ImageHandler(chat?.avatar_image, "defaultgroup.png", "chatbox-img");
 
   const loadMessages = useCallback(async () => {
     if (loading) {
@@ -123,7 +131,7 @@ const Chatbox = ({
         last_message: offset,
       },
     });
-  }, [loading, hasMoreMessages]);
+  }, [loading, hasMoreMessages, messageHistory]);
 
   useEffect(() => {
     switch (lastJsonMessage?.type) {
@@ -181,17 +189,34 @@ const Chatbox = ({
       case user:
         return <ChatMessage key={index} msg={msg} own={true} />;
       default:
-        return <ChatMessage key={index} msg={msg} />;
+        return (
+          <ChatMessage
+            key={index}
+            msg={{
+              ...msg,
+              sender_name:
+                messageHistory[index - 1]?.sender_id === msg.sender_id
+                  ? ""
+                  : msg.sender_name,
+            }}
+          />
+        );
     }
   });
 
-  const handleClickOutside = (event) => {
-    if (showPicker && !event.target.closest(".picker-container")) {
-      setShowPicker(false);
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setShowPicker(false);
+      }
+    };
 
-  document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -298,6 +323,7 @@ const Chatbox = ({
             <div className="picker-container">
               {showPicker && (
                 <Picker
+                  ref={ref}
                   //lazyLoad={true}
                   className="EmojiPicker"
                   searchDisabled={true}

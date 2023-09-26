@@ -27,6 +27,7 @@ type GroupJSON struct {
 	Description string `json:"description"`
 	ImagePath   string `json:"imagePath"`
 	IsMember    bool   `json:"isMember"`
+	IsCreator   bool   `json:"isCreator"`
 }
 
 type SearchResult struct {

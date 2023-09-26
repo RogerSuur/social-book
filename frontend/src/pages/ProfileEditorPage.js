@@ -92,102 +92,112 @@ const ProfileEditorPage = () => {
         </Alert>
       )}
       {user && (
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <Row className="gap-2">
-            <Col sm>
-              <div className="profile-img">
-                {image}
-                <GenericModal buttonText="Upload new image">
-                  <AvatarUpdater
-                    url={AVATAR_UPDATER_URL}
-                    onUploadSuccess={handleAvatarUpdate}
-                  />
-                </GenericModal>
-              </div>
-            </Col>
-            <Col sm>
-              <Row className="d-grid gap-2">
-                <Col xs="12">
-                  <h1>
-                    {user.firstName} {user.lastName}
-                  </h1>
-                </Col>
-                <Col xs="12">
-                  <div>also known as </div>
-                  <FloatingLabel
-                    className="mb-3"
-                    controlId="floatingNickname"
-                    label="Nickname"
-                  >
-                    <Form.Control
-                      placeholder="Enter your nickname"
-                      {...register("nickname", {
-                        maxLength: {
-                          value: 32,
-                          message:
-                            "A nickname should not be longer than 32 characters long",
-                        },
-                        pattern: {
-                          value: /^[a-zA-Z0-9._ ]{0,32}$/,
-                          message:
-                            "A nickname can only contain letters, numbers, spaces, dots (.) and underscores (_)",
-                        },
-                      })}
+        <>
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <Row className="gap-2">
+              <Col sm>
+                <div className="profile-img">
+                  {image}
+                  <GenericModal buttonText="Upload new image">
+                    <AvatarUpdater
+                      url={AVATAR_UPDATER_URL}
+                      onUploadSuccess={handleAvatarUpdate}
                     />
-                    {errors.nickname && (
-                      <Alert variant="danger">{errors.nickname.message}</Alert>
-                    )}
-                  </FloatingLabel>
-                </Col>
-                <div className="mb-3">
-                  <Form.Check
-                    type="checkbox"
-                    label="Profile is public"
-                    {...register("isPublic")}
-                  />
+                  </GenericModal>
                 </div>
-              </Row>
-            </Col>
-          </Row>
+              </Col>
+              <Col sm>
+                <Row className="d-grid gap-2">
+                  <Col xs="12">
+                    <h1>
+                      {user.firstName} {user.lastName}
+                    </h1>
+                  </Col>
+                  <Col xs="12">
+                    <div>also known as </div>
+                    <FloatingLabel
+                      className="mb-3"
+                      controlId="floatingNickname"
+                      label="Nickname"
+                    >
+                      <Form.Control
+                        placeholder="Enter your nickname"
+                        {...register("nickname", {
+                          maxLength: {
+                            value: 32,
+                            message:
+                              "A nickname should not be longer than 32 characters long",
+                          },
+                          pattern: {
+                            value: /^[a-zA-Z0-9._ ]{0,32}$/,
+                            message:
+                              "A nickname can only contain letters, numbers, spaces, dots (.) and underscores (_)",
+                          },
+                        })}
+                      />
+                      {errors.nickname && (
+                        <Alert variant="danger">
+                          {errors.nickname.message}
+                        </Alert>
+                      )}
+                    </FloatingLabel>
+                  </Col>
+                  <div className="mb-3">
+                    <Form.Check
+                      type="checkbox"
+                      label="Profile is public"
+                      {...register("isPublic")}
+                    />
+                  </div>
+                </Row>
+              </Col>
+            </Row>
 
-          <Row>
-            <Col>
-              <FloatingLabel
-                className="mt-3 mb-3"
-                controlId="about"
-                label="About you"
-              >
-                <Form.Control
-                  as="textarea"
-                  className="profile-textarea"
-                  placeholder="Write something about yourself"
-                  {...register("about")}
-                />
-              </FloatingLabel>
-            </Col>
-            <div className="text-center">
-              <Row>
-                <Col>
-                  <strong>Email address</strong>
-                  <p>{user.email}</p>
-                </Col>
-                <Col>
-                  <strong>Profile Type</strong>
-                  <p>{user.isPublic ? "Public" : "Private"}</p>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <strong>Born</strong>
-                  <p>{BirthdayConverter(user?.birthday)}</p>
-                </Col>
-                <Col>
-                  <strong>Joined</strong>
-                  <p>{LongDate(user.createdAt)}</p>
-                </Col>
-              </Row>
+            <Row>
+              <Col>
+                <FloatingLabel
+                  className="mt-3 mb-3"
+                  controlId="about"
+                  label="About you"
+                >
+                  <Form.Control
+                    as="textarea"
+                    className="profile-textarea"
+                    placeholder="Write something about yourself"
+                    {...register("about")}
+                  />
+                </FloatingLabel>
+              </Col>
+              <div className="text-center">
+                <Row>
+                  <Col>
+                    <strong>Email address</strong>
+                    <p>{user.email}</p>
+                  </Col>
+                  <Col>
+                    <strong>Profile Type</strong>
+                    <p>{user.isPublic ? "Public" : "Private"}</p>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <strong>Born</strong>
+                    <p>{BirthdayConverter(user?.birthday)}</p>
+                  </Col>
+                  <Col>
+                    <strong>Joined</strong>
+                    <p>{LongDate(user.createdAt)}</p>
+                  </Col>
+                </Row>
+              </div>
+            </Row>
+
+            <div className="d-flex justify-content-center mb-3 mt-3">
+              <Button type="submit" disabled={!isDirty}>
+                Save changes
+              </Button>
             </div>
-          </Row>
+          </Form>
           <Row className="gap-2">
             <Col>
               <GenericModal buttonText="Following">
@@ -205,12 +215,7 @@ const ProfileEditorPage = () => {
               </GenericModal>
             </Col>
           </Row>
-          <div className="d-flex justify-content-center mb-3 mt-3">
-            <Button type="submit" disabled={!isDirty}>
-              Save changes
-            </Button>
-          </div>
-        </Form>
+        </>
       )}
     </Container>
   );
