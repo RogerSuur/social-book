@@ -1,42 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { Container, Form, Button, FloatingLabel, Alert } from "react-bootstrap";
+import { Form, Button, FloatingLabel, Alert } from "react-bootstrap";
+import { useForm } from "react-hook-form";
 
 const CreateGroup = ({ onGroupCreated, handleClose }) => {
-  const [modalOpen, setModalOpen] = useState(false);
   const [errMsg, setErrMsg] = useState("");
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    mode: "onBlur",
+    criteriaMode: "all",
   });
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (formData?.title === "" || formData?.description === "") {
-      return;
-    }
-    // Send the formData data to the backend handler
+  const onSubmit = async (data) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:8000/creategroup",
-        JSON.stringify(formData),
+        JSON.stringify(data),
         { withCredentials: true },
         {
           headers: { "Content-Type": "application/json" },
         }
       );
-      setErrMsg(response.data?.message);
-      // props.onPostsUpdate();
-      //ACtion for creating new group
       onGroupCreated();
       handleClose();
     } catch (err) {
@@ -55,19 +42,22 @@ const CreateGroup = ({ onGroupCreated, handleClose }) => {
           {errMsg}
         </Alert>
       )}
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <FloatingLabel
           className="mb-3"
           controlId="floatingTitle"
           label="Group name"
         >
           <Form.Control
-            placeholder="Description"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
+            placeholder="Title"
             autoFocus
+            {...register("title", {
+              required: "Please enter a name for your group",
+            })}
           />
+          {errors.title && (
+            <Alert variant="danger">{errors.title.message}</Alert>
+          )}
         </FloatingLabel>
         <FloatingLabel
           className="mb-3"
@@ -77,10 +67,13 @@ const CreateGroup = ({ onGroupCreated, handleClose }) => {
           <Form.Control
             as="textarea"
             placeholder="Description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
+            {...register("description", {
+              required: "Please enter a description for your group",
+            })}
           />
+          {errors.description && (
+            <Alert variant="danger">{errors.description.message}</Alert>
+          )}
         </FloatingLabel>
         <Button type="submit">Create</Button>
       </Form>
