@@ -26,7 +26,7 @@ const NavbarChat = () => {
     <Chat newMessages={newMessages} setNewMessages={setNewMessages} />
   );
 
-  const colour = newMessages && !show && "red";
+  const colour = newMessages && "red";
 
   return (
     <>
