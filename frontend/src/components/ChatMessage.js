@@ -13,7 +13,7 @@ const ChatMessage = ({ msg, own }) => {
 
   const message = own ? (
     <div className="own-message">
-      <div className="message bg-primary text-light text-end ">{msgText}</div>
+      <div className="message bg-primary text-light text-end">{msgText}</div>
     </div>
   ) : (
     <>

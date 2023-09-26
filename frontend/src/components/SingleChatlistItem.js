@@ -4,7 +4,7 @@ const SingleChatlistItem = ({ chat }) => {
   const image =
     chat?.user_id > 0
       ? ImageHandler(chat?.avatar_image, "defaultuser.jpg", "chatbox-img")
-      : ImageHandler("", "defaultgroup.png", "chatbox-img");
+      : ImageHandler(chat?.avatar_image, "defaultgroup.png", "chatbox-img");
 
   const styles = chat?.user_id > 0 ? "" : "group-chatlist-item";
 
