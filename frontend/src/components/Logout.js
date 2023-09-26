@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-const LOGOUT_URL = "http://localhost:8000/logout";
+import { LOGOUT_URL } from "../utils/routes";
 
 const Logout = () => {
   const { setAuth } = useAuth();

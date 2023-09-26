@@ -11,7 +11,7 @@ type Follower struct {
 	Id          int64
 	FollowingId int64
 	FollowerId  int64
-	Accepted    bool
+	Accepted    sql.NullBool
 }
 
 type IFollowerRepository interface {

@@ -1,6 +1,9 @@
 export const WS_URL = "ws://localhost:8000/ws";
 export const NOTIFICATIONS_URL = "http://localhost:8000/notifications";
 export const AUTH_URL = "http://localhost:8000/auth";
+export const LOGOUT_URL = "http://localhost:8000/logout";
+export const LOGIN_URL = "http://localhost:8000/login";
+export const SIGNUP_URL = "http://localhost:8000/signup";
 //--------------------------Groups-----------------------//
 export const USER_GROUPS_URL = "http://localhost:8000/usergroups";
 export const USER_CREATED_GROUPS_URL = "http://localhost:8000/mygroups";
@@ -31,6 +34,10 @@ export const USER_POSTS_URL = "/userposts/";
 export const FEEDPOSTS_URL = "/feedposts";
 export const GROUPFEED_URL = "/groupfeed/";
 export const PROFILE_POSTS_URL = "/profileposts";
+export const CREATE_POST_URL = "http://localhost:8000/post";
+//--------------------------Comments---------------------//
+export const COMMENTS_URL = "http://localhost:8000/comments/";
+export const CREATE_COMMENT_URL = "http://localhost:8000/insertcomment";
 //--------------------------Profile---------------------//
 export const AVATAR_UPDATER_URL = "http://localhost:8000/profile/update/avatar";
 export const PROFILE_URL = "http://localhost:8000/profile";

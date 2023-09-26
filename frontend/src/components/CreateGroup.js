@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Form, Button, FloatingLabel, Alert } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { CREATE_GROUP_URL } from "../utils/routes";
 
 const CreateGroup = ({ onGroupCreated, handleClose }) => {
   const [errMsg, setErrMsg] = useState("");
@@ -17,7 +18,7 @@ const CreateGroup = ({ onGroupCreated, handleClose }) => {
   const onSubmit = async (data) => {
     try {
       await axios.post(
-        "http://localhost:8000/creategroup",
+        CREATE_GROUP_URL,
         JSON.stringify(data),
         { withCredentials: true },
         {

@@ -17,7 +17,6 @@ const RequireGuest = () => {
         await axios.get(AUTH_URL, {
           withCredentials: true,
         });
-        console.log("AUTHENTICATION");
         setAuth(true);
       } catch (err) {
         if (!err?.response) {

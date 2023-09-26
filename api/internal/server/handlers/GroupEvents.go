@@ -169,6 +169,26 @@ func (app *Application) EventReaction(rw http.ResponseWriter, r *http.Request) {
 
 		JSONdata.UserId = userId
 
+		notification, err := app.NotificationService.GetByEventAndUserId(JSONdata.EventId, userId)
+
+		if err != nil && err != sql.ErrNoRows {
+			app.Logger.Printf("Failed fetching notification: %v", err)
+			http.Error(rw, "JSON error", http.StatusBadRequest)
+		}
+
+		if err == sql.ErrNoRows {
+			app.Logger.Printf("No notification found")
+		}
+
+		if notification != nil {
+			err = app.NotificationService.HandleEventInvite(notification.Id, JSONdata.IsAttending)
+
+			if err != nil && err.Error() != "event invite already handled" {
+				app.Logger.Printf("Failed updating notification: %v", err)
+				http.Error(rw, "JSON error", http.StatusBadRequest)
+			}
+		}
+
 		err = app.GroupEventService.UpdateEventAttendance(JSONdata)
 
 		if err != nil {

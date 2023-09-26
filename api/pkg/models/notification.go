@@ -12,7 +12,7 @@ type Notification struct {
 	ReceiverId            int64
 	NotificationDetailsId int64
 	SeenAt                time.Time
-	Reaction              bool
+	Reaction              sql.NullBool
 }
 
 type NotificationDetails struct {
@@ -43,6 +43,7 @@ type INotificationRepository interface {
 	GetById(id int64) (*Notification, error)
 	GetDetailsById(id int64) (*NotificationDetails, error)
 	GetByReceiverId(receiverId int64) ([]*Notification, error)
+	GetByEventAndUserId(eventId int64, userId int64) (*Notification, error)
 	GetNotificationType(notificationType string) (int64, error)
 }
 
@@ -190,7 +191,7 @@ func (repo NotificationRepository) GetDetailsById(id int64) (*NotificationDetail
 func (repo NotificationRepository) GetByReceiverId(userId int64) ([]*Notification, error) {
 
 	query := `SELECT id, seen_at, notification_details_id, reaction FROM notifications
-	WHERE receiver_id = ?` // AND n.reaction IS false`
+	WHERE receiver_id = ? AND reaction IS NULL`
 
 	args := []interface{}{
 		userId,
@@ -221,6 +222,28 @@ func (repo NotificationRepository) GetByReceiverId(userId int64) ([]*Notificatio
 	}
 
 	return notifications, nil
+}
+
+func (repo NotificationRepository) GetByEventAndUserId(eventId int64, userId int64) (*Notification, error) {
+	query := `SELECT n.id, n.receiver_id, n.notification_details_id, n.seen_at, n.reaction FROM notifications n
+	JOIN notification_details nd ON n.notification_details_id = nd.id
+	WHERE nd.entity_id = ? AND n.receiver_id = ?`
+
+	args := []interface{}{
+		eventId,
+		userId,
+	}
+
+	notification := &Notification{}
+
+	err := repo.DB.QueryRow(query, args...).Scan(&notification.Id, &notification.ReceiverId, &notification.NotificationDetailsId, &notification.SeenAt, &notification.Reaction)
+
+	if err != nil {
+		repo.Logger.Printf("Error getting notification: %s", err.Error())
+		return nil, err
+	}
+
+	return notification, nil
 }
 
 func (repo NotificationRepository) GetNotificationType(notificationType string) (int64, error) {

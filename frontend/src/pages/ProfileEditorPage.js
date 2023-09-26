@@ -40,8 +40,6 @@ const ProfileEditorPage = () => {
     criteriaMode: "all",
   });
 
-  console.log("EDITOR PROFILE: ", user);
-
   const image = ImageHandler(user?.imagePath, "defaultuser.jpg", "profile-img");
 
   const loadUser = async () => {

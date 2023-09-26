@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import { ImageFill } from "react-bootstrap-icons";
 import GenericModal from "../components/GenericModal";
+import { CREATE_COMMENT_URL } from "../utils/routes";
 
 const CreateComment = ({ postId, onCommentsUpdate }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -59,14 +60,10 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/insertcomment",
-        formDataWithImage,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const response = await axios.post(CREATE_COMMENT_URL, formDataWithImage, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       setErrMsg(response.data?.message);
       onCommentsUpdate();
