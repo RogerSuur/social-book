@@ -109,7 +109,20 @@ func (app *Application) Group(rw http.ResponseWriter, r *http.Request) {
 			group.IsMember = true
 		}
 
-		//app.Logger.Printf("Group data fetched successfully: %v", group)
+		creator, err := app.GroupService.GetGroupCreator(groupId)
+
+		if err != nil {
+			app.Logger.Printf("Failed fetching group creator: %v", err)
+			http.Error(rw, "Fetch error", http.StatusBadRequest)
+		}
+
+		if creator.Id == userId {
+			group.IsCreator = true
+		} else {
+			group.IsCreator = false
+		}
+
+		//app.Logger.Printf("Group data fetched successfully: %+v", group)
 
 		json.NewEncoder(rw).Encode(&group)
 
