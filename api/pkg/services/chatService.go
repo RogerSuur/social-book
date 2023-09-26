@@ -319,8 +319,8 @@ func (s *ChatService) HandleMessagesRead(userId int64, messageId int64) error {
 	}
 
 	if message.RecipientId != userId {
-		s.Logger.Printf("User with id %d is not recipient of message with id %d", userId, messageId)
-		return errors.New("user is not recipient of message")
+		// mark read only messages that were sent to the user
+		return errors.New("not recipient")
 	}
 
 	err = s.ChatRepo.MarkMessagesRead(message.SenderId, userId, messageId)
