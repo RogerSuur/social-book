@@ -37,6 +37,7 @@ const Chatbox = ({
   const [lastMessageRead, setLastMessageRead] = useState(0);
   const [scrollToBottomNeeded, setScrollToBottomNeeded] = useState(false);
   const [loading, setLoading] = useState(false);
+  const ref = useRef(null);
   const [message, setMessage] = useState({
     type: "message",
     data: {
@@ -203,13 +204,19 @@ const Chatbox = ({
     }
   });
 
-  const handleClickOutside = (event) => {
-    if (showPicker && !event.target.closest(".picker-container")) {
-      setShowPicker(false);
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setShowPicker(false);
+      }
+    };
 
-  document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -316,6 +323,7 @@ const Chatbox = ({
             <div className="picker-container">
               {showPicker && (
                 <Picker
+                  ref={ref}
                   //lazyLoad={true}
                   className="EmojiPicker"
                   searchDisabled={true}

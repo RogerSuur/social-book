@@ -83,7 +83,7 @@ textarea#about {
 .search-results {
   overflow-y: hidden;
   max-height: calc(100vh - 56px);
-  width: calc(100%);
+  width: auto;
 }
 
 .add-members {

@@ -28,6 +28,7 @@ const NavigationBar = () => {
           {auth && (
             <>
               <NotificationNavbarItem />
+
               <div className="d-md-none">
                 <NavbarChat />
               </div>
@@ -49,8 +50,9 @@ const NavigationBar = () => {
                   <div className="d-none d-md-block">
                     <SearchUtility />
                   </div>
-
-                  <SearchSmallUtility />
+                  <div className="d-md-none">
+                    <SearchSmallUtility />
+                  </div>
 
                   <div className="d-md-none">
                     <NavbarGroupSidebar />
