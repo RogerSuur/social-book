@@ -183,7 +183,7 @@ func (app *Application) EventReaction(rw http.ResponseWriter, r *http.Request) {
 		if notification != nil {
 			err = app.NotificationService.HandleEventInvite(notification.Id, JSONdata.IsAttending)
 
-			if err != nil {
+			if err != nil && err.Error() != "event invite already handled" {
 				app.Logger.Printf("Failed updating notification: %v", err)
 				http.Error(rw, "JSON error", http.StatusBadRequest)
 			}

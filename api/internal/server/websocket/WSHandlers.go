@@ -109,8 +109,17 @@ func (w *WebsocketServer) ResponseHandler(p Payload, c *Client) error {
 	if NotificationDetails.NotificationType == "event_invite" {
 		w.Logger.Printf("User %v reacted to event invite %v", c.clientID, data.ID)
 		err = w.notificationService.HandleEventInvite(int64(data.ID), data.Reaction)
-		if err != nil {
+		if err != nil && err.Error() != "event invite already handled" {
 			return err
+		}
+		if err != nil && err.Error() == "event invite already handled" {
+			attendance := &models.EventAttendance{
+				EventId:     NotificationDetails.EntityId,
+				UserId:      int64(c.clientID),
+				IsAttending: data.Reaction,
+			}
+			w.Logger.Printf("attendance: %+v", attendance)
+			w.groupEventService.UpdateEventAttendance(attendance)
 		}
 		return nil
 	}
