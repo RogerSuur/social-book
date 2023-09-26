@@ -11,8 +11,7 @@ import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Alert from "react-bootstrap/Alert";
 import { LinkContainer } from "react-router-bootstrap";
 import useAuth from "../hooks/useAuth";
-
-const SIGNUP_URL = "http://localhost:8000/signup";
+import { SIGNUP_URL } from "../utils/routes";
 
 const Signup = () => {
   const { auth } = useAuth;
@@ -49,8 +48,6 @@ const Signup = () => {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
-
-      console.log(JSON.stringify(response));
 
       navigate("/profile", { replace: true });
     } catch (err) {

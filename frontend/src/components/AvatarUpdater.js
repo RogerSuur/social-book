@@ -24,19 +24,15 @@ const AvatarUpdater = ({ url, handleClose, onUploadSuccess }) => {
         await axios.post(url, formData, { withCredentials: true });
         handleClose();
         onUploadSuccess();
-        console.log("Image uploaded successfully!");
       } catch (err) {
         if (!err?.response) {
           setErrMsg("No Server Response");
         } else if (err.response?.status > 200) {
-          //handle image size errors
           setErrMsg("Internal Server Error");
         }
       }
     }, "image/jpeg");
   };
-
-  console.log("ERROR: ", errMsg);
 
   return (
     <Stack gap={2}>

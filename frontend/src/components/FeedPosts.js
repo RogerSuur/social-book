@@ -59,8 +59,6 @@ const FeedPosts = ({ url, reload }) => {
   const renderedPosts = posts?.map((post, index) => {
     const isLastPost = index === posts.length - 1;
 
-    console.log("POST: ", post);
-
     return (
       <Post
         post={post}

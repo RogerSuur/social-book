@@ -1,18 +1,18 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
-import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
-import Container from "react-bootstrap/Container";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
-import Alert from "react-bootstrap/Alert";
+import {
+  Button,
+  Row,
+  Col,
+  Form,
+  Container,
+  FloatingLabel,
+  Alert,
+} from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
-
-const LOGIN_URL = "http://localhost:8000/login";
+import { LOGIN_URL } from "../utils/routes";
 
 const Login = () => {
   const { auth, setAuth } = useAuth();
@@ -54,12 +54,11 @@ const Login = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post(LOGIN_URL, JSON.stringify(formData), {
+      await axios.post(LOGIN_URL, JSON.stringify(formData), {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
 
-      console.log(JSON.stringify(response, null, 2));
       setAuth(true);
       setFormData({
         username: "",

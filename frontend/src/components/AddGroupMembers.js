@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import axios from "axios";
 import { ADD_GROUP_MEMBERS_URL } from "../utils/routes";
-import { Button, Stack } from "react-bootstrap";
+import { Button, Stack, Alert } from "react-bootstrap";
 
-const AddGroupMembers = ({ id }) => {
-  const [open, setOpen] = useState(false);
+const AddGroupMembers = ({ id, handleClose }) => {
+  const [errMsg, setErrMsg] = useState("");
   const [followers, setFollowers] = useState([]);
   const [formData, setFormData] = useState([]);
 
@@ -17,7 +17,11 @@ const AddGroupMembers = ({ id }) => {
         });
         setFollowers(response.data);
       } catch (err) {
-        console.error(err);
+        if (!err?.response) {
+          setErrMsg("No Server Response");
+        } else {
+          setErrMsg("Internal Server Error");
+        }
       }
     };
     fetchFollowers();
@@ -33,10 +37,6 @@ const AddGroupMembers = ({ id }) => {
     label: `${follower.firstName} ${follower.lastName}`,
   }));
 
-  const handleOpen = () => {
-    setOpen(!open);
-  };
-
   const handleSubmit = async () => {
     try {
       await axios.post(
@@ -47,19 +47,30 @@ const AddGroupMembers = ({ id }) => {
         }
       );
       setFormData([]);
+      handleClose();
     } catch (err) {
-      console.error(err);
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg("Internal Server Error");
+      }
     }
-    setOpen(false);
   };
 
   return (
-    <Stack direction="horizontal">
-      <div className="add-members">
-        <Select options={userOptions} isMulti onChange={handleSelectChange} />
-      </div>
-      <Button onClick={handleSubmit}>Invite</Button>
-    </Stack>
+    <>
+      {errMsg && (
+        <Alert variant="danger" className="text-center">
+          {errMsg}
+        </Alert>
+      )}
+      <Stack direction="horizontal">
+        <div className="add-members">
+          <Select options={userOptions} isMulti onChange={handleSelectChange} />
+        </div>
+        <Button onClick={handleSubmit}>Invite</Button>
+      </Stack>
+    </>
   );
 };
 
