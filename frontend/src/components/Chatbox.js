@@ -277,18 +277,23 @@ const Chatbox = ({
               size={38}
               onClick={() => setShowPicker(true)}
             />
-            <div className="picker-container">
-              {showPicker && (
+
+            {showPicker && (
+              <div className="picker-container" ref={pickerRef}>
                 <Picker
-                  ref={pickerRef}
                   //lazyLoad={true}
                   className="EmojiPicker"
                   searchDisabled={true}
                   skinTonesDisabled={true}
+                  previewConfig={{ showPreview: false }}
+                  categories={["smileys_people"]}
+                  width={282}
+                  height={351}
                   onEmojiClick={onEmojiClick}
                 />
-              )}
-            </div>
+              </div>
+            )}
+
             <Button type="submit">
               <Send />
             </Button>

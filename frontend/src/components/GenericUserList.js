@@ -9,8 +9,8 @@ const image = (user) =>
 const GenericUserList = ({ url }) => {
   const mapUsers = (user, index) => {
     return (
-      <LinkContainer to={`/profile/${user.id}`}>
-        <ListGroup.Item action key={index}>
+      <LinkContainer key={index} to={`/profile/${user.id}`}>
+        <ListGroup.Item action>
           <>
             {image(user)}
             {user?.nickname

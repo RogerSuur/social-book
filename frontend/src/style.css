@@ -14,10 +14,6 @@
   cursor: pointer;
 }
 
-.content-wrapper {
-  margin-top: 72px;
-}
-
 textarea#about {
   height: 120px;
 }
@@ -82,8 +78,6 @@ textarea#about {
 
 .search-results {
   overflow-y: hidden;
-  max-height: calc(100vh - 56px);
-  width: auto;
 }
 
 .add-members {
@@ -111,8 +105,12 @@ textarea#about {
 }
 
 .picker-container {
-  max-height: calc(50vh - 56px);
-  z-index: 1000;
+  position: fixed;
+  bottom: 55px;
+}
+
+.EmojiPickerReact{
+  --epr-header-padding: 5px;
 }
 
 @media only screen and (min-width: 768px){
@@ -129,7 +127,4 @@ textarea#about {
     max-width: 500px;
   }
 
-  .search-results {
-    width: auto;
-  }
 }

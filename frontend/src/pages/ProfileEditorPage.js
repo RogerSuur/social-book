@@ -207,7 +207,7 @@ const ProfileEditorPage = () => {
               </GenericModal>
             </Col>
             <Col>
-              <GenericModal buttonText="User's posts">
+              <GenericModal buttonText="Posts">
                 <FeedPosts url={PROFILE_POSTS_URL} />
               </GenericModal>
             </Col>

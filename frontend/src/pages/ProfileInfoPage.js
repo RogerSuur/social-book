@@ -165,7 +165,7 @@ const ProfileInfo = () => {
                   </GenericModal>
                 </Col>
                 <Col>
-                  <GenericModal buttonText="User's posts">
+                  <GenericModal buttonText="Posts">
                     <FeedPosts url={USER_POSTS_URL + id} />
                   </GenericModal>
                 </Col>

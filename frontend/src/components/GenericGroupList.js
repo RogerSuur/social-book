@@ -4,8 +4,13 @@ import { LinkContainer } from "react-router-bootstrap";
 
 const GenericGroupList = ({ url, loadNewGroups }) => {
   const mapGenericGroupList = (group, index) => (
-    <LinkContainer action active={false} to={`/groups/${group.groupId}`}>
-      <ListGroup.Item key={index}>
+    <LinkContainer
+      key={index}
+      action
+      active={false}
+      to={`/groups/${group.groupId}`}
+    >
+      <ListGroup.Item>
         <>{group.groupName}</>
       </ListGroup.Item>
     </LinkContainer>
