@@ -3,28 +3,28 @@ import axios from "axios";
 import Select from "react-select";
 import ImageUploadModal from "./ImageUploadModal";
 import {
-  Form,
-  Image,
-  InputGroup,
-  Alert,
-  Button,
-  Col,
-  Stack,
+    Form,
+    Image,
+    InputGroup,
+    Alert,
+    Button,
+    Col,
+    Stack,
 } from "react-bootstrap";
 import { FOLLOWERS_URL, CREATE_POST_URL } from "../utils/routes";
 import GenericModal from "../components/GenericModal";
 import { ImageFill } from "react-bootstrap-icons";
 
 const CreatePost = ({ onPostsUpdate, handleClose }) => {
-  const [followers, setFollowers] = useState([]);
-  const [errMsg, setErrMsg] = useState("");
-  const initialFormData = {
-    content: "",
-    image: null,
-    privacyType: 0,
-    selectedReceivers: [],
-  };
-  const [formData, setFormData] = useState(initialFormData);
+    const [followers, setFollowers] = useState([]);
+    const [errMsg, setErrMsg] = useState("");
+    const initialFormData = {
+        content: "",
+        image: null,
+        privacyType: 1,
+        selectedReceivers: [],
+    };
+    const [formData, setFormData] = useState(initialFormData);
 
     useEffect(() => {
         const fetchFollowers = async () => {
@@ -35,32 +35,33 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
                 setFollowers(response.data);
             } catch (err) {
                 if (!err?.response) {
-          setErrMsg("No Server Response");
-        } else {
-          setErrMsg("Internal Server Error");
+                    setErrMsg("No Server Response");
+                } else {
+                    setErrMsg("Internal Server Error");
+                }
+            }
+        };
+        if (formData.privacyType === 3) {
+            fetchFollowers();
         }
-      }
+    }, [formData.privacyType]);
+
+    const handleImageUpload = (image) => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            image: image,
+        }));
     };
-    if (formData.privacyType === 3) {
-      fetchFollowers();
-    }
-  }, [formData.privacyType]);
 
-  const handleImageUpload = (image) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      image: image,
-    }));
-  };
+    const handleChange = (event) => {
+        const { name, value, type } = event.target;
 
-  const handleChange = (event) => {
-    const { name, value, type } = event.target;
-
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: type === "radio" ? parseInt(value) : value,
-    }));
-  };
+        setErrMsg();
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [name]: type === "radio" ? parseInt(value) : value,
+        }));
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -69,6 +70,7 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
             formData?.privacyType === 0 ||
             (formData?.content === "" && formData?.image === null)
         ) {
+            setErrMsg("Enter message and select privacytype");
             return;
         }
 
@@ -80,15 +82,19 @@ const CreatePost = ({ onPostsUpdate, handleClose }) => {
             formData.selectedReceivers
         );
 
-    if (formData?.image) {
-      formDataWithImage.append("image", formData?.image);
-    }
+        if (formData?.image) {
+            formDataWithImage.append("image", formData?.image);
+        }
 
-    try {
-      const response = await axios.post(CREATE_POST_URL, formDataWithImage, {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+        try {
+            const response = await axios.post(
+                CREATE_POST_URL,
+                formDataWithImage,
+                {
+                    withCredentials: true,
+                    headers: { "Content-Type": "multipart/form-data" },
+                }
+            );
 
             setErrMsg(response.data?.message);
 
