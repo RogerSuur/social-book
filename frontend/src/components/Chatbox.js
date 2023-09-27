@@ -247,7 +247,7 @@ const Chatbox = ({
       </Card.Header>
 
       <Card.Body
-        className="message-history h-25"
+        className="message-history"
         ref={messageboxRef}
         onScroll={handleScrolling}
       >

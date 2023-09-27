@@ -46,16 +46,14 @@ textarea#about {
 .chatbox {
   position: fixed;
   bottom: 0;
-  right: 15vw;
-  width: 300px;
-  border-radius: 6px;
-  box-shadow: .125rem .125rem .5rem rgba(0, 0, 0, 0.4);
+  right: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 9999;
 }
 
 .message-history {
-  max-height: 300px;
-  min-height: 300px;
+  height: calc(100vh - 47px - 55px);
   overflow-y: auto;
   overflow-wrap: anywhere;
 }
@@ -125,6 +123,23 @@ textarea#about {
   .navbar-nav {
     width: 65%;
     max-width: 500px;
+  }
+
+  .chatbox {
+    position: fixed;
+    bottom: 0;
+    right: 15vw;
+    width: 300px;
+    height: 403.98px;
+    border-radius: 6px;
+    box-shadow: .125rem .125rem .5rem rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+  }
+
+  .message-history {
+    height: 300px;
+    max-height: 300px;
+    min-height: 300px;
   }
 
 }
