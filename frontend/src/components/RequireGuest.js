@@ -31,6 +31,7 @@ const RequireGuest = () => {
     };
 
     authorisation();
+    // eslint-disable-next-line
   }, [location]);
 
   const isSignup = location?.pathname === "/signup";

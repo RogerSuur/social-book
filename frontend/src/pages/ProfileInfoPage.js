@@ -63,6 +63,7 @@ const ProfileInfo = () => {
       }
     };
     loadUser();
+    // eslint-disable-next-line
   }, [id, isFollowed]);
 
   const userList = (following) =>
@@ -164,7 +165,7 @@ const ProfileInfo = () => {
                   </GenericModal>
                 </Col>
                 <Col>
-                  <GenericModal buttonText="User's posts">
+                  <GenericModal buttonText="Posts">
                     <FeedPosts url={USER_POSTS_URL + id} />
                   </GenericModal>
                 </Col>

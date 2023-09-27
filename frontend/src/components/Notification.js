@@ -71,7 +71,7 @@ const Notification = ({ notification, onClose, popup }) => {
   const groupRequestNotification = (
     <>
       <LinkContainer to={`/profile/${notification?.sender_id}`}>
-        {notification?.sender_name}
+        <>{notification?.sender_name}</>
       </LinkContainer>{" "}
       wants to join your group{" "}
       <LinkContainer to={`/groups/${notification?.group_id}`}>

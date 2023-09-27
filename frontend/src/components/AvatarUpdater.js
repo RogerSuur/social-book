@@ -14,6 +14,7 @@ const AvatarUpdater = ({ url, handleClose, onUploadSuccess }) => {
       setErrMsg("You have to select an image first");
       return;
     }
+
     const canvas = editorRef.current.getImage();
 
     canvas.toBlob(async (blob) => {

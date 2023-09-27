@@ -60,12 +60,11 @@ const CreateComment = ({ postId, onCommentsUpdate }) => {
     }
 
     try {
-      const response = await axios.post(CREATE_COMMENT_URL, formDataWithImage, {
+      await axios.post(CREATE_COMMENT_URL, formDataWithImage, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setErrMsg(response.data?.message);
       onCommentsUpdate();
 
       if (!errMsg) {

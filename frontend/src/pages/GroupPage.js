@@ -10,7 +10,7 @@ import Events from "../components/Events";
 import GroupRequestButton from "../components/GroupRequestButton.js";
 import CreateGroupPosts from "../components/CreateGroupPosts.js";
 import GenericModal from "../components/GenericModal";
-import { Alert, Container, Stack, Col, Row, Badge } from "react-bootstrap";
+import { Alert, Container, Col, Row } from "react-bootstrap";
 
 const GroupPage = () => {
   const [group, setGroup] = useState({});
@@ -42,6 +42,7 @@ const GroupPage = () => {
 
   useEffect(() => {
     loadGroup();
+    //eslint-disable-next-line
   }, [id]);
 
   const image = ImageHandler(group.imagePath, "defaultgroup.png", "group-img");

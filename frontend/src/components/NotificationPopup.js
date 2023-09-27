@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Notification from "../components/Notification";
-import { Toast, CloseButton, Row, Col, Container } from "react-bootstrap";
+import { Toast, CloseButton } from "react-bootstrap";
 
 const NotificationPopup = ({ notification, onPopupClose }) => {
   const [show, setShow] = useState(true);

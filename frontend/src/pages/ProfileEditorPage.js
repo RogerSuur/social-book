@@ -28,7 +28,6 @@ import { LongDate, BirthdayConverter } from "../utils/datetimeConverters.js";
 const ProfileEditorPage = () => {
   const [user, setUser] = useState({});
   const [errMsg, setErrMsg] = useState("");
-
   const values = user;
   const {
     register,
@@ -208,7 +207,7 @@ const ProfileEditorPage = () => {
               </GenericModal>
             </Col>
             <Col>
-              <GenericModal buttonText="User's posts">
+              <GenericModal buttonText="Posts">
                 <FeedPosts url={PROFILE_POSTS_URL} />
               </GenericModal>
             </Col>

@@ -22,7 +22,30 @@ const Chat = ({ newMessages, setNewMessages }) => {
 
   useEffect(() => {
     loadChatlist();
+    // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    switch (lastJsonMessage?.type) {
+      case "chatlist":
+        setUser(lastJsonMessage?.data?.user_id);
+        setUserChatlist([...lastJsonMessage?.data?.user_chatlist]);
+        setGroupChatlist([...lastJsonMessage?.data?.group_chatlist]);
+        break;
+      case "message":
+        updateChatlist([
+          lastJsonMessage?.data?.group_id > 0
+            ? 0
+            : lastJsonMessage?.data?.sender_id,
+          lastJsonMessage?.data?.group_id,
+        ]);
+        setNewMessages && setNewMessages(true);
+        break;
+      default:
+        break;
+    }
+    // eslint-disable-next-line
+  }, [lastJsonMessage]);
 
   const resetUnreadCount = (openChatbox) => {
     openChatbox[0]
@@ -111,27 +134,6 @@ const Chat = ({ newMessages, setNewMessages }) => {
         : setUserChatlist([userChat, ...filteredChatlist]);
     }
   };
-
-  useEffect(() => {
-    switch (lastJsonMessage?.type) {
-      case "chatlist":
-        setUser(lastJsonMessage?.data?.user_id);
-        setUserChatlist([...lastJsonMessage?.data?.user_chatlist]);
-        setGroupChatlist([...lastJsonMessage?.data?.group_chatlist]);
-        break;
-      case "message":
-        updateChatlist([
-          lastJsonMessage?.data?.group_id > 0
-            ? 0
-            : lastJsonMessage?.data?.sender_id,
-          lastJsonMessage?.data?.group_id,
-        ]);
-        setNewMessages && setNewMessages(true);
-        break;
-      default:
-        break;
-    }
-  }, [lastJsonMessage]);
 
   const openedChatbox = (
     <Chatbox

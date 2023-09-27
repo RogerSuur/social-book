@@ -23,6 +23,7 @@ const SearchSmallUtility = () => {
               <SearchResults
                 searchResults={searchResults}
                 setSearchResults={setSearchResults}
+                handleClose={handleClose}
               />
             )}
           </Offcanvas.Body>

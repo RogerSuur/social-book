@@ -56,7 +56,7 @@ const Post = ({ post, isLastPost, lastPostElementRef }) => {
 
       <Row>
         {lastPostElementRef !== undefined && (
-          <div className="text-end">
+          <Col xs="auto" className="ms-auto">
             <GenericModal
               linkText={`${commentCount > 0 ? commentCount : ""} ${
                 commentCount === 0
@@ -70,7 +70,7 @@ const Post = ({ post, isLastPost, lastPostElementRef }) => {
               <Post post={post} />
               <Comments postId={id} commentCount={commentCount} />
             </GenericModal>
-          </div>
+          </Col>
         )}
       </Row>
     </Container>

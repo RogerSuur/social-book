@@ -44,7 +44,7 @@ const Signup = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post(SIGNUP_URL, JSON.stringify(data), {
+      await axios.post(SIGNUP_URL, JSON.stringify(data), {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });

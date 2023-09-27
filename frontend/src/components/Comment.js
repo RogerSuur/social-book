@@ -2,7 +2,7 @@ import React from "react";
 import { Image } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { ShortDatetime } from "../utils/datetimeConverters";
-import { Container, Row, Col, Stack } from "react-bootstrap";
+import { Container, Row, Stack } from "react-bootstrap";
 
 const Comment = ({ comment }) => {
   return (

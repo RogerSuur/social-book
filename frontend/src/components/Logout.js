@@ -19,6 +19,7 @@ const Logout = () => {
     };
 
     authorisation();
+    // eslint-disable-next-line
   }, []);
 };
 

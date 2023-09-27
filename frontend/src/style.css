@@ -14,10 +14,6 @@
   cursor: pointer;
 }
 
-.content-wrapper {
-  margin-top: 72px;
-}
-
 textarea#about {
   height: 120px;
 }
@@ -50,16 +46,14 @@ textarea#about {
 .chatbox {
   position: fixed;
   bottom: 0;
-  right: 15vw;
-  width: 300px;
-  border-radius: 6px;
-  box-shadow: .125rem .125rem .5rem rgba(0, 0, 0, 0.4);
+  right: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 9999;
 }
 
 .message-history {
-  max-height: 300px;
-  min-height: 300px;
+  height: calc(100vh - 47px - 55px);
   overflow-y: auto;
   overflow-wrap: anywhere;
 }
@@ -82,8 +76,6 @@ textarea#about {
 
 .search-results {
   overflow-y: hidden;
-  max-height: calc(100vh - 56px);
-  width: auto;
 }
 
 .add-members {
@@ -110,18 +102,13 @@ textarea#about {
   white-space: nowrap;
 }
 
-/* .group-chatlist-item {
-  animation: groupchatunread 3s;
-  animation-fill-mode: forwards;
-} */
-
-@keyframes groupchatunread {
-  to {background-color: red;}
+.picker-container {
+  position: fixed;
+  bottom: 55px;
 }
 
-.picker-container {
-  max-height: calc(50vh - 56px);
-  z-index: 1000;
+.EmojiPickerReact{
+  --epr-header-padding: 5px;
 }
 
 @media only screen and (min-width: 768px){
@@ -138,9 +125,21 @@ textarea#about {
     max-width: 500px;
   }
 
-  .search-results {
-    overflow-y: hidden;
-    width: auto;
+  .chatbox {
+    position: fixed;
+    bottom: 0;
+    right: 15vw;
+    width: 300px;
+    height: 403.98px;
+    border-radius: 6px;
+    box-shadow: .125rem .125rem .5rem rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+  }
+
+  .message-history {
+    height: 300px;
+    max-height: 300px;
+    min-height: 300px;
   }
 
 }
